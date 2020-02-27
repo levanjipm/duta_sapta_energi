@@ -71,4 +71,18 @@ class Good_receipt extends CI_Controller {
 		header('Content-Type: application/json');
 		echo json_encode($data);
 	}
+	
+	public function confirm()
+	{
+		$id		= $this->input->post('id');
+		$this->load->model('Good_receipt_model');
+		if ($this->Good_receipt_model->confirm($id))
+		{
+			$this->load->model('Good_receipt_detail_model');
+			$batch = $this->Good_receipt_detail_model->get_batch_by_code_good_receipt_id($id);
+
+			$this->load->model('Stock_in_model');
+			$this->Stock_in_model->input_from_code_good_receipt($batch);
+		}
+	}
 }

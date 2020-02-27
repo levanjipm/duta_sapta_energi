@@ -9,6 +9,10 @@ class Good_receipt_detail_model extends CI_Model {
 		public $quantity;
 		public $code_good_receipt_id;
 		
+		public $item_id;
+		public $supplier_id;
+		public $date;
+		
 		public function __construct()
 		{
 			parent::__construct();
@@ -82,5 +86,40 @@ class Good_receipt_detail_model extends CI_Model {
 			$this->load->model('Good_receipt_detail_model');
 			$batch 		= $this->Good_receipt_detail_model->create_batch($id);
 			$this->db->insert_batch($this->table_good_receipt, $batch);
+		}
+		
+		public function get_batch_by_code_good_receipt_id($id)
+		{
+			$this->db->select('good_receipt.*, purchase_order.item_id, code_purchase_order.supplier_id');
+			$this->db->from('good_receipt');
+			$this->db->join('purchase_order', 'good_receipt.purchase_order_id = purchase_order.id');
+			$this->db->join('code_purchase_order', 'purchase_order.code_purchase_order_id = code_purchase_order.id');
+			$this->db->where('good_receipt.code_good_receipt_id =', $id);
+			
+			$query	= $this->db->get();
+			$result	= $query->result();
+			$batch = $this->Good_receipt_detail_model->create_stock_batch($result);
+			
+			return $batch;
+		}
+		
+		public function create_stock_batch($results)
+		{
+			foreach($results as $result){
+				$quantity					= $result->quantity;
+				$item_id					= $result->item_id;
+				$supplier_id				= $result->supplier_id;
+				$code_good_receipt_id		= $result->code_good_receipt_id;
+				$batch[] = array(
+					'id' => '',
+					'quantity' => $quantity,
+					'residue' => $quantity,
+					'code_good_receipt_id' => $code_good_receipt_id,
+					'supplier_id' => $supplier_id,
+					'item_id' => $item_id,
+				);
+			}
+			
+			return $batch;
 		}
 }

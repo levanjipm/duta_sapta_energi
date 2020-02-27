@@ -62,7 +62,7 @@ class View_complete_good_receipt extends CI_Model {
 		
 		public function get_new_stub_from_db($db_item)
 		{
-			$stub = new Customer_model();
+			$stub = new View_complete_good_receipt();
 			
 			$stub->id					= $db_item->id;
 			$stub->code_good_receipt_id	= $db_item->code_good_receipt_id;
@@ -85,7 +85,7 @@ class View_complete_good_receipt extends CI_Model {
 			$result = array();
 			foreach ($items as $item)
 			{
-				$result[] = $this->get_new_stub_from_db($customer);
+				$result[] = $this->get_new_stub_from_db($item);
 			}
 			return $result;
 		}
@@ -94,10 +94,9 @@ class View_complete_good_receipt extends CI_Model {
 		public function show_by_id($id)
 		{
 			$this->db->where('code_good_receipt_id =', $id);
-			$query = $this->db->get($this->table_good_receipt, 1);
+			$query = $this->db->get($this->table_good_receipt);
 			
-			$item = $query->row();
-			
-			return ($item !== null) ? $this->get_stub_from_db($item) : null;
+			$item = $query->result();
+			return ($item !== null) ? $this->map_list($item) : null;
 		}
 }

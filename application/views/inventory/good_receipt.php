@@ -41,9 +41,9 @@
 			<p style='font-family:museo'>Received on <span id='good_receipt_received_date'></span></p>
 			
 			<label>Supplier</label>
-			<p style='font-family:museo' id='supplier_name'></p>
-			<p style='font-family:museo' id='supplier_address'></p>
-			<p style='font-family:museo' id='supplier_city'></p>
+			<p style='font-family:museo' id='supplier_name_p'></p>
+			<p style='font-family:museo' id='supplier_address_p'></p>
+			<p style='font-family:museo' id='supplier_city_p'></p>
 			
 			<label>Purchase order</label>
 			<p style='font-family:museo' id='purchase_order_name'></p>
@@ -57,11 +57,17 @@
 				</tr>
 				<tbody id='good_receipt_table'></tbody>
 			</table>
+			
+			<form action='<?= site_url('Good_receipt/confirm') ?>' method='POST'>
+				<input type='hidden' id='good_receipt_id' name='id'>
+				<button class='button button_default_dark'>Submit</button>
+			</form>
 		</div>
 	</div>
 	
 	<script>
 		function validate_good_receipt(n){
+			$('#good_receipt_id').val(n);
 			$.ajax({
 				url:'<?= site_url('Good_receipt/view_complete_good_receipt') ?>',
 				data:{
@@ -69,6 +75,22 @@
 				},
 				dataType:'json',
 				success:function(response){
+					var date	= response[0].date;
+					var document = response[0].name;
+					var received_date = response[0].received_date;
+					
+					$('#good_receipt_date').html(date);
+					$('#good_receipt_document').html(document);
+					$('#good_receipt_received_date').html(received_date);
+					
+					var supplier_name		= response[0].supplier_name;
+					var supplier_address	= response[0].address;
+					var supplier_city		= response[0].city;
+					
+					$('#supplier_name_p').html(supplier_name);
+					$('#supplier_address_p').html(supplier_address);
+					$('#supplier_city_p').html(supplier_city);
+					
 					$('#good_receipt_table').html('');
 					$.each(response, function(index, value){
 						$('#good_receipt_table').append("<tr><td>" + value.reference + "</td><td>" + value.name + "</td><td>" + numeral(value.quantity).format('0,0.00') + "</td></tr>");

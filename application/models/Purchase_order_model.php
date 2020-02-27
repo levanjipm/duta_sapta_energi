@@ -19,6 +19,7 @@ class Purchase_order_model extends CI_Model {
 		public $date_send_request;
 		public $guid;
 		public $supplier_id;
+		public $is_delete;
 		
 		public $supplier_name;
 		public $supplier_address;
@@ -43,6 +44,7 @@ class Purchase_order_model extends CI_Model {
 			$this->date_send_request        = NULL;
 			$this->guid                     ='';
 			$this->supplier_id              ='';
+			$this->is_delete              	='';
 		}
 		
 		public function get_stub_from_db($db_item)
@@ -62,6 +64,7 @@ class Purchase_order_model extends CI_Model {
 			$this->date_send_request        = $db_item->date_send_request;       
 			$this->guid                     = $db_item->guid;                    
 			$this->supplier_id              = $db_item->supplier_id;              
+			$this->is_delete	              = $db_item->is_delete;              
 			
 			return $this;
 		}
@@ -85,6 +88,7 @@ class Purchase_order_model extends CI_Model {
 			$db_item->date_send_request         = $this->date_send_request;       
 			$db_item->guid                      = $this->guid;                    
 			$db_item->supplier_id               = $this->supplier_id;
+			$db_item->is_delete	               = $this->is_delete;
 			
 			return $db_item;
 		}
@@ -108,6 +112,7 @@ class Purchase_order_model extends CI_Model {
 			$stub->date_send_request        = $db_item->date_send_request;       
 			$stub->guid                     = $db_item->guid;                    
 			$stub->supplier_id              = $db_item->supplier_id;     
+			$stub->is_delete	              = $db_item->is_delete;     
 			
 			return $stub;
 		}
@@ -134,6 +139,7 @@ class Purchase_order_model extends CI_Model {
 			$stub->supplier_name            = $db_item->supplier_name;    
 			$stub->supplier_address         = $db_item->supplier_address;    
 			$stub->supplier_city	        = $db_item->supplier_city;    
+			$stub->is_delete	       		 = $db_item->is_delete;    
 			
 			return $stub;
 		}
@@ -173,11 +179,14 @@ class Purchase_order_model extends CI_Model {
 		
 		public function show_unconfirmed_purchase_order()
 		{
-			$this->db->where('confirmed_by =', null);
-			$query = $this->db->get($this->table_purchase_order);
+			$this->db->select('code_purchase_order.*, supplier.name as supplier_name, supplier.address as supplier_address, supplier.city as supplier_city');
+			$this->db->from($this->table_purchase_order);
+			$this->db->join('supplier', 'code_purchase_order.supplier_id = supplier.id');
+			$this->db->where('code_purchase_order.confirmed_by =', null);
+			$query = $this->db->get();
 			$items	 	= $query->result();
 			
-			$result 	= $this->map_list($items);
+			$result 	= $this->map_list_with_supplier($items);
 			
 			return $result;
 			
@@ -278,6 +287,14 @@ class Purchase_order_model extends CI_Model {
 			$result 	= $this->map_list_with_supplier($items);
 			
 			return $result;
+		}
+		
+		public function confirm_purchase_order($id)
+		{
+			$this->db->set('is_confirm', 1);
+			$this->db->set('confirmed_by', $this->session->userdata('user_id'));
+			$this->db->where('id', $id);
+			$this->db->update($this->table_purchase_order);
 		}
 		
 		

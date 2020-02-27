@@ -102,4 +102,21 @@ class Purchase_order extends CI_Controller {
 		
 		$this->load->view('Inventory/view_incomplete_purchase_order', $data);
 	}
+	
+	public function get_purchase_order_detail_by_id($id)
+	{
+		$this->load->model('Purchase_order_detail_model');
+		$data	= $this->Purchase_order_detail_model->show_by_purchase_order_id($id);
+		header('Content-Type: application/json');
+		echo json_encode($data);
+	}
+	
+	public function confirm()
+	{
+		$id		= $this->input->post('id');
+		$this->load->model('Purchase_order_model');
+		$this->Purchase_order_model->confirm_purchase_order($id);
+		
+		redirect(site_url('Purchase_order'));
+	}
 }

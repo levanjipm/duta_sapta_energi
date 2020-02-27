@@ -117,7 +117,6 @@ class Delivery_order_detail_model extends CI_Model {
 		
 		public function insert_from_post($id)
 		{
-			$this->load->model('Delivery_order_detail_model');
 			$batch 					= $this->Delivery_order_detail_model->create_batch($id);
 			$this->db->insert_batch($this->table_delivery_order, $batch);
 			

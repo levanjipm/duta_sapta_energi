@@ -140,6 +140,25 @@ class Good_receipt_model extends CI_Model {
 			}
 		}
 		
+		public function confirm($id)
+		{
+			$this->db->trans_start();
+			$this->db->set('is_confirm', 1);
+			$this->db->set('confirmed_by', $this->session->userdata('user_id'));
+			$this->db->where('id =', $id);
+			$this->db->update($this->table_good_receipt);
+			$this->db->trans_complete();
+			
+			if($this->db->trans_status() === FALSE)
+			{
+				return false;
+			}
+			else
+			{
+				return true;
+			}
+		}
+		
 		public function create_guid()
 		{	
 			return sprintf('%04X%04X-%04X-%04X-%04X-%04X%04X%04X', mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(16384, 20479), mt_rand(32768, 49151), mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(0, 65535));
