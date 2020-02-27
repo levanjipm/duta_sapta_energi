@@ -1,0 +1,134 @@
+@font-face {
+  font-family: Bebasneue;
+  src: url(../third_party/font/BebasNeue.woff);
+}
+
+@font-face {
+  font-family: museo;
+  src: url(../third_party/font/museo300-regular.otf);
+}
+
+.topnav_bar{
+	width:100%;
+	height:70px;
+	background-color:#fff;
+	position:fixed;
+	top:0;
+	z-index:250;
+}
+
+.topnav_bar button{
+	padding:10px;
+	color:#ddd;
+	border:none;
+	background-color:transparent;
+	font-size:3rem;
+	transition:0.3s all ease;
+	outline:none!important;
+}
+
+.topnav_bar button:hover{
+	color:#f6a821;
+	transition:0.3s all ease;
+}
+
+.topnav_bar_left{
+	position:absolute;
+	left:0;
+	top:0;
+	background-color:#f6a821;
+	width:200px;
+	height:70px;
+	padding-left:20px;
+}
+
+.topnav_bar_left h1{
+	color:#fff;
+	font-family:bebasneue;
+	letter-spacing:10px;
+}
+
+.topnav_bar_right{
+	position:absolute;
+	left:200px;
+	top:0;
+	width:100% - 200px;
+}
+
+.sidenav_bar{
+	background-color:#24262d;
+	position:fixed;
+	width:200px;
+	top:70px;
+	left:0;
+	height:100%;
+	color:#ddd;
+	padding:5px;
+}
+
+.sidenav_bar a{
+	text-decoration:none;
+}
+
+.sidenav_bar a button{
+	width:100%;
+	outline:none!important;
+	border:none;
+	background-color:transparent;
+	text-align:left;
+	color:#ddd;
+}
+
+.container_button{
+	width:100%;
+	outline:none!important;
+	border:none;
+	background-color:transparent;
+	text-align:left;
+}
+
+.container_bar{
+	width:100%;
+	padding:5px;
+	padding-left:20px;
+	padding-top:0px;
+	display:none;
+}
+
+.container_bar a{
+	color:#ddd;
+	text-decoration:none;
+	font-size:1em!important;
+	font-family:museo;
+}
+
+.active{
+	border-left:5px solid white;
+	transition:0.3s all ease;
+}
+
+.dashboard{
+	margin-top:70px;
+	margin-left:200px;
+	padding:20px;
+	color:white;
+	background-color:transparent;
+}
+
+.form-control{
+	border-radius:0;
+}
+
+.form_control{
+	border:2px solid white;
+	background-color:transparent;
+	outline:none!important;
+	width:100%;
+	padding:5px;
+	color:white;
+}
+
+body{
+	background-image: -webkit-radial-gradient(top, circle cover, #393b45 0%, #2d3038 70%);
+	background-size: cover;
+}

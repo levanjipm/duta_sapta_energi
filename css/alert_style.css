@@ -1,0 +1,64 @@
+.alert_wrapper{
+	position:fixed;
+	top:0;
+	left:0;
+	width:100%;
+	height:100%;
+	background-color:rgba(20,20,20,0.8);
+	display:none;
+}
+
+.alert_box_default{
+	width:80%;
+	height:80%;
+	overflow-y:scroll;
+	z-index:300;
+	background-color:#fff;
+	left:10%;
+	top:10%;
+	position:absolute;
+	color:#333;
+	padding:20px;
+	border-top:10px solid #21daf6;
+	padding-top:10px;
+	box-shadow:3px 3px 3px 3px rgba(10,10,10,0.7);
+}
+
+.alert_box_confirm{
+	width:350px;
+	z-index:300;
+	background-color:#fff;
+	text-align:center;
+	margin: auto;
+	color:#333;
+	padding:20px;
+	box-shadow:3px 3px 3px 3px rgba(50,50,50,0.8);
+	margin-top:5%;
+}
+
+.alert_close_button{
+	position:absolute;
+	top:0;
+	left:0;
+	background-color:transparent;
+	border:none;
+	outline:none!important;
+	color:#333;
+	font-size:1.2em;
+}
+
+.alert_snackbar{
+	display:none;
+	min-width: 250px;
+	margin-left: -125px;
+	background-color: #fff;
+	color: #333;
+	text-align: center;
+	border-radius: 10px;
+	padding: 16px;
+	position: fixed;
+	z-index: 300;
+	left:10%;
+	bottom: 20px;
+	box-shadow:2px 2px 1px 1px rgba(20,20,20,0.8);
+}

@@ -1,0 +1,64 @@
+.button {
+	padding:3px 15px;
+	background-color:transparent;
+	transition:0.3s all ease;
+	outline:none!important;
+	font-size:1em;
+}
+
+.button:disabled{
+	cursor:not-allowed;
+}
+
+.button_success_dark{	
+	border:1px solid #21f6a8;
+	color:#21f6a8;
+}
+
+.button_success_dark:hover{
+	color:white;
+	background-color:#21f6a8;
+	transition:0.3s all ease;
+}
+
+.button_default_dark{
+	border:2px solid #24262d;
+	color:#24262d;
+}
+
+.button_default_dark:hover{
+	color:white;
+	background-color:#24262d;
+	transition:0.3s all ease;
+}
+
+.button_default_light{
+	color:white;
+	border:2px solid white;
+}
+
+.button_default_light:hover{
+	background-color:white;
+	color:#333;
+	transition:0.3s all ease;
+}
+
+.button_danger_dark{
+	border:2px solid #f63e21;
+	color:#f63e21;
+}
+
+.button_danger_dark:hover{
+	background-color:#f63e21;
+	color:white;
+}
+
+.button_undo{
+	border:none;
+	border-radius:8px;
+}
+
+.button_undo:hover{
+	background-color:rgba(246,168,33,0.7);
+	transition:0.3s all ease;
+}

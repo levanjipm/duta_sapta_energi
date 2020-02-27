@@ -1,0 +1,252 @@
+<?php
+defined('BASEPATH') OR exit('No direct script access allowed');
+
+class Customer_model extends CI_Model {
+	private $table_customer = 'customer';
+		
+		public $id;
+		public $name;
+		public $address;
+		public $number;
+		public $block;
+		public $rt;
+		public $rw;
+		public $city;
+		public $postal_code;
+		public $area_id;
+		public $npwp;
+		public $phone_number;
+		public $pic_name;
+		public $date_created;
+		public $created_by;
+		public $is_black_list;
+		
+		public $complete_address;
+		
+		public function __construct()
+		{
+			parent::__construct();
+		}
+		
+		public function get_stub_from_db($db_item)
+		{
+			$this->id					= $db_item->id;
+			$this->name					= $db_item->name;
+			$this->address				= $db_item->address;
+			$this->number				= $db_item->number;
+			$this->block				= $db_item->block;
+			$this->rt					= $db_item->rt;
+			$this->rw					= $db_item->rw;
+			$this->city					= $db_item->city;
+			$this->postal_code			= $db_item->postal_code;
+			$this->area_id				= $db_item->area_id;
+			$this->npwp					= $db_item->npwp;
+			$this->phone_number			= $db_item->phone_number;
+			$this->pic_name				= $db_item->pic_name;
+			$this->date_created			= $db_item->date_created;
+			$this->created_by			= $db_item->created_by;
+			$this->is_black_list		= $db_item->is_black_list;
+			
+			return $this;
+		}
+		
+		public function get_db_from_stub()
+		{
+			$db_item = new class{};
+			
+			$db_item->id					= $this->id;
+			$db_item->name					= $this->name;
+			$db_item->address				= $this->address;
+			$db_item->number				= $this->number;
+			$db_item->block					= $this->block;
+			$db_item->rt					= $this->rt;
+			$db_item->rw					= $this->rw;
+			$db_item->city					= $this->city;
+			$db_item->postal_code			= $this->postal_code;
+			$db_item->area_id				= $this->area_id;
+			$db_item->npwp					= $this->npwp;
+			$db_item->phone_number			= $this->phone_number;
+			$db_item->pic_name				= $this->pic_name;
+			$db_item->date_created			= $this->date_created;
+			$db_item->created_by			= $this->created_by;
+			$db_item->is_black_list			= $this->is_black_list;
+			
+			return $db_item;
+		}
+		
+		public function get_new_stub_from_db($db_item)
+		{
+			$stub = new Customer_model();
+			
+			$stub->id					= $db_item->id;
+			$stub->name					= $db_item->name;
+			$stub->address				= $db_item->address;
+			$stub->number				= $db_item->number;
+			$stub->block				= $db_item->block;
+			$stub->rt					= $db_item->rt;
+			$stub->rw					= $db_item->rw;
+			$stub->city					= $db_item->city;
+			$stub->postal_code			= $db_item->postal_code;
+			$stub->area_id				= $db_item->area_id;
+			$stub->npwp					= $db_item->npwp;
+			$stub->phone_number			= $db_item->phone_number;
+			$stub->pic_name				= $db_item->pic_name;
+			$stub->date_created			= $db_item->date_created;
+			$stub->created_by			= $db_item->created_by;
+			$stub->is_black_list		= $db_item->is_black_list;
+			
+			return $stub;
+		}
+		
+		public function map_list($customers)
+		{
+			$result = array();
+			foreach ($customers as $customer)
+			{
+				$result[] = $this->get_new_stub_from_db($customer);
+			}
+			return $result;
+		}
+		
+		public function show_items($offset = 0, $filter = '', $limit = 25)
+		{
+			if($filter != ''){
+				$this->db->like('name', $filter, 'both');
+				$this->db->or_like('address', $filter, 'both');
+				$this->db->or_like('city', $filter, 'both');
+			}
+			
+			$query 		= $this->db->get($this->table_customer, $limit, $offset);
+			$items	 	= $query->result();
+			
+			$result 	= $this->map_list($items);
+			
+			return $result;
+		}
+		
+		public function count_items($filter = '')
+		{
+			if($filter != ''){
+				$this->db->like('name', $filter, 'both');
+				$this->db->or_like('address', $filter, 'both');
+			}
+			
+			$query		= $this->db->get($this->table_customer);
+			$result		= $query->num_rows();
+			
+			return $result;
+		}
+		
+		public function insert_from_post()
+		{
+			$this->load->model('Customer_model');
+			$this->db->select('*');
+			$this->db->from($this->table_customer);
+			$this->db->where('name =', $this->input->post('customer_name'));
+			$items = $this->db->get();
+			$count = $items->num_rows();
+			
+			if($count == 0){
+				$this->id					= '';
+				$this->name					= $this->input->post('customer_name');
+				$this->address				= $this->input->post('customer_address');
+				$this->number				= $this->input->post('address_number');
+				$this->block				= $this->input->post('address_block');
+				$this->rt					= $this->input->post('address_rt');
+				$this->rw					= $this->input->post('address_rw');
+				$this->city					= $this->input->post('customer_city');
+				$this->postal_code			= $this->input->post('address_postal');
+				$this->area_id				= $this->input->post('area_id');
+				$this->npwp					= $this->input->post('customer_npwp');
+				$this->phone_number			= $this->input->post('customer_phone');
+				$this->pic_name				= $this->input->post('customer_pic');
+				$this->date_created			= date('Y-m-d');
+				$this->created_by			= $this->session->userdata('user_id');
+				$this->is_black_list		= '';
+				
+				$db_item 					= $this->get_db_from_stub($this);
+				$db_result 					= $this->db->insert($this->table_customer, $db_item);
+			}
+		}
+		
+		public function delete_by_id()
+		{
+			$this->db->where('id', $this->input->post('customer_id'));
+			$this->db->delete($this->table_customer);
+		}
+		
+		public function show_by_id_from_post()
+		{
+			$this->db->where('id', $this->input->post('customer_id'));
+			$this->db->where('is_black_list',0);
+			$query = $this->db->get($this->table_customer, 1);
+			
+			$item = $query->row();
+			
+			return ($item !== null) ? $this->get_stub_from_db($item) : null;
+		}
+		
+		public function show_by_id($id)
+		{
+			$this->db->where('id', $id);
+			$query = $this->db->get($this->table_customer, 1);
+			
+			$item = $query->row();
+			
+			return ($item !== null) ? $this->get_stub_from_db($item) : null;
+		}
+		
+		public function update_from_post()
+		{
+			$where['id']				= $this->input->post('customer_id');
+			
+			$this->name					= $this->input->post('customer_name');
+			$this->address				= $this->input->post('customer_address');
+			$this->number				= $this->input->post('address_number');
+			$this->block				= $this->input->post('address_block');
+			$this->rt					= $this->input->post('address_rt');
+			$this->rw					= $this->input->post('address_rw');
+			$this->city					= $this->input->post('customer_city');
+			$this->postal_code			= $this->input->post('address_postal');
+			$this->area_id				= $this->input->post('area_id');
+			$this->npwp					= $this->input->post('customer_pic');
+			$this->phone_number			= $this->input->post('customer_phone');
+			$this->pic_name				= $this->input->post('customer_pic');
+			
+			$db_item = $this->get_db_from_stub($this);
+			
+			$this->db->where($where);
+			$this->db->update($this->table_customer, $db_item);
+		}
+		
+		public function show_search_result($limit, $offset)
+		{
+			$term			= $this->input->get('term');
+			if($term == '' || empty($term)){
+				$this->load->model('Customer_model');
+				$this->Customer_model->show_limited($limit, $offset);
+			} else {
+				$this->db->like('name', $term , 'both');
+				$this->db->or_like('address', $term , 'both');
+				$this->db->or_like('postal_code', $term , 'both');
+				$this->db->or_like('block', $term , 'both');
+				$this->db->or_like('pic_name', $term , 'both');
+				$this->db->or_like('rt', $term , 'both');
+				$this->db->or_like('rw', $term , 'both');
+				$this->db->or_like('city', $term , 'both');
+			}
+			
+			$query = $this->db->get($this->table_customer, $limit, $offset);
+			$items	= $query->result();
+			return $items;
+		}
+		
+		public function show_all_by_id($customer_id_array)
+		{
+			$this->db->where_in('id', $customer_id_array);
+
+			$query = $this->db->get($this->table_customer);
+			$items	= $query->result();
+			return $items;
+		}
+}

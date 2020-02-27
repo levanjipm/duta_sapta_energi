@@ -1,0 +1,163 @@
+<style>
+.logo_wrapper{
+	position:relative; 
+	height:200px;
+}
+
+.circle_wrapper {
+    opacity: 1;
+    transform: scale(0);
+    color: white;
+	border-radius:50%;
+	border:2px solid #fff;
+    -webkit-text-stroke: 0;
+    animation: background .3s cubic-bezier(1.000, 0.008, 0.565, 1.650) .1s 1 forwards;
+	width:200px;
+	height:200px;
+	position:absolute;
+	text-align:center;
+}
+
+.check{
+	position:relative;
+	top:5%;
+	opacity:0;
+	color:white;
+	font-size:10rem;
+	animation: icon .5s cubic-bezier(0.895, 0.030, 0.685, 0.220) forwards;
+}
+
+@keyframes background {
+	from {
+		border:2px solid white;
+		opacity: 0;
+		transform: scale(0.3);
+		background-color:transparent;
+	}
+	to {
+		border:2px solid transparent;
+		opacity: 1;
+		transform: scale(1);
+		background-color:#00d478;
+	}
+}
+
+@keyframes icon {
+	from {
+		opacity: 0;
+		transform: scale(0.3);
+	}
+	to {
+		opacity: 1;
+		transform: scale(1)
+	}
+}
+
+#copy_text_span{
+	cursor:pointer;
+}
+	
+</style>
+<div class='dashboard'>
+	<div class='logo_wrapper'>
+		<div class='circle_wrapper'>
+			<div class='check'><i class='fa fa-check'></i></div>
+		</div>
+	</div>
+	<br>
+	<div style='text-align:center'>
+		<h4 style='font-family:museo'>You have successfully input this sales order</h4>
+	</div>
+	<label>Customer</label>
+<?php
+	$complete_address		= '';
+	$customer_name			= $customer->name;
+	$complete_address		= $customer->address;
+	$customer_city			= $customer->city;
+	$customer_number		= $customer->number;
+	$customer_rt			= $customer->rt;
+	$customer_rw			= $customer->rw;
+	$customer_postal		= $customer->postal_code;
+	$customer_block			= $customer->block;
+	$customer_id			= $customer->id;
+	
+	if($customer_number != NULL){
+		$complete_address	.= ' No. ' . $customer_number;
+	}
+	
+	if($customer_block != NULL){
+		$complete_address	.= ' Blok ' . $customer_block;
+	}
+	
+	if($customer_rt != '000'){
+		$complete_address	.= ' RT ' . $customer_rt;
+	}
+	
+	if($customer_rw != '000' && $customer_rt != '000'){
+		$complete_address	.= ' /RW ' . $customer_rw;
+	}
+	
+	if($customer_postal != NULL){
+		$complete_address	.= ', ' . $customer_postal;
+	}
+?>
+	<p style='font-family:museo'><?= $customer_name ?></p>
+	<p style='font-family:museo'><?= $complete_address ?></p>
+	<p style='font-family:museo'><?= $customer_city ?></p>
+	
+	<label>Sales order name</label>
+	<p style='font-family:museo'><?= $general->name ?> <span id='copy_text_span'><i class='fa fa-copy'></i></span></p>
+	
+	<table class='table table-bordered' style='color:white'>
+		<tr>
+			<th>Reference</th>
+			<th>Description</th>
+			<th>Price list</th>
+			<th>Discount</th>
+			<th>Quantity</th>
+			<th>Net unit price</th>
+			<th>Price</th>
+		</tr>
+<?php
+	$sales_order_value		= 0;
+	foreach($details as $detail){
+		$unit_price = $detail->price_list * (100 - $detail->discount) / 100;
+		$price		= $unit_price * $detail->quantity;
+		$sales_order_value	+= $price;
+?>
+		<tr>
+			<td><?= $detail->reference ?></td>
+			<td><?= $detail->name ?></td>
+			<td>Rp. <?= number_format($detail->price_list,2) ?></td>
+			<td><?= number_format($detail->discount,2) ?> %</td>
+			<td><?= number_format($detail->quantity) ?></td>
+			<td>Rp. <?= number_format($unit_price,2) ?></td>
+			<td>Rp. <?= number_format($price,2) ?></td>
+		</tr>
+<?php
+	}
+?>
+		<tr>
+			<td colspan='3'></td>
+			<td colspan='2'>Total</td>
+			<td colspan='2'>Rp. <?= number_format($sales_order_value,2) ?></td>
+		</tr>
+	</table>
+</div>
+<div class='alert_snackbar'>
+	Sales order input success 
+	<button type='button' class='button button_undo' title='Cancel sales order'>Undo</button>
+	<button type='button' class='button button_undo' title='Close'>&times</button></div>
+<script>
+	$(document).ready(function(){
+		var window_width	= $(document).width() - 200;
+		var difference		= window_width * 0.5 - 100;		
+		$('.logo_wrapper').css('margin-left', difference, 'important');
+		
+		$('.alert_snackbar').toggle(300);
+	});
+	
+	setTimeout(function(){
+		$('.alert_snackbar').fadeOut(300,function(){ $(this).remove()})
+	},5000);
+</script>
