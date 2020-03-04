@@ -45,15 +45,14 @@ class Good_receipt extends CI_Controller {
 	
 	public function input()
 	{
-		print_r($_POST);
 		$this->load->model('Good_receipt_model');
 		$id		= $this->Good_receipt_model->input_from_post();
 		
 		if($id != null){
-			$this->load->model('Good_receipt_detail_model');
-			$this->Good_receipt_detail_model->insert_from_post($id);
-			
 			$quantity_array		= $this->input->post('quantity');
+			$price_array		= $this->input->post('net_price');
+			$this->load->model('Good_receipt_detail_model');
+			$this->Good_receipt_detail_model->insert_from_post($id, $quantity_array, $price_array);
 			
 			$this->load->model('Purchase_order_detail_model');
 			$this->Purchase_order_detail_model->update_purchase_order_received($quantity_array);
@@ -66,7 +65,7 @@ class Good_receipt extends CI_Controller {
 	{
 		$good_receipt_id		= $this->input->get('id');
 		$this->load->model('View_complete_good_receipt');
-		$data = $this->View_complete_good_receipt->show_by_id($good_receipt_id);
+		$data = $this->View_complete_good_receipt->show_by_code_good_receipt_id($good_receipt_id);
 		
 		header('Content-Type: application/json');
 		echo json_encode($data);
@@ -84,5 +83,7 @@ class Good_receipt extends CI_Controller {
 			$this->load->model('Stock_in_model');
 			$this->Stock_in_model->input_from_code_good_receipt($batch);
 		}
+		
+		redirect(site_url('Good_receipt'));
 	}
 }

@@ -23,6 +23,7 @@ class Purchase_order extends CI_Controller {
 	public function create()
 	{
 		$this->session->unset_userdata('purchase_cart_products');
+		$this->session->unset_userdata('purchase_cart_bonus_products');
 		$this->load->model('Supplier_model');
 		$result = $this->Supplier_model->show_all();
 		$data['suppliers'] = $result;
@@ -40,8 +41,21 @@ class Purchase_order extends CI_Controller {
 	public function add_item_to_cart()
 	{
 		$item_id	= $this->input->post('item_id');
-		$this->load->model('Purchase_order_model');
-		$this->Purchase_order_model->add_item_to_cart($item_id);
+		$this->load->model('Item_model');
+		$item = $this->Item_model->select_by_id($item_id);
+		
+		header('Content-Type: application/json');
+		echo json_encode($item);
+	}
+	
+	public function add_item_to_cart_as_bonus()
+	{
+		$item_id	= $this->input->post('item_id');
+		$this->load->model('Item_model');
+		$item = $this->Item_model->select_by_id($item_id);
+		
+		header('Content-Type: application/json');
+		echo json_encode($item);
 	}
 	
 	public function update_cart_view()
@@ -49,22 +63,43 @@ class Purchase_order extends CI_Controller {
 		if($this->session->has_userdata('purchase_cart_products')){
 			$detail = array();
 			$products = $this->session->userdata('purchase_cart_products');
+			$bonus_products = $this->session->userdata('purchase_cart_bonus_products');
 			
 			$this->load->model('Item_model');
 			$data['carts'] = $this->Item_model->show_purchase_cart($products);
+			$data['bonus_carts'] = $this->Item_model->show_purchase_cart($bonus_products);
 			
-			$this->load->view('purchasing/shopping_cart_list',$data);
+			header('Content-Type: application/json');
+			echo json_encode($data);
 		}
 	}
 	
 	public function remove_item_from_cart()
 	{
+		$item_id		= $this->input->post('item_id');
 		$this->load->model('Purchase_order_model');
-		$this->Purchase_order_model->remove_item_from_cart();
+		$this->Purchase_order_model->remove_item_from_cart($item_id);
 		
 		if($this->session->has_userdata('purchase_cart_products')){
 			$detail = array();
 			$products = $this->session->userdata('purchase_cart_products');
+			
+			$this->load->model('Item_model');
+			$data['carts'] = $this->Item_model->show_cart($products);
+			
+			$this->load->view('purchasing/shopping_cart_list',$data);
+		}
+	}
+	
+	public function remove_bonus_item_from_cart()
+	{
+		$item_id		= $this->input->post('item_id');
+		$this->load->model('Purchase_order_model');
+		$this->Purchase_order_model->remove_bonus_item_from_cart($item_id);
+		
+		if($this->session->has_userdata('purchase_cart_bonus_products')){
+			$detail = array();
+			$products = $this->session->userdata('purchase_cart_bonus_products');
 			
 			$this->load->model('Item_model');
 			$data['carts'] = $this->Item_model->show_cart($products);
@@ -116,6 +151,15 @@ class Purchase_order extends CI_Controller {
 		$id		= $this->input->post('id');
 		$this->load->model('Purchase_order_model');
 		$this->Purchase_order_model->confirm_purchase_order($id);
+		
+		redirect(site_url('Purchase_order'));
+	}
+	
+	public function delete()
+	{
+		$id		= $this->input->get('id');
+		$this->load->model('Purchase_order_model');
+		$this->Purchase_order_model->delete_purchase_order($id);
 		
 		redirect(site_url('Purchase_order'));
 	}

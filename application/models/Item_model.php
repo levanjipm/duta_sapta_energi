@@ -150,6 +150,15 @@ class Item_model extends CI_Model {
 			}
 		}
 		
+		public function select_by_id($item_id)
+		{
+			$this->db->where('id', $item_id);
+			$query = $this->db->get($this->table_item,1);
+			$item	= $query->row();
+			
+			return $item;
+		}
+		
 		public function show_by_id()
 		{
 			$item_id = $this->input->post('item_id');

@@ -224,4 +224,13 @@ class Supplier_model extends CI_Model {
 			
 			$this->db->update($this->table_supplier);
 		}
+		
+		public function select_by_id($supplier_id)
+		{
+			$this->db->where('id', $supplier_id);
+			$query		= $this->db->get($this->table_supplier);
+			$item		= $query->row();
+			
+			return $item;
+		}
 }

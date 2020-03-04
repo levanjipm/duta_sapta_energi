@@ -6,13 +6,13 @@
 	height:100%;
 	background-color:rgba(20,20,20,0.8);
 	display:none;
+	z-index:300;
 }
 
 .alert_box_default{
 	width:80%;
 	height:80%;
 	overflow-y:scroll;
-	z-index:300;
 	background-color:#fff;
 	left:10%;
 	top:10%;
@@ -22,6 +22,22 @@
 	border-top:10px solid #21daf6;
 	padding-top:10px;
 	box-shadow:3px 3px 3px 3px rgba(10,10,10,0.7);
+	z-index:500;
+}
+
+.alert_box_full{
+	width:100%;
+	height:90%;
+	overflow-y:scroll;
+	background-color:#fff;
+	left:0;
+	top:10%;
+	position:absolute;
+	color:#333;
+	padding:20px;
+	padding-top:10px;
+	box-shadow:3px 3px 3px 3px rgba(10,10,10,0.7);
+	z-index:500;
 }
 
 .alert_box_confirm{
@@ -34,17 +50,34 @@
 	padding:20px;
 	box-shadow:3px 3px 3px 3px rgba(50,50,50,0.8);
 	margin-top:5%;
+	z-index:500;
 }
 
 .alert_close_button{
 	position:absolute;
-	top:0;
-	left:0;
-	background-color:transparent;
+	top:8%;
+	right:8%;
+	background-color:rgba(255,255,255,0.8);
 	border:none;
 	outline:none!important;
 	color:#333;
 	font-size:1.2em;
+	border-radius:50%;
+	transition:0.3s all ease;
+	z-index:600;
+}
+
+.alert_close_button:hover{
+	background-color:#333;
+	color:white;
+	transition:0.3s all ease;
+}
+
+.alert_full_close_button{
+	height:10px;
+	width:100%;
+	background-color:#ccc;
+	border-radius:5px;
 }
 
 .alert_snackbar{

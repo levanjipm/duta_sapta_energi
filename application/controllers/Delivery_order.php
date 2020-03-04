@@ -124,4 +124,15 @@ class Delivery_order extends CI_Controller {
 		$this->load->view('head');
 		$this->load->view('Inventory/delivery_order_print', $data);
 	}
+	
+	public function send()
+	{
+		$code_delivery_order_id		= $this->input->post('id');
+		$this->load->model('Delivery_order_detail_model');
+		$result = $this->Delivery_order_detail_model->get_batch_by_code_delivery_order_id($code_delivery_order_id);
+		if($result){
+			$this->load->model('Stock_out_model');
+			$batch = $this->Stock_out_model->send_delivery_order($result);
+		}
+	}
 }

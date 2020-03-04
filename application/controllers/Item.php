@@ -75,27 +75,24 @@ class Item extends CI_Controller {
 	}
 	
 	public function shopping_cart_view_purchase()
-	{
-		$data['page'] = $this->input->get('page');
-		$this->load->model('Item_model');
-		$items = $this->Item_model->show_items();
-		
-		$data['items'] = $items;
-		
-		$items = $this->Item_model->count_items();
-		$data['pages'] = max(1, ceil($items / 25));
-		
-		$this->load->view('purchasing/shopping_cart_item',$data);
+	{		
+		$this->load->view('purchasing/shopping_cart_item');
 	}
 	
 	public function search_item_cart()
 	{
+		$term		= $this->input->get('term');
+		$page		= $this->input->get('page');
+		$offset		= ($page - 1) * 25;
 		$this->load->model('Item_model');
-		$items	= $this->Item_model->show_by_search(25,0);
-		
+		$items = $this->Item_model->show_items($offset, $term);
 		$data['items'] = $items;
 		
-		$this->load->view('sales/shopping_cart_item_view',$data);
+		$items = $this->Item_model->count_items($term);
+		$data['pages'] = max(1, ceil($items / 25));
+		$data['page'] = $page;
+		
+		$this->load->view('purchasing/shopping_cart_item_view',$data);
 	}
 	
 	public function view_item_table()

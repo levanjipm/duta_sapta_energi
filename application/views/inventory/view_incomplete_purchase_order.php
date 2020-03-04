@@ -29,6 +29,7 @@
 		$name			= $purchase_order->name;
 		$quantity		= $purchase_order->quantity;
 		$received		= $purchase_order->received;
+		$net_price		= $purchase_order->net_price;
 		
 		$maximum_value	= $quantity - $received;
 ?>
@@ -38,6 +39,7 @@
 			<td><?= number_format($quantity) ?></td>
 			<td><?= number_format($received) ?></td>
 			<td><input type='number' class='form-control' id='quantity-<?= $id ?>' name='quantity[<?= $id ?>]' max='<?= $maximum_value ?>' min='0' onchange='update_value()'></td>
+			<input type='hidden' value='<?= $net_price ?>' name='net_price[<?= $id ?>]'>
 		</tr>
 <?php
 	}

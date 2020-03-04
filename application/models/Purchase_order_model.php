@@ -182,7 +182,8 @@ class Purchase_order_model extends CI_Model {
 			$this->db->select('code_purchase_order.*, supplier.name as supplier_name, supplier.address as supplier_address, supplier.city as supplier_city');
 			$this->db->from($this->table_purchase_order);
 			$this->db->join('supplier', 'code_purchase_order.supplier_id = supplier.id');
-			$this->db->where('code_purchase_order.confirmed_by =', null);
+			$this->db->where('code_purchase_order.is_confirm', 0);
+			$this->db->where('code_purchase_order.is_delete', 0);
 			$query = $this->db->get();
 			$items	 	= $query->result();
 			
@@ -192,24 +193,13 @@ class Purchase_order_model extends CI_Model {
 			
 		}
 		
-		public function add_item_to_cart()
+		public function remove_bonus_item_from_cart($item_id)
 		{
-			$item_id = $this->input->post('item_id');
-			$cart_products = $this->session->userdata('purchase_cart_products');
-			
-			$cart_products[] = $item_id;
-			
-			$this->session->set_userdata('purchase_cart_products', $cart_products);
-		}
-		
-		public function remove_item_from_cart()
-		{
-			$cart_products = $this->session->userdata('purchase_cart_products');
-			$item_id = $this->input->post('item_id');
+			$cart_products = $this->session->userdata('purchase_cart_bonus_products');
 			$key = array_search($item_id, $cart_products);
 			unset($cart_products[$key]);
 			
-			$this->session->set_userdata('purchase_cart_products', $cart_products);
+			$this->session->set_userdata('purchase_cart_bonus_products', $cart_products);
 		}
 		
 		public function name_generator($date)
@@ -235,6 +225,7 @@ class Purchase_order_model extends CI_Model {
 			if($check_guid){
 				$this->name				= $this->Purchase_order_model->name_generator($date);
 				$this->guid				= $guid;
+				$this->is_delete		= '0';
 				$this->date				= $this->input->post('date');
 				$this->supplier_id		= $this->input->post('supplier');
 				$this->taxing			= $this->input->post('taxing');
@@ -259,7 +250,7 @@ class Purchase_order_model extends CI_Model {
 		
 		public function get_incompleted_purchase_order($supplier_id)
 		{
-			$this->db->select('purchase_order.code_purchase_order_id as id, code_purchase_order.*');
+			$this->db->select('DISTINCT(purchase_order.code_purchase_order_id) as id, code_purchase_order.*');
 			$this->db->from('purchase_order');
 			$this->db->join('code_purchase_order', 'purchase_order.code_purchase_order_id = code_purchase_order.id', 'inner');
 			$this->db->where('purchase_order.status =', 0);
@@ -293,6 +284,13 @@ class Purchase_order_model extends CI_Model {
 		{
 			$this->db->set('is_confirm', 1);
 			$this->db->set('confirmed_by', $this->session->userdata('user_id'));
+			$this->db->where('id', $id);
+			$this->db->update($this->table_purchase_order);
+		}
+		
+		public function delete_purchase_order($id)
+		{
+			$this->db->set('is_delete', 1);
 			$this->db->where('id', $id);
 			$this->db->update($this->table_purchase_order);
 		}

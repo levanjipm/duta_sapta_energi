@@ -1,3 +1,6 @@
+<?php
+	if(!empty($items)){
+?>
 <table class='table table-bordered'>
 	<tr>
 		<th>Reference</th>
@@ -10,37 +13,26 @@
 	<tr>
 		<td><?= $item->reference ?></td>
 		<td><?= $item->name ?></td>
-		<td><button type='button' class='button button_success_dark' onclick='add_to_cart(<?= $item->id ?>)'><i class='fa fa-cart-plus'></i></button></td>
+		<td><button type='button' class='button button_success_dark' onclick='add_to_cart(<?= $item->id ?>)' title='Add <?= $item->reference ?> to cart'><i class='fa fa-cart-plus'></i></button>
+		<button type='button' class='button button_danger_dark' onclick='add_to_cart_as_bonus(<?= $item->id ?>)' title='Add <?= $item->reference ?> to cart as bonus'><i class='fa fa-gift'></i></button></td>
 	</tr>
 <?php
 	}
 ?>
 </table>
-<script>
-	function add_to_cart(n){
-		$.ajax({
-			url:'<?= site_url('Purchase_order/add_item_to_cart') ?>',
-			data:{
-				item_id:n
-			},
-			type:'POST',
-			beforeSend:function(){
-				$('button').attr('disabled',true);
-			},
-			success:function(){
-				$('button').attr('disabled',false);
-				$.ajax({
-					url:'<?= site_url('Purchase_order/update_cart_view') ?>',
-					success:function(response){
-						$('#purchase_order_items').html(response);
-						$('#add_item_wrapper').fadeOut();
-					}
-				});
-			}
-		})
+<?php
+	} else {
+?>
+<p style='font-family:museo'>Item not found</p>
+<?php
 	}
-	
-	$('.alert_close_button').click(function(){
-		$('#add_item_wrapper').fadeOut();
-	});
-</script>
+?>
+<select class='form-control' id='page' style='width:100px'>
+<?php
+	for($i = 1; $i <= $pages; $i++){
+?>
+	<option value='<?= $i ?>' <?php if($page == $i){ echo 'selected'; } ?>><?= $i ?></option>
+<?php
+	}
+?>
+</select>

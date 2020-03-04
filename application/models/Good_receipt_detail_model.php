@@ -62,17 +62,17 @@ class Good_receipt_detail_model extends CI_Model {
 			return $result;
 		}
 		
-		public function create_batch($id)
-		{
-			$quantity_array		= $this->input->post('quantity');
-			
+		public function create_batch($id, $quantity_array, $price_array)
+		{			
 			foreach($quantity_array as $quantity){
 				$purchase_id		= key($quantity_array);
+				$price				= $price_array[$purchase_id];
 				$batch[] = array(
 					'id' => '',
 					'purchase_order_id' => $purchase_id,
 					'quantity' => $quantity,
-					'code_good_receipt_id' => $id
+					'code_good_receipt_id' => $id,
+					'billed_price' => $price
 				);
 				
 				next($quantity_array);
@@ -81,16 +81,15 @@ class Good_receipt_detail_model extends CI_Model {
 			return $batch;
 		}
 		
-		public function insert_from_post($id)
+		public function insert_from_post($code_good_receipt_id, $quantity_array, $price_array)
 		{
-			$this->load->model('Good_receipt_detail_model');
-			$batch 		= $this->Good_receipt_detail_model->create_batch($id);
+			$batch 		= $this->Good_receipt_detail_model->create_batch($code_good_receipt_id, $quantity_array, $price_array);
 			$this->db->insert_batch($this->table_good_receipt, $batch);
 		}
 		
 		public function get_batch_by_code_good_receipt_id($id)
 		{
-			$this->db->select('good_receipt.*, purchase_order.item_id, code_purchase_order.supplier_id');
+			$this->db->select('good_receipt.*, purchase_order.item_id, code_purchase_order.supplier_id, purchase_order.net_price');
 			$this->db->from('good_receipt');
 			$this->db->join('purchase_order', 'good_receipt.purchase_order_id = purchase_order.id');
 			$this->db->join('code_purchase_order', 'purchase_order.code_purchase_order_id = code_purchase_order.id');
@@ -109,14 +108,16 @@ class Good_receipt_detail_model extends CI_Model {
 				$quantity					= $result->quantity;
 				$item_id					= $result->item_id;
 				$supplier_id				= $result->supplier_id;
-				$code_good_receipt_id		= $result->code_good_receipt_id;
+				$good_receipt_id			= $result->id;
+				$net_price					= $result->net_price;
 				$batch[] = array(
 					'id' => '',
 					'quantity' => $quantity,
 					'residue' => $quantity,
-					'code_good_receipt_id' => $code_good_receipt_id,
+					'good_receipt_id' => $good_receipt_id,
 					'supplier_id' => $supplier_id,
 					'item_id' => $item_id,
+					'price' => $net_price,
 				);
 			}
 			

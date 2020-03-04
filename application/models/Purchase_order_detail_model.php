@@ -140,6 +140,20 @@ class Purchase_order_detail_model extends CI_Model {
 				next($discount_array);
 			}
 			
+			$bonus_quantity		= $this->input->post('bonus_quantity');
+			foreach($bonus_quantity as $quantity){
+				$batch[] = array(
+					'id' => '',
+					'price_list' => '1',
+					'item_id' => key($bonus_quantity),
+					'quantity' => $quantity,
+					'net_price' => '0',
+					'code_purchase_order_id' => $id
+				);
+				
+				next($bonus_quantity);
+			}
+			
 			return $batch;
 		}
 		

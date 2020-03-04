@@ -83,12 +83,12 @@ class Stock_in_model extends CI_Model {
 			return $stub;
 		}
 		
-		public function map_list($delivery_orders)
+		public function map_list($items)
 		{
 			$result = array();
-			foreach ($delivery_orders as $delivery_order)
+			foreach ($items as $item)
 			{
-				$result[] = $this->get_new_stub_from_db($delivery_order);
+				$result[] = $this->get_new_stub_from_db($item);
 			}
 			return $result;
 		}
@@ -96,5 +96,17 @@ class Stock_in_model extends CI_Model {
 		public function input_from_code_good_receipt($good_receipt_array)
 		{
 			$this->db->insert_batch($this->table_stock_in, $good_receipt_array);
+		}
+		
+		public function search_by_item_id($item_id, $quantity)
+		{
+			$this->db->where('residue >', 0);
+			$this->db->where('item_id =', $item_id);
+			$query = $this->db->get($this->table_stock_in);
+			$result	= $query->result();
+			foreach($result as $stock)
+			{
+				print_r($stock);
+			}
 		}
 }

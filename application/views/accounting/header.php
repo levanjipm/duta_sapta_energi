@@ -6,7 +6,8 @@
 </div>
 <div class='sidenav_bar'>
 	<h3 style='font-family:museo'>Main</h3>
-	<a href='<?= site_url('invoice') ?>'><button><p style='font-family:museo'>Invoice</p></button></a>
+	<a href='<?= site_url('Invoice') ?>'><button><p style='font-family:museo'>Invoice</p></button></a>
+	<a href='<?= site_url('Debt') ?>'><button><p style='font-family:museo'>Debt document</p></button></a>
 </div>
 <script>
 	$('.container_button').click(function(){

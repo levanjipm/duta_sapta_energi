@@ -159,6 +159,32 @@ class Good_receipt_model extends CI_Model {
 			}
 		}
 		
+		public function view_uninvoiced_documents($offset = 0, $limit = 25)
+		{
+			$this->db->where('invoice_id', null);
+			$this->db->where('is_delete', 0);
+			$this->db->where('is_confirm', 1);
+			$query = $this->db->get($this->table_good_receipt, $limit, $offset);
+			
+			$items	 	= $query->result();
+			
+			$result 	= $this->map_list($items);
+			
+			return $result;
+		}
+		
+		public function count_uninvoiced_documents()
+		{
+			$this->db->where('invoice_id', null);
+			$this->db->where('is_delete', 0);
+			$this->db->where('is_confirm', 1);
+			$query = $this->db->get($this->table_good_receipt);
+			
+			$item = $query-> num_rows();
+			
+			return $item;
+		}
+		
 		public function create_guid()
 		{	
 			return sprintf('%04X%04X-%04X-%04X-%04X-%04X%04X%04X', mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(16384, 20479), mt_rand(32768, 49151), mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(0, 65535));

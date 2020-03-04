@@ -9,6 +9,9 @@ class Delivery_order_detail_model extends CI_Model {
 		public $code_delivery_order_id;
 		public $quantity;
 		
+		public $item_id;
+		public $customer_id;
+		
 		public $reference;
 		public $name;
 		public $do_name;
@@ -149,5 +152,40 @@ class Delivery_order_detail_model extends CI_Model {
 			$items	= $query->result();
 			
 			return $this->map_list_with_items($items);
+		}
+		
+		public function get_batch_by_code_delivery_order_id($id)
+		{
+			$this->db->select('price_list.item_id, code_sales_order.customer_id, delivery_order.quantity, delivery_order.code_delivery_order_id');
+			$this->db->from('delivery_order');
+			$this->db->join('sales_order', 'delivery_order.sales_order_id = sales_order.id');
+			$this->db->join('price_list', 'sales_order.price_list_id = price_list.id');
+			$this->db->join('code_sales_order', 'code_sales_order.id = sales_order.code_sales_order_id', 'inner');
+			$this->db->where('delivery_order.code_delivery_order_id =', $id);
+			
+			$query 	= $this->db->get();
+			$items	= $query->result();
+			
+			$batch = $this->Delivery_order_detail_model->create_stock_batch($items);
+			return ($batch !== null) ? $batch : null;
+		}
+		
+		public function create_stock_batch($results)
+		{
+			foreach($results as $result){
+				$quantity					= $result->quantity;
+				$item_id					= $result->item_id;
+				$customer_id				= $result->customer_id;
+				$code_delivery_order_id		= $result->code_delivery_order_id;
+				$batch[] = array(
+					'id' => '',
+					'quantity' => $quantity,
+					'code_delivery_order_id' => $code_delivery_order_id,
+					'customer_id' => $customer_id,
+					'item_id' => $item_id,
+				);
+			}
+			
+			return $batch;
 		}
 }

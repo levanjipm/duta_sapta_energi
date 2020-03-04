@@ -91,9 +91,9 @@ class View_complete_good_receipt extends CI_Model {
 		}
 		
 		
-		public function show_by_id($id)
+		public function show_by_code_good_receipt_id($id)
 		{
-			$this->db->where('code_good_receipt_id =', $id);
+			$this->db->where('code_good_receipt_id', $id);
 			$query = $this->db->get($this->table_good_receipt);
 			
 			$item = $query->result();

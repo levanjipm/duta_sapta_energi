@@ -57,4 +57,13 @@ class Supplier extends CI_Controller {
 		
 		redirect(site_url('supplier'));
 	}
+	
+	public function select_by_id()
+	{
+		$supplier_id	= $this->input->get('id');
+		$this->load->model('Supplier_model');
+		$item = $this->Supplier_model->select_by_id($supplier_id);
+		header('Content-Type: application/json');
+		echo json_encode($item);
+	}
 }

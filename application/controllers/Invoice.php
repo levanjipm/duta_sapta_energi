@@ -14,6 +14,7 @@ class Invoice extends CI_Controller {
 	{
 		$this->load->view('head');
 		$this->load->view('accounting/header');
+		$this->load->view('accounting/create_invoice_dashboard');
 		
 		$this->load->model('Invoice_model');
 	}

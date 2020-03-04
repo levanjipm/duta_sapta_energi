@@ -8,6 +8,9 @@
 	<label>Date</label>
 	<input type='date' class='form-control' name='date' required min='2020-01-01' id='purchase_order_date'>
 	
+	<label>Send date request</label>
+	<input type='date' class='form-control' name='request_date' required min='2020-01-01'>
+	
 	<label>Supplier</label>
 	<select class='form-control' name='supplier' id='supplier'>
 <?php
@@ -20,7 +23,7 @@
 	</select>
 	
 	<label>Taxing</label>
-	<select class='form-control' name='taxing'>
+	<select class='form-control' name='taxing' id='taxing'>
 		<option value='0'>Non - tax</option>
 		<option value='1' selected>Tax</option>
 	</select>
@@ -45,18 +48,39 @@
 	<button type='button' class='button button_default_light' id='add_item_button'><i class='fa fa-shopping-cart'></i> Add item</button>
 	<br><br>
 	
-	<div id='purchase_order_items'></div>
+	<table class='table table-bordered' id='cart_products_table' style='display:none'>
+		<tr>
+			<th>Reference</th>
+			<th>Name</th>
+			<th>Price list</th>
+			<th>Discount</th>
+			<th>Quantity</th>
+			<th>Action</th>
+		</tr>
+		<tbody id='cart_products'></tbody>
+	</table>
 	
+	<table class='table table-bordered' id='bonus_cart_products_table' style='display:none'>
+		<tr>
+			<th>Item</th>
+			<th>Description</th>
+			<th>Quantity</th>
+			<th>Action</th>
+		</tr>
+		<tbody id='bonus_cart_products'></tbody>
+	</table>
+	
+	<button type='button' class='button button_default_light' id='submit_button' onclick='show_purchase_order()' style='display:none'>Submit</button>
 	</form>
 </div>
 
 <div class='alert_wrapper' id='add_item_wrapper'>
-	<div class='alert_box_default'></div>
+	<div class='alert_box_full'></div>
 </div>
 
 <div class='alert_wrapper' id='validate_purchase_order_wrapper'>
+	<button class='alert_close_button'>&times</button>
 	<div class='alert_box_default' id='validate_purchase_order_box'>
-		<button class='alert_close_button'>&times</button>
 		<label>Date</label>
 		<p id='date'></p>
 		
@@ -65,6 +89,8 @@
 		
 		<label>Supplier</label>
 		<p id='supplier_p'></p>		
+		<p id='supplier_address_p'></p>		
+		<p id='supplier_city_p'></p>		
 		
 		<table class='table table-bordered'>
 			<tr>
@@ -99,32 +125,32 @@
 			data:{
 				page:1
 			},
+			type:'GET',
 			success:function(response){
-				$('#add_item_wrapper .alert_box_default').html(response);
-				$('#add_item_wrapper').fadeIn();
+				$('#add_item_wrapper .alert_box_full').html(response);
+				$('#add_item_wrapper').slideToggle(300);
 			}
 		});
 	});
 	
 	function remove_item(n){
-		$.ajax({
-			url:'<?= site_url('Purchase_order/remove_item_from_cart') ?>',
-			data:{
-				item_id:n
-			},
-			type:'POST',
-			success:function(){
-				$.ajax({
-					url:'<?= site_url('Purchase_order/update_cart_view') ?>',
-					success:function(response){
-						$('#purchase_order_items').html(response);
-					}
-				});
-			}
-		})
+		$('#item_row-' + n).remove();
+		
+		if($('#cart_products tr').length == 0){
+			$('#cart_products_table').hide();
+			$('#submit_button').hide();
+		}
 	}
 	
-	function show_purchase_order(n){
+	function remove_bonus_item(n){
+		$('#bonus_item_row-' + n).remove();
+		
+		if($('#bonus_cart_products tr').length == 0){
+			$('#bonus_cart_products_table').hide();
+		}
+	}
+	
+	function show_purchase_order(){
 		if(!$("#purchase_order_form").valid()){
 			return false;
 		} else {
@@ -134,9 +160,26 @@
 			
 			var taxing 		= $("#taxing option:selected").html();
 			var date 		= $("#purchase_order_date").val();
-			var supplier	= $("#supplier option:selected").html();
+			var supplier	= $("#supplier").val();
 			
-			$('#supplier_p').html(supplier);
+			
+			$.ajax({
+				url:'<?= site_url('Supplier/select_by_id') ?>',
+				data:{
+					id:supplier
+				},
+				type:'GET',
+				success:function(response){
+					var supplier_name		= response.name;
+					var supplier_address	= response.address;
+					var supplier_city		= response.city;
+					
+					$('#supplier_p').html(supplier_name);
+					$('#supplier_address_p').html(supplier_address);
+					$('#supplier_city_p').html(supplier_city);
+				}
+			});
+			
 			$('#date').html(date);
 			$('#taxing_p').html(taxing);
 			
@@ -144,7 +187,7 @@
 			
 			$('td[id^="reference-"]').each(function(){
 				var id 			= $(this).attr('id');
-				var uid 		= parseInt(id.substring(10,50));
+				var uid 		= parseInt(id.substring(10,265));
 				var quantity 	= $('#quantity-' + uid).val();
 				var discount 	= $('#discount-' + uid).val();
 				var price_list 	= $('#price_list-' + uid).val();
@@ -171,6 +214,32 @@
 				);
 			});
 			
+			$('td[id^="bonus_reference-"]').each(function(){
+				var id 			= $(this).attr('id');
+				var uid 		= parseInt(id.substring(16,271));
+				var quantity 	= $('#bonus_quantity-' + uid).val();
+				
+				var name	 	= $('#bonus_name-' + uid).html();
+				var reference	= $('#bonus_reference-' + uid).html();
+				var unit_price	= 0;
+				var total_price	= unit_price * quantity;
+				
+				purchase_order_value += total_price;
+				
+				$('#net_price_value-' + id).val(unit_price);
+				
+				$('#purchase_order_tbody').append(
+				"<tr>"+
+					"<td>" + reference  + "</td>"+
+					"<td>" + name + "</td>"+
+					"<td>Rp. " + numeral(0).format('0,0.00') + "</td>"+
+					"<td>" + numeral(0).format('0,0.00') + " %</td>"+
+					"<td>" + numeral(unit_price).format('0,0.00') + "</td>"+
+					"<td>" + numeral(quantity).format('0,0') + "</td>"+
+					"<td>Rp. " + numeral(total_price).format('0,0.00') + "</td>"+
+				"</tr>");
+			});
+			
 			$('#purchase_order_tbody').append(
 				"<tr>"+
 					"<td colspan='4'></td>"+
@@ -186,4 +255,79 @@
 	function submit_form(){
 		$('#purchase_order_form').submit();
 	};
+	
+	$('.alert_close_button').click(function(){
+		$(this).parent().fadeOut();
+	});
+	
+	function add_to_cart(n){
+		$.ajax({
+			url:'<?= site_url('Purchase_order/add_item_to_cart') ?>',
+			data:{
+				item_id:n
+			},
+			type:'POST',
+			beforeSend:function(){
+				$('button').attr('disabled',true);
+			},
+			success:function(response){
+				var item_id	= response.id;
+				var reference	= response.reference;
+				var name		= response.name;
+				
+				if($('#item_row-' + item_id).length == 0){
+					$('#cart_products').append("<tr id='item_row-" + n + "'><td id='reference-" + n + "'>" + reference + "</td><td id='name-" + n + "'>" + name + "</td>" + 
+						"<td><input type='number' class='form-control' min='1' required name='price_list[" + n + "]' id='price_list-" + n + "'></td>" +
+						"<td><input type='number' class='form-control' min='0' max='100' required name='discount[" + n + "]' id='discount-" + n + "'></td>" +
+						"<td><input type='number' class='form-control' min='0' max='100' required name='quantity[" + n + "]' id='quantity-" + n + "'></td>" + 
+						"<td><button type='button' class='button button_danger_dark' onclick='remove_item(" + n + ")'><i class='fa fa-trash'></i></button></td>");
+				}
+				$('button').attr('disabled',false);
+				$('.alert_close_button').click();
+				
+				if($('#cart_products tr').length > 0){
+					$('#cart_products_table').show();
+					$('#submit_button').show();
+				}
+			}
+		})
+	}
+	
+	function add_to_cart_as_bonus(n){
+		$.ajax({
+			url:'<?= site_url('Purchase_order/add_item_to_cart_as_bonus') ?>',
+			data:{
+				item_id:n
+			},
+			type:'POST',
+			beforeSend:function(){
+				$('button').attr('disabled',true);
+			},
+			success:function(response){
+				var item_id	= response.id;
+				var reference	= response.reference;
+				var name		= response.name;
+				
+				if($('#bonus_item_row-' + item_id).length == 0){
+					$('#bonus_cart_products').append("<tr id='bonus_item_row-" + n + "'><td id='bonus_reference-" + n + "'>" + reference + "</td><td id='bonus_name-" + n + "'>" + name + "</td>" + 
+						"<td><input type='number' class='form-control' min='1' required name='bonus_quantity[" + n + "]' id='bonus_quantity-" + n + "'></td>" +
+						"<td><button type='button' class='button button_danger_dark' onclick='remove_bonus_item(" + n + ")'><i class='fa fa-trash'></i></button></td>");
+				}
+				$('button').attr('disabled',false);
+				$('.alert_close_button').click();
+				
+				if($('#bonus_cart_products tr').length > 0){
+					$('#bonus_cart_products_table').show();
+				}
+			}
+		})
+	}
+	
+	$('.alert_close_button').click(function(){
+		$('#add_item_wrapper').fadeOut();
+	});
+	
+	$('#page').change(function(){
+		refresh_view();
+	});
 </script>

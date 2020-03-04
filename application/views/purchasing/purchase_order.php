@@ -68,7 +68,7 @@
 			<form action='<?= site_url('Purchase_order/confirm') ?>' method='POST'>
 				<input type='hidden' id='purchase_order_id' name='id'>
 				<button class='button button_default_dark' style='display:inline-block'>Submit</button>
-				<button type='button' class='button button_danger_dark' style='display:inline-block'>Delete</button>
+				<button type='button' class='button button_danger_dark' style='display:inline-block' onclick='delete_purchase_order()'>Delete</button>
 			</form>
 		</div>
 	</div>
@@ -113,6 +113,23 @@
 				}
 			});
 		}
+		
+		function delete_purchase_order(){
+			$.ajax({
+				url:'<?= site_url('Purchase_order/delete') ?>',
+				data:{
+					id:$('#purchase_order_id').val()
+				},
+				type:'GET',
+				success:function(){
+					location.reload();
+				}
+			});
+		};
+		
+		$('.alert_close_button').click(function(){
+			$(this).parent().fadeOut();
+		});
 	</script>
 <?php
 	}
