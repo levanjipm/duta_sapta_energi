@@ -15,6 +15,8 @@ class Good_receipt_model extends CI_Model {
 		public $confirmed_by;
 		public $guid;
 		
+		public $supplier_id;
+		
 		public function __construct()
 		{
 			parent::__construct();
@@ -159,6 +161,19 @@ class Good_receipt_model extends CI_Model {
 			}
 		}
 		
+		public function delete($id)
+		{
+			$this->db->set('is_delete', 1);
+			$this->db->where('id', $id);
+			$this->db->update($this->table_good_receipt);
+			
+			if($this->db->affected_rows() > 0){
+				return TRUE;
+			} else {
+				return FALSE;
+			}
+		}
+		
 		public function view_uninvoiced_documents($offset = 0, $limit = 25)
 		{
 			$this->db->where('invoice_id', null);
@@ -181,6 +196,137 @@ class Good_receipt_model extends CI_Model {
 			$query = $this->db->get($this->table_good_receipt);
 			
 			$item = $query-> num_rows();
+			
+			return $item;
+		}
+		
+		public function select_supplier_from_uninvoiced_document()
+		{
+			$this->db->select('DISTINCT(code_purchase_order.supplier_id) as id, supplier.name');
+			$this->db->from($this->table_good_receipt);
+			$this->db->join('good_receipt', 'good_receipt.code_good_receipt_id = code_good_receipt.id', 'inner');
+			$this->db->join('purchase_order', 'good_receipt.purchase_order_id = purchase_order.id');
+			$this->db->join('code_purchase_order', 'purchase_order.code_purchase_order_id = code_purchase_order.id', 'inner');
+			$this->db->join('supplier', 'code_purchase_order.supplier_id = supplier.id');
+			$this->db->where('code_good_receipt.invoice_id', NULL);
+			$this->db->where('code_good_receipt.is_confirm', 1);
+			$this->db->where('code_good_receipt.is_delete', 0);
+			
+			$query		= $this->db->get();
+			$item		= $query->result();
+
+			return $item;
+		}
+		
+		public function count_uninvoiced_documents_group_supplier($supplier_id, $term)
+		{
+			$this->db->select('code_good_receipt.id');
+			$this->db->from($this->table_good_receipt);
+			$this->db->join('good_receipt', 'good_receipt.code_good_receipt_id = code_good_receipt.id', 'inner');
+			$this->db->join('purchase_order', 'good_receipt.purchase_order_id = purchase_order.id');
+			$this->db->join('code_purchase_order', 'purchase_order.code_purchase_order_id = code_purchase_order.id', 'inner');
+			$this->db->where('code_good_receipt.invoice_id', NULL);
+			$this->db->where('code_good_receipt.is_confirm', 1);
+			$this->db->where('code_good_receipt.is_delete', 0);
+			$this->db->where('code_purchase_order.supplier_id', $supplier_id);
+			$this->db->like('code_good_receipt.name', $term, 'both');
+			
+			$query		= $this->db->get();
+			$item		= $query->result();
+			$item = $query-> num_rows();
+			
+			return $item;
+		}
+		
+		public function select_uninvoiced_documents_group_supplier($supplier_id, $offset = 0, $term = '', $limit = 25)
+		{
+			$this->db->select('DISTINCT(code_good_receipt.id) as id, code_good_receipt.name, code_good_receipt.date, code_good_receipt.received_date , supplier.name as supplier_name, supplier.address, supplier.city, code_purchase_order.name as purchase_order_name, code_purchase_order.date as purchase_order_date');
+			$this->db->from($this->table_good_receipt);
+			$this->db->join('good_receipt', 'good_receipt.code_good_receipt_id = code_good_receipt.id', 'inner');
+			$this->db->join('purchase_order', 'good_receipt.purchase_order_id = purchase_order.id');
+			$this->db->join('code_purchase_order', 'purchase_order.code_purchase_order_id = code_purchase_order.id', 'inner');
+			$this->db->join('supplier', 'code_purchase_order.supplier_id = supplier.id');
+			$this->db->where('code_good_receipt.invoice_id', NULL);
+			$this->db->where('code_good_receipt.is_confirm', 1);
+			$this->db->where('code_good_receipt.is_delete', 0);
+			$this->db->where('code_purchase_order.supplier_id', $supplier_id);
+			$this->db->like('code_good_receipt.name', $term, 'both');
+			$this->db->limit($limit, $offset);
+			
+			$query		= $this->db->get();
+			$item		= $query->result();
+
+			return $item;
+		}
+		
+		public function select_by_code_good_receipt_id_array($documents)
+		{
+			$array		= array();
+			foreach($documents as $document){
+				$code_good_receipt_id	= key($documents);
+				array_push($array, $code_good_receipt_id);
+				
+				next($documents);
+			}
+			
+			$this->db->select('DISTINCT(code_good_receipt.id) AS id, code_good_receipt.name, code_good_receipt.date, code_good_receipt.received_date, code_purchase_order.name as purchase_order_name, code_purchase_order.date as purchase_order_date');
+			$this->db->from('code_good_receipt');
+			$this->db->join('good_receipt', 'good_receipt.code_good_receipt_id = code_good_receipt.id');
+			$this->db->join('purchase_order', 'good_receipt.purchase_order_id = purchase_order.id');
+			$this->db->join('code_purchase_order', 'purchase_order.code_purchase_order_id = code_purchase_order.id');
+			$this->db->where_in('code_good_receipt.id', $array);
+			
+			$query		= $this->db->get();
+			$item		= $query->result();
+			
+			return $item;
+		}
+		
+		public function show_by_id($code_good_receipt_id)
+		{
+			$this->db->select('code_good_receipt.*, supplier.name as supplier_name, supplier.address, supplier.city');
+			$this->db->from('code_good_receipt');
+			$this->db->join('good_receipt', 'good_receipt.code_good_receipt_id = code_good_receipt.id');
+			$this->db->join('purchase_order', 'good_receipt.purchase_order_id = purchase_order.id');
+			$this->db->join('code_purchase_order', 'purchase_order.code_purchase_order_id = code_purchase_order.id');
+			$this->db->join('supplier', 'code_purchase_order.supplier_id = supplier.id');
+			$this->db->where('code_good_receipt.id', $code_good_receipt_id);
+			
+			$query		= $this->db->get();
+			$item		= $query->result();
+			
+			return $item;
+		}
+		
+		public function update_set_invoice_id($invoice_id, $code_good_receipt_array)
+		{
+			foreach($code_good_receipt_array as $code_good_receipt)
+			{
+				$batch[] = array(
+					'id' => $code_good_receipt,
+					'invoice_id' => $invoice_id
+				);
+				
+				next($code_good_receipt_array);
+			}
+			
+			$this->db->update_batch($this->table_good_receipt,$batch, 'id'); 
+		}
+		
+		public function update_unset_invoice_id($invoice_id)
+		{
+			$this->db->set('invoice_id', null);
+			$this->db->where('invoice_id', $invoice_id);
+			$this->db->update($this->table_good_receipt);
+		}
+		
+		public function select_by_invoice_id($invoice_id)
+		{
+			$this->db->where('invoice_id', $invoice_id);
+			$this->db->where('is_confirm', 1);
+			$this->db->where('is_delete', 0);
+			$query	= $this->db->get($this->table_good_receipt);
+			$item	= $query->result();
 			
 			return $item;
 		}

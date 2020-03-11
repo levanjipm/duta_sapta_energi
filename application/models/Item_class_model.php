@@ -103,36 +103,19 @@ class Item_class_model extends CI_Model {
 			$this->db->delete($this->table_item_class);
 		}
 		
-		
-		public function show_by_id($id)
+		public function update_from_post($id, $name, $description)
 		{
-			// $where['id'] = $id;
-			// $this->db->where($where);
-			// $query = $this->db->get($this->table_client, 1);
-			// $item = $query->row();
+			$this->db->select('id');
+			$this->db->from($this->table_item_class);
+			$this->db->where('name', $name);
+			$this->db->where('id !=',$id);
+			$count = $this->db->count_all_results();
 			
-			// return ($item !== null) ? $this->get_stub_from_db($item) : null;
-		}
-		
-		public function update_from_post($id)
-		{
-			// $where['id']			= $id;
-			// $this->name				= $this->input->post('client_name');
-			// $this->address			= $this->input->post('client_address');
-			// $this->city				= $this->input->post('client_city');
-			// $this->pic				= $this->input->post('client_pic');
-			// $this->phone			= $this->input->post('client_phone');
-			// $this->npwp				= $this->input->post('client_npwp');
-			
-			// $db_item = $this->get_db_from_stub();
-			
-			// $this->db->where($where);
-			// // $this->db->set('name', $this->name);
-			// // $this->db->set('address', $this->address);
-			// // $this->db->set('city', $this->city);
-			// // $this->db->set('pic', $this->pic);
-			// // $this->db->set('phone', $this->phone);
-			// // $this->db->set('npwp', $this->npwp);\
-			// $this->db->update($this->table_client, $db_item);
+			if($count == 0){
+				$this->db->set('name', $name);
+				$this->db->set('description', $description);
+				$this->db->where('id', $id);
+				$this->db->update($this->table_item_class);
+			}
 		}
 }

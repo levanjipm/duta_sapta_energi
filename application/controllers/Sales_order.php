@@ -46,35 +46,6 @@ class Sales_order extends CI_Controller {
 		$this->Sales_order_model->add_item_to_cart();
 	}
 	
-	public function update_cart_view()
-	{
-		if($this->session->has_userdata('cart_products')){
-			$detail = array();
-			$products = $this->session->userdata('cart_products');
-			
-			$this->load->model('Item_model');
-			$data['carts'] = $this->Item_model->show_cart($products);
-			
-			$this->load->view('sales/shopping_cart_list',$data);
-		}
-	}
-	
-	public function remove_item_from_cart()
-	{
-		$this->load->model('Sales_order_model');
-		$this->Sales_order_model->remove_item_from_cart();
-		
-		if($this->session->has_userdata('cart_products')){
-			$detail = array();
-			$products = $this->session->userdata('cart_products');
-			
-			$this->load->model('Item_model');
-			$data['carts'] = $this->Item_model->show_cart($products);
-			
-			$this->load->view('sales/shopping_cart_list',$data);
-		}
-	}
-	
 	public function input_sales_order()
 	{		
 		$this->load->model('Sales_order_model');

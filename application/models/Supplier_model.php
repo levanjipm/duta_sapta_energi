@@ -177,14 +177,13 @@ class Supplier_model extends CI_Model {
 			$this->db->delete($this->table_supplier);
 		}
 		
-		public function show_by_id()
+		public function show_by_id($supplier_id)
 		{
-			$this->db->where('id', $this->input->post('supplier_id'));
-			$this->db->where('is_black_list',0);
+			$this->db->where('id', $supplier_id);
 			$query = $this->db->get($this->table_supplier, 1);
 			
 			$item = $query->row();
-			
+
 			return ($item !== null) ? $this->get_stub_from_db($item) : null;
 		}
 		

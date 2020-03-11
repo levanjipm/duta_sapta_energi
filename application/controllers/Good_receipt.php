@@ -64,8 +64,11 @@ class Good_receipt extends CI_Controller {
 	public function view_complete_good_receipt()
 	{
 		$good_receipt_id		= $this->input->get('id');
-		$this->load->model('View_complete_good_receipt');
-		$data = $this->View_complete_good_receipt->show_by_code_good_receipt_id($good_receipt_id);
+		$this->load->model('Good_receipt_model');
+		$data['general'] = $this->Good_receipt_model->show_by_id($good_receipt_id);
+		
+		$this->load->model('Good_receipt_detail_model');
+		$data['detail'] = $this->Good_receipt_detail_model->show_by_code_good_receipt_id($good_receipt_id);
 		
 		header('Content-Type: application/json');
 		echo json_encode($data);
@@ -85,5 +88,39 @@ class Good_receipt extends CI_Controller {
 		}
 		
 		redirect(site_url('Good_receipt'));
+	}
+	
+	public function delete()
+	{
+		$id		= $this->input->post('id');
+		$this->load->model('Good_receipt_model');
+		$result = $this->Good_receipt_model->delete($id);
+		
+		if($result){
+			$this->load->model('Good_receipt_detail_model');
+			$batch = $this->Good_receipt_detail_model->show_by_code_good_receipt_id($id);
+			
+			$this->load->model('Purchase_order_detail_model');
+			$this->Purchase_order_detail_model->delete_from_good_receipt($batch);
+		}
+	}
+	
+	public function archive()
+	{
+		$this->load->view('head');
+		$this->load->view('inventory/header');
+		$this->load->view('inventory/good_receipt_archive');
+	}
+	
+	public function view_archive($offset, $year, $month, $limit)
+	{
+	}
+	
+	public function select_by_invoice_id($invoice_id)
+	{
+		$this->where('invoice_id', $invoice_id);
+		$query = $this->db->get($this->table_good_receipt);
+		$item	= $query->result();
+		return $item;
 	}
 }

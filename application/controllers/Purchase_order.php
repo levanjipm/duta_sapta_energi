@@ -130,12 +130,13 @@ class Purchase_order extends CI_Controller {
 		$result				= $this->Purchase_order_model->create_guid();
 		$data['guid']		= $result;
 		
-		$this->load->model('View_purchase_order_detail_model');
-		$result = $this->View_purchase_order_detail_model->show_by_code_purchase_order_id($purchase_order_id);
+		$this->load->model('Purchase_order_detail_model');
+		$result = $this->Purchase_order_detail_model->show_by_purchase_order_id($purchase_order_id);
 		
 		$data['purchase_orders'] = $result;
 		
-		$this->load->view('Inventory/view_incomplete_purchase_order', $data);
+		header('Content-Type: application/json');
+		echo json_encode($data);
 	}
 	
 	public function get_purchase_order_detail_by_id($id)

@@ -19,8 +19,8 @@
 		$description	= $class->description;		
 ?>
 		<tr>
-			<td><?= $class_name ?></td>
-			<td><?= $description ?></td>
+			<td id='name-<?= $class_id ?>'><?= $class_name ?></td>
+			<td id='description-<?= $class_id ?>'><?= $description ?></td>
 			<td>
 				<button type='button' class='button button_success_dark' onclick='open_edit_form(<?= $class_id ?>)'><i class='fa fa-pencil'></i></button>
 				<button type='button' class='button button_danger_dark' onclick='open_delete_confirmation(<?= $class_id ?>)'><i class='fa fa-trash'></i></button>
@@ -35,8 +35,8 @@
 </div>
 
 <div class='alert_wrapper' id='add_item_class_wrapper'>
+	<button class='alert_close_button'>&times</button>
 	<div class='alert_box_default'>
-		<button class='alert_close_button'>&times</button>
 		<form action='<?= site_url('Item_class/insert_new_class/') ?>' method='POST'>
 		<h2 style='font-family:bebasneue'>Add item class form</h2>
 		<hr>
@@ -66,7 +66,21 @@
 </div>
 
 <div class='alert_wrapper' id='edit_item_class_wrapper'>
+	<button type='button' class='alert_close_button'>&times </button>
 	<div class='alert_box_default'>
+		<h2 style='font-family:bebasneue'>Edit item class</h2>
+		<hr>
+		<form action='<?= site_url('Item_class/update_item_class') ?>' method='POST'>
+			<input type='hidden' id='item_class_edit_id' name='id'>
+			<label>Name</label>
+			<input type='text' class='form-control' id='item_class_name' name='name'>
+			
+			<label>Description</label>
+			<textarea class='form-control' id='item_class_description' name='description'></textarea>
+			<br>
+			
+			<button class='button button_default_dark'><i class='fa fa-long-arrow-right'></i></button>
+		</form>
 	</div>
 </div>
 
@@ -97,24 +111,16 @@
 	};
 	
 	function open_edit_form(n){
-		$.ajax({
-			url:'<?= site_url('Customer/update_customer_view') ?>',
-			type:'POST',
-			data:{
-				customer_id: n
-			},
-			beforeSend:function(){
-				$('button').attr('disabled',true);
-			},
-			success:function(response){
-				$('button').attr('disabled',false);
-				$('#edit_customer_wrapper .alert_box_default').html(response);
-				$('#edit_customer_wrapper').fadeIn();
-			}
-		})
+		var item_name_existing	= $('#name-' + n).text();
+		var item_description_existing	= $('#description-' + n).text();
+		$('#item_class_edit_id').val(n);
+		$('#item_class_name').val(item_name_existing);
+		$('#item_class_description').val(item_description_existing);
+		
+		$('#edit_item_class_wrapper').fadeIn();
 	};
 	
 	$('.alert_close_button').click(function(){
-		$(this).parents('.alert_wrapper').fadeOut();
+		$(this).parent().fadeOut();
 	});
 </script>

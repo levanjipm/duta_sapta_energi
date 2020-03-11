@@ -14,8 +14,29 @@ class Invoice extends CI_Controller {
 	{
 		$this->load->view('head');
 		$this->load->view('accounting/header');
-		$this->load->view('accounting/create_invoice_dashboard');
 		
-		$this->load->model('Invoice_model');
+		$this->load->view('accounting/create_invoice_dashboard');
+	}
+	
+	public function view_uninvoiced_retail_delivery_orders()
+	{
+		$term		= $this->input->get('term');
+		$page		= $this->input->get('page');
+		$offset		= ($page - 1) * 25;
+		$this->load->model('Delivery_order_model');
+		$result = $this->Delivery_order_model->show_uninvoiced_retail_delivery_order($offset, $term);
+		$data['delivery_orders'] = $result;
+		
+		$result = $this->Delivery_order_model->count_uninvoiced_retail_delivery_order($term);
+		$data['pages'] = max(1, ceil($result / 25));
+		
+		header('Content-Type: application/json');
+		echo json_encode($data);
+	}
+	
+	public function create_retail()
+	{
+		$delivery_order_id		= $this->input->post('id');
+		//$this->load->model->
 	}
 }

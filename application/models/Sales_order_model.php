@@ -141,13 +141,13 @@ class Sales_order_model extends CI_Model {
 			$this->db->from('sales_order');
 			$this->db->join('code_sales_order', 'code_sales_order.id = sales_order.code_sales_order_id');
 			$this->db->join('customer', 'code_sales_order.customer_id = customer.id');
-			$this->db->where('code_sales_order.id =',$id);
+			$this->db->where('code_sales_order.id',$id);
 			
 			$query 		= $this->db->get();
+			print_r($this->db->last_query());
 			
 			$items 		= $query->result();
-			$result		= $this->map_list_with_customer($items);
-			return $result;
+			return $items;
 		}
 		
 		public function show_invoicing_method_by_id($delivery_order_id)

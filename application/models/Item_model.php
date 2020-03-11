@@ -75,36 +75,64 @@ class Item_model extends CI_Model {
 		public function show_items($offset = 0, $filter = '', $limit = 25)
 		{
 			if($filter != ''){
-				$this->db->like('name', $filter, 'both');
-				$this->db->or_like('reference', $filter, 'both');
+				$query = $this->db->query("
+					SELECT price_list.id, price_list.price_list, item.name, item.reference
+					FROM price_list
+					JOIN item ON item.id = price_list.item_id
+					WHERE price_list.id IN (
+						SELECT MAX(price_list.id)
+						FROM price_list
+						GROUP BY price_list.item_id
+					) AND (item.name LIKE '%$filter%' OR reference LIKE '%$filter%') 
+					LIMIT $limit OFFSET $offset");
+			} else {
+				$query = $this->db->query("
+					SELECT price_list.id, price_list.price_list, item.name, item.reference
+					FROM price_list
+					JOIN item ON item.id = price_list.item_id
+					WHERE price_list.id IN (
+						SELECT MAX(price_list.id)
+						FROM price_list
+						GROUP BY price_list.item_id)
+					LIMIT $limit OFFSET $offset");
 			}
 			
-			$query 		= $this->db->get($this->table_item, $limit, $offset);
 			$items	 	= $query->result();
-			
-			$result 	= $this->map_list($items);
-			
-			return $result;
+			return $items;
 		}
 		
 		public function count_items($filter = '')
 		{
 			if($filter != ''){
-				$this->db->like('name', $filter, 'both');
-				$this->db->or_like('reference', $filter, 'both');
+				$query = $this->db->query("
+					SELECT price_list.id
+						FROM price_list
+						JOIN item ON item.id = price_list.item_id
+						WHERE price_list.id IN (
+							SELECT MAX(price_list.id)
+							FROM price_list
+							GROUP BY price_list.item_id) 
+						AND (item.name LIKE '%$filter%' OR reference LIKE '%$filter%')");
+			} else {
+				$query = $this->db->query("
+					SELECT price_list.id FROM price_list
+					JOIN item ON item.id = price_list.item_id
+					WHERE price_list.id IN (
+						SELECT MAX(price_list.id)
+						FROM price_list
+						GROUP BY price_list.item_id)");
 			}
 			
-			$query		= $this->db->get($this->table_item);
-			$result		= $query->num_rows();
+			$items	 	= $query->num_rows();
 			
-			return $result;
+			return $items;
 		}
 		
 		public function insert_from_post()
 		{
 			$this->db->select('*');
 			$this->db->from($this->table_item);
-			$this->db->where('reference =', $this->input->post('item_reference'));;
+			$this->db->where('reference', $this->input->post('item_reference'));;
 			$item = $this->db->count_all_results();
 			
 			if($item == 0){
@@ -119,6 +147,8 @@ class Item_model extends CI_Model {
 				$insert_id = $this->db->insert_id();
 				
 				return $insert_id;
+			} else {
+				return null;
 			}
 		}
 		
@@ -126,7 +156,7 @@ class Item_model extends CI_Model {
 		{
 			if(!empty($ids)){
 				$query = $this->db->query("
-					SELECT price_list.id, price_list.item_id, price_list.price_list, item.name, item.reference, item.type
+					SELECT item.id, price_list.item_id, price_list.price_list, item.name, item.reference, item.type
 						FROM price_list
 						JOIN item ON item.id = price_list.item_id
 						WHERE price_list.id IN (
@@ -152,34 +182,43 @@ class Item_model extends CI_Model {
 		
 		public function select_by_id($item_id)
 		{
-			$this->db->where('id', $item_id);
-			$query = $this->db->get($this->table_item,1);
-			$item	= $query->row();
-			
-			return $item;
-		}
-		
-		public function show_by_id()
-		{
-			$item_id = $this->input->post('item_id');
-			$query = $this->db->query("
-				SELECT item.id, price_list.item_id, price_list.price_list, item.name, item.reference, item.type
+			$query 				= $this->db->query("
+				SELECT price_list.price_list, item.reference, item.name, item.type, item.id
 					FROM price_list
 					JOIN item ON item.id = price_list.item_id
 					WHERE price_list.id IN (
 						SELECT MAX(price_list.id)
 						FROM price_list
 						GROUP BY item_id
-					) AND item_id = '$item_id'");
-			$item = $query->row();
+					) AND item_id = '$item_id'");	
+			$item 				= $query->row();
+			
+			return $item;
+		}
+		
+		public function select_by_price_list_id($price_list_id)
+		{
+			$query 				= $this->db->query("
+				SELECT price_list.price_list, item.reference, item.name, item.type, item.id
+					FROM price_list
+					JOIN item ON item.id = price_list.item_id
+					WHERE price_list.id IN (
+						SELECT MAX(price_list.id)
+						FROM price_list
+						GROUP BY item_id
+					) AND price_list.id = '$price_list_id'");	
+			$item 				= $query->row();
 			
 			return $item;
 		}
 		
 		public function update_from_post()
 		{
-			$item_id 			= $this->input->post('item_id');
-			$updated_price_list = $this->input->post('item_price_list');
+			$item_id 			= $this->input->post('id');
+			$reference			= $this->input->post('reference');
+			$updated_price_list = $this->input->post('price_list');
+			$name				= $this->input->post('name');
+			$type				= $this->input->post('type');
 			
 			$query 				= $this->db->query("
 				SELECT price_list.price_list
@@ -201,9 +240,9 @@ class Item_model extends CI_Model {
 			$count = $this->db->count_all_results();
 			
 			if($count == 0){
-				$this->reference	= $this->input->post('item_reference');
-				$this->name			= $this->input->post('item_name');
-				$this->type			= $this->input->post('item_type');
+				$this->reference	= $reference;
+				$this->name			= $name;
+				$this->type			= $type;
 				$db_item			= $this->update_db_from_stub();
 					
 				$this->db->where('id', $item_id);

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 04, 2020 at 12:29 PM
+-- Generation Time: Mar 11, 2020 at 12:10 PM
 -- Server version: 10.1.38-MariaDB
 -- PHP Version: 7.3.2
 
@@ -44,8 +44,8 @@ CREATE TABLE `code_delivery_order` (
 --
 
 INSERT INTO `code_delivery_order` (`id`, `date`, `name`, `is_confirm`, `is_delete`, `is_sent`, `guid`, `invoice_id`) VALUES
-(1, '2020-03-02', 'DO-DSE-20200010', 1, 0, 0, '33C54E3C-810C-4661-A510-E6B9B860664B', 0),
-(2, '2020-03-03', 'DO-DSE-20200020', 1, 0, 0, '30EC62BD-29D1-4E38-BBE0-510F8938AC9C', 0);
+(1, '2020-03-02', 'DO-DSE-20200010', 1, 0, 0, '33C54E3C-810C-4661-A510-E6B9B860664B', NULL),
+(2, '2020-03-03', 'DO-DSE-20200020', 1, 0, 0, '30EC62BD-29D1-4E38-BBE0-510F8938AC9C', NULL);
 
 -- --------------------------------------------------------
 
@@ -71,8 +71,19 @@ CREATE TABLE `code_good_receipt` (
 --
 
 INSERT INTO `code_good_receipt` (`id`, `name`, `date`, `is_confirm`, `is_delete`, `invoice_id`, `received_date`, `created_by`, `confirmed_by`, `guid`) VALUES
-(1, 'PI-CK-AI-XXXXXX', '2020-02-28', 1, 0, NULL, '2020-02-28', 1, 1, '4F60F2F8-0080-4998-B314-C64032E9995C'),
-(2, 'UAUAUA', '2020-03-03', 1, 0, NULL, '2020-03-03', 1, 1, 'BE29AEC3-B49F-46EB-BC1F-FB6D9BFBD92C');
+(1, 'PI-CK-AI-XXXXXX', '2020-02-28', 1, 0, 11, '2020-02-28', 1, 1, '4F60F2F8-0080-4998-B314-C64032E9995C'),
+(2, 'UAUAUA', '2020-03-03', 1, 0, 7, '2020-03-03', 1, 1, 'BE29AEC3-B49F-46EB-BC1F-FB6D9BFBD92C'),
+(3, 'ddfffer', '2020-04-03', 0, 0, NULL, '2020-03-04', 1, NULL, 'CC2F928E-7CF7-4B3E-BC69-7E3EEA91D848'),
+(4, 'asafwega', '2020-03-04', 1, 0, 6, '2020-03-04', 1, 1, '7DA9ECD9-B542-49CD-B72F-9F4AF2FFA887'),
+(5, '12221', '2020-03-04', 0, 0, NULL, '2020-03-04', 1, NULL, '8CAAB3E9-FD3C-4C09-AD1A-F085D97B9988'),
+(6, 'dfdfdffdfdf', '2020-03-04', 0, 0, NULL, '2020-03-04', 1, NULL, 'F890B1A3-9AA8-4502-9554-44899742BFC8'),
+(7, 'dfdfefe', '2020-03-04', 1, 0, 7, '2020-03-04', 1, 1, 'DF1E746E-4BE2-4736-A76A-F6DC99FDDDB9'),
+(8, 'PI-CK-SL-AAIOA', '2020-03-08', 1, 0, 8, '2020-03-05', 1, 1, '6F10E7E8-12E8-439C-8C0B-36A16BB530F7'),
+(9, 'B-CK-AI-ASDFD', '2020-03-08', 1, 0, 10, '2020-03-05', 1, 1, 'C18C50E6-C442-4947-B930-E3E8CA92DE52'),
+(10, 'PI-CK-SL-ASDFDS', '2020-03-08', 1, 0, 9, '2020-03-05', 1, 1, '14977543-B786-43C2-8EC9-580E64BD3A67'),
+(11, 'PI-CK-AESDF', '2020-03-05', 0, 1, NULL, '2020-03-08', 1, NULL, 'EAF44A67-84C6-414E-BCF4-D6D8651B491D'),
+(12, 'asdf', '2020-03-08', 0, 1, NULL, '2020-03-08', 1, NULL, 'C1F34335-EF02-41EE-B816-EB90F218BF44'),
+(13, '123456', '2020-03-08', 0, 1, NULL, '2020-03-08', 1, NULL, '3D38AA01-C385-4688-9178-BD8A4A94B11A');
 
 -- --------------------------------------------------------
 
@@ -108,8 +119,12 @@ INSERT INTO `code_purchase_order` (`id`, `date`, `name`, `supplier_id`, `created
 (1, '2020-02-28', 'PO.DSE-2020024976', 1, 1, 1, 0, NULL, NULL, NULL, NULL, NULL, 1, NULL, '0E54E76D-BA59-46DC-AA1D-A8100994F16C', 0, 1),
 (2, '2020-03-03', 'PO.DSE-2020039437', 1, 1, NULL, 0, NULL, NULL, NULL, NULL, NULL, 1, NULL, 'FB29C7E4-5FD5-4ACA-8EB9-EAC1D393464E', 1, 0),
 (3, '2020-03-03', 'PO.DSE-2020030923', 1, 1, 1, 0, NULL, NULL, NULL, NULL, NULL, 1, NULL, 'B2F95F4E-0B5F-451E-9D15-828889C2EF82', 0, 1),
-(4, '2020-03-03', 'PO.DSE-2020030106', 1, 1, NULL, 0, NULL, NULL, NULL, NULL, NULL, 1, NULL, '60C19068-1DDF-42BB-AFDF-2D673DB7557B', 0, 0),
-(5, '2020-03-03', 'PO.DSE-2020037250', 1, 1, NULL, 0, NULL, 'Jalan Buluh Indah 4C', 'Bali', 'Daniel', '085290000241', 1, NULL, 'D02F0614-748D-4B26-BFC2-51C11806FF2F', 1, 0);
+(4, '2020-03-03', 'PO.DSE-2020030106', 1, 1, NULL, 0, NULL, NULL, NULL, NULL, NULL, 1, NULL, '60C19068-1DDF-42BB-AFDF-2D673DB7557B', 1, 0),
+(5, '2020-03-03', 'PO.DSE-2020037250', 1, 1, NULL, 0, NULL, 'Jalan Buluh Indah 4C', 'Bali', 'Daniel', '085290000241', 1, NULL, 'D02F0614-748D-4B26-BFC2-51C11806FF2F', 1, 0),
+(6, '2020-03-04', 'PO.DSE-2020037266', 1, 1, 1, 0, NULL, NULL, NULL, NULL, NULL, 1, NULL, 'D63D0051-1006-4CB8-94F7-7C55CC74AD47', 0, 1),
+(7, '2020-03-05', 'PO.DSE-2020035900', 1, 1, 1, 0, NULL, NULL, NULL, NULL, NULL, 1, NULL, '538A970E-1D9E-4131-9D2D-A698BCEAFCB4', 0, 1),
+(8, '2020-03-11', 'PO.DSE-2020030410', 1, 1, 1, 0, NULL, NULL, NULL, NULL, NULL, 1, NULL, '2B632FBD-5EC1-4B71-BB99-D603764E686A', 0, 1),
+(9, '2020-03-11', 'PO.DSE-2020039367', 1, 1, NULL, 0, NULL, NULL, NULL, NULL, NULL, 1, NULL, 'E9991069-DE2A-42A5-94BE-DFB0481524E1', 0, 0);
 
 -- --------------------------------------------------------
 
@@ -135,7 +150,9 @@ CREATE TABLE `code_sales_order` (
 --
 
 INSERT INTO `code_sales_order` (`id`, `customer_id`, `name`, `date`, `taxing`, `seller`, `is_confirm`, `guid`, `created_by`, `invoicing_method`) VALUES
-(1, 5, '202034528931', '2020-02-28', 0, NULL, 0, '5077ADE5-1865-434F-9AE3-52C00ED81C22', 0, 1);
+(1, 5, '202034528931', '2020-02-28', 0, NULL, 0, '5077ADE5-1865-434F-9AE3-52C00ED81C22', 0, 1),
+(2, 1, '202046711362', '2020-03-11', 0, NULL, 0, '75090CD8-DE9E-4495-9BAB-44F0AE082588', 0, 1),
+(3, 1, '202061647043', '2020-03-11', 0, NULL, 0, '20EDCE7B-8A8C-47BB-945D-0022298C6631', 0, 1);
 
 -- --------------------------------------------------------
 
@@ -169,7 +186,6 @@ CREATE TABLE `customer` (
 --
 
 INSERT INTO `customer` (`id`, `name`, `address`, `number`, `rt`, `rw`, `city`, `postal_code`, `area_id`, `is_black_list`, `block`, `npwp`, `phone_number`, `pic_name`, `date_created`, `created_by`, `latitude`, `longitude`) VALUES
-(0, 'Toko Surya Indah', 'Jalan Mochammad Toha', '204A', '000', '000', 'Bandung', '40235', 3, 0, '', NULL, '(022) 5200016', 'Bapak -', NULL, 0, NULL, NULL),
 (1, 'Toko Sumber Lampu', 'Jalan Jendral Ahmad Yani (Plaza IBCC)', '3', '029', '006', 'Bandung', '40271', 1, 0, 'B2', NULL, '(022) 7233271', 'Bapak Ayung', NULL, 1, NULL, NULL),
 (5, 'Toko Agni Surya', 'Jalan Jendral Ahmad Yani', '353', '000', '000', 'Bandung', '40121', 1, 0, '', NULL, '(022) 7273893', 'Ibu Yani', '2020-01-24', 1, NULL, NULL),
 (6, 'Toko Trijaya 2', 'Jalan Cikawao', '56', '001', '001', 'Bandung', '40261', 1, 0, '', NULL, '(022) 4220661', 'Bapak Yohan', '2020-01-24', 1, NULL, NULL),
@@ -364,9 +380,20 @@ CREATE TABLE `good_receipt` (
 --
 
 INSERT INTO `good_receipt` (`id`, `purchase_order_id`, `quantity`, `code_good_receipt_id`, `billed_price`) VALUES
-(1, 1, 20, 1, '0.0000'),
-(2, 3, 10, 2, '0.0000'),
-(3, 4, 10, 2, '0.0000');
+(1, 1, 20, 1, '268960.0000'),
+(2, 3, 10, 2, '350000.0000'),
+(3, 4, 10, 2, '1050000.0000'),
+(4, 1, 1, 4, '268960.0000'),
+(5, 1, 1, 7, '268960.0000'),
+(6, 10, 100, 8, '268960.0000'),
+(7, 11, 0, 8, '0.0000'),
+(8, 10, 0, 9, '268960.0000'),
+(9, 11, 5, 9, '0.0000'),
+(10, 8, 40, 10, '15000.0000'),
+(11, 9, 0, 10, '0.0000'),
+(12, 9, 10, 11, '0.0000'),
+(13, 1, 1, 12, '268960.0000'),
+(14, 9, 1, 13, '0.0000');
 
 -- --------------------------------------------------------
 
@@ -450,7 +477,17 @@ INSERT INTO `item` (`id`, `reference`, `name`, `type`) VALUES
 (47, 'NYY32_100_EXT', 'Kabel NYY 3 x 2,5mm<sup>2</sup> kemasan 100 meter (Extrana)', 3),
 (48, 'NYY32_250_EXT', 'Kabel NYY 3 x 2,5mm<sup>2</sup> kemasan 250 meter (Extrana)', 3),
 (49, 'NYY32_500_EXT', 'Kabel NYY 3 x 2,5mm<sup>2</sup> kemasan 500 meter (Extrana)', 3),
-(50, 'NYY32_1000_EXT', 'Kabel NYY 3 x 2,5mm<sup>2</sup> kemasan 1.000 meter (Extrana)', 3);
+(50, 'NYY32_1000_EXT', 'Kabel NYY 3 x 2,5mm<sup>2</sup> kemasan 1.000 meter (Extrana)', 3),
+(54, 'NYY41_50_EXT', 'Kabel NYY 4 x 1,5mm<sup>2</sup> kemasan 50 meter (Extrana)', 3),
+(55, 'NYY41_100_EXT', 'Kabel NYY 4 x 1,5mm<sup>2</sup> kemasan 100 meter (Extrana)', 3),
+(56, 'NYY41_250_EXT', 'Kabel NYY 4 x 1,5mm<sup>2</sup> kemasan 250 meter (Extrana)', 3),
+(57, 'NYY41_500_EXT', 'Kabel NYY 4 x 1,5mm<sup>2</sup> kemasan 500 meter (Extrana)', 3),
+(58, 'NYY41_1000_EXT', 'Kabel NYY 4 x 1,5mm<sup>2</sup> kemasan 1.000 meter (Extrana)', 3),
+(59, 'NYY42_50_EXT', 'Kabel NYY 4 x 2,5mm<sup>2</sup> kemasan 50 meter (Extrana)', 3),
+(60, 'NYY42_100_EXT', 'Kabel NYY 4 x 2,5mm<sup>2</sup> kemasan 100 meter (Extrana)', 3),
+(61, 'NYY42_250_EXT', 'Kabel NYY 4 x 2,5mm<sup>2</sup> kemasan 250 meter (Extrana)', 3),
+(62, 'NYY42_500_EXT', 'Kabel NYY 4 x 2,5mm<sup>2</sup> kemasan 500 meter (Extrana)', 3),
+(63, 'NYY42_1000_EXT', 'Kabel NYY 4 x 2,5mm<sup>2</sup> kemasan 1.000 meter (Extrana)', 3);
 
 -- --------------------------------------------------------
 
@@ -470,9 +507,9 @@ CREATE TABLE `item_class` (
 --
 
 INSERT INTO `item_class` (`id`, `name`, `description`, `created_by`) VALUES
-(2, 'Kabel NYM retail', 'Kabel NYM dengan ukuran per core lebih kecil dari 4mm<sup>2</sup>', 1),
-(3, 'Kabel NYY retail', 'Kabel NYY dengan ukuran per core lebih kecil dari 4mm2 dan jumlah core lebih kecil atau sama dengan 4', 1),
-(4, 'Kabel NYM project', 'Kabel NYM dengan ukuran per core sama dengan atau lebih besar dari 4mm<sup>2</sup>', 1);
+(2, 'Kabel NYM retail ukuran kecil', 'Kabel NYM dengan ukuran per core lebih kecil dari 4mm<sup>2</sup>', 1),
+(3, 'Kabel NYY retail ukuran kecil', 'Kabel NYY dengan ukuran per core lebih kecil dari 4mm<sup>2</sup>', 1),
+(5, 'Kabel NYM retail ukuran besar', 'Kabel NYM dengan ukuran per core lebih besar dari 4mm<sup>2</sup> dan lebih kecil dari 10mm<sup>2</sup>', 1);
 
 -- --------------------------------------------------------
 
@@ -541,7 +578,70 @@ INSERT INTO `price_list` (`id`, `item_id`, `price_list`) VALUES
 (52, 48, '3840000.000'),
 (53, 49, '7680000.000'),
 (54, 50, '15360000.000'),
-(56, 1, '200000.000');
+(56, 1, '200000.000'),
+(57, 1, '328000.000'),
+(58, 54, '664000.000'),
+(59, 55, '1328000.000'),
+(60, 56, '3320000.000'),
+(61, 57, '6640000.000'),
+(62, 58, '13280000.000'),
+(63, 59, '923200.000'),
+(64, 60, '1846400.000'),
+(65, 61, '4616000.000'),
+(66, 62, '9232000.000'),
+(67, 63, '18464000.000');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `purchase_invoice`
+--
+
+CREATE TABLE `purchase_invoice` (
+  `id` int(255) NOT NULL,
+  `date` date NOT NULL,
+  `tax_document` varchar(100) NOT NULL,
+  `invoice_document` varchar(100) NOT NULL,
+  `created_by` int(255) NOT NULL,
+  `is_confirm` tinyint(1) NOT NULL DEFAULT '0',
+  `is_delete` tinyint(1) NOT NULL DEFAULT '0',
+  `confirmed_by` int(255) DEFAULT NULL,
+  `is_done` tinyint(4) NOT NULL DEFAULT '0'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `purchase_invoice`
+--
+
+INSERT INTO `purchase_invoice` (`id`, `date`, `tax_document`, `invoice_document`, `created_by`, `is_confirm`, `is_delete`, `confirmed_by`, `is_done`) VALUES
+(1, '0000-00-00', '', '', 1, 0, 0, NULL, 0),
+(2, '0000-00-00', '', '', 1, 0, 0, NULL, 0),
+(3, '0000-00-00', '', '', 1, 0, 0, NULL, 0),
+(4, '0000-00-00', '', '', 1, 0, 0, NULL, 0),
+(5, '0000-00-00', '', '', 1, 0, 1, NULL, 0),
+(6, '0000-00-00', '', '', 1, 0, 1, NULL, 0),
+(7, '0000-00-00', '010.003-20.78978981', '010.003-20.78978981', 1, 0, 1, NULL, 0),
+(8, '2020-03-08', '010.003-20.23535135', '010.003-20.23535135', 1, 1, 0, 1, 0),
+(9, '2020-03-05', '010.003-20.67543163', '010.003-20.67543163', 1, 1, 0, 1, 0),
+(10, '2020-03-09', '011.789-45.12345678', '011.789-45.12345678', 1, 1, 0, NULL, 0),
+(11, '2020-03-08', '010.003-20.53845645', '010.003-20.53845645', 1, 0, 0, NULL, 0);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `purchase_invoice_other`
+--
+
+CREATE TABLE `purchase_invoice_other` (
+  `id` int(255) NOT NULL,
+  `supplier_id` int(255) NOT NULL,
+  `value` decimal(50,2) NOT NULL,
+  `created_by` int(255) NOT NULL,
+  `is_confirm` tinyint(1) NOT NULL DEFAULT '0',
+  `confirmed_by` int(255) DEFAULT NULL,
+  `is_delete` tinyint(1) NOT NULL DEFAULT '0',
+  `is_done` tinyint(1) NOT NULL DEFAULT '0'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
 
@@ -565,13 +665,20 @@ CREATE TABLE `purchase_order` (
 --
 
 INSERT INTO `purchase_order` (`id`, `item_id`, `price_list`, `net_price`, `quantity`, `received`, `status`, `code_purchase_order_id`) VALUES
-(1, 1, '328000.0000', '268960.0000', 50, 20, 0, 1),
+(1, 1, '328000.0000', '268960.0000', 50, 22, 0, 1),
 (2, 1, '25000.0000', '17500.0000', 50, 0, 0, 2),
 (3, 3, '500000.0000', '350000.0000', 50, 10, 0, 3),
 (4, 25, '1500000.0000', '1050000.0000', 50, 10, 0, 3),
 (5, 1, '50000.0000', '35000.0000', 50, 0, 0, 4),
 (6, 1, '1.0000', '0.0000', 20, 0, 0, 4),
-(7, 1, '280000.0000', '196000.0000', 50, 0, 0, 5);
+(7, 1, '280000.0000', '196000.0000', 50, 0, 0, 5),
+(8, 1, '30000.0000', '15000.0000', 40, 40, 1, 6),
+(9, 3, '1.0000', '0.0000', 30, 10, 0, 6),
+(10, 1, '328000.0000', '268960.0000', 100, 100, 1, 7),
+(11, 1, '1.0000', '0.0000', 5, 5, 1, 7),
+(12, 2, '328000.0000', '262400.0000', 30, 0, 0, 8),
+(13, 6, '1.0000', '0.0000', 10, 0, 0, 8),
+(14, 2, '3280000.0000', '1640000.0000', 30, 0, 0, 9);
 
 -- --------------------------------------------------------
 
@@ -594,7 +701,9 @@ CREATE TABLE `sales_order` (
 --
 
 INSERT INTO `sales_order` (`id`, `price_list_id`, `discount`, `quantity`, `sent`, `status`, `code_sales_order_id`) VALUES
-(1, 30, '18.0000', 20, 2, 0, 1);
+(1, 30, '18.0000', 20, 2, 0, 1),
+(2, 1, '18.0000', 30, 0, 0, 2),
+(3, 31, '18.0000', 30, 0, 0, 2);
 
 -- --------------------------------------------------------
 
@@ -620,11 +729,16 @@ CREATE TABLE `stock_in` (
 --
 
 INSERT INTO `stock_in` (`id`, `item_id`, `quantity`, `residue`, `supplier_id`, `customer_id`, `good_receipt_id`, `code_sales_return_id`, `code_event_id`, `price`) VALUES
-(1, 1, 20, 20, 1, NULL, 1, NULL, NULL, '0.0000'),
+(1, 1, 20, 20, 1, NULL, 1, NULL, NULL, '268960.0000'),
 (2, 3, 10, 10, 1, NULL, 2, NULL, NULL, '350000.0000'),
 (3, 25, 10, 10, 1, NULL, 3, NULL, NULL, '1050000.0000'),
 (4, 3, 10, 10, 1, NULL, 2, NULL, NULL, '350000.0000'),
-(5, 25, 10, 10, 1, NULL, 3, NULL, NULL, '1050000.0000');
+(5, 25, 10, 10, 1, NULL, 3, NULL, NULL, '1050000.0000'),
+(6, 1, 1, 1, 1, NULL, 4, NULL, NULL, '268960.0000'),
+(7, 1, 1, 1, 1, NULL, 5, NULL, NULL, '268960.0000'),
+(8, 1, 100, 100, 1, NULL, 6, NULL, NULL, '268960.0000'),
+(9, 1, 5, 5, 1, NULL, 9, NULL, NULL, '0.0000'),
+(10, 1, 40, 40, 1, NULL, 10, NULL, NULL, '15000.0000');
 
 -- --------------------------------------------------------
 
@@ -723,27 +837,6 @@ CREATE TABLE `view_code_delivery_order` (
 -- --------------------------------------------------------
 
 --
--- Stand-in structure for view `view_complete_good_receipt`
--- (See below for the actual view)
---
-CREATE TABLE `view_complete_good_receipt` (
-`id` int(255)
-,`code_good_receipt_id` int(255)
-,`good_receipt_name` varchar(50)
-,`date` date
-,`received_date` date
-,`purchase_order_name` varchar(50)
-,`supplier_name` varchar(100)
-,`address` varchar(500)
-,`city` varchar(100)
-,`reference` varchar(50)
-,`name` varchar(100)
-,`quantity` int(255)
-);
-
--- --------------------------------------------------------
-
---
 -- Stand-in structure for view `view_delivery_order_detail`
 -- (See below for the actual view)
 --
@@ -787,15 +880,6 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW 
 -- --------------------------------------------------------
 
 --
--- Structure for view `view_complete_good_receipt`
---
-DROP TABLE IF EXISTS `view_complete_good_receipt`;
-
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `view_complete_good_receipt`  AS  select `code_good_receipt`.`id` AS `id`,`code_good_receipt`.`id` AS `code_good_receipt_id`,`code_good_receipt`.`name` AS `good_receipt_name`,`code_good_receipt`.`date` AS `date`,`code_good_receipt`.`received_date` AS `received_date`,`code_purchase_order`.`name` AS `purchase_order_name`,`supplier`.`name` AS `supplier_name`,`supplier`.`address` AS `address`,`supplier`.`city` AS `city`,`item`.`reference` AS `reference`,`item`.`name` AS `name`,`good_receipt`.`quantity` AS `quantity` from (((((`good_receipt` join `code_good_receipt` on((`good_receipt`.`code_good_receipt_id` = `code_good_receipt`.`id`))) join `purchase_order` on((`good_receipt`.`purchase_order_id` = `purchase_order`.`id`))) join `code_purchase_order` on((`purchase_order`.`code_purchase_order_id` = `code_purchase_order`.`id`))) join `supplier` on((`code_purchase_order`.`supplier_id` = `supplier`.`id`))) join `item` on((`purchase_order`.`item_id` = `item`.`id`))) ;
-
--- --------------------------------------------------------
-
---
 -- Structure for view `view_delivery_order_detail`
 --
 DROP TABLE IF EXISTS `view_delivery_order_detail`;
@@ -819,13 +903,15 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW 
 -- Indexes for table `code_delivery_order`
 --
 ALTER TABLE `code_delivery_order`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `invoice_id` (`invoice_id`);
 
 --
 -- Indexes for table `code_good_receipt`
 --
 ALTER TABLE `code_good_receipt`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `invoice_id` (`invoice_id`);
 
 --
 -- Indexes for table `code_purchase_order`
@@ -894,6 +980,18 @@ ALTER TABLE `price_list`
   ADD KEY `item_id` (`item_id`);
 
 --
+-- Indexes for table `purchase_invoice`
+--
+ALTER TABLE `purchase_invoice`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `purchase_invoice_other`
+--
+ALTER TABLE `purchase_invoice_other`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `purchase_order`
 --
 ALTER TABLE `purchase_order`
@@ -942,19 +1040,19 @@ ALTER TABLE `code_delivery_order`
 -- AUTO_INCREMENT for table `code_good_receipt`
 --
 ALTER TABLE `code_good_receipt`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT for table `code_purchase_order`
 --
 ALTER TABLE `code_purchase_order`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `code_sales_order`
 --
 ALTER TABLE `code_sales_order`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `customer`
@@ -978,7 +1076,7 @@ ALTER TABLE `delivery_order`
 -- AUTO_INCREMENT for table `good_receipt`
 --
 ALTER TABLE `good_receipt`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT for table `invoice`
@@ -990,37 +1088,49 @@ ALTER TABLE `invoice`
 -- AUTO_INCREMENT for table `item`
 --
 ALTER TABLE `item`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=51;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=64;
 
 --
 -- AUTO_INCREMENT for table `item_class`
 --
 ALTER TABLE `item_class`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `price_list`
 --
 ALTER TABLE `price_list`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=57;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=68;
+
+--
+-- AUTO_INCREMENT for table `purchase_invoice`
+--
+ALTER TABLE `purchase_invoice`
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+
+--
+-- AUTO_INCREMENT for table `purchase_invoice_other`
+--
+ALTER TABLE `purchase_invoice_other`
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `purchase_order`
 --
 ALTER TABLE `purchase_order`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT for table `sales_order`
 --
 ALTER TABLE `sales_order`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `stock_in`
 --
 ALTER TABLE `stock_in`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `supplier`
@@ -1037,6 +1147,18 @@ ALTER TABLE `users`
 --
 -- Constraints for dumped tables
 --
+
+--
+-- Constraints for table `code_delivery_order`
+--
+ALTER TABLE `code_delivery_order`
+  ADD CONSTRAINT `code_delivery_order_ibfk_1` FOREIGN KEY (`invoice_id`) REFERENCES `invoice` (`id`);
+
+--
+-- Constraints for table `code_good_receipt`
+--
+ALTER TABLE `code_good_receipt`
+  ADD CONSTRAINT `code_good_receipt_ibfk_1` FOREIGN KEY (`invoice_id`) REFERENCES `purchase_invoice` (`id`);
 
 --
 -- Constraints for table `code_sales_order`

@@ -8,6 +8,8 @@
 	<h3 style='font-family:museo'>Main</h3>
 	<a href='<?= site_url('Invoice') ?>'><button><p style='font-family:museo'>Invoice</p></button></a>
 	<a href='<?= site_url('Debt') ?>'><button><p style='font-family:museo'>Debt document</p></button></a>
+	<a href='<?= site_url('Debt') ?>'><button><p style='font-family:museo'>Receivable</p></button></a>
+	<a href='<?= site_url('Payable') ?>'><button><p style='font-family:museo'>Payable</p></button></a>
 </div>
 <script>
 	$('.container_button').click(function(){

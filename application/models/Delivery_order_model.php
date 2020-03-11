@@ -213,6 +213,7 @@ class Delivery_order_model extends CI_Model {
 			$this->date				= $this->input->post('date');
 			$this->name				= $delivery_order_name;
 			$this->guid				= $this->input->post('guid');
+			$this->invoice_id		= null;
 			
 			$db_item 				= $this->get_db_from_stub($this);
 			$db_result 				= $this->db->insert($this->table_delivery_order, $db_item);
@@ -236,6 +237,45 @@ class Delivery_order_model extends CI_Model {
 				return FALSE;
 				
 			}
+		}
+		
+		public function show_uninvoiced_retail_delivery_order($offset = 0, $filter = '', $limit = 25)
+		{
+			$this->db->select('code_delivery_order.*, customer.name as customer_name, customer.address as customer_address, customer.city as customer_city');
+			$this->db->from('code_delivery_order');
+			$this->db->join('delivery_order', 'delivery_order.code_delivery_order_id = code_delivery_order.id', 'inner');
+			$this->db->join('sales_order', 'delivery_order.sales_order_id = sales_order.id');
+			$this->db->join('code_sales_order', 'sales_order.code_sales_order_id = code_sales_order.id');
+			$this->db->join('customer', 'code_sales_order.customer_id = customer.id');
+			$this->db->where('code_sales_order.invoicing_method', 1);
+			$this->db->where('code_delivery_order.is_confirm', 1);
+			$this->db->where('code_delivery_order.is_delete', 0);
+			$this->db->where('code_delivery_order.invoice_id', null);
+			$this->db->like('code_delivery_order.name', null);
+			$this->db->limit($limit, $offset);
+			$query		= $this->db->get();
+			
+			$result		= $query->result();
+			
+			return $result;
+		}
+		
+		public function count_uninvoiced_retail_delivery_order($term = '')
+		{
+			$this->db->select('code_delivery_order.id');
+			$this->db->from('code_delivery_order');
+			$this->db->join('delivery_order', 'delivery_order.code_delivery_order_id = code_delivery_order.id', 'inner');
+			$this->db->join('sales_order', 'delivery_order.sales_order_id = sales_order.id');
+			$this->db->join('code_sales_order', 'sales_order.code_sales_order_id = code_sales_order.id');
+			$this->db->where('code_sales_order.invoicing_method', 1);
+			$this->db->where('code_delivery_order.is_confirm', 1);
+			$this->db->where('code_delivery_order.is_delete', 0);
+			$this->db->where('code_delivery_order.invoice_id', null);
+			$query	= $this->db->get();
+
+			$result		= $query->num_rows();
+			
+			return $result;
 		}
 		
 		public function create_guid()

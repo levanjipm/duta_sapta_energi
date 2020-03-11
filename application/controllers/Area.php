@@ -16,7 +16,7 @@ class Area extends CI_Controller {
 		$this->load->view('sales/header');
 		
 		$this->load->model('Area_model');
-		$items = $this->Area_model->show_limited(0,25,'');
+		$items = $this->Area_model->show_limited();
 		$data['areas'] = $items;
 		$this->load->view('sales/area_manage_dashboard',$data);
 	}
@@ -31,8 +31,21 @@ class Area extends CI_Controller {
 	
 	public function update_area()
 	{
+		$area_id	= $this->input->post('id');
+		$area_name	= $this->input->post('name');
+		
 		$this->load->model('Area_model');
-		$this->Area_model->update_from_post();
+		$this->Area_model->update_from_post($area_id, $area_name);
+		
+		redirect('Area');
+	}
+	
+	public function delete()
+	{
+		$area_id	= $this->input->post('id');
+		
+		$this->load->model('Area_model');
+		$this->Area_model->delete_area($area_id);
 		
 		redirect('Area');
 	}

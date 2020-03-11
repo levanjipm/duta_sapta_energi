@@ -98,15 +98,37 @@ class Stock_in_model extends CI_Model {
 			$this->db->insert_batch($this->table_stock_in, $good_receipt_array);
 		}
 		
-		public function search_by_item_id($item_id, $quantity)
+		public function search_by_item_id($item_id)
 		{
 			$this->db->where('residue >', 0);
-			$this->db->where('item_id =', $item_id);
-			$query = $this->db->get($this->table_stock_in);
-			$result	= $query->result();
-			foreach($result as $stock)
-			{
-				print_r($stock);
+			$this->db->where('item_id', $item_id);
+			$this->db->order_by('id', 'asc');
+			$query 	= $this->db->get($this->table_stock_in);
+			$result	= $query->row();
+			
+			return $result;
+			
+		}
+		
+		public function update_price($price_array)
+		{
+			foreach($price_array as $price){
+				$id		= key($price_array);
+				$batch[] = array(
+					'good_receipt_id' => $id,
+					'price' => $price
+				);
+				
+				next($price_array);
 			}
+			
+			$this->db->update_batch($this->table_stock_in,$batch, 'good_receipt_id'); 
+		}
+		
+		public function update_stock_in($id, $final_quantity)
+		{
+			$this->db->set('residue', $final_quantity);
+			$this->db->where('id', $id);
+			$this->db->update($this->table_stock_in);
 		}
 }

@@ -45,7 +45,8 @@ class View_purchase_order_detail_model extends CI_Model {
 		
 		public function show_by_code_purchase_order_id($id)
 		{
-			$this->db->where('code_purchase_order_id =', $id);
+			$this->db->where('code_purchase_order_id', $id);
+			$this->db->where('status', 0);
 			$query 		= $this->db->get($this->table_purchase_order);
 			$items	 	= $query->result();
 			

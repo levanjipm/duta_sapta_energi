@@ -180,7 +180,7 @@ class Purchase_order_detail_model extends CI_Model {
 			$batch = array();
 			foreach($quantity_array as $quantity){
 				$purchase_order_id			= key($quantity_array);
-				$items		= $this->Purchase_order_detail_model->show_by_id($purchase_order_id);
+				$items						= $this->Purchase_order_detail_model->show_by_id($purchase_order_id);
 				$received					= $items->received;
 				$ordered					= $items->quantity;
 				$final_quantity				= $quantity + $received;
@@ -205,15 +205,30 @@ class Purchase_order_detail_model extends CI_Model {
 		
 		public function show_by_purchase_order_id($id)
 		{
-			$this->db->select('purchase_order.*, item.name, item.reference, code_purchase_order.name as purchase_order_name, code_purchase_order.date as purchase_order_date, supplier.name as supplier_name, supplier.address as supplier_address, supplier.city as supplier_city');
+			$this->db->select('purchase_order.*, item.name, item.reference');
 			$this->db->from('purchase_order');
-			$this->db->join('code_purchase_order', 'purchase_order.code_purchase_order_id = code_purchase_order.id');
-			$this->db->join('supplier', 'code_purchase_order.supplier_id = supplier.id');
 			$this->db->join('item', 'purchase_order.item_id = item.id');
 			$this->db->where('purchase_order.code_purchase_order_id =', $id);
 			$query = $this->db->get();
 			$item = $query->result();
 			
-			return ($item !== null) ? $this->complete_map_list($item) : null;
+			return $item;
+		}
+		
+		public function delete_from_good_receipt($good_receipt_array)
+		{
+			foreach($good_receipt_array as $good_receipt){
+				$purchase_order_id		= $good_receipt->purchase_order_id;
+				$quantity				= $good_receipt->quantity;
+				$received				= $good_receipt->received;
+				
+				$final_quantity			= $received - $quantity;
+				$batch[] = array(
+					'id' => $purchase_order_id,
+					'received' => $final_quantity
+				);
+			}
+			
+			$this->db->update_batch($this->table_purchase_order,$batch, 'id'); 
 		}
 }

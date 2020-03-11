@@ -63,33 +63,16 @@ class Customer extends CI_Controller {
 		redirect(site_url('customer'));
 	}
 	
-	public function update_view_page()
+	public function show_items()
 	{
-		$current_page	= $this->input->get('page') - 1;
-		$filter			= $this->input->get('term');
+		$term		= $this->input->get('term');
+		$page		= $this->input->get('page');
+		$offset		= ($page - 1) * 25;
 		$this->load->model('Customer_model');
-		$items			= $this->Customer_model->show_items($current_page * 25, $filter);
-		$data['customers']	= $items;
-		
-		$data['pages']	= ceil($this->Customer_model->count_items($filter) / 25);
-		
-		$data['paging'] = max(1,$this->input->get('page'));
-		
-		$this->load->view('sales/customer_table_view',$data);
-	}
-	
-	public function update_view_select()
-	{
-		$current_page	= $this->input->get('page') - 1;
-		$filter			= $this->input->get('term');
-		$this->load->model('Customer_model');
-		$items			= $this->Customer_model->show_items($current_page * 25, $filter);
-		$data['customers']	= $items;
-		
-		$data['pages']	= ceil($this->Customer_model->count_items($filter) / 25);
-		
-		$data['paging'] = max(1,$this->input->get('page'));
-		
-		$this->load->view('sales/customer_select_view',$data);
+		$data['customers'] = $this->Customer_model->show_items($offset, $term);
+		$item = $this->Customer_model->count_items($term);
+		$data['pages'] = max(1, ceil($item / 25));
+		header('Content-Type: application/json');
+		echo json_encode($data);
 	}
 }

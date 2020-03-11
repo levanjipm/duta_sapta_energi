@@ -31,11 +31,12 @@ class Item extends CI_Controller {
 	
 	public function insert_new_item()
 	{
+		$price_list		= $this->input->post('price_list');
 		$this->load->model('Item_model');
 		$result = $this->Item_model->insert_from_post();
-		if($result != NULL){
+		if($result != null){
 			$this->load->model('Price_list_model');
-			$this->Price_list_model->insert_from_post($result);
+			$this->Price_list_model->insert_from_post($result, $price_list);
 		}
 		
 		redirect(site_url('Item'));
@@ -69,9 +70,8 @@ class Item extends CI_Controller {
 		$this->load->model('Item_model');
 		$items = $this->Item_model->show_items(25,0);
 		
-		$data['items'] = $items;
-		
-		$this->load->view('sales/shopping_cart_item',$data);
+		header('Content-Type: application/json');
+		echo json_encode($items);
 	}
 	
 	public function shopping_cart_view_purchase()
@@ -92,7 +92,8 @@ class Item extends CI_Controller {
 		$data['pages'] = max(1, ceil($items / 25));
 		$data['page'] = $page;
 		
-		$this->load->view('purchasing/shopping_cart_item_view',$data);
+		header('Content-Type: application/json');
+		echo json_encode($data);
 	}
 	
 	public function view_item_table()
@@ -105,5 +106,35 @@ class Item extends CI_Controller {
 		
 		$this->load->model('Item_model');
 		$data['pages'] = ceil($this->Item_model->count_page() / 25);
+	}
+	
+	public function item_edit_form()
+	{
+		$item_id		= $this->input->get('id');
+		$this->load->model('Item_model');
+		$data	= $this->Item_model->select_by_id($item_id);
+		
+		header('Content-Type: application/json');
+		echo json_encode($data);
+	}
+	
+	public function add_item_to_cart()
+	{
+		$item_id	= $this->input->post('price_list_id');
+		$this->load->model('Item_model');
+		$item = $this->Item_model->select_by_price_list_id($item_id);
+		
+		header('Content-Type: application/json');
+		echo json_encode($item);
+	}
+	
+	public function add_item_to_cart_as_bonus()
+	{
+		$item_id	= $this->input->post('price_list_id');
+		$this->load->model('Item_model');
+		$item = $this->Item_model->select_by_price_list_id($item_id);
+		
+		header('Content-Type: application/json');
+		echo json_encode($item);
 	}
 }

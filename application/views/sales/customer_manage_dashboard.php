@@ -79,8 +79,8 @@
 </div>
 
 <div class='alert_wrapper' id='add_customer_wrapper'>
+	<button class='alert_close_button'>&times</button>
 	<div class='alert_box_default'>
-		<button class='alert_close_button'>&times</button>
 		<form action='<?= site_url('Customer/insert_new_customer/') ?>' method='POST'>
 		<h2 style='font-family:bebasneue'>Add customer form</h2>
 		<hr>
@@ -151,6 +151,7 @@
 </div>
 
 <div class='alert_wrapper' id='edit_customer_wrapper'>
+	<button class='alert_close_button'>&times</button>
 	<div class='alert_box_default'>
 	</div>
 </div>

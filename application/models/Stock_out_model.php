@@ -2,7 +2,7 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 
 class Stock_out_model extends CI_Model {
-	private $table_stock_in = 'stock_in';
+	private $table_stock_out = 'stock_out';
 		
 		public $id;
 		public $in_id;
@@ -89,10 +89,41 @@ class Stock_out_model extends CI_Model {
 			foreach($delivery_order_array as $delivery_order){
 				$item_id				= $delivery_order['item_id'];
 				$quantity				= $delivery_order['quantity'];
-				$customer_id			= $delivery_order['customer_id'];
 				$code_delivery_order_id	= $delivery_order['code_delivery_order_id'];
+				$customer_id			= $delivery_order['customer_id'];
 				
-				$this->Stock_in_model->search_by_item_id($item_id, $quantity);
+				$stock_in		= $this->Stock_in_model->search_by_item_id($item_id);
+				$residue		= $stock_in->residue;
+				$in_id			= $stock_in->id;
+				while($quantity > 0){
+					if($residue		> $quantity){
+						$current_residue	= $residue - $quantity;
+						$this->Stock_in_model->update_stock_in($in_id, $current_residue);
+						$this->Stock_out_model->insert_stock_out_delivery_order($in_id, $quantity, $code_delivery_order_id, $customer_id); 
+						break;
+					} else {
+						$current_residue		= $quantity - $residue;
+						$this->Stock_in_model->update_stock_in($in_id, 0);
+						$this->Stock_out_model->insert_stock_out_delivery_order($in_id, $current_residue, $code_delivery_order_id, $customer_id);
+						
+						$quantity = $quantity - $residue;
+					}
+				}
 			}
+		}
+		
+		public function insert_stock_out_delivery_order($in_id, $quantity, $code_delivery_order_id, $customer_id)
+		{
+			$db_item		= array(
+				'in_id' => $in_id,
+				'quantity' => $quantity,
+				'code_delivery_order_id' => $code_delivery_order_id,
+				'customer_id' => $customer_id,
+				'supplier_id' => null,
+				'code_event_id' => null,
+				'code_purchase_return_id' => null
+			);
+				
+			$this->db->insert($this->table_stock_out, $db_item);
 		}
 }

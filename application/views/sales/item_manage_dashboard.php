@@ -45,8 +45,8 @@
 </div>
 
 <div class='alert_wrapper' id='add_item_wrapper'>
+	<button class='alert_close_button'>&times</button>
 	<div class='alert_box_default'>
-		<button class='alert_close_button'>&times</button>
 		<form action='<?= site_url('Item/insert_new_item/') ?>' method='POST'>
 		<h2 style='font-family:bebasneue'>Add item form</h2>
 		<hr>
@@ -90,7 +90,34 @@
 </div>
 
 <div class='alert_wrapper' id='edit_item_wrapper'>
+	<button type='button' class='alert_close_button'>&times </button>
 	<div class='alert_box_default'>
+		<form action='<?= site_url('Item/update_item') ?>' method='POST'>
+			<h3 style='font-family:bebasneue'>Edit item</h3>
+			<hr>
+			<input type='hidden' id='item_id' name='id'>
+			<label>Reference</label>
+			<input type='text' class='form-control' id='reference_edit' name='reference' required>
+			
+			<label>Description</label>
+			<textarea class='form-control' id='description_edit' name='name' required></textarea>
+			
+			<label>Price list</label>
+			<input type='number' class='form-control' id='price_list_edit' name='price_list' min='1'>
+			
+			<label>Type</label>
+			<select class='form-control' id='item_type' name='type' required>
+<?php
+	foreach($classes as $class){
+?>
+				<option value='<?= $class->id ?>'><?= $class->name ?></option>
+<?php
+	}
+?>
+			</select>
+			<br>
+			<button class='button button_default_dark'><i class='fa fa-long-arrow-right'></i></button>
+		</form>
 	</div>
 </div>
 
@@ -99,26 +126,36 @@
 		$('#add_item_wrapper').fadeIn();
 	});
 	
-	function open_edit_form(n){
+	function open_edit_form(item_id){
 		$.ajax({
-			url:'<?= site_url('Item/update_item_view') ?>',
-			type:'POST',
+			url:'<?= site_url('Item/item_edit_form') ?>',
+			type:'GET',
 			data:{
-				item_id: n
+				id: item_id
 			},
 			beforeSend:function(){
 				$('button').attr('disabled',true);
 			},
 			success:function(response){
 				$('button').attr('disabled',false);
-				$('#edit_item_wrapper .alert_box_default').html(response);
+				$('#item_id').val(item_id);
+				var reference	= response.reference;
+				var name		= response.name;
+				var price_list	= response.price_list;
+				var type		= response.type;
+				
+				$('#reference_edit').val(reference);
+				$('#description_edit').val(name);
+				$('#price_list_edit').val(price_list);
+				$('#item_type').val(type);
+				
 				$('#edit_item_wrapper').fadeIn();
 			}
 		})
 	};
 	
 	$('.alert_close_button').click(function(){
-		$(this).parents('.alert_wrapper').fadeOut();
+		$(this).parent().fadeOut();
 	});
 	
 	function update_view(){

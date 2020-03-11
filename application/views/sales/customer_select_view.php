@@ -1,8 +1,3 @@
-	<style>
-		#page{
-			width:100px;
-		}
-	</style>
 	<table class='table table-bordered'>
 		<tr>
 			<th>Customer name</th>
@@ -56,7 +51,7 @@
 	}
 ?>
 	</table>
-	<select class='form-control' id='page' onchange='update_view()'>
+	<select class='form-control' id='customer_page' onchange='update_view()' style='width:100px'>
 <?php
 	for($i = 1; $i <= $pages; $i++){
 ?>

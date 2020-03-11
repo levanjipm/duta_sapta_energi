@@ -8,8 +8,6 @@ class Area_model extends CI_Model {
 		public $name;
 		public $major_id;
 		
-		public $complete_address;
-		
 		public function __construct()
 		{
 			parent::__construct();
@@ -67,14 +65,14 @@ class Area_model extends CI_Model {
 			
 		}
 		
-		public function show_limited($limit, $offset, $term)
+		public function show_limited($offset = 0, $term = '', $limit = 25)
 		{
-			$query 		= $this->db->get($this->table_area, $limit, $offset);
+			$query	= $this->db->query("SELECT asdf.customer, `customer_area`.* FROM `customer_area` LEFT JOIN 
+						(SELECT COUNT(customer.id) as customer, area_id FROM customer GROUP BY customer.area_id) AS asdf 
+						ON asdf.area_id = customer_area.id LIMIT $limit OFFSET $offset");
 			$areas	 	= $query->result();
 			
-			$items = $this->map_list($areas);
-			
-			return $items;
+			return $areas;
 			
 		}
 		
@@ -93,35 +91,23 @@ class Area_model extends CI_Model {
 			}
 		}
 		
-		public function show_by_id($id)
+		public function update_from_post($area_id, $area_name)
 		{
-			// $where['id'] = $id;
-			// $this->db->where($where);
-			// $query = $this->db->get($this->table_client, 1);
-			// $item = $query->row();
+			$this->db->where('id !=', $area_id);
+			$this->db->where('name', $area_name);
+			$query		= $this->db->get($this->table_area);
+			$num_rows	= $query->num_rows();
 			
-			// return ($item !== null) ? $this->get_stub_from_db($item) : null;
+			if($num_rows	== 0){
+				$this->db->set('name', $area_name);
+				$this->db->where('id', $area_id);
+				$this->db->update($this->table_area);
+			}
 		}
 		
-		public function update_from_post($id)
+		public function delete_area($area_id)
 		{
-			// $where['id']			= $id;
-			// $this->name				= $this->input->post('client_name');
-			// $this->address			= $this->input->post('client_address');
-			// $this->city				= $this->input->post('client_city');
-			// $this->pic				= $this->input->post('client_pic');
-			// $this->phone			= $this->input->post('client_phone');
-			// $this->npwp				= $this->input->post('client_npwp');
-			
-			// $db_item = $this->get_db_from_stub();
-			
-			// $this->db->where($where);
-			// // $this->db->set('name', $this->name);
-			// // $this->db->set('address', $this->address);
-			// // $this->db->set('city', $this->city);
-			// // $this->db->set('pic', $this->pic);
-			// // $this->db->set('phone', $this->phone);
-			// // $this->db->set('npwp', $this->npwp);\
-			// $this->db->update($this->table_client, $db_item);
+			$this->db->where('id', $area_id);
+			$this->db->delete($this->table_area);
 		}
 }

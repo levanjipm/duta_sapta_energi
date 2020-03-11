@@ -37,4 +37,16 @@ class Item_class extends CI_Controller {
 		
 		redirect(site_url('Item_class'));
 	}
+	
+	public function update_item_class()
+	{
+		$id				= $this->input->post('id');
+		$name			= $this->input->post('name');
+		$description	= $this->input->post('description');
+		
+		$this->load->model('Item_class_model');
+		$this->Item_class_model->update_from_post($id, $name, $description);
+		
+		redirect(site_url('Item_class'));
+	}
 }

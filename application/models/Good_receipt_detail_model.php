@@ -67,13 +67,15 @@ class Good_receipt_detail_model extends CI_Model {
 			foreach($quantity_array as $quantity){
 				$purchase_id		= key($quantity_array);
 				$price				= $price_array[$purchase_id];
-				$batch[] = array(
-					'id' => '',
-					'purchase_order_id' => $purchase_id,
-					'quantity' => $quantity,
-					'code_good_receipt_id' => $id,
-					'billed_price' => $price
-				);
+				if($quantity > 0){
+					$batch[] = array(
+						'id' => '',
+						'purchase_order_id' => $purchase_id,
+						'quantity' => $quantity,
+						'code_good_receipt_id' => $id,
+						'billed_price' => $price
+					);
+				}
 				
 				next($quantity_array);
 			}
@@ -110,17 +112,83 @@ class Good_receipt_detail_model extends CI_Model {
 				$supplier_id				= $result->supplier_id;
 				$good_receipt_id			= $result->id;
 				$net_price					= $result->net_price;
-				$batch[] = array(
-					'id' => '',
-					'quantity' => $quantity,
-					'residue' => $quantity,
-					'good_receipt_id' => $good_receipt_id,
-					'supplier_id' => $supplier_id,
-					'item_id' => $item_id,
-					'price' => $net_price,
-				);
+				
+				if($quantity > 0){
+					$batch[] = array(
+						'id' => '',
+						'quantity' => $quantity,
+						'residue' => $quantity,
+						'good_receipt_id' => $good_receipt_id,
+						'supplier_id' => $supplier_id,
+						'item_id' => $item_id,
+						'price' => $net_price,
+					);
+				}
 			}
 			
 			return $batch;
+		}
+		
+		public function select_by_code_good_receipt_id_array($documents)
+		{
+			$array		= array();
+			foreach($documents as $document){
+				$code_good_receipt_id	= key($documents);
+				array_push($array, $code_good_receipt_id);
+				
+				next($documents);
+			}
+				
+			$this->db->select('good_receipt.id, item.reference, item.name, good_receipt.quantity, purchase_order.net_price, good_receipt.code_good_receipt_id');
+			$this->db->from('good_receipt');
+			$this->db->join('purchase_order', 'good_receipt.purchase_order_id = purchase_order.id');
+			$this->db->join('item', 'purchase_order.item_id = item.id');
+			$this->db->where_in('good_receipt.code_good_receipt_id', $array);
+			
+			$query		= $this->db->get();
+			$item		= $query->result();
+			
+			return $item;
+		}
+		
+		public function show_by_code_good_receipt_id($code_good_receipt_id)
+		{
+			$this->db->select('good_receipt.id, good_receipt.quantity, item.name, item.reference, good_receipt.purchase_order_id, purchase_order.received as received');
+			$this->db->from('good_receipt');
+			$this->db->join('purchase_order', 'good_receipt.purchase_order_id = purchase_order.id');
+			$this->db->join('item', 'purchase_order.item_id = item.id');
+			$this->db->where('good_receipt.code_good_receipt_id', $code_good_receipt_id);
+			$query		= $this->db->get();
+			$item		= $query->result();
+			
+			return $item;
+		}
+		
+		public function update_price($price_array)
+		{
+			foreach($price_array as $price){
+				$id		= key($price_array);
+				$batch[] = array(
+					'id' => $id,
+					'billed_price' => $price
+				);
+				
+				next($price_array);
+			}
+			
+			$this->db->update_batch($this->table_good_receipt,$batch, 'id'); 
+		}
+		
+		public function select_by_code_good_receipt_id_invoice_id($invoice_id)
+		{
+			$this->db->select('good_receipt.id, good_receipt.quantity, item.name, item.reference, good_receipt.purchase_order_id, purchase_order.received as received, good_receipt.billed_price, good_receipt.code_good_receipt_id');
+			$this->db->from('good_receipt');
+			$this->db->join('code_good_receipt', 'good_receipt.code_good_receipt_id = code_good_receipt.id');
+			$this->db->join('purchase_order', 'good_receipt.purchase_order_id = purchase_order.id');
+			$this->db->join('item', 'purchase_order.item_id = item.id');
+			$this->db->where('code_good_receipt.invoice_id', $invoice_id);
+			$query		= $this->db->get();
+			$item		= $query->result();
+			return $item;
 		}
 }

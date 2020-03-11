@@ -7,6 +7,7 @@
 <?php
 	if(!empty($good_receipts)){
 ?>
+	<h2 style='font-family:bebasneue'>Confirm good receipt</h2>
 	<table class='table table-bordered'>
 		<tr>
 			<th>Name</th>
@@ -32,6 +33,7 @@
 	</table>
 	
 	<div class='alert_wrapper' id='good_receipt_validation_wrapper'>
+		<button type='button' class='alert_close_button'>&times </button>
 		<div class='alert_box_default'>
 			<h3 style='font-family:bebasneue'>Confirm good receipt</h3>
 			<hr>
@@ -61,6 +63,8 @@
 			<form action='<?= site_url('Good_receipt/confirm') ?>' method='POST'>
 				<input type='hidden' id='good_receipt_id' name='id'>
 				<button class='button button_default_dark'>Submit</button>
+				
+				<button type='button' class='button button_danger_dark' onclick='delete_good_receipt()'>Delete</button>
 			</form>
 		</div>
 	</div>
@@ -75,30 +79,54 @@
 				},
 				dataType:'json',
 				success:function(response){
-					var date	= response[0].date;
-					var document = response[0].name;
-					var received_date = response[0].received_date;
+					var detail_data		= response.detail;
+					var general_data 	= response.general;
+					console.log(general_data);
+					var date			= general_data[0].date;
+					var document 		= general_data[0].name;
+					var received_date 	= general_data[0].received_date;
 					
 					$('#good_receipt_date').html(date);
 					$('#good_receipt_document').html(document);
 					$('#good_receipt_received_date').html(received_date);
 					
-					var supplier_name		= response[0].supplier_name;
-					var supplier_address	= response[0].address;
-					var supplier_city		= response[0].city;
+					var supplier_name		= general_data[0].supplier_name;
+					var supplier_address	= general_data[0].address;
+					var supplier_city		= general_data[0].city;
 					
 					$('#supplier_name_p').html(supplier_name);
 					$('#supplier_address_p').html(supplier_address);
 					$('#supplier_city_p').html(supplier_city);
 					
 					$('#good_receipt_table').html('');
-					$.each(response, function(index, value){
-						$('#good_receipt_table').append("<tr><td>" + value.reference + "</td><td>" + value.name + "</td><td>" + numeral(value.quantity).format('0,0.00') + "</td></tr>");
+					$.each(detail_data, function(index, value){
+						$('#good_receipt_table').append("<tr><td>" + value.reference + "</td><td>" + value.name + "</td><td>" + numeral(value.quantity).format('0,0') + "</td></tr>");
 					});
 					$('#good_receipt_validation_wrapper').fadeIn();
 				}
 			});
 		};
+		
+		function delete_good_receipt(){
+			var good_receipt_id	= $('#good_receipt_id').val();
+			$.ajax({
+				url:'<?= site_url('Good_receipt/delete') ?>',
+				data:{
+					id:$('#good_receipt_id').val()
+				},
+				type:'POST',
+				beforeSend:function(){
+					$('button').attr('disabled', true);
+				},
+				success:function(){
+					location.reload();
+				}
+			});
+		}
+		
+		$('.alert_close_button').click(function(){
+			$(this).parent().fadeOut();
+		});
 	</script>
 <?php
 	}

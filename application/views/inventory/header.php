@@ -6,12 +6,15 @@
 </div>
 <div class='sidenav_bar'>
 	<h3 style='font-family:museo'>Main</h3>
-	<a href='<?= site_url('Delivery_order') ?>'><button><p>Delivery order</p></button></a>
-	<a href='<?= site_url('Good_receipt') ?>'><button class='container_button'><p style='font-family:museo'>Good receipt</p></button></a>
-	<button class='container_button'><p style='font-family:museo'>Sales Order</p></button>
+	<button class='container_button'><p>Delivery order</p></button>
 	<div class='container_bar'>
-		<a href='<?= site_url('Sales_order') ?>'><p>Create sales order</p></a>
-		<a href='<?= site_url('Sales_order/track_sales_order') ?>'><p>Track sales order</p></a>	
+		<a href='<?= site_url('Delivery_order') ?>'><p>Create</p></a>	
+		<a href='<?= site_url('Delivery_order/archive') ?>'><p>Archive</p></a>	
+	</div>
+	<button class='container_button'><p style='font-family:museo'>Good receipt</p></button>
+	<div class='container_bar'>
+		<a href='<?= site_url('Good_receipt') ?>'><p>Create</p></a>	
+		<a href='<?= site_url('Good_receipt/archive') ?>'><p>Archive</p></a>	
 	</div>
 	<a href='<?= site_url() ?>'><button><p>Check stock</p></button></a>
 </div>

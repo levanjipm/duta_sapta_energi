@@ -1,4 +1,3 @@
-	<button class='alert_close_button'>&times</button>
 	<form action='<?= site_url('Customer/update_customer/') ?>' method='POST'>
 		<h2 style='font-family:bebasneue'>Edit customer form</h2>
 		<hr>
