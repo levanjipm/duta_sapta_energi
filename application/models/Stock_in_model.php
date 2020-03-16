@@ -136,8 +136,8 @@ class Stock_in_model extends CI_Model {
 		{
 			$final_stock_array		= array();
 			foreach($stock_array as $stock){
-				$item_id				= $delivery_order['item_id'];
-				$quantity				= $delivery_order['quantity'];
+				$item_id				= $stock['item_id'];
+				$quantity				= $stock['quantity'];
 				if(array_key_exists($item_id, $final_stock_array)){
 					$final_quantity	= $final_stock_array[$item_id] + $quantity;
 					$final_stock_array[$item_id] = $final_quantity;

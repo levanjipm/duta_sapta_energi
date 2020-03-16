@@ -132,4 +132,22 @@ class Invoice_model extends CI_Model {
 			
 			return $result->value;
 		}
+		
+		public function view_incompleted_transaction($customer_id)
+		{
+			$this->db->select('invoice.*');
+			$this->db->from('invoice');
+			$this->db->join('code_delivery_order', 'code_delivery_order.invoice_id = invoice.id');
+			$this->db->join('delivery_order', 'delivery_order.code_delivery_order_id = code_delivery_order.id', 'left');
+			$this->db->join('sales_order', 'delivery_order.sales_order_id = sales_order.id');
+			$this->db->join('code_sales_order', 'code_sales_order.id = sales_order.code_sales_order_id');
+			$this->db->where('code_sales_order.customer_id', $customer_id);
+			$this->db->where('invoice.is_done', 0);
+			$this->db->order_by('invoice.date');
+			
+			$query	= $this->db->get();
+			$result	= $query->result();
+			
+			return $result;
+		}
 }

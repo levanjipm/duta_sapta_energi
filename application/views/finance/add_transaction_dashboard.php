@@ -14,13 +14,13 @@
 	</select>
 	
 	<label>Date</label>
-	<input type='date' class='form-control' name='date' required min='2020-01-01'>
+	<input type='date' class='form-control' name='date' required min='2020-01-01' id='date'>
 	
 	<label>Value</label>
-	<input type='number' class='form-control' required min='1'>
+	<input type='number' class='form-control' required min='1' name='value' id='value'>
 	
 	<label>Transaction</label>
-	<select class='form-control' name='transaction'>
+	<select class='form-control' name='transaction' id='transaction'>
 		<option value='1'>Credit</option>
 		<option value='2'>Debit</option>
 	</select>
@@ -64,6 +64,24 @@
 				</select>
 			</div>
 		</div>
+	</div>
+</div>
+
+<div class='alert_wrapper' id='transaction_wrapper'>
+	<button type='button' class='alert_close_button' onclick="$(this).parent().fadeOut()">&times </button>
+	<div class='alert_box_default'>
+		<h2 style='font-family:bebasneue'>Add transaction</h2>
+		<hr>
+		<label>Transaction</label>
+		<p style='font-family:museo' id='transaction_date_p'></p>
+		<p style='font-family:museo' id='bank_name_p'></p>
+		<p style='font-family:museo' id='transaction_value_p'></p>
+		<p style='font-family:museo' id='transaction_type_p'></p>
+		
+		<label>Opponent</label>
+		<p style='font-family:museo' id='opponent_name_p'></p>
+		
+		<button type='button' class='button button_default_dark' onclick="$('#transaction_form').submit()"><i class='fa fa-long-arrow-right'></i></button>
 	</div>
 </div>
 <script>
@@ -127,11 +145,22 @@
 	}
 	
 	$('#submit_button').click(function(){
-		$if(!$("#transaction_form").valid()){
+		if(!$("#transaction_form").valid()){
 			return false;
 		} else {
 			var bank_name		= $('#account option:selected').html();
-			var opponent_type	= $('#
+			var opponent_name	= $('#opponent_selector_view').html();
+			var date			= $('#date').val();
+			var value			= $('#value').val();
+			var transaction		= $('#transaction option:selected').html();
+			
+			$('#transaction_date_p').html(date);
+			$('#bank_name_p').html(bank_name);
+			$('#opponent_name_p').html(opponent_name);
+			$('#transaction_type_p').html(transaction);
+			$('#transaction_value_p').html('Rp. ' + numeral(value).format('0,0.00'));
+			
+			$('#transaction_wrapper').fadeIn();
 		}
 	});
 </script>

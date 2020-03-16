@@ -17,9 +17,12 @@ class Internal_bank_account_model extends CI_Model {
 		
 		public function show_all($offset = 0, $term = '', $limit = 25)
 		{
-			$this->db->like('name', $term, 'both');
-			$this->db->or_like('number', $term, 'both');
-			$this->db->limit($limit, $offset);
+			if($term != ''){
+				$this->db->like('name', $term, 'both');
+				$this->db->or_like('number', $term, 'both');
+				$this->db->limit($limit, $offset);
+			}
+			$this->db->order_by('name', 'asc');
 			$query 		= $this->db->get($this->table_account);
 			$accounts 	= $query->result();
 			

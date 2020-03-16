@@ -42,4 +42,18 @@ class Finance extends CI_Controller {
 		header('Content-Type: application/json');
 		echo json_encode($data);
 	}
+	
+	public function input()
+	{
+		$account		= $this->input->post('account');
+		$date			= $this->input->post('date');
+		$value			= $this->input->post('value');
+		$transaction	= $this->input->post('transaction');
+		$type			= $this->input->post('type');
+		$opponent_id	= $this->input->post('id');
+		$this->load->model('Bank_model');
+		$this->Bank_model->input($date, $value, $transaction, $type, $opponent_id, $account);
+		
+		redirect(site_url('Bank/transaction'));
+	}
 }

@@ -110,15 +110,15 @@ class Delivery_order_model extends CI_Model {
 		
 		public function show_unconfirmed_delivery_order($offset = 0, $filter = '', $limit = 25)
 		{
-			$this->db->select('code_delivery_order.*, customer.name as customer_name, customer.address, customer.city');
+			$this->db->select('DISTINCT(code_delivery_order.id) as id, code_delivery_order.date, code_delivery_order.name, code_delivery_order.is_confirm, code_delivery_order.is_sent, code_delivery_order.guid, code_delivery_order.invoice_id, customer.name as customer_name, customer.address, customer.city');
 			$this->db->from('code_delivery_order');
-			$this->db->join('delivery_order', 'delivery_order.code_delivery_order_id = code_delivery_order.id', 'inner');
+			$this->db->join('delivery_order', 'delivery_order.code_delivery_order_id = code_delivery_order.id', 'left');
 			$this->db->join('sales_order', 'delivery_order.sales_order_id = sales_order.id');
 			$this->db->join('code_sales_order', 'code_sales_order.id = sales_order.code_sales_order_id', 'inner');
 			$this->db->join('customer', 'code_sales_order.customer_id = customer.id');
-			$this->db->where('code_delivery_order.is_confirm =',0);
-			$this->db->where('code_delivery_order.is_delete =',0);
-			$this->db->where('code_delivery_order.is_sent =',0);
+			$this->db->where('code_delivery_order.is_confirm',0);
+			$this->db->where('code_delivery_order.is_delete',0);
+			$this->db->where('code_delivery_order.is_sent',0);
 			$this->db->limit($limit, $offset);
 			
 			$query 		= $this->db->get();
@@ -131,7 +131,7 @@ class Delivery_order_model extends CI_Model {
 		
 		public function show_unsent_delivery_order($offset = 0, $filter = '', $limit = 25)
 		{
-			$this->db->select('code_delivery_order.*, customer.name as customer_name, customer.address, customer.city');
+			$this->db->select('DISTINCT(code_delivery_order.id) as id, code_delivery_order.date, code_delivery_order.name, code_delivery_order.is_confirm, code_delivery_order.is_sent, code_delivery_order.guid, code_delivery_order.invoice_id, customer.name as customer_name, customer.address, customer.city');
 			$this->db->from('code_delivery_order');
 			$this->db->join('delivery_order', 'delivery_order.code_delivery_order_id = code_delivery_order.id', 'inner');
 			$this->db->join('sales_order', 'delivery_order.sales_order_id = sales_order.id');

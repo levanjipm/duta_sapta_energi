@@ -105,12 +105,14 @@ class Delivery_order_detail_model extends CI_Model {
 			foreach($sales_order_array as $sales_order){
 				$key			= key($sales_order_array);
 				$quantity		= $quantity_array[$key];
-				$batch[] = array(
-					'id' => '',
-					'sales_order_id' => $sales_order,
-					'code_delivery_order_id' => $id,
-					'quantity' => $quantity,
-				);
+				if($quantity > 0){
+					$batch[] = array(
+						'id' => '',
+						'sales_order_id' => $sales_order,
+						'code_delivery_order_id' => $id,
+						'quantity' => $quantity,
+					);
+				}
 				
 				next($sales_order_array);
 			}

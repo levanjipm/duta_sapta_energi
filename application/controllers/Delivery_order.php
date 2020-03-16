@@ -133,7 +133,6 @@ class Delivery_order extends CI_Controller {
 		$delivery_order_id		= $this->input->post('id');
 		$this->load->model('Delivery_order_detail_model');
 		$delivery_order_array = $this->Delivery_order_detail_model->get_batch_by_code_delivery_order_id($delivery_order_id);
-
 		$this->load->model('Stock_in_model');
 		$result	= $this->Stock_in_model->check_stock($delivery_order_array);
 		if($result){
