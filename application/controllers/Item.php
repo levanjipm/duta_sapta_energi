@@ -127,14 +127,4 @@ class Item extends CI_Controller {
 		header('Content-Type: application/json');
 		echo json_encode($item);
 	}
-	
-	public function add_item_to_cart_as_bonus()
-	{
-		$item_id	= $this->input->post('price_list_id');
-		$this->load->model('Item_model');
-		$item = $this->Item_model->select_by_price_list_id($item_id);
-		
-		header('Content-Type: application/json');
-		echo json_encode($item);
-	}
 }

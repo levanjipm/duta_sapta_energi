@@ -31,13 +31,16 @@ class Delivery_order extends CI_Controller {
 		
 		$this->load->model('Sales_order_model');
 		$data['sales_orders'] = $this->Sales_order_model->show_uncompleted_sales_order();
-		$customer_ids = array();
-		foreach($data['sales_orders'] as $sales_order){
-			array_push($customer_ids, $sales_order->customer_id);
-		}
 		
-		$this->load->model('Customer_model');
-		$data['customers'] = $this->Customer_model->show_all_by_id($customer_ids);
+		if(!empty($data['sales_order'])){
+			$customer_ids = array();
+			foreach($data['sales_orders'] as $sales_order){
+				array_push($customer_ids, $sales_order->customer_id);
+			}
+			
+			$this->load->model('Customer_model');
+			$data['customers'] = $this->Customer_model->show_all_by_id($customer_ids);
+		}
 		
 		$this->load->view('inventory/delivery_order_create_dashboard', $data);
 	}
@@ -47,7 +50,7 @@ class Delivery_order extends CI_Controller {
 		$id		= $this->input->get('sales_order_id');
 		$this->load->model('Sales_order_model');
 		$result	= $this->Sales_order_model->show_by_id($id);
-		$data['sales_order'] = $result[0];
+		$data['sales_order'] = $result;
 		
 		$this->load->model('Sales_order_detail_model');
 		$result	= $this->Sales_order_detail_model->show_by_code_sales_order_id($id);
@@ -127,14 +130,21 @@ class Delivery_order extends CI_Controller {
 	
 	public function send()
 	{
-		$delivery_order_array[]	= array(
-			'item_id' => '1',				
-			'quantity' => '25',				
-			'code_delivery_order_id' => '5',	
-			'customer_id' => 1
-		);		
-			
-		$this->load->model('Stock_out_model');
-		$this->Stock_out_model->send_delivery_order($delivery_order_array);
+		$delivery_order_id		= $this->input->post('id');
+		$this->load->model('Delivery_order_detail_model');
+		$delivery_order_array = $this->Delivery_order_detail_model->get_batch_by_code_delivery_order_id($delivery_order_id);
+
+		$this->load->model('Stock_in_model');
+		$result	= $this->Stock_in_model->check_stock($delivery_order_array);
+		if($result){
+			$this->load->model('Delivery_order_model');
+			$check = $this->Delivery_order_model->send($delivery_order_id);
+			if($check){			
+				$this->load->model('Stock_out_model');
+				$this->Stock_out_model->send_delivery_order($delivery_order_array);
+			}
+		}
+		
+		redirect(site_url('Delivery_order'));
 	}
 }

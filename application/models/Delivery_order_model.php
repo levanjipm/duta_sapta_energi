@@ -161,21 +161,23 @@ class Delivery_order_model extends CI_Model {
 			
 			$item++;
 			
-			$name = 'DO-DSE-' . date('Y', strtotime($date)) . str_pad($item, 3, '0', STR_PAD_LEFT) . $taxing;
+			$name = 'DO-DSE-' . date('Ym', strtotime($date)) . '-' . str_pad($item, 3, '0', STR_PAD_LEFT) . $taxing;
 			return $name;
 		}
 		
 		public function show_by_id($id)
 		{
-			$this->db->where('id =',$id);
-			$this->db->from($this->table_sales_order);
+			$this->db->select('code_delivery_order.*, customer.name as customer_name, customer.address, customer.city, code_sales_order.name as sales_order_name');
+			$this->db->from('code_delivery_order');
+			$this->db->join('delivery_order', 'delivery_order.code_delivery_order_id = code_delivery_order.id', 'inner');
+			$this->db->join('sales_order', 'delivery_order.sales_order_id = sales_order.id', 'inner');
+			$this->db->join('code_sales_order', 'sales_order.code_sales_order_id = code_sales_order.id');
+			$this->db->join('customer', 'code_sales_order.customer_id = customer.id');
+			$this->db->where('code_delivery_order.id',$id);
 			$query 		= $this->db->get();
-			
 			$items 		= $query->result();
 			
-			$result 	= $this->map_list($items);
-			
-			return $result;
+			return $items;
 		}
 		
 		public function check_guid($guid)
@@ -276,6 +278,28 @@ class Delivery_order_model extends CI_Model {
 			$result		= $query->num_rows();
 			
 			return $result;
+		}
+		
+		public function send($delivery_order_id)
+		{
+			$this->db->set('is_sent', 1);
+			$this->db->where('id', $delivery_order_id);
+			$this->db->where('is_sent', 0);
+			$this->db->update($this->table_delivery_order);
+			
+			if($this->db->affected_rows() > 0){
+				return TRUE;
+			} else {
+				return FALSE;
+			}
+		}
+		
+		public function set_invoice_id($delivery_order_id, $invoice_id)
+		{
+			$this->db->set('invoice_id', $invoice_id);
+			$this->db->where('invoice_id', NULL);
+			$this->db->where('id', $delivery_order_id);
+			$this->db->update($this->table_delivery_order);
 		}
 		
 		public function create_guid()

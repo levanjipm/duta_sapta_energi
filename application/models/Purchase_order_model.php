@@ -187,24 +187,13 @@ class Purchase_order_model extends CI_Model {
 			$query = $this->db->get();
 			$items	 	= $query->result();
 			
-			$result 	= $this->map_list_with_supplier($items);
+			return $items;
 			
-			return $result;
-			
-		}
-		
-		public function remove_bonus_item_from_cart($item_id)
-		{
-			$cart_products = $this->session->userdata('purchase_cart_bonus_products');
-			$key = array_search($item_id, $cart_products);
-			unset($cart_products[$key]);
-			
-			$this->session->set_userdata('purchase_cart_bonus_products', $cart_products);
 		}
 		
 		public function name_generator($date)
 		{
-			$name = 'PO.DSE-' . date('Ym', strtotime($date)) . rand(0,9) . rand(0,9) . rand(0,9) . rand(0,9);
+			$name = 'PO.DSE-' . date('Ym', strtotime($date)) . '-' . rand(0,9) . rand(0,9) . rand(0,9) . rand(0,9);
 			$this->db->where('name =',$name);
 			$query = $this->db->get($this->table_purchase_order);
 			$item = $query->num_rows();
@@ -220,16 +209,24 @@ class Purchase_order_model extends CI_Model {
 		{
 			$guid			= $this->input->post('guid');
 			$date			= $this->input->post('date');
+			$status			= $this->input->post('status');
+			if($status		== 1){
+				$date_send	= $this->input->post('date_send_request');
+			} else {
+				$date_send 	= null;
+			}
+			
 			$this->load->model('Purchase_order_model');
 			$check_guid = $this->Purchase_order_model->check_guid($guid);
 			if($check_guid){
-				$this->name				= $this->Purchase_order_model->name_generator($date);
-				$this->guid				= $guid;
-				$this->is_delete		= '0';
-				$this->date				= $this->input->post('date');
-				$this->supplier_id		= $this->input->post('supplier');
-				$this->taxing			= $this->input->post('taxing');
-				$this->created_by		= $this->session->userdata('user_id');
+				$this->name					= $this->Purchase_order_model->name_generator($date);
+				$this->guid					= $guid;
+				$this->is_delete			= '0';
+				$this->date					= $this->input->post('date');
+				$this->supplier_id			= $this->input->post('supplier');
+				$this->taxing				= $this->input->post('taxing');
+				$this->created_by			= $this->session->userdata('user_id');
+				$this->date_send_request	= $date_send;
 				
 				if($this->input->post('dropship_address') != ''){
 					$this->dropship_address			= $this->input->post('dropship_address');
@@ -239,9 +236,7 @@ class Purchase_order_model extends CI_Model {
 				}
 				
 				$db_item 				= $this->get_db_from_stub($this);
-				
 				$db_result 				= $this->db->insert($this->table_purchase_order, $db_item);
-				
 				$insert_id				= $this->db->insert_id();
 				
 				return $insert_id;
@@ -259,9 +254,7 @@ class Purchase_order_model extends CI_Model {
 			$query 		= $this->db->get();
 			$items	 	= $query->result();
 			
-			$result 	= $this->map_list($items);
-			
-			return $result;
+			return $items;
 			
 		}
 		
@@ -273,11 +266,9 @@ class Purchase_order_model extends CI_Model {
 			$this->db->where('code_purchase_order.id =', $id);
 			
 			$query 		= $this->db->get();
-			$items	 	= $query->result();
+			$items	 	= $query->row();
 			
-			$result 	= $this->map_list_with_supplier($items);
-			
-			return $result;
+			return $items;
 		}
 		
 		public function confirm_purchase_order($id)

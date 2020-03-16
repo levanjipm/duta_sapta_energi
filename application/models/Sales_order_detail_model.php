@@ -115,14 +115,27 @@ class Sales_order_detail_model extends CI_Model {
 				next($discount_array);
 			}
 			
+			if(!empty($this->input->post('bonus_quantity'))){
+				$bonus_array		= $this->input->post('bonus_quantity');
+				foreach($bonus_array as $bonus){
+					$batch[] = array(
+						'id' => '',
+						'price_list_id' => key($bonus_array),
+						'discount' => '100',
+						'quantity' => $bonus,
+						'code_sales_order_id' => $id
+					);
+					
+					next($bonus_array);
+				}
+			}
+			
 			return $batch;
 		}
 		
 		public function insert_from_post($id)
 		{
-			$code_sales_order_id	= $id;
-			$this->load->model('Sales_order_detail_model');
-			
+			$code_sales_order_id	= $id;			
 			$batch 					= $this->Sales_order_detail_model->create_batch($id);
 			$this->db->insert_batch($this->table_sales_order, $batch);
 		}
@@ -133,14 +146,12 @@ class Sales_order_detail_model extends CI_Model {
 			$this->db->from('sales_order');
 			$this->db->join('price_list', 'price_list.id = sales_order.price_list_id');
 			$this->db->join('item', 'price_list.item_id = item.id');
-			$this->db->where('sales_order.code_sales_order_id =',$id);
+			$this->db->where('sales_order.code_sales_order_id',$id);
 			$query 	= $this->db->get();
 			
 			$items	= $query->result();
 			
-			$result	= $this->map_list_item_price_list($items);
-			
-			return $result;
+			return $items;
 		}
 		
 		public function show_by_id($id)

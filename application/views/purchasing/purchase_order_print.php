@@ -24,11 +24,11 @@
 		<div class='row'>
 			<div class='col-xs-1'><img src='<?= base_url('assets/Logo.png') ?>' style='width:100%'></img></div>
 			<div class='col-xs-5'>
-				<h3 style='margin-top:0'><b>PT Duta Sapta Energi</b></h3>
-				<p style='margin:0'>Jalan Babakan Hantap no. 23</p>
-				<p style='margin:0'>Bandung, 40281</p>
-				<p style='margin:0'><b>Ph. </b>(022) 7102225</p>
-				<p style='margin:0'><b>Email </b>marketing@dutasaptaenergi.com</p>
+				<h3 style='margin-top:0'><b>Duta Sapta Energi</b></h3>
+				<p>Jalan Babakan Hantap no. 23</p>
+				<p>Bandung, 40281</p>
+				<p><b>Ph. </b>(022) 7102225</p>
+				<p><b>Email </b>marketing@dutasaptaenergi.com</p>
 			</div>
 			<div class='col-xs-4 col-xs-offset-1'>
 				<p><b>Tanggal: </b><?= date('d M Y',strtotime($datas->date));?></p>

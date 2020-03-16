@@ -115,13 +115,11 @@ class Customer_model extends CI_Model {
 				$this->db->or_like('address', $filter, 'both');
 				$this->db->or_like('city', $filter, 'both');
 			}
-			
-			$query 		= $this->db->get($this->table_customer, $limit, $offset);
+			$this->db->limit($limit, $offset);			
+			$query 		= $this->db->get($this->table_customer);
 			$items	 	= $query->result();
 			
-			$result 	= $this->map_list($items);
-			
-			return $result;
+			return $items;
 		}
 		
 		public function count_items($filter = '')

@@ -163,9 +163,9 @@
 			total_price		+= quantity * net_price;
 		});
 		
-		$('td[id^="total_value-"]').each(function(){
+		$('td[id^="total_debt_document-"]').each(function(){
 			var id			= $(this).attr('id');
-			var uid			= parseInt(id.substring(12, 267));
+			var uid			= parseInt(id.substring(20, 267));
 			$('#total_good_receipt_value_p-' + uid).html($(this).html());
 		});
 		

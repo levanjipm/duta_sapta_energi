@@ -2,6 +2,9 @@
 	<h2 style='font-family:bebasneue'>Debt document</h2>
 	<hr>
 	<a href='<?= site_url('Debt/create_dashboard') ?>'><button type='button' class='button button_default_light'>Create debt document</button></a>
+	
+	<a href='<?= site_url('Debt/create_blank_dashboard') ?>'><button type='button' class='button button_default_light'>Create blank debt document</button></a>
+	
 	<br><br>
 	<input type='text' class='form_control' placeholder='Search' id='search_bar'>
 	<br><br>
@@ -144,6 +147,7 @@
 			},
 			success:function(response){
 				$('#purchase_invoice_id').val(n);
+				var total_value = 0;
 				debt_array		= response.debt;
 				document_array	= response.documents;
 				detail_array	= response.details;
@@ -169,18 +173,27 @@
 					var document_name			= value.name;
 					var document_received_date	= value.received_date;
 					var document_id				= value.id;
-					$('#good_receipt_table').append("<tr><td>" + document_date + "</td><td>" + document_name + "</td><td colspan='5'></td></tr>");
+					$('#good_receipt_table').append("<tr><td>" + document_date + "</td><td>" + document_name + "</td><td colspan='4'></td><td id='document_value-" + document_id + "'></td></tr>");
+					
+					var document_value			= 0;
 					$.each(detail_array, function (index_a, value_a){
-						if(value_a.code_good_receipt_id = document_id){
+						if(value_a.code_good_receipt_id == document_id){
 							var reference			= value_a.reference;
 							var name				= value_a.name;
 							var quantity			= value_a.quantity;
 							var billed_price		= value_a.billed_price;
 							var total_price			= billed_price * quantity;
 							$('#good_receipt_table').append("<tr><td colspan='2'></td><td>" + reference + "</td><td>" + name + "</td><td>Rp. " + numeral(billed_price).format('0,0.00') + "</td><td>" + numeral(quantity).format('0,0') + "</td><td>Rp. " + numeral(total_price).format('0,0.00') + "</td></tr>");
+							
+							document_value += total_price;
 						};
 					});
+					
+					total_value		+= document_value;
+					$('#document_value-' + document_id).html('Rp. ' + numeral(document_value).format('0,0.00'));
 				});
+				
+				$('#good_receipt_table').append("<tr><td colspan='5'></td><td>Total</td><td>Rp. " + numeral(total_value).format('0,0.00') + "</td></tr>");
 				
 				$('#view_debt_wrapper').fadeIn();
 			}

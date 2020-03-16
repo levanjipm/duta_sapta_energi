@@ -41,6 +41,9 @@ class Debt extends CI_Controller {
 		
 		$items = $this->Good_receipt_model->count_uninvoiced_documents();
 		$data['pages'] = max(ceil($items / 25), 1);
+		
+		header('Content-Type: application/json');
+		echo json_encode($data);
 	}
 	
 	public function create_dashboard()
@@ -49,10 +52,20 @@ class Debt extends CI_Controller {
 		$this->load->view('accounting/header');
 		$this->load->model('Good_receipt_model');
 		$supplier = $this->Good_receipt_model->select_supplier_from_uninvoiced_document();
-		
 		$data['suppliers'] = $supplier;
 		
 		$this->load->view('accounting/create_debt_document_dashboard', $data);
+	}
+	
+	public function create_blank_dashboard()
+	{
+		$this->load->view('head');
+		$this->load->view('accounting/header');
+		$this->load->model('Supplier_model');
+		$supplier = $this->Supplier_model->show_all();
+		$data['suppliers'] = $supplier;
+		
+		$this->load->view('accounting/create_blank_debt_document_dashboard', $data);
 	}
 	
 	public function view_uninvoiced_documents_by_supplier()
@@ -61,6 +74,7 @@ class Debt extends CI_Controller {
 		$page				= $this->input->get('page');
 		$offset				= ($page - 1) * 25;
 		$supplier_id		= $this->input->get('supplier_id');
+		
 		$this->load->model('Good_receipt_model');
 		$items = $this->Good_receipt_model->select_uninvoiced_documents_group_supplier($supplier_id, $offset, $term);
 		$data['bills'] = $items;

@@ -6,13 +6,10 @@
 </div>
 <div class='sidenav_bar'>
 	<h3 style='font-family:museo'>Main</h3>
-	<button class='container_button'><p style='font-family:museo'>Departments</p></button>
+	<button class='container_button'><p style='font-family:museo'>Bank</p></button>
 	<div class='container_bar'>
-		<a href='<?= site_url('Sales') ?>'><p>Sales</p></a>
-		<a href='<?= site_url('Purchasing') ?>'><p>Purchasing</p></a>
-		<a href='<?= site_url('Inventory') ?>'><p>Inventory</p></a>
-		<a href='<?= site_url('Accounting') ?>'><p>Accounting</p></a>
-		<a href='<?= site_url('Finance') ?>'><p>Finance</p></a>
+		<a href='<?= site_url('Bank/transaction') ?>'><button><p style='font-family:museo'>Transaction</p></button></a>
+		<a href='<?= site_url('Bank/account') ?>'><button><p style='font-family:museo'>Account</p></button></a>
 	</div>
 </div>
 <script>
@@ -20,4 +17,3 @@
 		$(this).next('.container_bar').toggle(300);
 	});
 </script>
-<div class='dashboard'></div>

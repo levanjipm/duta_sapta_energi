@@ -37,6 +37,37 @@ class Invoice extends CI_Controller {
 	public function create_retail()
 	{
 		$delivery_order_id		= $this->input->post('id');
-		//$this->load->model->
+		$this->load->model('Delivery_order_detail_model');
+		$result = $this->Delivery_order_detail_model->show_by_code_delivery_order_id($delivery_order_id);
+		$data['details'] = $result;
+		
+		$this->load->view('head');
+		$this->load->view('accounting/header');
+		
+		$this->load->view('accounting/create_invoice', $data);
+	}
+	
+	public function print_retail()
+	{
+		$delivery_order_id		= $this->input->post('id');
+		$this->load->view('head');		
+		$this->load->model('Delivery_order_detail_model');
+		$result = $this->Delivery_order_detail_model->show_by_code_delivery_order_id($delivery_order_id);
+		$data['details'] = $result;
+		
+		$customer_id	= $result[0]->customer_id;
+		$this->load->model('Customer_model');
+		$data['customer'] = $this->Customer_model->show_by_id($customer_id);
+		
+		$this->load->model('Invoice_model');
+		$input_invoice = $this->Invoice_model->delivery_order_input($delivery_order_id, $result[0]);
+		if($input_invoice != NULL){
+			$this->load->model('Delivery_order_model');
+			$this->Delivery_order_model->set_invoice_id($delivery_order_id, $input_invoice);
+			
+			$this->load->view('accounting/print_retail_invoice', $data);
+		} else {
+			redirect(site_url('Invoice'));
+		}
 	}
 }

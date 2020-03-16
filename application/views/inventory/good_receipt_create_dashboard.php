@@ -73,15 +73,14 @@
 					date:$('#date').val()
 				},
 				success:function(response){
-					console.log(response);
 					var purchase_order_array	= response.general;
 					var guid					= response.guid;
 					var purchase_orders			= response.purchase_orders;
 					
-					var purchase_order_name		= response.name;
-					var dropship_address		= response.dropship_address;
-					var dropship_city			= response.dropship_city;
-					var dropship_contact_person	= response.dropship_contact_person;
+					var purchase_order_name		= purchase_order_array.name;
+					var dropship_address		= purchase_order_array.dropship_address;
+					var dropship_city			= purchase_order_array.dropship_city;
+					var dropship_contact_person	= purchase_order_array.dropship_contact_person;
 					
 					$('#purchase_order_name_p').html(purchase_order_name);
 					$('#guid').val(guid);

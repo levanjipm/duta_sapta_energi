@@ -104,40 +104,32 @@ class Supplier_model extends CI_Model {
 			return $result;
 		}
 		
-		public function show_all()
+		public function show_items($offset = 0, $filter = '', $limit = 25)
 		{
-			$query 		= $this->db->get($this->table_supplier);
-			$suppliers 	= $query->result();
+			if($filter != ''){
+				$this->db->like('name', $filter, 'both');
+				$this->db->or_like('address', $filter, 'both');
+				$this->db->or_like('city', $filter, 'both');
+			}
 			
-			$items = $this->map_list($suppliers);
-			
-			return $items;
-			
-		}
-		
-		public function show_limited($limit, $offset)
-		{
 			$query 		= $this->db->get($this->table_supplier, $limit, $offset);
-			$suppliers 	= $query->result();
-			
-			$items = $this->map_list($suppliers);
+			$items	 	= $query->result();
 			
 			return $items;
 		}
-		
-		public function count_page()
+
+		public function count_items($filter = '')
 		{
-			$this->load->model('Supplier_model');
-			$limit	= 25;
+			if($filter != ''){
+				$this->db->like('name', $filter, 'both');
+				$this->db->or_like('address', $filter, 'both');
+				$this->db->or_like('city', $filter, 'both');
+			}
 			
-			$this->db->select('id');
-			$this->db->from($this->table_supplier);	
-			
-			$items = $this->db->get();
+			$items = $this->db->get($this->table_supplier);
 			$count = $items->num_rows();
 			
 			return $count;
-			
 		}
 		
 		public function insert_from_post()

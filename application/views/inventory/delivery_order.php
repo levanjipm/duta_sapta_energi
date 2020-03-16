@@ -38,7 +38,7 @@
 
 	if(!empty($unsent_delivery_orders)){
 ?>
-	<h3 style='font-family:bebasneue'>Confirm delivery order</h3>
+	<h3 style='font-family:bebasneue'>Confirm sent delivery order</h3>
 	<table class='table table-bordered'>
 		<tr>
 			<th>Date</th>
@@ -71,8 +71,8 @@
 </div>
 
 <div class='alert_wrapper' id='view_delivery_order_wrapper'>
+	<button class='alert_close_button'>&times </button>
 	<div class='alert_box_default' id='view_delivery_order_box'>
-		<button class='alert_close_button'>&times </button>
 		<label>Customer</label>
 		<p id='customer_name'></p>
 		<p id='customer_address'></p>
@@ -141,6 +141,6 @@
 	}
 	
 	$('.alert_close_button').click(function(){
-		$(this).parent().parent().fadeOut();
+		$(this).parent().fadeOut();
 	});
 </script>

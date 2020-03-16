@@ -501,7 +501,7 @@
 	function add_to_cart_as_bonus(n){
 		if($('#cart_products tr').length > 0){
 			$.ajax({
-				url:'<?= site_url('Item/add_item_to_cart_as_bonus') ?>',
+				url:'<?= site_url('Item/add_item_to_cart') ?>',
 				data:{
 					price_list_id:n
 				},

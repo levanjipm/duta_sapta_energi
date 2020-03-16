@@ -76,7 +76,7 @@ class Item_model extends CI_Model {
 		{
 			if($filter != ''){
 				$query = $this->db->query("
-					SELECT price_list.id, price_list.price_list, item.name, item.reference
+					SELECT price_list.id, price_list.price_list, item.name, item.reference, price_list.item_id
 					FROM price_list
 					JOIN item ON item.id = price_list.item_id
 					WHERE price_list.id IN (
@@ -87,7 +87,7 @@ class Item_model extends CI_Model {
 					LIMIT $limit OFFSET $offset");
 			} else {
 				$query = $this->db->query("
-					SELECT price_list.id, price_list.price_list, item.name, item.reference
+					SELECT price_list.id, price_list.price_list, item.name, item.reference, price_list.item_id
 					FROM price_list
 					JOIN item ON item.id = price_list.item_id
 					WHERE price_list.id IN (
@@ -190,7 +190,7 @@ class Item_model extends CI_Model {
 						SELECT MAX(price_list.id)
 						FROM price_list
 						GROUP BY item_id
-					) AND item_id = '$item_id'");	
+					) AND item.id = '$item_id'");	
 			$item 				= $query->row();
 			
 			return $item;
@@ -199,7 +199,7 @@ class Item_model extends CI_Model {
 		public function select_by_price_list_id($price_list_id)
 		{
 			$query 				= $this->db->query("
-				SELECT price_list.price_list, item.reference, item.name, item.type, item.id
+				SELECT price_list.price_list, item.reference, item.name, item.type, price_list.id
 					FROM price_list
 					JOIN item ON item.id = price_list.item_id
 					WHERE price_list.id IN (

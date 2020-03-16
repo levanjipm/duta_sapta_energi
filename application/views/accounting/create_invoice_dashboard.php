@@ -43,7 +43,7 @@
 					var customer_address		= delivery_order.customer_address;
 					var customer_city			= delivery_order.customer_city;
 					
-					$('#delivery_order_tbody').append("<tr><td>" + date + "</td><td>" + delivery_order_name + "</td><td><p>" + customer_name + "</p><p>" + customer_address + "</p><p>" + customer_city + "</p></td><td><button onclick='submit_form(" + delivery_order_id + ")'><i class='fa fa-long-arrow-right'></i></button></td>");
+					$('#delivery_order_tbody').append("<tr><td>" + date + "</td><td>" + delivery_order_name + "</td><td><p>" + customer_name + "</p><p>" + customer_address + "</p><p>" + customer_city + "</p></td><td><button class='button button_default_light' onclick='submit_form(" + delivery_order_id + ")'><i class='fa fa-long-arrow-right'></i></button></td>");
 				});
 				var pages					= response.pages;
 			}

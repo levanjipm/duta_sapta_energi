@@ -102,7 +102,7 @@ class Stock_in_model extends CI_Model {
 		{
 			$this->db->where('residue >', 0);
 			$this->db->where('item_id', $item_id);
-			$this->db->order_by('id', 'asc');
+			$this->db->order_by('id', 'ASC');
 			$query 	= $this->db->get($this->table_stock_in);
 			$result	= $query->row();
 			
@@ -130,5 +130,36 @@ class Stock_in_model extends CI_Model {
 			$this->db->set('residue', $final_quantity);
 			$this->db->where('id', $id);
 			$this->db->update($this->table_stock_in);
+		}
+		
+		public function check_stock($stock_array)
+		{
+			$final_stock_array		= array();
+			foreach($stock_array as $stock){
+				$item_id				= $delivery_order['item_id'];
+				$quantity				= $delivery_order['quantity'];
+				if(array_key_exists($item_id, $final_stock_array)){
+					$final_quantity	= $final_stock_array[$item_id] + $quantity;
+					$final_stock_array[$item_id] = $final_quantity;
+				} else {
+					$final_stock_array[$item_id] = $quantity;
+				}
+			}
+			
+			$sufficient_stock	= TRUE;
+			
+			foreach($final_stock_array as $final_stock){
+				$this->db->select_sum('residue');
+				$this->db->where('item_id', $item_id);
+				$query		= $this->db->get($this->table_stock_in);
+				$result		= $query->row();
+				
+				$stock		= $result->residue;
+				if($stock < $final_stock){
+					$sufficient_stock = FALSE;
+				}
+			}
+			
+			return $sufficient_stock;
 		}
 }

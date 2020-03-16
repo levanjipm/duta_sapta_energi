@@ -74,47 +74,15 @@ class Purchase_order extends CI_Controller {
 		}
 	}
 	
-	public function remove_item_from_cart()
-	{
-		$item_id		= $this->input->post('item_id');
-		$this->load->model('Purchase_order_model');
-		$this->Purchase_order_model->remove_item_from_cart($item_id);
-		
-		if($this->session->has_userdata('purchase_cart_products')){
-			$detail = array();
-			$products = $this->session->userdata('purchase_cart_products');
-			
-			$this->load->model('Item_model');
-			$data['carts'] = $this->Item_model->show_cart($products);
-			
-			$this->load->view('purchasing/shopping_cart_list',$data);
-		}
-	}
-	
-	public function remove_bonus_item_from_cart()
-	{
-		$item_id		= $this->input->post('item_id');
-		$this->load->model('Purchase_order_model');
-		$this->Purchase_order_model->remove_bonus_item_from_cart($item_id);
-		
-		if($this->session->has_userdata('purchase_cart_bonus_products')){
-			$detail = array();
-			$products = $this->session->userdata('purchase_cart_bonus_products');
-			
-			$this->load->model('Item_model');
-			$data['carts'] = $this->Item_model->show_cart($products);
-			
-			$this->load->view('purchasing/shopping_cart_list',$data);
-		}
-	}
-	
 	public function input_purchase_order()
 	{
 		$this->load->model('Purchase_order_model');
 		$purchase_order_id = $this->Purchase_order_model->input_from_post();
 		
-		$this->load->model('Purchase_order_detail_model');
-		$this->Purchase_order_detail_model->insert_from_post($purchase_order_id);
+		if($purchase_order_id != null){
+			$this->load->model('Purchase_order_detail_model');
+			$this->Purchase_order_detail_model->insert_from_post($purchase_order_id);
+		}
 		
 		redirect(site_url('Purchase_order'));
 	}
@@ -141,8 +109,11 @@ class Purchase_order extends CI_Controller {
 	
 	public function get_purchase_order_detail_by_id($id)
 	{
+		$this->load->model('Purchase_order_model');
+		$data['general']	= $this->Purchase_order_model->show_by_id($id);
+		
 		$this->load->model('Purchase_order_detail_model');
-		$data	= $this->Purchase_order_detail_model->show_by_purchase_order_id($id);
+		$data['detail']		= $this->Purchase_order_detail_model->show_by_purchase_order_id($id);
 		header('Content-Type: application/json');
 		echo json_encode($data);
 	}
@@ -153,7 +124,7 @@ class Purchase_order extends CI_Controller {
 		$this->load->model('Purchase_order_model');
 		$this->Purchase_order_model->confirm_purchase_order($id);
 		
-		redirect(site_url('Purchase_order'));
+		redirect(site_url('Purchase_order/print/') . $id);
 	}
 	
 	public function delete()
@@ -163,5 +134,17 @@ class Purchase_order extends CI_Controller {
 		$this->Purchase_order_model->delete_purchase_order($id);
 		
 		redirect(site_url('Purchase_order'));
+	}
+	
+	public function print($purchase_order_id)
+	{
+		$this->load->model('Purchase_order_model');
+		$data['general']	= $this->Purchase_order_model->show_by_id($purchase_order_id);
+		
+		$this->load->model('Purchase_order_detail_model');
+		$data['detail']		= $this->Purchase_order_detail_model->show_by_purchase_order_id($purchase_order_id);
+		
+		$this->load->view('head');
+		$this->load->view('purchasing/purchase_order_print', $data);
 	}
 }

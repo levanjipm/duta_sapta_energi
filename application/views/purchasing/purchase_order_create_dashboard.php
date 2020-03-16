@@ -8,8 +8,17 @@
 	<label>Date</label>
 	<input type='date' class='form-control' name='date' required min='2020-01-01' id='purchase_order_date'>
 	
-	<label>Send date request</label>
-	<input type='date' class='form-control' name='request_date' required min='2020-01-01'>
+	<label>Send date</label>
+	<select class='form-control' name='status' id='purchase_order_status'>
+		<option value='1'>Choose date</option>
+		<option value='2'>Urgent delivery</option>
+		<option value='3'>Unknown date</option>
+	</select>
+	
+	<div id='purchase_order_status_detail'>
+		<label>Send date request</label>
+		<input type='date' class='form-control' name='request_date' required min='2020-01-01'>
+	</div>
 	
 	<label>Supplier</label>
 	<select class='form-control' name='supplier' id='supplier'>
@@ -70,7 +79,7 @@
 		<tbody id='bonus_cart_products'></tbody>
 	</table>
 	
-	<button type='button' class='button button_default_light' id='submit_button' onclick='show_purchase_order()' style='display:none'>Submit</button>
+	<button type='button' class='button button_success_dark' id='submit_button' onclick='show_purchase_order()' style='display:none'><i class='fa fa-long-arrow-right'></i></button>
 	</form>
 </div>
 
@@ -78,7 +87,7 @@
 	<div class='alert_box_full'>
 		<div class='row' style='text-align:center'>
 			<div class='col-lg-2 col-md-2 col-sm-4 col-xs-4 col-lg-offset-5 col-md-offset-5 col-sm-offset-4 col-sm-offset-4'>
-				<button type='button' class='button alert_full_close_button' title='Close add item session'></button>
+				<button type='button' class='button alert_full_close_button' title='Close add item session' onclick="$('#add_item_wrapper').fadeOut()"></button>
 			</div>
 		</div>
 		<div class='row'>
@@ -160,24 +169,25 @@
 				page:page
 			},
 			success:function(response){
-				$('#add_item_wrapper').fadeIn();
+				$('#add_item_wrapper').slideDown(300);
 				$('#shopping_item_list_tbody').html('');
 				var item_array	= response.items;
 				var pages		= response.pages;
 				var page		= response.page;
 				
-				if(item_array.length > 0){
+				if($('#cart_products tr').length > 0){
 					$('#cart_products_table').show();
-					$.each(item_array, function(index, item){
-						var reference		= item.reference;
-						var id				= item.id;
-						var name			= item.name;
-						
-						$('#shopping_item_list_tbody').append("<tr><td>" + reference + "</td><td>" + name + "</td><td><button type='button' class='button button_success_dark' onclick='add_to_cart(" + id + ")' title='Add " + reference + " to cart'><i class='fa fa-cart-plus'></i></button> <button type='button' class='button button_danger_dark' onclick='add_to_cart_as_bonus(" + id + ")' title='Add " + reference + " to cart as bonus'><i class='fa fa-gift'></i></button></td></tr>");
-					});
 				} else {
 					$('#cart_products_table').hide();
 				}
+				
+				$.each(item_array, function(index, item){
+					var reference		= item.reference;
+					var id				= item.item_id;
+					var name			= item.name;
+					
+					$('#shopping_item_list_tbody').append("<tr><td>" + reference + "</td><td>" + name + "</td><td><button type='button' class='button button_success_dark' onclick='add_to_cart(" + id + ")' title='Add " + reference + " to cart'><i class='fa fa-cart-plus'></i></button> <button type='button' class='button button_danger_dark' onclick='add_to_cart_as_bonus(" + id + ")' title='Add " + reference + " to cart as bonus'><i class='fa fa-gift'></i></button></td></tr>");
+				});
 				
 				$('#page').html('');
 				for(i = 1; i <= pages; i++){
@@ -332,12 +342,13 @@
 				var item_id		= response.id;
 				var reference	= response.reference;
 				var name		= response.name;
+				var price_list	= response.price_list;
 				
 				if($('#item_row-' + item_id).length == 0){
 					$('#cart_products').append("<tr id='item_row-" + n + "'><td id='reference-" + n + "'>" + reference + "</td><td id='name-" + n + "'>" + name + "</td>" + 
-						"<td><input type='number' class='form-control' min='1' required name='price_list[" + n + "]' id='price_list-" + n + "'></td>" +
+						"<td><input type='number' class='form-control' min='1' required name='price_list[" + n + "]' id='price_list-" + n + "'><br><label>" + numeral(price_list).format('0,0.00') + "</label> <button type='button' class='button button_default_light' onclick='copy_price_list(" + item_id + "," + price_list + ")'><i class='fa fa-copy'></i></button></td>" +
 						"<td><input type='number' class='form-control' min='0' max='100' required name='discount[" + n + "]' id='discount-" + n + "'></td>" +
-						"<td><input type='number' class='form-control' min='0' max='100' required name='quantity[" + n + "]' id='quantity-" + n + "'></td>" + 
+						"<td><input type='number' class='form-control' min='1' required name='quantity[" + n + "]' id='quantity-" + n + "'></td>" + 
 						"<td><button type='button' class='button button_danger_dark' onclick='remove_item(" + n + ")'><i class='fa fa-trash'></i></button></td>");
 				}
 				$('button').attr('disabled',false);
@@ -381,6 +392,10 @@
 		})
 	}
 	
+	function copy_price_list(item_id, price_list){
+		$('#price_list-' + item_id).val(price_list);
+	}
+	
 	$('.alert_close_button').click(function(){
 		$('#add_item_wrapper').fadeOut();
 	});
@@ -391,5 +406,16 @@
 	
 	$('#search_bar').change(function(){
 		refresh_view(1)
+	});
+	
+	$('#purchase_order_status').change(function(){
+		var status		= $('#purchase_order_status').val();
+		if(status == 1){
+			$('#purchase_order_status_detail').show();
+			$('#purchase_order_status_detail input').attr('required', true);
+		} else {
+			$('#purchase_order_status_detail').hide();
+			$('#purchase_order_status_detail input').attr('required', false);
+		}
 	});
 </script>

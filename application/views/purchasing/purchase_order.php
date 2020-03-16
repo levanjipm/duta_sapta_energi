@@ -79,10 +79,11 @@
 				url:'<?= site_url('Purchase_order/get_purchase_order_detail_by_id/') ?>' + n,
 				dataType:'json',
 				success:function(response){
-					var purchase_order_id	= response[0].code_purchase_order_id;
-					var supplier_name 		= response[0].supplier_name;
-					var supplier_address 	= response[0].supplier_address;
-					var supplier_city 		= response[0].supplier_city;
+					var general_data		= response.general;
+					var purchase_order_id	= general_data.id;
+					var supplier_name 		= general_data.supplier_name;
+					var supplier_address 	= general_data.supplier_address;
+					var supplier_city 		= general_data.supplier_city;
 					
 					$('#supplier_name_p').html(supplier_name);
 					$('#supplier_address_p').html(supplier_address);
@@ -90,13 +91,15 @@
 					
 					$('#purchase_order_id').val(purchase_order_id);
 					
-					var purchase_order_name	= response[0].purchase_order_name;
-					var purchase_order_date	= response[0].purchase_order_date;
+					var purchase_order_name	= general_data.name;
+					var purchase_order_date	= general_data.date;
 					
 					$('#purchase_order_name_p').html(purchase_order_name);
 					$('#purchase_order_date_p').html(purchase_order_date);
+					
+					var detail_data			= response.detail;
 					var purchase_order_value = 0;
-					$.each(response, function(index, value){
+					$.each(detail_data, function(index, value){
 						var reference 	= value.reference;
 						var name		= value.name
 						var price_list	= value.price_list;

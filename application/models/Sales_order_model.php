@@ -113,7 +113,7 @@ class Sales_order_model extends CI_Model {
 		
 		public function name_generator($date)
 		{
-			$name = date('Y', strtotime($date)) . rand(0,9) . rand(0,9) . rand(0,9) . rand(0,9) . rand(0,9) . rand(0,9) . rand(0,9) . rand(0,9);
+			$name = date('Ym', strtotime($date)) . '.' . rand(0,9) . rand(0,9) . rand(0,9) . rand(0,9) . rand(0,9) . rand(0,9) . rand(0,9) . rand(0,9);
 			$this->db->where('name =',$name);
 			$query = $this->db->get($this->table_sales_order);
 			$item = $query->num_rows();
@@ -137,16 +137,15 @@ class Sales_order_model extends CI_Model {
 		
 		public function show_by_id($id)
 		{
-			$this->db->select('DISTINCT(sales_order.code_sales_order_id) as id, code_sales_order.*, customer.name as customer_name, customer.name as customer_name, customer.address as customer_address, customer.city as customer_city');
+			$this->db->select('DISTINCT(sales_order.code_sales_order_id) as id, code_sales_order.*, customer.name as customer_name, customer.name as customer_name, customer.address as customer_address, customer.city as customer_city, users.name as seller');
 			$this->db->from('sales_order');
 			$this->db->join('code_sales_order', 'code_sales_order.id = sales_order.code_sales_order_id');
 			$this->db->join('customer', 'code_sales_order.customer_id = customer.id');
+			$this->db->join('users', 'code_sales_order.seller = users.id', 'left');
 			$this->db->where('code_sales_order.id',$id);
 			
 			$query 		= $this->db->get();
-			print_r($this->db->last_query());
-			
-			$items 		= $query->result();
+			$items 		= $query->row();
 			return $items;
 		}
 		
@@ -216,26 +215,6 @@ class Sales_order_model extends CI_Model {
 			}
 		}
 		
-		public function add_item_to_cart()
-		{
-			$item_id = $this->input->post('item_id');
-			$cart_products = $this->session->userdata('cart_products');
-			
-			$cart_products[] = $item_id;
-			
-			$this->session->set_userdata('cart_products', $cart_products);
-		}
-		
-		public function remove_item_from_cart()
-		{
-			$cart_products = $this->session->userdata('cart_products');
-			$item_id = $this->input->post('item_id');
-			$key = array_search($item_id, $cart_products);
-			unset($cart_products[$key]);
-			
-			$this->session->set_userdata('cart_products', $cart_products);
-		}
-		
 		public function create_guid()
 		{	
 			return sprintf('%04X%04X-%04X-%04X-%04X-%04X%04X%04X', mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(16384, 20479), mt_rand(32768, 49151), mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(0, 65535));
@@ -254,14 +233,103 @@ class Sales_order_model extends CI_Model {
 				$this->db->or_like('code_sales_order.name', $filter, 'both');
 			}
 			
-			$this->db->where('sales_order.status =', 0);
+			$this->db->where('sales_order.status', 0);
+			$this->db->where('code_sales_order.is_confirm', 1);
+			$this->db->where('code_sales_order.is_delete', 0);
 			$this->db->order_by('code_sales_order.date');
 			$this->db->limit($limit, $offset);
 			$query 		= $this->db->get();
 			
 			$items 		= $query->result();
-			$result		= $this->map_list_with_customer($items);
+			return $items;
+		}
+		
+		public function count_uncompleted_sales_order($offset = 0, $filter = '', $limit = 25)
+		{
+			$this->db->select('DISTINCT(sales_order.code_sales_order_id) as id');
+			$this->db->from('sales_order');
+			$this->db->join('code_sales_order', 'code_sales_order.id = sales_order.code_sales_order_id');
+			$this->db->join('customer', 'code_sales_order.customer_id = customer.id');
 			
-			return $result;
+			if($filter != ''){
+				$this->db->like('customer.name', $filter,'both');
+				$this->db->or_like('customer.address', $filter,'both');
+				$this->db->or_like('code_sales_order.name', $filter, 'both');
+			}
+			
+			$this->db->where('sales_order.status', 0);
+			$this->db->where('code_sales_order.is_confirm', 1);
+			$this->db->where('code_sales_order.is_delete', 0);
+			$this->db->order_by('code_sales_order.date');
+			$this->db->limit($limit, $offset);
+			$query 		= $this->db->get();
+			
+			$items 		= $query->result();
+			return $items;
+		}
+		
+		public function show_unconfirmed_sales_order($offset = 0, $filter = '', $limit = 25)
+		{
+			$this->db->select('DISTINCT(sales_order.code_sales_order_id) as id, code_sales_order.*, customer.name as customer_name, customer.address as customer_address, customer.city as customer_city');
+			$this->db->from('sales_order');
+			$this->db->join('code_sales_order', 'code_sales_order.id = sales_order.code_sales_order_id');
+			$this->db->join('customer', 'code_sales_order.customer_id = customer.id');
+			
+			if($filter != ''){
+				$this->db->like('customer.name', $filter,'both');
+				$this->db->or_like('customer.address', $filter,'both');
+				$this->db->or_like('code_sales_order.name', $filter, 'both');
+			}
+			
+			$this->db->where('sales_order.status', 0);
+			$this->db->where('code_sales_order.is_confirm', 0);
+			$this->db->where('code_sales_order.is_delete', 0);
+			$this->db->order_by('code_sales_order.date');
+			$this->db->limit($limit, $offset);
+			$query 		= $this->db->get();
+			
+			$items 		= $query->result();
+			return $items;
+		}
+		
+		public function count_unconfirmed_sales_order($filter = '')
+		{
+			$this->db->select('DISTINCT(sales_order.code_sales_order_id) as id');
+			$this->db->from('sales_order');
+			$this->db->join('code_sales_order', 'code_sales_order.id = sales_order.code_sales_order_id');
+			$this->db->join('customer', 'code_sales_order.customer_id = customer.id');
+			
+			if($filter != ''){
+				$this->db->like('customer.name', $filter,'both');
+				$this->db->or_like('customer.address', $filter,'both');
+				$this->db->or_like('code_sales_order.name', $filter, 'both');
+			}
+			
+			$this->db->where('sales_order.status', 0);
+			$this->db->where('code_sales_order.is_confirm', 0);
+			$this->db->where('code_sales_order.is_delete', 0);
+			$this->db->order_by('code_sales_order.date');
+			$query 		= $this->db->get();
+			
+			$items 		= $query->num_rows();
+			return $items;
+		}
+		
+		public function confirm($sales_order_id)
+		{
+			$this->db->set('is_confirm', 1);
+			$this->db->set('confirmed_by', $this->session->userdata('user_id'));
+			$this->db->where('is_confirm', 0);
+			$this->db->where('is_delete', 0);
+			$this->db->where('id', $sales_order_id);
+			$this->db->update($this->table_sales_order);
+		}
+		
+		public function delete($sales_order_id)
+		{
+			$this->db->set('is_delete', 1);
+			$this->db->where('is_confirm', 0);
+			$this->db->where('id', $sales_order_id);
+			$this->db->update($this->table_sales_order);
 		}
 }

@@ -182,10 +182,7 @@ class Good_receipt_model extends CI_Model {
 			$query = $this->db->get($this->table_good_receipt, $limit, $offset);
 			
 			$items	 	= $query->result();
-			
-			$result 	= $this->map_list($items);
-			
-			return $result;
+			return $items;
 		}
 		
 		public function count_uninvoiced_documents()
@@ -203,18 +200,17 @@ class Good_receipt_model extends CI_Model {
 		public function select_supplier_from_uninvoiced_document()
 		{
 			$this->db->select('DISTINCT(code_purchase_order.supplier_id) as id, supplier.name');
-			$this->db->from($this->table_good_receipt);
+			$this->db->from('code_good_receipt');
 			$this->db->join('good_receipt', 'good_receipt.code_good_receipt_id = code_good_receipt.id', 'inner');
 			$this->db->join('purchase_order', 'good_receipt.purchase_order_id = purchase_order.id');
 			$this->db->join('code_purchase_order', 'purchase_order.code_purchase_order_id = code_purchase_order.id', 'inner');
 			$this->db->join('supplier', 'code_purchase_order.supplier_id = supplier.id');
-			$this->db->where('code_good_receipt.invoice_id', NULL);
-			$this->db->where('code_good_receipt.is_confirm', 1);
 			$this->db->where('code_good_receipt.is_delete', 0);
+			$this->db->where('code_good_receipt.invoice_id IS NULL');
 			
 			$query		= $this->db->get();
 			$item		= $query->result();
-
+			print_r($this->db->last_query());
 			return $item;
 		}
 		

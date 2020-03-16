@@ -2,7 +2,7 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 
 class Invoice_model extends CI_Model {
-	private $table_customer = 'customer';
+	private $table_invoice = 'invoice';
 		
 		public $id;
 		public $name;
@@ -93,5 +93,43 @@ class Invoice_model extends CI_Model {
 			$result		= $query->num_rows();
 			
 			return $result;
+		}
+		
+		public function delivery_order_input($delivery_order_id,$delivery_order_data)
+		{
+			$value	= $this->Invoice_model->calculate_delivery_order_value($delivery_order_id);
+			$name	= $delivery_order_data->do_name;
+			$date	= date('Y-m-d', strtotime($delivery_order_data->date));
+			$customer_id	= $delivery_order_data->customer_id;
+			
+			$invoice_name	= 'INV.DSE' . substr($name,7);
+			$db_item		= array(
+				'id' => '',
+				'name' => $invoice_name,
+				'value' => $value,
+				'customer_id' => $customer_id,
+				'information' => $name,
+				'date' => $date
+			);
+			
+			$this->db->insert($this->table_invoice, $db_item);
+			if($this->db->affected_rows() > 0){
+				return ($this->db->insert_id());
+			} else {
+				return NULL;
+			}
+		}
+		
+		public function calculate_delivery_order_value($delivery_order_id)
+		{
+			$this->db->select('sum(`price_list`.`price_list`*`delivery_order`.`quantity`* (100 - `sales_order`.`discount`) / 100) as value', FAlSE);
+			$this->db->from('delivery_order');
+			$this->db->join('sales_order', 'delivery_order.sales_order_id = sales_order.id');
+			$this->db->join('price_list', 'sales_order.price_list_id = price_list.id');
+			$this->db->where('delivery_order.code_delivery_order_id', $delivery_order_id);
+			$query	= $this->db->get();
+			$result	= $query->row();
+			
+			return $result->value;
 		}
 }

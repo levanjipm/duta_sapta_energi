@@ -65,10 +65,9 @@
 		</div>
 	</div>
 	<br>
-	<div style='text-align:center'>
-		<h4 style='font-family:museo'>You have successfully input this sales order</h4>
-	</div>
-	<label>Customer</label>
+	<div class='row'>
+		<div class='col-sm-6 col-xs-12'>
+			<label>Customer</label>
 <?php
 	$complete_address		= '';
 	$customer_name			= $customer->name;
@@ -100,13 +99,25 @@
 	if($customer_postal != NULL){
 		$complete_address	.= ', ' . $customer_postal;
 	}
-?>
-	<p style='font-family:museo'><?= $customer_name ?></p>
-	<p style='font-family:museo'><?= $complete_address ?></p>
-	<p style='font-family:museo'><?= $customer_city ?></p>
 	
-	<label>Sales order name</label>
-	<p style='font-family:museo'><?= $general->name ?> <span id='copy_text_span'><i class='fa fa-copy'></i></span></p>
+	if($general->seller == null){
+		$sales		= "<i>Not assigned</i>";
+	} else {
+		$sales		= $general->seller;
+	}
+?>
+			<p style='font-family:museo'><?= $customer_name ?></p>
+			<p style='font-family:museo'><?= $complete_address ?></p>
+			<p style='font-family:museo'><?= $customer_city ?></p>
+		</div>
+		<div class='col-sm-6 col-xs-12'>
+			<label>Sales order name</label>
+			<p style='font-family:museo'><?= $general->name ?> <span id='copy_text_span'><i class='fa fa-copy'></i></span></p>
+			
+			<label>Sales</label>
+			<p style='font-family:museo'><?= $sales ?></p>
+		</div>
+	</div>
 	
 	<table class='table table-bordered' style='color:white'>
 		<tr>
@@ -143,21 +154,13 @@
 			<td colspan='2'>Rp. <?= number_format($sales_order_value,2) ?></td>
 		</tr>
 	</table>
+	
+	<button class='button button_default_light'><i class='fa fa-long-arrow-left'></i></button>
 </div>
-<div class='alert_snackbar'>
-	Sales order input success 
-	<button type='button' class='button button_undo' title='Cancel sales order'>Undo</button>
-	<button type='button' class='button button_undo' title='Close'>&times</button></div>
 <script>
 	$(document).ready(function(){
 		var window_width	= $(document).width() - 200;
 		var difference		= window_width * 0.5 - 100;		
 		$('.logo_wrapper').css('margin-left', difference, 'important');
-		
-		$('.alert_snackbar').toggle(300);
 	});
-	
-	setTimeout(function(){
-		$('.alert_snackbar').fadeOut(300,function(){ $(this).remove()})
-	},5000);
 </script>
