@@ -19,3 +19,23 @@
 	border-radius:0;
 	height:100%;
 }
+
+.form-control-text-custom{
+	border:2px solid #E19B3C!important;
+	font: Light 12px/16px Avenir;
+	padding:7px;
+	color:#000000;
+	text-align:left;
+	width:100%;
+}
+
+.form-control-select-custom{
+	border:2px solid #E19B3C!important;
+	background-color:#E19B3C!important;
+	width:100%;
+	padding:7px;
+	color:#FFFFFF;
+	outline:none!important;
+	border:none;
+	font: Light 12px/16px Avenir;
+}

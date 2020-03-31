@@ -11,8 +11,15 @@ class Delivery_order extends CI_Controller {
 	
 	public function index()
 	{
+		$user_id		= $this->session->userdata('user_id');
+		$this->load->model('User_model');
+		$data['user_login'] = $this->User_model->show_by_id($user_id);
+		
+		$this->load->model('Authorization_model');
+		$data['departments']	= $this->Authorization_model->show_by_user_id($user_id);
+		
 		$this->load->view('head');
-		$this->load->view('inventory/header');
+		$this->load->view('inventory/header', $data);
 		
 		$this->load->model('Delivery_order_model');
 		$result	= $this->Delivery_order_model->show_unconfirmed_delivery_order();
@@ -26,8 +33,15 @@ class Delivery_order extends CI_Controller {
 	
 	public function create_dashboard()
 	{
+		$user_id		= $this->session->userdata('user_id');
+		$this->load->model('User_model');
+		$data['user_login'] = $this->User_model->show_by_id($user_id);
+		
+		$this->load->model('Authorization_model');
+		$data['departments']	= $this->Authorization_model->show_by_user_id($user_id);
+		
 		$this->load->view('head');
-		$this->load->view('inventory/header');
+		$this->load->view('inventory/header', $data);
 		
 		$this->load->model('Sales_order_model');
 		$data['sales_orders'] = $this->Sales_order_model->show_uncompleted_sales_order();
@@ -170,6 +184,40 @@ class Delivery_order extends CI_Controller {
 		
 		$this->load->model('Delivery_order_detail_model');
 		$data 				= $this->Delivery_order_detail_model->show_by_code_sales_order_id($sales_order_id);
+		
+		header('Content-Type: application/json');
+		echo json_encode($data);
+	}
+	
+	public function archive()
+	{
+		$user_id		= $this->session->userdata('user_id');
+		$this->load->model('User_model');
+		$data['user_login'] = $this->User_model->show_by_id($user_id);
+		
+		$this->load->model('Authorization_model');
+		$data['departments']	= $this->Authorization_model->show_by_user_id($user_id);
+		
+		$this->load->view('head');
+		$this->load->view('inventory/header', $data);
+		
+		$this->load->model('Delivery_order_model');
+		$data['years']	= $this->Delivery_order_model->show_years();
+		
+		$this->load->view('inventory/delivery_order_archive', $data);
+	}
+	
+	public function view_archive()
+	{
+		$page			= $this->input->get('page');
+		$term			= $this->input->get('term');
+		$offset			= ($page - 1) * 25;
+		$year			= $this->input->get('year');
+		$month			= $this->input->get('month');
+		
+		$this->load->model('Delivery_order_model');
+		$data['delivery_orders'] 	= $this->Delivery_order_model->show_items($year, $month, $offset, $term);
+		$data['pages']				= max(1, ceil($this->Delivery_order_model->count_items($year, $month, $term)/25));
 		
 		header('Content-Type: application/json');
 		echo json_encode($data);

@@ -1,34 +1,33 @@
 <style>
 	.department_box{
 		width:80%;
-		background-color:black;
-		border-radius:10px;
+		background-color:transparent;
+		border-radius:7px;
 		margin-top:20px;
 		cursor:pointer;
 	}
 	
 	.department_box_head{
-		background-image: linear-gradient(to right, #E19B3C,black);
+		background: transparent linear-gradient(90deg, #9B713A 0%, #5C3B30 42%, #392D33 100%) 0% 0% no-repeat padding-box;
 		padding:10px;
 		color:white;
-		border-top-right-radius:10px;
-		border-top-left-radius:10px;
-		opacity: 0.8;
+		border-top-right-radius:7px;
+		border-top-left-radius:7px;
+		opacity:0.8;
 	}
 	
 	.department_box_body{
-		background-color:black;
+		background-color:#232323;
 		padding:10px;
-		border-bottom-right-radius:10px;
-		border-bottom-left-radius:10px;
+		border-bottom-right-radius:7px;
+		border-bottom-left-radius:7px;
 		text-align:right;
 	}
 	
 	.department_box_body img{
-		opacity:0.8;
+		opacity:0.1;
 		width:30%;
 		min-width:50px;
-		margin-top:-20px;
 	}
 	
 	html, body{
