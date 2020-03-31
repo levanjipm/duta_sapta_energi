@@ -167,7 +167,7 @@ class Delivery_order_model extends CI_Model {
 		
 		public function show_by_id($id)
 		{
-			$this->db->select('code_delivery_order.*, customer.name as customer_name, customer.address, customer.city, code_sales_order.name as sales_order_name');
+			$this->db->select('code_delivery_order.*, customer.name as customer_name, customer.address, customer.city, code_sales_order.name as sales_order_name, customer.number, customer.rt, customer.rw, customer.block, customer.pic_name');
 			$this->db->from('code_delivery_order');
 			$this->db->join('delivery_order', 'delivery_order.code_delivery_order_id = code_delivery_order.id', 'inner');
 			$this->db->join('sales_order', 'delivery_order.sales_order_id = sales_order.id', 'inner');
@@ -175,7 +175,7 @@ class Delivery_order_model extends CI_Model {
 			$this->db->join('customer', 'code_sales_order.customer_id = customer.id');
 			$this->db->where('code_delivery_order.id',$id);
 			$query 		= $this->db->get();
-			$items 		= $query->result();
+			$items 		= $query->row();
 			
 			return $items;
 		}
@@ -241,15 +241,15 @@ class Delivery_order_model extends CI_Model {
 			}
 		}
 		
-		public function show_uninvoiced_retail_delivery_order($offset = 0, $filter = '', $limit = 25)
+		public function show_uninvoiced_delivery_order($type, $offset = 0, $filter = '', $limit = 25)
 		{
-			$this->db->select('code_delivery_order.*, customer.name as customer_name, customer.address as customer_address, customer.city as customer_city');
+			$this->db->select('DISTINCT(code_delivery_order.id) as id, , code_delivery_order.date, code_delivery_order.name, code_delivery_order.is_confirm, code_delivery_order.is_sent, code_delivery_order.guid, code_delivery_order.invoice_id, customer.name as customer_name, customer.address as customer_address, customer.city as customer_city');
 			$this->db->from('code_delivery_order');
-			$this->db->join('delivery_order', 'delivery_order.code_delivery_order_id = code_delivery_order.id', 'inner');
+			$this->db->join('delivery_order', 'delivery_order.code_delivery_order_id = code_delivery_order.id', 'left');
 			$this->db->join('sales_order', 'delivery_order.sales_order_id = sales_order.id');
-			$this->db->join('code_sales_order', 'sales_order.code_sales_order_id = code_sales_order.id');
+			$this->db->join('code_sales_order', 'sales_order.code_sales_order_id = code_sales_order.id', 'inner');
 			$this->db->join('customer', 'code_sales_order.customer_id = customer.id');
-			$this->db->where('code_sales_order.invoicing_method', 1);
+			$this->db->where('code_sales_order.invoicing_method', $type);
 			$this->db->where('code_delivery_order.is_confirm', 1);
 			$this->db->where('code_delivery_order.is_delete', 0);
 			$this->db->where('code_delivery_order.invoice_id', null);
@@ -262,14 +262,14 @@ class Delivery_order_model extends CI_Model {
 			return $result;
 		}
 		
-		public function count_uninvoiced_retail_delivery_order($term = '')
+		public function count_uninvoiced_delivery_order($type, $term = '')
 		{
 			$this->db->select('code_delivery_order.id');
 			$this->db->from('code_delivery_order');
 			$this->db->join('delivery_order', 'delivery_order.code_delivery_order_id = code_delivery_order.id', 'inner');
 			$this->db->join('sales_order', 'delivery_order.sales_order_id = sales_order.id');
 			$this->db->join('code_sales_order', 'sales_order.code_sales_order_id = code_sales_order.id');
-			$this->db->where('code_sales_order.invoicing_method', 1);
+			$this->db->where('code_sales_order.invoicing_method', $type);
 			$this->db->where('code_delivery_order.is_confirm', 1);
 			$this->db->where('code_delivery_order.is_delete', 0);
 			$this->db->where('code_delivery_order.invoice_id', null);

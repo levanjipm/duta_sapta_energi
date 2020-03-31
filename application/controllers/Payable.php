@@ -16,4 +16,13 @@ class Payable extends CI_Controller {
 		$this->load->view('accounting/header');
 		$this->load->view('accounting/payable_dashboard');
 	}
+	
+	public function view_payable()
+	{
+		$this->load->model('Debt_model');
+		$data	= $this->Debt_model->view_payable_chart();
+
+		header('Content-Type: application/json');
+		echo json_encode($data);
+	}
 }

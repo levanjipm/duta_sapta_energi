@@ -1,0 +1,21 @@
+.input_group{
+	display: flex;
+	width:100%;
+}
+
+.input_group > input{
+	flex: 1;
+	border:1px solid #ccc;
+}
+
+.input_group_append{
+	margin-top:0px;
+	margin-left:-1px;
+	margin-bottom:0;
+	height:auto;
+}
+
+.input_group_append > button{
+	border-radius:0;
+	height:100%;
+}

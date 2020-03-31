@@ -1,27 +1,48 @@
 <div class='topnav_bar'>
-	<div class='topnav_bar_left'><a href='<?= site_url() ?>' style='text-decoration:none'><h1>DSE</h1></a></div>
-	<div class='topnav_bar_right'>
-		<button><i class='fa fa-bars' id='hide_side_nav_button'></i></button>
-	</div>
+	<div style='width:50%;display:inline-block'><h3>Sales</h3></div><div style='width:50%;display:inline-block;text-align:right'><?php if(!empty($user_login)){ ?><h4>Hello, <?= $user_login->name ?></h4><?php } else { ?><button type='button' class='button button_default_dark'>Login</button> <?php } ?></div>
 </div>
 <div class='sidenav_bar'>
-	<h3 style='font-family:museo'>Main</h3>
-	<button class='container_button'><p style='font-family:museo'>Quotation</p></button>
-	<div class='container_bar'>
-		<a href='<?= site_url('Sales') ?>'><p>Create quotation</p></a>
-		<a href='<?= site_url() ?>'><p>Edit quotation</p></a>
+	<button class='button_close_sidenav'>
+		<div class='bar bar_1'></div>
+		<div class='bar bar_2'></div>
+		<div class='bar bar_3'></div>
+	</button>
+	<a href='<?= site_url() ?>'><img src='<?= base_url('assets/Logo_light.png') ?>' style='width:70%;vertical-align:top;height:65px;'></a>
+	<div class='sidenav_bar_departments'>
+<?php
+	foreach($departments as $department){
+		if($department->name == 'Sales'){
+?>
+		<button class='button_departments' onclick='window.location.href="<?= site_url($department->index_url) ?>"' title='<?= $department->name ?>'><img src='<?= base_url() . 'assets/' . $department->icon . '.png' ?>' style='width:100%'></button>
+		<br><br>
+<?php
+		} else {
+?>
+		<button class='button_departments' onclick='window.location.href="<?= site_url($department->index_url) ?>"' title='<?= $department->name ?>'><img src='<?= base_url() . 'assets/' . $department->icon . '.png' ?>' style='width:100%;filter: brightness(0) invert(1);'></button>
+		<br><br>
+<?php
+		}
+	}
+?>
 	</div>
-	<a href='<?= site_url('Customer') ?>'><button><p>Customer</p></button></a>
-	<a href='<?= site_url('Area') ?>'><button><p>Area</p></button></a>
-	<a href='<?= site_url('Item') ?>'><button><p>Item</p></button></a>
-	<a href='<?= site_url('Item_class') ?>'><button><p>Item class</p></button></a>
-	<a href='<?= site_url('Sales_order') ?>'><button><p>Sales order</p></button></a>
-	<button class='container_button'><p style='font-family:museo'>Return</p></button>
-	<div class='container_bar'>
-		<a href='<?= site_url('Sales') ?>'><p>Create return</p></a>
-		<a href='<?= site_url() ?>'><p>Confirm return</p></a>	
+	<div class='sidenav_bar_functions'>
+		<button class='container_button'><p style='font-family:museo'>Customer</p></button>
+		<div class='container_bar'>
+			<a href='<?= site_url('Customer') ?>'><button><p>Manage</p></button></a>
+			<a href='<?= site_url('Customer/plafond') ?>'><button><p>Plafond</p></button></a>
+			<a href='<?= site_url('Customer/check_plafond_status') ?>'><button><p>Plafond Submission status</p></button></a>
+		</div>
+		<a href='<?= site_url('Area') ?>'><button><p>Area</p></button></a>
+		<a href='<?= site_url('Item') ?>'><button><p>Item</p></button></a>
+		<a href='<?= site_url('Item_class') ?>'><button><p>Item class</p></button></a>
+		<a href='<?= site_url('Sales_order') ?>'><button><p>Sales order</p></button></a>
+		<button class='container_button'><p style='font-family:museo'>Return</p></button>
+		<div class='container_bar'>
+			<a href='<?= site_url('Sales') ?>'><p>Create return</p></a>
+			<a href='<?= site_url() ?>'><p>Confirm return</p></a>	
+		</div>
+		<a href='<?= site_url('Stock/view/Sales') ?>'><button><p>Check stock</p></button></a>
 	</div>
-	<a href='<?= site_url('Sales') ?>'><button><p>Check stock</p></button></a>
 </div>
 <script>
 	$('.container_button').click(function(){

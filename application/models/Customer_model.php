@@ -20,6 +20,7 @@ class Customer_model extends CI_Model {
 		public $date_created;
 		public $created_by;
 		public $is_black_list;
+		public $term_of_payment;
 		
 		public $complete_address;
 		
@@ -46,6 +47,7 @@ class Customer_model extends CI_Model {
 			$this->date_created			= $db_item->date_created;
 			$this->created_by			= $db_item->created_by;
 			$this->is_black_list		= $db_item->is_black_list;
+			$this->term_of_payment		= $db_item->term_of_payment;
 			
 			return $this;
 		}
@@ -70,6 +72,7 @@ class Customer_model extends CI_Model {
 			$db_item->date_created			= $this->date_created;
 			$db_item->created_by			= $this->created_by;
 			$db_item->is_black_list			= $this->is_black_list;
+			$db_item->term_of_payment		= $this->term_of_payment;
 			
 			return $db_item;
 		}
@@ -94,6 +97,7 @@ class Customer_model extends CI_Model {
 			$stub->date_created			= $db_item->date_created;
 			$stub->created_by			= $db_item->created_by;
 			$stub->is_black_list		= $db_item->is_black_list;
+			$stub->term_of_payment		= $db_item->term_of_payment;
 			
 			return $stub;
 		}
@@ -105,6 +109,20 @@ class Customer_model extends CI_Model {
 			{
 				$result[] = $this->get_new_stub_from_db($customer);
 			}
+			return $result;
+		}
+		
+		public function show_plafonded_customers($offset = 0, $filter = '', $limit = 25)
+		{
+			$this->db->select('customer.*');
+			if($filter != ''){
+				$this->db->like('customer.name', $filter, 'both');
+				$this->db->or_like('customer.address', $filter, 'both');
+				$this->db->or_like('customer.city', $filter, 'both');
+			};
+			
+			$query		= $this->db->get($this->table_customer, $limit, $offset);
+			$result		= $query->result();
 			return $result;
 		}
 		
@@ -161,6 +179,8 @@ class Customer_model extends CI_Model {
 				$this->date_created			= date('Y-m-d');
 				$this->created_by			= $this->session->userdata('user_id');
 				$this->is_black_list		= '';
+				$this->term_of_payment		= $this->input->post('term_of_payment');
+				$this->plafond				= '3000000';
 				
 				$db_item 					= $this->get_db_from_stub($this);
 				$db_result 					= $this->db->insert($this->table_customer, $db_item);
@@ -191,29 +211,30 @@ class Customer_model extends CI_Model {
 			
 			$item = $query->row();
 			
-			return ($item !== null) ? $this->get_stub_from_db($item) : null;
+			return ($item !== null) ? $item : null;
 		}
 		
 		public function update_from_post()
 		{
-			$where['id']				= $this->input->post('customer_id');
+			$customer_id				= $this->input->post('customer_id');
 			
-			$this->name					= $this->input->post('customer_name');
-			$this->address				= $this->input->post('customer_address');
-			$this->number				= $this->input->post('address_number');
-			$this->block				= $this->input->post('address_block');
-			$this->rt					= $this->input->post('address_rt');
-			$this->rw					= $this->input->post('address_rw');
-			$this->city					= $this->input->post('customer_city');
-			$this->postal_code			= $this->input->post('address_postal');
-			$this->area_id				= $this->input->post('area_id');
-			$this->npwp					= $this->input->post('customer_pic');
-			$this->phone_number			= $this->input->post('customer_phone');
-			$this->pic_name				= $this->input->post('customer_pic');
+			$db_item			= array(
+				'name'=> $this->input->post('customer_name'),
+				'address' => $this->input->post('customer_address'),
+				'number' => $this->input->post('address_number'),
+				'block' => $this->input->post('address_block'),
+				'rt' => $this->input->post('address_rt'),
+				'rw' => $this->input->post('address_rw'),
+				'city' => $this->input->post('customer_city'),
+				'postal_code' => $this->input->post('address_postal'),
+				'area_id' => $this->input->post('area_id'),
+				'npwp' => $this->input->post('customer_npwp'),
+				'phone_number' => $this->input->post('customer_phone'),
+				'pic_name' => $this->input->post('customer_pic'),
+				'term_of_payment' => $this->input->post('term_of_payment')
+			);
 			
-			$db_item = $this->get_db_from_stub($this);
-			
-			$this->db->where($where);
+			$this->db->where('id', $customer_id);
 			$this->db->update($this->table_customer, $db_item);
 		}
 		
@@ -246,5 +267,102 @@ class Customer_model extends CI_Model {
 			$query = $this->db->get($this->table_customer);
 			$items	= $query->result();
 			return $items;
+		}
+		
+		public function view_by_area_id($area_id, $offset, $term = '', $limit = 25)
+		{
+			$this->db->where('area_id', $area_id);
+			if($term != ''){
+				$this->db->like('name', $term , 'both');
+				$this->db->or_like('address', $term , 'both');
+				$this->db->or_like('postal_code', $term , 'both');
+				$this->db->or_like('block', $term , 'both');
+				$this->db->or_like('pic_name', $term , 'both');
+				$this->db->or_like('rt', $term , 'both');
+				$this->db->or_like('rw', $term , 'both');
+				$this->db->or_like('city', $term , 'both');
+			}
+			$query	= $this->db->get($this->table_customer, $limit, $offset);
+			$items	= $query->result();
+			
+			return $items;
+		}
+		
+		public function count_by_area_id($area_id, $term = '')
+		{
+			$this->db->where('area_id', $area_id);
+			if($term != ''){
+				$this->db->like('name', $term , 'both');
+				$this->db->or_like('address', $term , 'both');
+				$this->db->or_like('postal_code', $term , 'both');
+				$this->db->or_like('block', $term , 'both');
+				$this->db->or_like('pic_name', $term , 'both');
+				$this->db->or_like('rt', $term , 'both');
+				$this->db->or_like('rw', $term , 'both');
+				$this->db->or_like('city', $term , 'both');
+			};
+			
+			$query	= $this->db->get($this->table_customer);
+			$items	= $query->num_rows();
+			
+			return $items;
+		}
+		
+		public function show_unconfirmed_plafond_customers($offset = 0, $term = '', $limit = 25)
+		{
+			$this->db->select('customer.*, users.name as created_by, plafond_submission.submitted_date, plafond_submission.id as submission_id');
+			$this->db->from('plafond_submission');
+			$this->db->join('customer', 'plafond_submission.customer_id = customer.id');
+			$this->db->join('users', 'plafond_submission.submitted_by = users.id');
+			$this->db->where('plafond_submission.is_confirm', 0);
+			$this->db->where('plafond_submission.is_delete', 0);
+			if($term != ''){
+				$this->db->like('customer.name', $term , 'both');
+				$this->db->or_like('customer.address', $term , 'both');
+				$this->db->or_like('customer.postal_code', $term , 'both');
+				$this->db->or_like('customer.block', $term , 'both');
+				$this->db->or_like('customer.pic_name', $term , 'both');
+				$this->db->or_like('customer.rt', $term , 'both');
+				$this->db->or_like('customer.rw', $term , 'both');
+				$this->db->or_like('customer.city', $term , 'both');
+			};
+			
+			$this->db->limit($limit, $offset);
+			$query		= $this->db->get();
+			$result		= $query->result();
+			
+			return $result;
+		}
+		
+		public function count_unconfirmed_plafond_customers($term = '')
+		{
+			$this->db->select('plafond_submission.id,');
+			$this->db->from('plafond_submission');
+			$this->db->join('customer', 'plafond_submission.customer_id = customer.id');
+			$this->db->where('plafond_submission.is_confirm', 0);
+			$this->db->where('plafond_submission.is_delete', 0);
+			if($term != ''){
+				$this->db->like('name', $term , 'both');
+				$this->db->or_like('customer.address', $term , 'both');
+				$this->db->or_like('customer.postal_code', $term , 'both');
+				$this->db->or_like('customer.block', $term , 'both');
+				$this->db->or_like('customer.pic_name', $term , 'both');
+				$this->db->or_like('customer.rt', $term , 'both');
+				$this->db->or_like('customer.rw', $term , 'both');
+				$this->db->or_like('customer.city', $term , 'both');
+			};
+			$query		= $this->db->get();
+			$result		= $query->num_rows();
+			
+			return $result;
+		}
+		
+		public function update_plafond($customer_id, $plafond)
+		{
+			if($plafond >= 0){
+				$this->db->set('plafond', $plafond);
+				$this->db->where('id', $customer_id);
+				$this->db->update($this->table_customer);
+			}
 		}
 }

@@ -1,79 +1,83 @@
 <div class='dashboard'>
-	<h2 style='font-family:bebasneue'>Debt document</h2>
-	<hr>
-	<form action='<?= site_url('Debt/input') ?>' method='POST' id='debt_document_form'>
-		<label>Date</label>
-		<p style='font-family:museo' id='document_date'><?= date('d M Y',strtotime($date)) ?></p>
-		<input type='hidden' class='form-control' name='date' value='<?= $date ?>' required>
-		
-		<label>Supplier</label>
-		<p style='font-family:museo'><?= $supplier->name ?></p>
-		<p style='font-family:museo'><?= $supplier->address ?></p>
-		<p style='font-family:museo'><?= $supplier->city ?></p>
-		
-		<label>Tax document</label>
-		<input type='text' class='form-control' id='tax_document' name='tax_document'>
-		
-		<label>Invoice name</label>
-		<input type='text' class='form-control' id='invoice_document' name='invoice_document' required>
-		<br>
-		<script>
-			$("#tax_document").inputmask("999.999-99.99999999");
-		</script>
+	<div class='dashboard_head'>
+		<p style='font-family:museo'><a href='<?= site_url('Accounting') ?>' title='Sales'><i class='fa fa-bar-chart'></i></a> /<a href='<?= site_url('Debt') ?>'>Debt document</a> /Create</p>
+	</div>
+	<br>
+	<div class='dashboard_in'>
+		<form action='<?= site_url('Debt/input') ?>' method='POST' id='debt_document_form'>
+			<label>Date</label>
+			<p style='font-family:museo' id='document_date'><?= date('d M Y',strtotime($date)) ?></p>
+			<input type='hidden' class='form-control' name='date' value='<?= $date ?>' required>
+			
+			<label>Supplier</label>
+			<p style='font-family:museo'><?= $supplier->name ?></p>
+			<p style='font-family:museo'><?= $supplier->address ?></p>
+			<p style='font-family:museo'><?= $supplier->city ?></p>
+			
+			<label>Tax document</label>
+			<input type='text' class='form-control' id='tax_document' name='tax_document'>
+			
+			<label>Invoice name</label>
+			<input type='text' class='form-control' id='invoice_document' name='invoice_document' required>
+			<br>
+			<script>
+				$("#tax_document").inputmask("999.999-99.99999999");
+			</script>
 <?php
 	foreach($documents as $document){
 		$document_value		= 0;
 ?>
-		<label>Good receipt</label>
-		<p style='font-family:museo'><?= date('d M Y',strtotime($document->date)) ?></p>
-		<p style='font-family:museo'><?= $document->name ?></p>
-		<p style='font-family:museo'>Received on <?= date('d M Y',strtotime($document->received_date)) ?></p>
-		
-		<input type='hidden' name='document[<?= $document->id ?>]'>
-		
-		<label>Purchase order</label>
-		<p style='font-family:museo'><?= $document->purchase_order_name ?></p>
-		
-		<table class='table table-bordered'>
-			<tr>
-				<th>Reference</th>
-				<th>Name</th>
-				<th>Quantity</th>
-				<th>Net price</th>
-				<th>Total price</th>
-			</tr>
-			<tbody id='documents-<?= $document->id ?>'>
+			<label>Good receipt</label>
+			<p style='font-family:museo'><?= date('d M Y',strtotime($document->date)) ?></p>
+			<p style='font-family:museo'><?= $document->name ?></p>
+			<p style='font-family:museo'>Received on <?= date('d M Y',strtotime($document->received_date)) ?></p>
+			
+			<input type='hidden' name='document[<?= $document->id ?>]'>
+			
+			<label>Purchase order</label>
+			<p style='font-family:museo'><?= $document->purchase_order_name ?></p>
+			
+			<table class='table table-bordered'>
+				<tr>
+					<th>Reference</th>
+					<th>Name</th>
+					<th>Quantity</th>
+					<th>Net price</th>
+					<th>Total price</th>
+				</tr>
+				<tbody id='documents-<?= $document->id ?>'>
 <?php
 		foreach($details as $detail){
 			if($detail->code_good_receipt_id == $document->id){
 				$item_value			= $detail->net_price * $detail->quantity;
 				$document_value		+= $item_value;
 ?>
-			<tr>
-				<td><?= $detail->reference ?></td>
-				<td><?= $detail->name ?></td>
-				<td><?= number_format($detail->quantity) ?><input type='hidden' value='<?= $detail->quantity ?>' id='quantity-<?= $detail->id ?>'></td>
-				<td><input type='number' class='form-control' id='net_price-<?= $detail->id ?>' name='price[<?= $detail->id ?>]' value='<?= $detail->net_price ?>' onchange='update_price(<?= $document->id ?>)' min='0'></td>
-				<td id='total_value-<?= $detail->id ?>'>Rp. <?= number_format($item_value,2) ?></td>
-			</tr>
+					<tr>
+						<td><?= $detail->reference ?></td>
+						<td><?= $detail->name ?></td>
+						<td><?= number_format($detail->quantity) ?><input type='hidden' value='<?= $detail->quantity ?>' id='quantity-<?= $detail->id ?>'></td>
+						<td><input type='number' class='form-control' id='net_price-<?= $detail->id ?>' name='price[<?= $detail->id ?>]' value='<?= $detail->net_price ?>' onchange='update_price(<?= $document->id ?>)' min='0'></td>
+						<td id='total_value-<?= $detail->id ?>'>Rp. <?= number_format($item_value,2) ?></td>
+					</tr>
 <?php
 			}
 			
 			next($details);
 		}
 ?>
-			</tbody>
-			<tr>
-				<td colspan='2'></td>
-				<td colspan='2'>Total</td>
-				<td id='total_debt_document-<?= $document->id ?>'>Rp. <?= number_format($document_value,2) ?></td>
-			</tr>
-		</table>
+				</tbody>
+				<tr>
+					<td colspan='2'></td>
+					<td colspan='2'>Total</td>
+					<td id='total_debt_document-<?= $document->id ?>'>Rp. <?= number_format($document_value,2) ?></td>
+				</tr>
+			</table>
 <?php
 	}
 ?>
-		<button type='button' class='button button_default_light' onclick='validate_debt_document()'><i class='fa fa-long-arrow-right'></i></button>
-	</form>
+			<button type='button' class='button button_default_dark' onclick='validate_debt_document()'><i class='fa fa-long-arrow-right'></i></button>
+		</form>
+	</div>
 </div>
 <div class='alert_wrapper' id='debt_document_validation_wrapper'>
 	<button type='button' class='alert_close_button'>&times </button>

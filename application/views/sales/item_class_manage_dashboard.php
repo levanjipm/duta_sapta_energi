@@ -1,36 +1,41 @@
 <div class='dashboard'>
-	<h2 style='font-family:bebasneue'>Customer</h2>
-	<hr>
-	<button type='button' class='button button_default_light' id='add_item_class_button'>Add item class</button>
-	<br><br>
-	<input type='text' class='form_control' id='search_bar'>
-	<br><br>
-	<div id='customer_table_view_pane'>
-	<table class='table table-bordered'>
-		<tr>
-			<th>Name</th>
-			<th>Description</th>
-			<th>Action</th>
-		</tr>
+	<div class='dashboard_head'>
+		<p style='font-family:museo'><a href='<?= site_url('Sales') ?>' title='Sales'><i class='fa fa-briefcase'></i></a> /Item classes</p>
+	</div>
+	<br>
+	<div class='dashboard_in'>
+		<div class='input_group'>
+			<input type='text' class='form-control' id='search_bar'>
+			<div class='input_group_append'>
+				<button type='button' class='button button_default_dark' id='add_item_class_button'>Add item class</button>
+			</div>
+		</div>
+		<br>
+		<table class='table table-bordered'>
+			<tr>
+				<th>Name</th>
+				<th>Description</th>
+				<th>Action</th>
+			</tr>
 <?php
 	foreach($classes as $class){
 		$class_id		= $class->id;
 		$class_name		= $class->name;		
 		$description	= $class->description;		
 ?>
-		<tr>
-			<td id='name-<?= $class_id ?>'><?= $class_name ?></td>
-			<td id='description-<?= $class_id ?>'><?= $description ?></td>
-			<td>
-				<button type='button' class='button button_success_dark' onclick='open_edit_form(<?= $class_id ?>)'><i class='fa fa-pencil'></i></button>
-				<button type='button' class='button button_danger_dark' onclick='open_delete_confirmation(<?= $class_id ?>)'><i class='fa fa-trash'></i></button>
-				<button type='button' class='button button_default_light'><i class='fa fa-eye'></i></button>
-			</td>
-		</tr>
+			<tr>
+				<td id='name-<?= $class_id ?>'><?= $class_name ?></td>
+				<td id='description-<?= $class_id ?>'><?= $description ?></td>
+				<td>
+					<button type='button' class='button button_success_dark' onclick='open_edit_form(<?= $class_id ?>)'><i class='fa fa-pencil'></i></button>
+					<button type='button' class='button button_danger_dark' onclick='open_delete_confirmation(<?= $class_id ?>)'><i class='fa fa-trash'></i></button>
+					<button type='button' class='button button_default_light'><i class='fa fa-eye'></i></button>
+				</td>
+			</tr>
 <?php
 	}
 ?>
-	</table>
+		</table>
 	</div>
 </div>
 
@@ -111,7 +116,7 @@
 	};
 	
 	function open_edit_form(n){
-		var item_name_existing	= $('#name-' + n).text();
+		var item_name_existing			= $('#name-' + n).text();
 		var item_description_existing	= $('#description-' + n).text();
 		$('#item_class_edit_id').val(n);
 		$('#item_class_name').val(item_name_existing);

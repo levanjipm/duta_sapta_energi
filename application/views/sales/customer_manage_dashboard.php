@@ -1,80 +1,34 @@
-<style>
-	#page{
-		width:100px;
-	}
-</style>
 <div class='dashboard'>
-	<h2 style='font-family:bebasneue'>Customer</h2>
-	<hr>
-	<button type='button' class='button button_default_light' id='add_customer_button'>Add customer</button>
-	<br><br>
-	<input type='text' class='form_control' id='search_bar'>
-	<br><br>
-	<div id='customer_table_view_pane'>
-	<table class='table table-bordered'>
-		<tr>
-			<th>Customer name</th>
-			<th>Address</th>
-			<th>City</th>
-			<th>Action</th>
-		</tr>
-<?php
-	foreach($customers as $customer){
-		$complete_address		= '';
-		$customer_name			= $customer->name;
-		$complete_address		.= $customer->address;
-		$customer_city			= $customer->city;
-		$customer_number		= $customer->number;
-		$customer_rt			= $customer->rt;
-		$customer_rw			= $customer->rw;
-		$customer_postal		= $customer->postal_code;
-		$customer_block			= $customer->block;
-		$customer_id			= $customer->id;
+	<div class='dashboard_head'>
+		<p style='font-family:museo'><a href='<?= site_url('Sales') ?>' title='Sales'><i class='fa fa-briefcase'></i></a> /Customer</p>
+	</div>
+	<br>
+	<div class='dashboard_in'>
+		<div class='input_group'>
+			<input type='text' class='form-control' id='search_bar'>
+			<div class='input_group_append'>
+				<button type='button' class='button button_default_dark' id='add_customer_button'>Add customer</button>
+			</div>
+		</div>
+		<br><br>
+		<table class='table table-bordered'>
+			<tr>
+				<th>Customer name</th>
+				<th>Address</th>
+				<th>Action</th>
+			</tr>
+			<tbody id='customer_table'></tbody>
+		</table>
 		
-		if($customer_number != NULL){
-			$complete_address	.= ' No. ' . $customer_number;
-		}
-		
-		if($customer_block != NULL){
-			$complete_address	.= ' Blok ' . $customer_block;
-		}
-		
-		if($customer_rt != '000'){
-			$complete_address	.= ' RT ' . $customer_rt;
-		}
-		
-		if($customer_rw != '000' && $customer_rt != '000'){
-			$complete_address	.= ' /RW ' . $customer_rw;
-		}
-		
-		if($customer_postal != NULL){
-			$complete_address	.= ', ' . $customer_postal;
-		}
-			
-?>
-		<tr>
-			<td><?= $customer_name ?></td>
-			<td><?= $complete_address ?></td>
-			<td><?= $customer_city ?></td>
-			<td>
-				<button type='button' class='button button_success_dark' onclick='open_edit_form(<?= $customer_id ?>)'><i class='fa fa-pencil'></i></button>
-				<button type='button' class='button button_danger_dark' onclick='open_delete_confirmation(<?= $customer_id ?>)'><i class='fa fa-trash'></i></button>
-				<button type='button' class='button button_default_light'><i class='fa fa-eye'></i></button>
-			</td>
-		</tr>
-<?php
-	}
-?>
-	</table>
-	<select class='form-control' id='page' onchange='update_view()'>
+		<select class='form-control' id='page' onchange='update_view()' style='width:100px'>
 <?php
 	for($i = 1; $i <= $pages; $i++){
 ?>
-		<option value='<?= $i ?>'><?= $i ?></option>
+			<option value='<?= $i ?>'><?= $i ?></option>
 <?php
 	}
 ?>
-	</select>
+		</select>
 	</div>
 </div>
 
@@ -131,6 +85,9 @@
 	}
 ?>
 		</select>
+		
+		<label>Default payment</label>
+		<input type='number' class='form-control' min='0' required name='term_of_payment'>
 		<br>
 		<button class='button button_default_dark'><i class='fa fa-long-arrow-right'></i></button>
 		</form>
@@ -157,6 +114,7 @@
 </div>
 
 <script>
+	update_view();
 	$('#add_customer_button').click(function(){
 		$('#add_customer_wrapper').fadeIn();
 	});
@@ -204,39 +162,71 @@
 		$(this).parents('.alert_wrapper').fadeOut();
 	});
 	
-	function update_view(){
+	function update_view(page = $('#page').val()){
 		$.ajax({
-			url:'<?= site_url('Customer/update_view_page') ?>',
+			url:'<?= site_url('Customer/show_items') ?>',
 			data:{
 				term:$('#search_bar').val(),
-				page:$('#page').val()
+				page:page
 			},
 			type:'GET',
 			beforeSend:function(){
 				$('#customer_table_view_pane').html('');
 			},
 			success:function(response){
-				$('#customer_table_view_pane').html(response);
+				var customers	= response.customers;
+				var pages		= response.pages;
+				$('#page').html('');
+				$('#customer_table').html('');
+				
+				$.each(customers, function(index, customer){
+					var complete_address		= '';
+					var customer_name			= customer.name;
+					complete_address		+= customer.address;
+					var customer_city			= customer.city;
+					var customer_number			= customer.number;
+					var customer_rt				= customer.rt;
+					var customer_rw				= customer.rw;
+					var customer_postal			= customer.postal_code;
+					var customer_block			= customer.block;
+					var customer_id				= customer.id;
+		
+					if(customer_number != null){
+						complete_address	+= ' No. ' + customer_number;
+					}
+					
+					if(customer_block != null){
+						complete_address	+= ' Blok ' + customer_block;
+					}
+				
+					if(customer_rt != '000'){
+						complete_address	+= ' RT ' + customer_rt;
+					}
+					
+					if(customer_rw != '000' && customer_rt != '000'){
+						complete_address	+= ' /RW ' + customer_rw;
+					}
+					
+					if(customer_postal != null){
+						complete_address	+= ', ' + customer_postal;
+					}
+					
+					$('#customer_table').append("<tr><td>" + customer_name + "</td><td><p>" + complete_address + "</p><p>" + customer_city + "</p></td><td><button type='button' class='button button_success_dark' onclick='open_edit_form(" + customer_id + ")'><i class='fa fa-pencil'></i></button> <button type='button' class='button button_danger_dark' onclick='open_delete_confirmation(" + customer_id + ")'><i class='fa fa-trash'></i></button> <button type='button' class='button button_default_dark'><i class='fa fa-eye'></i></button></tr>");
+				});
+				
+				for(i = 1; i <= pages; i++){
+					if(page == i){
+						$('#page').append("<option value='" + i + "' selected>" + i + "</option>");
+					} else {
+						$('#page').append("<option value='" + i + "'>" + i + "</option>");
+					}
+				}
 			},
 			
 		});
 	};
 	
 	$('#search_bar').change(function(){
-		$.ajax({
-			url:'<?= site_url('Customer/update_view_page') ?>',
-			data:{
-				term:$('#search_bar').val(),
-				page:1
-			},
-			type:'GET',
-			beforeSend:function(){
-				$('#customer_table_view_pane').html('');
-			},
-			success:function(response){
-				$('#customer_table_view_pane').html(response);
-			},
-			
-		});
+		update_view(1);
 	});
 </script>

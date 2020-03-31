@@ -1,10 +1,13 @@
 <div class='dashboard'>
-	<h2 style='font-family:bebasneue'>Purchase order</h2>
-	<hr>
-	<a href='<?= site_url('Purchase_order/create') ?>'>
-		<button type='button' class='button button_default_light'>Create purchase order</button>
-	</a>
-	<br><br>
+	<div class='dashboard_head'>
+		<p style='font-family:museo'><a href='<?= site_url('Purchasing') ?>' title='Purchasing'><i class='fa fa-briefcase'></i></a> /Purchase order</p>
+	</div>
+	<br>
+	<div class='dashboard_in'>
+		<a href='<?= site_url('Purchase_order/create') ?>'>
+			<button type='button' class='button button_default_dark'>Create purchase order</button>
+		</a>
+		<br><br>
 <?php
 	if(!empty($purchase_orders)){
 ?>
@@ -134,6 +137,10 @@
 			$(this).parent().fadeOut();
 		});
 	</script>
+<?php
+	} else {
+?>
+	<p>There is no purchase order to be confirmed</p>
 <?php
 	}
 ?>

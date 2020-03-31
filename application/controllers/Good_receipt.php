@@ -27,7 +27,7 @@ class Good_receipt extends CI_Controller {
 		$this->load->view('inventory/header');
 		
 		$this->load->model('Supplier_model');
-		$result = $this->Supplier_model->show_all();
+		$result = $this->Supplier_model->show_items();
 		$data['suppliers'] = $result;
 		$this->load->view('inventory/good_receipt_create_dashboard', $data);
 	}

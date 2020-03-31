@@ -1,45 +1,63 @@
 <div class='dashboard'>
-	<h2 style='font-family:bebasneue'>Assign bank</h2>
-	<hr>
-	<form action='<?= site_url('Bank/assign_input') ?>' method='POST'>
-	<label>Bank data</label>
-	<p style='font-family:museo'><?= date('d M Y',strtotime($bank->date)) ?></p>
-	<p style='font-family:museo'><?= $bank->name ?> ( <?= $opponent ?> )</p>
-	<p style='font-family:museo'>Rp. <span id='bank_value_p'><?= number_format($bank->value,2) ?></span></p>
-	<input type='hidden' value='<?= $bank->value ?>' id='bank_value'>
-	
-	<label>Invoice</label>
-	<table class='table table-bordered'>
-		<tr>
-			<th>Date</th>
-			<th>Name</th>
-			<th>Action</th>
-			<th>Remaining</th>
-		</tr>
+	<div class='dashboard_head'>
+		<p style='font-family:museo'><a href='<?= site_url('Accounting') ?>' title='Accounting'><i class='fa fa-briefcase'></i></a> / Bank/ Assign bank</p>
+	</div>
+	<br>
+	<div class='dashboard_in'>
+		<form action='<?= site_url('Bank/assign_input') ?>' method='POST'>
+			<label>Bank data</label>
+			<p style='font-family:museo'><?= date('d M Y',strtotime($bank->date)) ?></p>
+			<p style='font-family:museo'><?= $bank->name ?> ( <?= $opponent ?> )</p>
+			<p style='font-family:museo'>Rp. <span id='bank_value_p'><?= number_format($bank->value,2) ?></span></p>
+			<input type='hidden' value='<?= $bank->value ?>' id='bank_value'>
+			<input type='hidden' value='<?= $bank->id ?>' name='bank_id' readonly>
+			
+			<label>Invoice</label>
+<?php
+	if(!empty($invoices)){
+?>
+			<table class='table table-bordered'>
+				<tr>
+					<th>Date</th>
+					<th>Name</th>
+					<th>Action</th>
+					<th>Remaining</th>
+				</tr>
 <?php
 	foreach($invoices as $invoice){
+		$paid		= $invoice->paid;
 		$value		= $invoice->value;
 		$date		= $invoice->date;
 		$name		= $invoice->name;
 		$id			= $invoice->id;
 ?>
-		<tr>
-			<td><?= date('d M Y',strtotime($date)) ?></td>
-			<td><?= $name ?></td>
-			<td><input type='checkbox' name='check_box[<?= $id ?>]' onchange='process(<?= $id ?>)' id='check_box-<?= $id ?>'></td>
-			<td>
-				Rp. <span id='remaining_value-<?= $id ?>'><?= number_format($value,2) ?></span>
-				<input type='hidden' id='remaining-<?= $id ?>' value='<?= $value ?>'>
-				<input type='hidden' id='original-<?= $id ?>' value='<?= $value ?>'>
-			</td>
-		</tr>
+				<tr>
+					<td><?= date('d M Y',strtotime($date)) ?></td>
+					<td><?= $name ?></td>
+					<td><input type='checkbox' name='check_box[<?= $id ?>]' onchange='process(<?= $id ?>)' id='check_box-<?= $id ?>'></td>
+					<td>
+						Rp. <span id='remaining_value-<?= $id ?>'><?= number_format($value - $paid,2) ?></span>
+						<input type='hidden' id='remaining-<?= $id ?>' value='<?= $value - $paid ?>' name='remaining[<?= $id ?>]'>
+						<input type='hidden' id='original-<?= $id ?>' value='<?= $value - $paid ?>' name='original[<?= $id ?>]'>
+					</td>
+				</tr>
 <?php
 	}
 ?>
-	</table>
+			</table>
+			
+			<button class='button button_default_dark' id='submit_button' disabled style='display:none'><i class='fa fa-long-arrow-right'></i></button>
+<?php
+	} else {
+?>
+			<p style='font-family:museo'>There is no invoice to be assigned</p>
 	
-	<button class='button button_default_light' id='submit_button' disabled style='display:none'><i class='fa fa-long-arrow-right'></i></button>
-	</form>
+			<a href='<?= site_url('Bank/assign') ?>'><button type='button' class='button button_default_dark'><i class='fa fa-long-arrow-left'></i></button></a>
+<?php
+	}
+?>
+		</form>
+	</div>
 </div>
 <script>
 	function process(id){

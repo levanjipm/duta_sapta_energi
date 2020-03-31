@@ -1,86 +1,90 @@
 <div class='dashboard'>
-	<h2 style='font-family:bebasneue'>Purchase order</h2>
-	<hr>
-	
-	<form action='<?= site_url('Purchase_order/input_purchase_order') ?>' method='POST' id='purchase_order_form'>
-	<input type='hidden' value='<?= $guid ?>'name='guid'>
-	
-	<label>Date</label>
-	<input type='date' class='form-control' name='date' required min='2020-01-01' id='purchase_order_date'>
-	
-	<label>Send date</label>
-	<select class='form-control' name='status' id='purchase_order_status'>
-		<option value='1'>Choose date</option>
-		<option value='2'>Urgent delivery</option>
-		<option value='3'>Unknown date</option>
-	</select>
-	
-	<div id='purchase_order_status_detail'>
-		<label>Send date request</label>
-		<input type='date' class='form-control' name='request_date' required min='2020-01-01'>
+	<div class='dashboard_head'>
+		<p style='font-family:museo'><a href='<?= site_url('Purchasing') ?>' title='Purchasing'><i class='fa fa-briefcase'></i></a> /<a href='<?= site_url('Purchase_order') ?>'>Purchase order</a> /Create</p>
 	</div>
+	<br>
+	<div class='dashboard_in'>
+		<form action='<?= site_url('Purchase_order/input_purchase_order') ?>' method='POST' id='purchase_order_form'>
+			<input type='hidden' value='<?= $guid ?>'name='guid'>
 	
-	<label>Supplier</label>
-	<select class='form-control' name='supplier' id='supplier'>
+			<label>Date</label>
+			<input type='date' class='form-control' name='date' required min='2020-01-01' id='purchase_order_date'>
+			
+			<label>Send date</label>
+			<select class='form-control' name='status' id='purchase_order_status'>
+				<option value='1'>Choose date</option>
+				<option value='2'>Urgent delivery</option>
+				<option value='3'>Unknown date</option>
+			</select>
+	
+			<div id='purchase_order_status_detail'>
+				<label>Send date request</label>
+				<input type='date' class='form-control' name='request_date' required min='2020-01-01'>
+			</div>
+			
+			<label>Supplier</label>
+			<select class='form-control' name='supplier' id='supplier'>
 <?php
 	foreach($suppliers as $supplier){
 ?>
-		<option value='<?= $supplier->id ?>'><?= $supplier->name ?></option>
+				<option value='<?= $supplier->id ?>'><?= $supplier->name ?></option>
 <?php
 	}
 ?>
-	</select>
+			</select>
 	
-	<label>Taxing</label>
-	<select class='form-control' name='taxing' id='taxing'>
-		<option value='0'>Non - tax</option>
-		<option value='1' selected>Tax</option>
-	</select>
+			<label>Taxing</label>
+			<select class='form-control' name='taxing' id='taxing'>
+				<option value='0'>Non - tax</option>
+				<option value='1' selected>Tax</option>
+			</select>
 	
-	<label><input type='checkbox' id='dropship'>Dropship</label>
+			<br>
+			<label><input type='checkbox' id='dropship'> Dropship</label>
+			
+			<div id='dropship_detail' style='display:none'>
+				<label>Address</label>
+				<textarea class='form-control' name='dropship_address'></textarea>
+				
+				<label>City</label>
+				<input type='text' class='form-control' name='dropship_city'>
+				
+				<label>Person in charge</label>
+				<input type='text' class='form-control' name='dropship_contact_person'>
+				
+				<label>Contact number</label>
+				<input type='text' class='form-control' name='dropship_contact'>
+			</div>
 	
-	<div id='dropship_detail' style='display:none'>
-		<label>Address</label>
-		<textarea class='form-control' name='dropship_address'></textarea>
-		
-		<label>City</label>
-		<input type='text' class='form-control' name='dropship_city'>
-		
-		<label>Person in charge</label>
-		<input type='text' class='form-control' name='dropship_contact_person'>
-		
-		<label>Contact number</label>
-		<input type='text' class='form-control' name='dropship_contact'>
+			<br>
+			<button type='button' class='button button_default_dark' id='add_item_button'><i class='fa fa-shopping-cart'></i> Add item</button>
+			<br><br>
+	
+			<table class='table table-bordered' id='cart_products_table' style='display:none'>
+				<tr>
+					<th>Reference</th>
+					<th>Name</th>
+					<th>Price list</th>
+					<th>Discount</th>
+					<th>Quantity</th>
+					<th>Action</th>
+				</tr>
+				<tbody id='cart_products'></tbody>
+			</table>
+	
+			<table class='table table-bordered' id='bonus_cart_products_table' style='display:none'>
+				<tr>
+					<th>Item</th>
+					<th>Description</th>
+					<th>Quantity</th>
+					<th>Action</th>
+				</tr>
+				<tbody id='bonus_cart_products'></tbody>
+			</table>
+	
+			<button type='button' class='button button_success_dark' id='submit_button' onclick='show_purchase_order()' style='display:none'><i class='fa fa-long-arrow-right'></i></button>
+		</form>
 	</div>
-	
-	<br>
-	<button type='button' class='button button_default_light' id='add_item_button'><i class='fa fa-shopping-cart'></i> Add item</button>
-	<br><br>
-	
-	<table class='table table-bordered' id='cart_products_table' style='display:none'>
-		<tr>
-			<th>Reference</th>
-			<th>Name</th>
-			<th>Price list</th>
-			<th>Discount</th>
-			<th>Quantity</th>
-			<th>Action</th>
-		</tr>
-		<tbody id='cart_products'></tbody>
-	</table>
-	
-	<table class='table table-bordered' id='bonus_cart_products_table' style='display:none'>
-		<tr>
-			<th>Item</th>
-			<th>Description</th>
-			<th>Quantity</th>
-			<th>Action</th>
-		</tr>
-		<tbody id='bonus_cart_products'></tbody>
-	</table>
-	
-	<button type='button' class='button button_success_dark' id='submit_button' onclick='show_purchase_order()' style='display:none'><i class='fa fa-long-arrow-right'></i></button>
-	</form>
 </div>
 
 <div class='alert_wrapper' id='add_item_wrapper'>
@@ -346,7 +350,7 @@
 				
 				if($('#item_row-' + item_id).length == 0){
 					$('#cart_products').append("<tr id='item_row-" + n + "'><td id='reference-" + n + "'>" + reference + "</td><td id='name-" + n + "'>" + name + "</td>" + 
-						"<td><input type='number' class='form-control' min='1' required name='price_list[" + n + "]' id='price_list-" + n + "'><br><label>" + numeral(price_list).format('0,0.00') + "</label> <button type='button' class='button button_default_light' onclick='copy_price_list(" + item_id + "," + price_list + ")'><i class='fa fa-copy'></i></button></td>" +
+						"<td><input type='number' class='form-control' min='1' required name='price_list[" + n + "]' id='price_list-" + n + "'><br><label>" + numeral(price_list).format('0,0.00') + "</label> <button type='button' class='button button_default_dark' onclick='copy_price_list(" + item_id + "," + price_list + ")'><i class='fa fa-copy'></i></button></td>" +
 						"<td><input type='number' class='form-control' min='0' max='100' required name='discount[" + n + "]' id='discount-" + n + "'></td>" +
 						"<td><input type='number' class='form-control' min='1' required name='quantity[" + n + "]' id='quantity-" + n + "'></td>" + 
 						"<td><button type='button' class='button button_danger_dark' onclick='remove_item(" + n + ")'><i class='fa fa-trash'></i></button></td>");

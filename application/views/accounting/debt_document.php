@@ -1,24 +1,30 @@
 <div class='dashboard'>
-	<h2 style='font-family:bebasneue'>Debt document</h2>
-	<hr>
-	<a href='<?= site_url('Debt/create_dashboard') ?>'><button type='button' class='button button_default_light'>Create debt document</button></a>
+	<div class='dashboard_head'>
+		<p style='font-family:museo'><a href='<?= site_url('Accounting') ?>' title='Sales'><i class='fa fa-bar-chart'></i></a> /Debt document</p>
+	</div>
+	<br>
+	<div class='dashboard_in'>
+		<div class='input_group'>
+			<input type='text' class='form-control' id='search_bar'>
+			<div class='input_group_append'>
+				<a href='<?= site_url('Debt/create_dashboard') ?>'><button type='button' class='button button_default_dark'>Create debt document</button></a>
+				<a href='<?= site_url('Debt/create_blank_dashboard') ?>'><button type='button' class='button button_default_dark'>Create blank debt document</button></a>
+			</div>
+		</div>
+		<br>
+		<table class='table table-bordered' id='debt_document_table'>
+			<tr>
+				<th>Date</th>
+				<th>Document</th>
+				<th>Supplier</th>
+				<th>Action</th>
+			</tr>
+			<tbody id='debt_document_tbody'></tbody>
+		</table>
 	
-	<a href='<?= site_url('Debt/create_blank_dashboard') ?>'><button type='button' class='button button_default_light'>Create blank debt document</button></a>
-	
-	<br><br>
-	<input type='text' class='form_control' placeholder='Search' id='search_bar'>
-	<br><br>
-	<table class='table table-bordered' id='debt_document_table'>
-		<tr>
-			<th>Date</th>
-			<th>Document</th>
-			<th>Supplier</th>
-			<th>Action</th>
-		</tr>
-		<tbody id='debt_document_tbody'></tbody>
-	</table>
-	
-	<select class='form-control' id='page' style='width:100px' value='1'></select>
+		<select class='form-control' id='page' style='width:100px'>
+			<option value='1'>1</option>
+		</select>
 </div>
 
 <div class='alert_wrapper' id='view_debt_wrapper'>
@@ -57,56 +63,22 @@
 	</div>
 </div>
 <script>
-	$(document).ready(function(){
-		$.ajax({
-			url:'<?= site_url('Debt/view_unconfirmed_documents') ?>',
-			data:{
-				page:1,
-				term:''
-			},
-			success:function(response){
-				var page	= $('#page').val();
-				array	= response.invoices;
-				$('#debt_document_tbody').html('');
-				$.each(array, function(index, value){
-					var id					= value.id;
-					var date				= value.date;
-					var tax_document		= value.tax_document;
-					var invoice_document	= value.invoice_document;
-					var supplier_name		= value.name;
-					var supplier_address	= value.address;
-					var supplier_city		= value.city;
-					
-					$('#debt_document_tbody').append("<tr><td>" + date + "</td><td><p>" + supplier_name + "</p><p>" + supplier_address + "</p><p>" + supplier_city + "</p></td><td><p>" + invoice_document + "</p><p>" + tax_document + "</p></td><td><button type='button' class='button button_default_light' onclick='view_debt_document(" + id + ")'><i class='fa fa-eye'></i></button></td></tr>");
-				});
-				
-				$('#page').html('');
-				var pages		= response.pages;
-				for(i = 1; i <= pages; i++){
-					if(i == page){
-						$('#page').append("<option value='" + i + "' selected>" + i + "</option>");
-					} else {
-						$('#page').append("<option value='" + i + "'>" + i + "</option>");
-					}
-				}
-			}
-		});
-	});
+	refresh_view();
 	
 	$('#page').change(function(){
 		refresh_view();
 	});
 	
 	$('#search_bar').change(function(){
-		refresh_view();
+		refresh_view(1);
 	});
 	
-	function refresh_view()
+	function refresh_view(page = $('#page').val())
 	{
 		$.ajax({
 			url:'<?= site_url('Debt/view_unconfirmed_documents') ?>',
 			data:{
-				page:$('#page').val(),
+				page:page,
 				term:$('#search_bar').val()
 			},
 			success:function(response){

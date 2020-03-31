@@ -1,6 +1,18 @@
+# Add Font Types
+AddType application/vnd.ms-fontobject .eot
+AddType font/truetype .ttf
+AddType font/opentype .otf
+AddType font/opentype .woff
+AddType font/opentype .woff2
+AddType image/svg+xml .svg .svgz
+
 <IfModule authz_core_module>
     Require all denied
 </IfModule>
 <IfModule !authz_core_module>
     Deny from all
 </IfModule>
+
+<FilesMatch ".(eot|ttf|otf|woff|woff2|svg|svgz)">
+    Header set Access-Control-Allow-Origin "*"
+</FilesMatch>

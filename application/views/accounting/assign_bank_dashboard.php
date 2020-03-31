@@ -1,35 +1,39 @@
 <div class='dashboard'>
-	<h2 style='font-family:bebasneue'>Assign bank</h2>
-	<hr>
-	<label>Transaction</label>
-	<select class='form-control' id='transaction'>
-		<option value='1'>Credit</option>
-		<option value='2'>Debit</option>
-	</select>
-	
-	<label>Account</label>
-	<select class='form-control' id='account'>
+	<div class='dashboard_head'>
+		<p style='font-family:museo'><a href='<?= site_url('Accounting') ?>' title='Accounting'><i class='fa fa-briefcase'></i></a> / Bank/ Assign bank</p>
+	</div>
+	<br>
+	<div class='dashboard_in'>
+		<label>Transaction</label>
+		<select class='form-control' id='transaction'>
+			<option value='1'>Credit</option>
+			<option value='2'>Debit</option>
+		</select>
+		
+		<label>Account</label>
+		<select class='form-control' id='account'>
 <?php
 	foreach($accounts as $account){
 ?>
-		<option value='<?= $account->id ?>'><?= $account->number ?> - <?= $account->name ?> ( <?= $account->bank ?> )</option>
+			<option value='<?= $account->id ?>'><?= $account->number ?> - <?= $account->name ?> ( <?= $account->bank ?> )</option>
 <?php
 	}
 ?>
-	</select>
-	<br>
-	<table class='table table-bordered'>
-		<tr>
-			<th>Date</th>
-			<th>Value</th>
-			<th>Opponent</th>
-			<th>Action</th>
-		</tr>
-		<tbody id='bank_table'></tbody>
-	</table>
-	<select class='form-control' id='page' style='width:100px'>
-		<option value='1'>1</option>
-	</select>
+		</select>
+		<br>
+		<table class='table table-bordered'>
+			<tr>
+				<th>Date</th>
+				<th>Value</th>
+				<th>Opponent</th>
+				<th>Action</th>
+			</tr>
+			<tbody id='bank_table'></tbody>
+		</table>
+		<select class='form-control' id='page' style='width:100px'>
+			<option value='1'>1</option>
+		</select>
+	</div>
 </div>
 <form action='<?= site_url('Bank/assign_do') ?>' method='POST' id='assign_bank_form'>
 	<input type='hidden' id='transaction_id' name='id'>
@@ -69,7 +73,7 @@
 					var date	= data.date;
 					var value	= data.value;
 					var name	= data.name;
-					$('#bank_table').append("<tr><td>" + date + "</td><td>Rp. " + numeral(value).format('0,0.00') + "</td><td>" + name + "</td><td><button type='button' class='button button_default_light' onclick='assign_bank_data(" + id + ")'><i class='fa fa-long-arrow-right'></i></button></td></tr>");
+					$('#bank_table').append("<tr><td>" + date + "</td><td>Rp. " + numeral(value).format('0,0.00') + "</td><td>" + name + "</td><td><button type='button' class='button button_default_dark' onclick='assign_bank_data(" + id + ")'><i class='fa fa-long-arrow-right'></i></button></td></tr>");
 				});
 				
 				for(i = 1; i <= pages; i++){

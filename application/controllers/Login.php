@@ -16,7 +16,6 @@ class Login extends CI_Controller {
 		} else if($result_login[0] == 'Success'){
 			$login_array = array(
 				'user_id' => $result_login[1],
-				'user_role' => $result_login[2]
 			);
 			
 			$this->session->set_userdata($login_array);

@@ -59,7 +59,8 @@ class Delivery_order extends CI_Controller {
 		$this->load->model('Delivery_order_model');
 		$data['guid'] = $this->Delivery_order_model->create_guid();
 		
-		$this->load->view('Inventory/sales_order_view',$data);
+		header('Content-Type: application/json');
+		echo json_encode($data);
 	}
 	
 	public function input_delivery_order()
@@ -87,13 +88,23 @@ class Delivery_order extends CI_Controller {
 			};
 		}
 		
-		redirect(site_url('Inventory'));
+		redirect(site_url('Delivery_order'));
 	}
 	
 	public function show_by_code_delivery_order_id($id)
 	{
 		$this->load->model('Delivery_order_detail_model');
-		$data = $this->Delivery_order_detail_model->show_by_code_delivery_order_id($id);
+		$data['general'] = $this->Delivery_order_detail_model->show_by_code_delivery_order_id($id);
+		
+		$delivery_order_array 	= $this->Delivery_order_detail_model->get_batch_by_code_delivery_order_id($id);
+		
+		$this->load->model('Stock_in_model');
+		$result					= $this->Stock_in_model->check_stock($delivery_order_array);
+		if($result){
+			$data['info'] = '';
+		} else {
+			$data['info'] = 'Stock';
+		}
 		
 		header('Content-Type: application/json');
 		echo json_encode($data);
@@ -118,26 +129,32 @@ class Delivery_order extends CI_Controller {
 	
 	public function print($delivery_order_id)
 	{
-		$this->load->model('View_delivery_order_model');
-		$data['datas'] = $this->View_delivery_order_model->show_by_id($delivery_order_id);
+		$this->load->model('Delivery_order_model');
+		$result = $this->Delivery_order_model->show_by_id($delivery_order_id);
+		$data['general']	= $result;
 		
-		$this->load->model('View_delivery_order_detail_model');
-		$data['items'] = $this->View_delivery_order_detail_model->show_by_code_delivery_order_id($delivery_order_id);
+		$this->load->model('Delivery_order_detail_model');
+		$data['items'] = $this->Delivery_order_detail_model->show_by_code_delivery_order_id($delivery_order_id);
 		
 		$this->load->view('head');
 		$this->load->view('Inventory/delivery_order_print', $data);
+		
+		print_r($data['general']);
 	}
 	
 	public function send()
 	{
 		$delivery_order_id		= $this->input->post('id');
+		
 		$this->load->model('Delivery_order_detail_model');
-		$delivery_order_array = $this->Delivery_order_detail_model->get_batch_by_code_delivery_order_id($delivery_order_id);
+		$delivery_order_array 	= $this->Delivery_order_detail_model->get_batch_by_code_delivery_order_id($delivery_order_id);
+		
 		$this->load->model('Stock_in_model');
-		$result	= $this->Stock_in_model->check_stock($delivery_order_array);
+		$result					= $this->Stock_in_model->check_stock($delivery_order_array);
+		
 		if($result){
 			$this->load->model('Delivery_order_model');
-			$check = $this->Delivery_order_model->send($delivery_order_id);
+			$check 				= $this->Delivery_order_model->send($delivery_order_id);
 			if($check){			
 				$this->load->model('Stock_out_model');
 				$this->Stock_out_model->send_delivery_order($delivery_order_array);
@@ -145,5 +162,16 @@ class Delivery_order extends CI_Controller {
 		}
 		
 		redirect(site_url('Delivery_order'));
+	}
+	
+	public function show_by_sales_order()
+	{
+		$sales_order_id		= $this->input->get('sales_order_id');
+		
+		$this->load->model('Delivery_order_detail_model');
+		$data 				= $this->Delivery_order_detail_model->show_by_code_sales_order_id($sales_order_id);
+		
+		header('Content-Type: application/json');
+		echo json_encode($data);
 	}
 }

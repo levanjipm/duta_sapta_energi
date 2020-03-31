@@ -51,8 +51,19 @@ class Finance extends CI_Controller {
 		$transaction	= $this->input->post('transaction');
 		$type			= $this->input->post('type');
 		$opponent_id	= $this->input->post('id');
+		$petty_cash		= $this->input->post('petty_cash_transfer');
+		if($petty_cash	== 'on'){		
+			$opponent_id	= 1;
+			$type			= 'other';
+		}
+		
 		$this->load->model('Bank_model');
-		$this->Bank_model->input($date, $value, $transaction, $type, $opponent_id, $account);
+		$insert_id		= $this->Bank_model->input($date, $value, $transaction, $type, $opponent_id, $account);
+		
+		if($petty_cash	== 'on'){
+			$this->load->model('Petty_cash_model');
+			$this->Petty_cash_model->insert_income($insert_id, $value, $date);
+		}
 		
 		redirect(site_url('Bank/transaction'));
 	}

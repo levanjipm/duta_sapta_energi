@@ -1,8 +1,11 @@
 <div class='dashboard'>
-	<h2 style='font-family:bebasneue'>Delivery Order</h2>
-	<hr>
-	<a href='<?= site_url('Delivery_order/create_dashboard'); ?>'><button type='button' class='button button_default_light'>Create delivery order</button></a>
-	<br><br>
+	<div class='dashboard_head'>
+		<p style='font-family:museo'><a href='<?= site_url('Inventory') ?>' title='Inventory'><i class='fa fa-briefcase'></i></a> /Delivery order</p>
+	</div>
+	<br>
+	<div class='dashboard_in'>
+		<a href='<?= site_url('Delivery_order/create_dashboard'); ?>'><button type='button' class='button button_default_dark'>Create delivery order</button></a>
+		<br><br>
 <?php
 	if(!empty($delivery_orders)){
 ?>
@@ -92,9 +95,12 @@
 			<tbody id='delivery_order_table'>
 			</tbody>
 		</table>
+		
+		<p style='font-family:museo' id='warning_text' style='display:none'>Warning! Insufficient stock detected</p>
+		
 		<form action='<?= site_url('Delivery_order/confirm') ?>' method='POST' id='delivery_order_form'>
 			<input type='hidden' id='delivery_order_id' name='id'>
-			<button class='button button_default_dark'><i class='fa fa-long-arrow-right'></i></button>
+			<button class='button button_default_dark' id='send_delivery_order_button'><i class='fa fa-long-arrow-right'></i></button>
 		</form>
 	</div>
 </div>
@@ -125,17 +131,33 @@
 		$.ajax({
 			url:"<?= site_url('Delivery_order/show_by_code_delivery_order_id/') ?>" + n,
 			success:function(response){
-				$.each(response, function(index, value){
-					$('#delivery_order_table').append("<tr><td>" + value.reference + "</td><td>" + value.name + "</td><td>" + numeral(value.quantity).format('0,0') + "</td></tr>");
+				console.log(response);
+				var general		= response.general;
+				$.each(general, function(index, value){
+					var reference	= value.reference;
+					var name		= value.name;
+					var quantity	= value.quantity;
+					
+					$('#delivery_order_table').append("<tr><td>" + reference + "</td><td>" + name + "</td><td>" + numeral(quantity).format('0,0') + "</td></tr>");
 				});
-				$('#delivery_order_name').html(response[0].do_name);
-				$('#delivery_order_date').html(response[0].date);
-				$('#customer_name').html(response[0].customer_name);
-				$('#customer_address').html(response[0].address);
-				$('#customer_city').html(response[0].city);
-				$('#delivery_order_id').val(response[0].id);
+				
+				$('#delivery_order_name').html(general[0].do_name);
+				$('#delivery_order_date').html(general[0].date);
+				$('#customer_name').html(general[0].customer_name);
+				$('#customer_address').html(general[0].address);
+				$('#customer_city').html(general[0].city);
+				$('#delivery_order_id').val(general[0].id);
 				$('#delivery_order_form').attr('action', '<?= site_url('Delivery_order/send') ?>');
 				$('#view_delivery_order_wrapper').fadeIn();
+				
+				var info		= response.info;
+				if(info == 'Stock'){
+					$('#warning_text').show();
+					$('#send_delivery_order_button').attr('disabled', true);
+				} else {
+					$('#warning_text').hide();
+					$('#send_delivery_order_button').attr('disabled', false);
+				}
 			}
 		});
 	}

@@ -162,4 +162,37 @@ class Stock_in_model extends CI_Model {
 			
 			return $sufficient_stock;
 		}
+		
+		public function search_stock_table($offset = 0, $term = '', $limit = 25)
+		{
+			$this->db->select('item.reference, item.name, item.id');
+			$this->db->select_sum('stock_in.residue', 'stock');
+			$this->db->from('stock_in');
+			$this->db->join('item', 'stock_in.item_id = item.id');
+			
+			if($term != ''){
+				$this->db->like('reference', $term, 'both');
+				$this->db->or_like('name', $term, 'both');
+			};
+			
+			$this->db->group_by('stock_in.item_id');
+			$this->db->order_by('item.reference');
+			$this->db->limit($limit, $offset);
+			
+			$query		= $this->db->get();
+			$result		= $query->result();
+			
+			return $result;
+		}
+		
+		public function count_stock_table($offset = 0, $term = '', $limit = 25)
+		{
+			$this->db->select_sum('stock_in.residue', 'stock');
+			$this->db->group_by('stock_in.item_id');
+			
+			$query		= $this->db->get($this->table_stock_in);
+			$result		= $query->num_rows();
+			
+			return $result;
+		}
 }

@@ -13,6 +13,7 @@ class Sales_order_model extends CI_Model {
 		public $is_confirm;
 		public $guid;
 		public $invoicing_method;
+		public $created_by;
 		
 		public $customer_name;
 		public $customer_address;
@@ -34,6 +35,7 @@ class Sales_order_model extends CI_Model {
 			$this->is_confirm			= $db_item->is_confirm;
 			$this->guid					= $db_item->guid;
 			$this->invoicing_method		= $db_item->invoicing_method;
+			$this->created_by			= $db_item->created_by;
 			
 			return $this;
 		}
@@ -51,6 +53,7 @@ class Sales_order_model extends CI_Model {
 			$db_item->is_confirm			= $this->is_confirm;
 			$db_item->guid					= $this->guid;
 			$db_item->invoicing_method		= $this->invoicing_method;
+			$db_item->created_by			= $this->created_by;
 			
 			return $db_item;
 		}
@@ -68,6 +71,7 @@ class Sales_order_model extends CI_Model {
 			$stub->is_confirm			= $db_item->is_confirm;
 			$stub->guid					= $db_item->guid;
 			$stub->invoicing_method		= $db_item->invoicing_method;
+			$stub->created_by			= $db_item->created_by;
 			
 			$stub->customer_name 		= $db_item->customer_name;
 			$stub->customer_address 	= $db_item->customer_address;
@@ -203,6 +207,7 @@ class Sales_order_model extends CI_Model {
 				$this->is_confirm		= '';
 				$this->guid				= $guid;
 				$this->invoicing_method	= $this->input->post('method');
+				$this->created_by		= $this->session->userdata('user_id');
 				
 				$db_item 				= $this->get_db_from_stub();
 				$db_result 				= $this->db->insert($this->table_sales_order, $db_item);
@@ -222,10 +227,11 @@ class Sales_order_model extends CI_Model {
 		
 		public function show_uncompleted_sales_order($offset = 0, $filter = '', $limit = 25)
 		{
-			$this->db->select('DISTINCT(sales_order.code_sales_order_id) as id, code_sales_order.*, customer.name as customer_name, customer.name as customer_name, customer.address as customer_address, customer.city as customer_city');
+			$this->db->select('DISTINCT(sales_order.code_sales_order_id) as id, code_sales_order.*, customer.name as customer_name, customer.name as customer_name, customer.address as customer_address, customer.city as customer_city, users.name as seller');
 			$this->db->from('sales_order');
 			$this->db->join('code_sales_order', 'code_sales_order.id = sales_order.code_sales_order_id');
 			$this->db->join('customer', 'code_sales_order.customer_id = customer.id');
+			$this->db->join('users', 'code_sales_order.seller = users.id', 'left');
 			
 			if($filter != ''){
 				$this->db->like('customer.name', $filter,'both');
@@ -244,7 +250,7 @@ class Sales_order_model extends CI_Model {
 			return $items;
 		}
 		
-		public function count_uncompleted_sales_order($offset = 0, $filter = '', $limit = 25)
+		public function count_uncompleted_sales_order($filter = '')
 		{
 			$this->db->select('DISTINCT(sales_order.code_sales_order_id) as id');
 			$this->db->from('sales_order');
@@ -260,19 +266,19 @@ class Sales_order_model extends CI_Model {
 			$this->db->where('sales_order.status', 0);
 			$this->db->where('code_sales_order.is_confirm', 1);
 			$this->db->where('code_sales_order.is_delete', 0);
-			$this->db->order_by('code_sales_order.date');
-			$this->db->limit($limit, $offset);
+			
 			$query 		= $this->db->get();
 			
-			$items 		= $query->result();
+			$items 		= $query->num_rows();
 			return $items;
 		}
 		
 		public function show_unconfirmed_sales_order($offset = 0, $filter = '', $limit = 25)
 		{
-			$this->db->select('DISTINCT(sales_order.code_sales_order_id) as id, code_sales_order.*, customer.name as customer_name, customer.address as customer_address, customer.city as customer_city');
+			$this->db->select('DISTINCT(sales_order.code_sales_order_id) as id, code_sales_order.*, customer.name as customer_name, customer.address as customer_address, customer.city as customer_city, users.name as seller');
 			$this->db->from('sales_order');
 			$this->db->join('code_sales_order', 'code_sales_order.id = sales_order.code_sales_order_id');
+			$this->db->join('users', 'code_sales_order.seller = users.id', 'left');
 			$this->db->join('customer', 'code_sales_order.customer_id = customer.id');
 			
 			if($filter != ''){

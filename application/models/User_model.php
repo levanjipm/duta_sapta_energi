@@ -11,7 +11,8 @@ class User_model extends CI_Model {
 		public $is_active;
 		public $entry_date;
 		public $password;
-		public $role;
+		public $image_url;
+		public $access_level;
 		
 		public function __construct()
 		{
@@ -27,7 +28,8 @@ class User_model extends CI_Model {
 			$this->is_active			= $db_item->is_active;
 			$this->entry_date			= $db_item->entry_date;
 			$this->password				= $db_item->password;
-			$this->role					= $db_item->role;
+			$this->image_url			= $db_item->image_url;
+			$this->access_level			= $db_item->access_level;
 			
 			return $this;
 		}
@@ -43,7 +45,8 @@ class User_model extends CI_Model {
 			$db_item->is_active				= $this->is_active;
 			$db_item->entry_date			= $this->entry_date;
 			$db_item->password				= $this->password;
-			$db_item->role					= $this->role;
+			$db_item->image_url				= $this->image_url;
+			$db_item->access_level			= $this->access_level;
 			
 			return $db_item;
 		}
@@ -59,7 +62,8 @@ class User_model extends CI_Model {
 			$stub->is_active			= $db_item->is_active;
 			$stub->entry_date			= $db_item->entry_date;
 			$stub->password				= $db_item->password;
-			$stub->role					= $db_item->role;
+			$stub->image_url			= $db_item->image_url;
+			$stub->access_level			= $db_item->access_level;
 			
 			return $stub;
 		}
@@ -89,8 +93,7 @@ class User_model extends CI_Model {
 				$login_status = array('Failed','');
 			} else {
 				$user_id = $row->id;
-				$user_role = $row->role;
-				$login_status = array('Success', $user_id, $user_role);
+				$login_status = array('Success', $user_id);
 			}
 			
 			return $login_status;
@@ -106,38 +109,12 @@ class User_model extends CI_Model {
 			return $items;
 		}
 		
-		public function insert_from_post()
-		{
-			$this->load->model('Customer_model');
-			$this->db->select('*');
-			$this->db->from($this->table_customer);
-			$this->db->where('name =', $this->input->post('customer_name'));
-			$item = $this->db->count_all_results();
-			
-			if($item == 0){
-				$this->id					= '';
-				$this->name					= $this->input->post('client_name');
-				$this->address				= $this->input->post('client_address');
-				$this->city					= $this->input->post('client_city');
-				$this->pic					= $this->input->post('client_pic');
-				$this->phone				= $this->input->post('client_phone');
-				$this->npwp					= $this->input->post('client_npwp');
-				$this->created_by			= 1;
-				$this->created_date			= date('Y-m-d');
-				
-				$db_item 					= $this->get_db_from_stub($this);
-				$db_result 					= $this->db->insert($this->table_client, $db_item);
-			}
-		}
-		
 		public function show_by_id($id)
 		{
 			$this->db->where('id',$id);
 			$query = $this->db->get($this->table_user);
-			$user = $query->result();
-			$result = $this->map_list($user);
+			$user = $query->row();
 			
-			return $result;
-			
+			return $user;
 		}
 }

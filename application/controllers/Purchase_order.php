@@ -16,6 +16,7 @@ class Purchase_order extends CI_Controller {
 		
 		$this->load->model('Purchase_order_model');
 		$result = $this->Purchase_order_model->show_unconfirmed_purchase_order();
+
 		$data['purchase_orders'] = $result;
 		$this->load->view('Purchasing/purchase_order', $data);
 	}
@@ -24,8 +25,9 @@ class Purchase_order extends CI_Controller {
 	{
 		$this->session->unset_userdata('purchase_cart_products');
 		$this->session->unset_userdata('purchase_cart_bonus_products');
+		
 		$this->load->model('Supplier_model');
-		$result = $this->Supplier_model->show_all();
+		$result = $this->Supplier_model->show_items();
 		$data['suppliers'] = $result;
 		
 		$this->load->model('Purchase_order_model');
@@ -146,5 +148,7 @@ class Purchase_order extends CI_Controller {
 		
 		$this->load->view('head');
 		$this->load->view('purchasing/purchase_order_print', $data);
+		
+		print_r($data);
 	}
 }

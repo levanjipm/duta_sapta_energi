@@ -15,13 +15,6 @@ class Item extends CI_Controller {
 		$this->load->view('head');
 		$this->load->view('sales/header');
 		
-		$this->load->model('Item_model');
-		$items = $this->Item_model->show_items();
-		$data['items'] = $items;
-		
-		$pages = $this->Item_model->count_items();
-		$data['pages'] = ceil($pages / 25);
-		
 		$this->load->model('Item_class_model');
 		$items = $this->Item_class_model->show_all();
 		$data['classes'] = $items;
@@ -40,21 +33,6 @@ class Item extends CI_Controller {
 		}
 		
 		redirect(site_url('Item'));
-	}
-	
-	public function update_view_page()
-	{
-		$current_page	= $this->input->get('page') - 1;
-		$filter			= $this->input->get('term');
-		$this->load->model('Item_model');
-		$items			= $this->Item_model->show_items($current_page * 25, $filter);
-		$data['items']	= $items;
-		
-		$data['pages']	= ceil($this->Item_model->count_items($filter) / 25);
-		
-		$data['paging'] = $this->input->get('page');
-		
-		$this->load->view('sales/item_manage_view',$data);
 	}
 	
 	public function update_item()

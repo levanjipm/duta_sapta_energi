@@ -111,6 +111,10 @@ class Debt_model extends CI_Model {
 			$created_by			= $this->session->userdata('user_id');
 			$date				= $this->input->post('date');
 			$tax_document		= $this->input->post('tax_document');
+			if(strlen($tax_document) < 19){
+				$tax_document	= NULL;
+			}
+			
 			$invoice_document	= $this->input->post('invoice_document');
 			
 			$data		= array(
@@ -157,7 +161,6 @@ class Debt_model extends CI_Model {
 			
 			$query = $this->db->get();
 			
-			// print_r($this->db->last_query());
 			$result	= $query->result();
 			
 			return $result;
@@ -217,5 +220,65 @@ class Debt_model extends CI_Model {
 			} else {
 				return FALSE;
 			}
+		}
+		
+		public function view_payable_chart()
+		{
+			$query		= $this->db->query("SELECT SUM(good_receipt.billed_price * good_receipt.quantity) as value, supplier.name, supplier.city, COALESCE(a.value,0) as paid, code_purchase_order.supplier_id
+				FROM good_receipt 
+				INNER JOIN code_good_receipt ON good_receipt.code_good_receipt_id = code_good_receipt.id 
+				JOIN purchase_order ON good_receipt.purchase_order_id = purchase_order.id
+				INNER JOIN code_purchase_order ON purchase_order.code_purchase_order_id = code_purchase_order.id
+				JOIN supplier ON code_purchase_order.supplier_id = supplier.id
+				JOIN purchase_invoice ON code_good_receipt.invoice_id = purchase_invoice.id
+				LEFT JOIN
+					(SELECT SUM(value) as value, purchase_id FROM payable GROUP BY purchase_id) a
+				ON a.purchase_id = purchase_invoice.id
+				WHERE purchase_invoice.is_done = '0'
+				GROUP BY code_purchase_order.supplier_id");
+			$result		= $query->result();
+			$data		= $this->Debt_model->convert_payable_chart_array($result);
+			
+			return $result;
+		}
+		
+		public function convert_payable_chart_array($payable_array)
+		{
+			$chart_array		= array();
+			foreach($payable_array as $payable){
+				$supplier_id		= $payable->supplier_id;
+				$supplier_name		= $payable->name;
+				$supplier_city		= $payable->city;
+				$value				= $payable->value;
+				$paid				= $payable->paid;
+				$chart_array[$supplier_id] = array(
+					'id' => $supplier_id,
+					'name' => $supplier_name,
+					'city' => $supplier_city,
+					'value' => $value - $paid
+				);
+			}
+			
+			return $chart_array;
+		}
+		
+		public function view_incompleted_transaction($supplier_id)
+		{
+			$this->db->select('sum(good_receipt.quantity * good_receipt.billed_price) as value, purchase_invoice.id, purchase_invoice.date, purchase_invoice.invoice_document as name, purchase_invoice.tax_document, sum(payable.value) as paid');
+			$this->db->from('purchase_invoice');
+			$this->db->join('code_good_receipt', 'code_good_receipt.invoice_id = purchase_invoice.id');
+			$this->db->join('good_receipt', 'good_receipt.code_good_receipt_id = code_good_receipt.id', 'left');
+			$this->db->join('purchase_order', 'good_receipt.purchase_order_id = purchase_order.id');
+			$this->db->join('code_purchase_order', 'code_purchase_order.id = purchase_order.code_purchase_order_id');
+			$this->db->join('payable', 'purchase_invoice.id = payable.purchase_id', 'left');
+			$this->db->group_by('payable.purchase_id');
+			$this->db->where('code_purchase_order.supplier_id', $supplier_id);
+			$this->db->where('purchase_invoice.is_done', 0);
+			$this->db->order_by('purchase_invoice.date');
+			
+			$query	= $this->db->get();
+			$result	= $query->result();
+			
+			return $result;
 		}
 }

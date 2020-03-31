@@ -1,71 +1,74 @@
 <div class='dashboard'>
-	<h2 style='font-family:bebasneue'>Create sales order</h2>
-	<hr>
-	<form action='<?= site_url('Sales_order/input_sales_order') ?>' method='POST' id='sales_order_form'>
-	<label>Date</label>
-	<input type='date' class='form-control' name='sales_order_date' id='sales_order_date' value='<?= date('Y-m-d') ?>'>
-	
-	<input type='hidden' value='<?= $guid ?>' name='guid'>
-	
-	<label>Customer</label>
-	<button class='form-control' type='button' id='select_customer_button' style='text-align:left'></button>
-	<p style='font-family:museo' id='customer_address_select'></p>
-	
-	<input type='hidden' name='customer_id' id='customer_id' required>
+	<div class='dashboard_head'>
+		<p style='font-family:museo'><a href='<?= site_url('Sales') ?>' title='Sales'><i class='fa fa-briefcase'></i></a> /<a href='<?= site_url('Sales_order') ?>'>Sales order </a> /Create sales order</p>
+	</div>
 	<br>
-	
-	<label>Seller</label>
-	<select class='form-control' name='sales_order_seller' id='sales_order_seller'>
-	<option value=''>None</option>
+	<div class='dashboard_in'>
+		<form action='<?= site_url('Sales_order/input_sales_order') ?>' method='POST' id='sales_order_form'>
+			<label>Date</label>
+			<input type='date' class='form-control' name='sales_order_date' id='sales_order_date' value='<?= date('Y-m-d') ?>'>
+			
+			<input type='hidden' value='<?= $guid ?>' name='guid'>
+			
+			<label>Customer</label>
+			<button class='form-control' type='button' id='select_customer_button' style='text-align:left'></button>
+			<p style='font-family:museo' id='customer_address_select'></p>
+			
+			<input type='hidden' name='customer_id' id='customer_id' required>
+			<br>
+			
+			<label>Seller</label>
+			<select class='form-control' name='sales_order_seller' id='sales_order_seller'>
+				<option value=''>None</option>
 <?php
 	foreach($users as $user){
 ?>
-	<option value='<?= $user->id ?>'><?= $user->name ?></option>
+				<option value='<?= $user->id ?>'><?= $user->name ?></option>
 <?php
 	}
 ?>
-	</select>
+			</select>
 	
-	<label>Taxing</label>
-	<select class='form-control' name='taxing' id='taxing'>
-		<option value='0'>Non taxable</option>
-		<option value='1'>Taxable</option>
-	</select>
+			<label>Taxing</label>
+			<select class='form-control' name='taxing' id='taxing'>
+				<option value='0'>Non taxable</option>
+				<option value='1'>Taxable</option>
+			</select>
 	
-	<label>Invoicing method</label>
-	<select class='form-control' name='method' id='method'>
-		<option value='1'>Retail</option>
-		<option value='2'>Coorporate</option>
-	</select>
+			<label>Invoicing method</label>
+			<select class='form-control' name='method' id='method'>
+				<option value='1'>Retail</option>
+				<option value='2'>Coorporate</option>
+			</select>
+			
+			<br>
+			<button type='button' class='button button_default_dark' id='add_item_button'><i class='fa fa-shopping-cart'></i> Add item</button>
+			<br><br>
+			<table class='table table-bordered' id='cart_products_table' style='display:none'>
+				<tr>
+					<th>Reference</th>
+					<th>Name</th>
+					<th>Price list</th>
+					<th>Discount (%)</th>
+					<th>Quantity</th>
+					<th>Action</th>
+				</tr>
+				<tbody id='cart_products'></tbody>
+			</table>
+		
+			<table class='table table-bordered' id='bonus_cart_products_table' style='display:none'>
+				<tr>
+					<th>Item</th>
+					<th>Description</th>
+					<th>Quantity</th>
+					<th>Action</th>
+				</tr>
+				<tbody id='bonus_cart_products'></tbody>
+			</table>
 	
-	<br>
-	<button type='button' class='button button_default_light' id='add_item_button'><i class='fa fa-shopping-cart'></i> Add item</button>
-	<br><br>
-	<table class='table table-bordered' id='cart_products_table' style='display:none'>
-		<tr>
-			<th>Reference</th>
-			<th>Name</th>
-			<th>Price list</th>
-			<th>Discount</th>
-			<th>Quantity</th>
-			<th>Action</th>
-		</tr>
-		<tbody id='cart_products'></tbody>
-	</table>
-	
-	<table class='table table-bordered' id='bonus_cart_products_table' style='display:none'>
-		<tr>
-			<th>Item</th>
-			<th>Description</th>
-			<th>Quantity</th>
-			<th>Action</th>
-		</tr>
-		<tbody id='bonus_cart_products'></tbody>
-	</table>
-	
-	<button type='button' class='button button_default_light' onclick='validate_form()' style='display:none' id='submit_button'>Submit</button>
-	
-	</form>
+			<button type='button' class='button button_default_dark' onclick='validate_form()' style='display:none' id='submit_button'>Submit</button>
+		</form>
+	</div>
 </div>
 
 <div class='alert_wrapper' id='select_customer_wrapper'>

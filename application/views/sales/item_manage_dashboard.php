@@ -1,46 +1,27 @@
 <div class='dashboard'>
-	<h2 style='font-family:bebasneue'>Item</h2>
-	<hr>
-	<button type='button' class='button button_default_light' id='add_item_button'>Add item</button>
-	<br><br>
-	<input type='text' class='form_control' id='search_bar'>
-	<br><br>
-	<div id='customer_table_view_pane'>
-	<table class='table table-bordered'>
-		<tr>
-			<th>Reference</th>
-			<th>Name</th>
-			<th>Action</th>
-		</tr>
-<?php
-	foreach($items as $item){
-		$item_id		= $item->id;
-		$reference		= $item->reference;
-		$item_name		= $item->name;
-		$item_type		= $item->type;			
-?>
-		<tr>
-			<td><?= $reference ?></td>
-			<td><?= $item_name ?></td>
-			<td>
-				<button type='button' class='button button_success_dark' onclick='open_edit_form(<?= $item_id ?>)'><i class='fa fa-pencil'></i></button>
-				<button type='button' class='button button_danger_dark' onclick='open_delete_confirmation(<?= $item_id ?>)'><i class='fa fa-trash'></i></button>
-				<button type='button' class='button button_default_light'><i class='fa fa-eye'></i></button>
-			</td>
-		</tr>
-<?php
-	}
-?>
-	</table>
-	<select class='form-control' id='page' onchange='update_view()' style='width:100px'>
-<?php
-	for($i = 1; $i <= $pages; $i++){
-?>
-		<option value='<?= $i ?>'><?= $i ?></option>
-<?php
-	}
-?>
-	</select>
+	<div class='dashboard_head'>
+		<p style='font-family:museo'><a href='<?= site_url('Sales') ?>' title='Sales'><i class='fa fa-briefcase'></i></a> /Items</p>
+	</div>
+	<br>
+	<div class='dashboard_in'>
+		<div class='input_group'>
+			<input type='text' class='form-control' id='search_bar'>
+			<div class='input_group_append'>
+				<button type='button' class='button button_default_dark' id='add_item_button'>Add item</button>
+			</div>
+		</div>
+		<br>
+		<table class='table table-bordered'>
+			<tr>
+				<th>Reference</th>
+				<th>Name</th>
+				<th>Action</th>
+			</tr>
+			<tbody id='item_table'></tbody>
+		</table>
+		<select class='form-control' id='page' style='width:100px'>
+			<option value='1'>1</option>
+		</select>
 	</div>
 </div>
 
@@ -122,6 +103,12 @@
 </div>
 
 <script>
+	update_view();
+	
+	$('#page').change(function(){
+		update_view();
+	});
+	
 	$('#add_item_button').click(function(){
 		$('#add_item_wrapper').fadeIn();
 	});
@@ -158,39 +145,42 @@
 		$(this).parent().fadeOut();
 	});
 	
-	function update_view(){
+	function update_view(page = $('#page').val()){
 		$.ajax({
-			url:'<?= site_url('Item/update_view_page') ?>',
+			url:'<?= site_url('Item/search_item_cart') ?>',
 			data:{
 				term:$('#search_bar').val(),
-				page:$('#page').val()
+				page:page
 			},
 			type:'GET',
 			beforeSend:function(){
-				$('#customer_table_view_pane').html('');
+				$('#item_table').html('');
 			},
 			success:function(response){
-				$('#customer_table_view_pane').html(response);
+				var item_array	= response.items;
+				$.each(item_array, function(index, item){
+					var reference	= item.reference;
+					var description	= item.name;
+					var id			=item.id;
+					$('#item_table').append("<tr><td>" + reference + "</td><td>" + description + "</td><td><button type='button' class='button button_success_dark' onclick='open_edit_form(" + id + ")' title='Edit " + reference + "'><i class='fa fa-pencil'></i></button> <button type='button' class='button button_danger_dark' onclick='open_delete_confirmation(" + id + ")' title='Delete " + reference + "'><i class='fa fa-trash'></i></button> <button type='button' class='button button_default_dark' title='View " + reference + "'><i class='fa fa-eye'></i></button>");
+				});
+				
+				
+				$('#page').html('');
+				var pages		= response.pages;
+				for(i = 1; i <= pages; i++){
+					if(i == page){
+						$('#page').append("<option value='" + i + "' selected>" + i + "</option>");
+					} else {
+						$('#page').append("<option value='" + i + "'>" + i + "</option>");
+					}
+				}
 			},
 			
 		});
 	};
 	
 	$('#search_bar').change(function(){
-		$.ajax({
-			url:'<?= site_url('Item/update_view_page') ?>',
-			data:{
-				term:$('#search_bar').val(),
-				page:1
-			},
-			type:'GET',
-			beforeSend:function(){
-				$('#customer_table_view_pane').html('');
-			},
-			success:function(response){
-				$('#customer_table_view_pane').html(response);
-			},
-			
-		});
+		update_view(1);
 	});
 </script>

@@ -34,33 +34,11 @@
 		<input type='text' class='form-control' name='customer_pic' value='<?= $customer->pic_name ?>'>
 		
 		<label>Tax identification number</label>
-		<input type='text' class='form-control' name='customer_npwp' id='customer_npwp' value='<?= $customer->npwp ?>'>
+		<input type='text' class='form-control' name='customer_npwp' id='customer_edit_npwp' value='<?= $customer->npwp ?>'>
 		<script>
-			$("#customer_npwp").inputmask("99.999.999.9-999.999");
-		</script>
+			$("#customer_edit_npwp").inputmask("99.999.999.9-999.999");
+		</script><br>
 		
-		<label>Location</label>
-		<input type='text' class='form-control' id='latitude'>
-		<input type='text' class='form-control' id='longitude'>
-		<span id='demo'></span>
-		<button type='button' class='button button_default_dark' id='get_location_button'>Get location</button>
-		<script>
-			var x 	= document.getElementById("demo");
-			$('#get_location_button').click(function(){
-				if (navigator.geolocation) {
-					navigator.geolocation.getCurrentPosition(showPosition);
-				} else {
-					x.innerHTML = "Geolocation is not supported by this browser.";
-				}
-			});
-
-			function showPosition(position) {
-				$('#latitude').val(position.coords.latitude);
-				$('#longitude').val(position.coords.longitude);
-			}
-		</script>
-
-<br>		
 		<label>Area</label>
 		<select class='form-control' name='area_id'>
 <?php
@@ -71,6 +49,9 @@
 	}
 ?>
 		</select>
+		<label>Term of payment</label>
+		<input type='number' class='form-control' min='0' required name='term_of_payment' value='<?= $customer->term_of_payment ?>'>
+		
 		<br>
 		<button class='button button_default_dark'><i class='fa fa-long-arrow-right'></i></button>
 	</form>

@@ -58,6 +58,17 @@
 	  size: 21.59cm 13.97cm;
 	}
 }
+
+.table_footer{
+	width:100%;
+	text-align:center;
+	border-collapse: collapse;
+}
+
+.table_footer, th, td {
+	border:1px solid black!important;
+	padding:5px;
+}
 </style>
 <div class='row' style='margin:0'>	
 	<div class='col-sm-10 col-sm-offset-1' style='background-color:white;padding:20px' id='printable'>
@@ -69,7 +80,6 @@
 			<div class='col-xs-5' style='text-align:center'>
 				<h1 style='font-family:bebasneue;letter-spacing:4px;margin-top:0'>Invoice</h1>
 				<hr style='border-top:2px solid #424242;margin:0;'>
-				<p style='margin-top:4px'>INV.DSE<?= $delivery_order_name ?></p>
 			</div>
 		</div>
 		<div class='row'>
@@ -79,7 +89,14 @@
 				<p><?= $complete_address ?></p>
 				<p><?= $customer_city ?></p>
 			</div>
-			<div class='col-xs-4 col-xs-offset-4'>
+			<div class='col-xs-4'>
+				<label>Invoice number</label>
+				<p>INV.DSE<?= $delivery_order_name ?></p>
+				
+				<label>Date</label>
+				<p><?= $delivery_order_date ?></p>
+			</div>
+			<div class='col-xs-4'>
 				<label>Sales order</label>
 				<p><?= $sales_order_name ?></p>
 				
@@ -90,7 +107,7 @@
 		<br><br>
 		<div class='row'>
 			<div class='col-xs-12'>
-				<table class='table table-bordered'>
+				<table class='table_footer' style='text-align:left'>
 					<tr>
 						<th>Referensi</th>
 						<th>Nama barang</th>
@@ -101,7 +118,6 @@
 						<th>Total</th>
 					</tr>
 <?php
-	$total_quantity = 0;
 	$invoice_value		= 0;
 	foreach($details as $detail){
 		$reference		= $detail->reference;
@@ -123,13 +139,15 @@
 						<td>Rp. <?= number_format($item_value,2) ?></td>
 					</tr>
 <?php
-		$total_quantity += $detail->quantity;
 	}
 ?>
 					<tr>
-						<td colspan='4'><p>Jumlah barang : <?= number_format($total_quantity) ?></td>
+						<td colspan='4'><p>Barang yang sudah dibeli tidak dapat dikembalikan. Harap periksa barang pada saat penerimaan.</p><label>Terbilang</label><p id='value_say'></p></td>
 						<td colspan='2'>Total</td>
 						<td>Rp. <?= number_format($invoice_value,2) ?></td>
+					</tr>
+					<tr>
+						<td colspan='7'>Pembayaran dengan menggunakan cek atau giro dianggap sah setelah berhasil dicairkan.</td>
 					</tr>
 				</table>
 			</div>
@@ -137,23 +155,11 @@
 		<br><br>
 		<div class='row'>
 			<div class='col-xs-12'>
-				<table style='width:100%;text-align:center'>
+				<table class='table_footer'>
 					<tr>
-						<td style='width:33%;padding:0px 60px'>
-							<p>Penerima</p>
-							<br><br><br><br>
-							<hr style='border-top:2px solid black'>
-						</td>
-						<td style='width:33%;padding:0px 60px'>
-							<p>Pengirim</p>
-							<br><br><br><br>
-							<hr style='border-top:2px solid black'>
-						</td>
-						<td style='width:33%;padding:0px 60px'>
-							<p>Hormat kami</p>
-							<br><br><br><br>
-							<hr style='border-top:2px solid black'>
-						</td>
+						<td style='width:30%'><p>Penerima</p><br><br><br><br></td>
+						<td style='width:30%'><p>Pengirim</p><br><br><br><br></td>
+						<td style='width:30%'><p>Hormat kami</p><br><br><br><br></td>
 					</tr>
 				</table>
 			</div>
@@ -163,7 +169,22 @@
 <br>
 <div class='row' style='margin:0'>
 	<div class='col-xs-12' style='text-align:center'>
-		<a href='<?= site_url('Accounting') ?>'><button type='button' class='button button_success_dark'><i class='fa fa-long-arrow-left'></i></button></a>
-		<button type='button' class='button button_default_light' onclick='window.print()'><i class='fa fa-print'></i></button>
+		<a href='<?= site_url('Accounting') ?>'><button type='button' class='button button_success_dark' style='display:none' id='back_button'><i class='fa fa-long-arrow-left'></i></button></a>
+		<button type='button' class='button button_default_dark' onclick="window.print();$('#back_button').show();$('#print_button').hide();" id='print_button'><i class='fa fa-print'></i></button>
 	</div>
 </div>
+<script>
+	get_say();
+	
+	function get_say(){
+		$.ajax({
+			url:'<?= site_url('Invoice/convert_number') ?>',
+			data:{
+				value:<?= $invoice_value ?>
+			},
+			success:function(response){
+				$('#value_say').html(response + " Rupiah.");
+			}
+		});
+	}
+</script>

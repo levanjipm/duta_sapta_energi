@@ -1,18 +1,21 @@
 <div class='dashboard'>
-	<h2 style='font-family:bebasneue'>Supplier</h2>
-	<hr>
-	<button type='button' class='button button_default_light' id='add_supplier_button'>Add supplier</button>
-	<br><br>
-	<input type='text' class='form_control' id='search_bar'>
-	<br><br>
-	<div id='supplier_table_view_pane'>
-	<table class='table table-bordered'>
-		<tr>
-			<th>Supplier name</th>
-			<th>Address</th>
-			<th>City</th>
-			<th>Action</th>
-		</tr>
+	<div class='dashboard_head'>
+		<p style='font-family:museo'><a href='<?= site_url('Inventory') ?>' title='Inventory'><i class='fa fa-briefcase'></i></a> /Delivery order</p>
+	</div>
+	<div class='dashboard_in'>
+		<div class='input_group'>
+			<input type='text' class='form-control' id='search_bar'>
+			<div class='input_group_append'>
+				<button type='button' class='button button_default_dark' id='add_supplier_button'>Add supplier</button>
+			</div>
+		</div>
+		<table class='table table-bordered'>
+			<tr>
+				<th>Supplier name</th>
+				<th>Address</th>
+				<th>City</th>
+				<th>Action</th>
+			</tr>
 <?php
 	foreach($suppliers as $supplier){
 		$complete_address		= '';
@@ -186,4 +189,8 @@
 	$('.alert_close_button').click(function(){
 		$(this).parents('.alert_wrapper').fadeOut();
 	});
+	
+	function refresh_view()
+	{
+	}
 </script>

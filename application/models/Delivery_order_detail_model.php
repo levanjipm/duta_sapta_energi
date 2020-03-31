@@ -191,4 +191,18 @@ class Delivery_order_detail_model extends CI_Model {
 			
 			return $batch;
 		}
+		
+		public function show_by_code_sales_order_id($sales_order_id)
+		{
+			$this->db->select('DISTINCT(code_delivery_order.id) as id, code_delivery_order.date, code_delivery_order.name, code_delivery_order.is_confirm, code_delivery_order.is_sent, code_delivery_order.invoice_id');
+			$this->db->from('delivery_order');
+			$this->db->join('sales_order', 'delivery_order.sales_order_id = sales_order.id');
+			$this->db->join('code_delivery_order', 'delivery_order.code_delivery_order_id = code_delivery_order.id');
+			$this->db->where('sales_order.code_sales_order_id', $sales_order_id);
+			$this->db->where('code_delivery_order.is_delete', 0);
+			$query 	= $this->db->get();
+			$items	= $query->result();
+			
+			return $items;
+		}
 }

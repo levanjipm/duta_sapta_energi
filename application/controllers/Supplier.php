@@ -16,11 +16,11 @@ class Supplier extends CI_Controller {
 		$this->load->view('purchasing/header');
 		
 		$this->load->model('Supplier_model');
-		$items = $this->Supplier_model->show_limited(25,0);
+		$items = $this->Supplier_model->show_items(25);
 		$data['suppliers'] = $items;
 		
 		$this->load->model('Supplier_model');
-		$data['pages'] = ceil($this->Supplier_model->count_page() / 25);
+		$data['pages'] = ceil($this->Supplier_model->count_items() / 25);
 		
 		$this->load->view('purchasing/supplier_manage_dashboard',$data);
 	}

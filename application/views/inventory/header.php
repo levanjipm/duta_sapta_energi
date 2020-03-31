@@ -1,14 +1,13 @@
 <div class='topnav_bar'>
-	<div class='topnav_bar_left'><a href='<?= site_url() ?>' style='text-decoration:none'><h1>DSE</h1></a></div>
-	<div class='topnav_bar_right'>
-		<button><i class='fa fa-bars' id='hide_side_nav_button'></i></button>
-	</div>
+	<h3>Inventory</h3>
 </div>
 <div class='sidenav_bar'>
-	<h3 style='font-family:museo'>Main</h3>
+	<a href='<?= site_url() ?>'><img src='<?= base_url('assets/Logo_light.png') ?>' style='width:80%'></a>
+	<br><br>
 	<button class='container_button'><p>Delivery order</p></button>
 	<div class='container_bar'>
 		<a href='<?= site_url('Delivery_order') ?>'><p>Create</p></a>	
+		<a href='<?= site_url('Delivery_order/check') ?>'><p>Check</p></a>	
 		<a href='<?= site_url('Delivery_order/archive') ?>'><p>Archive</p></a>	
 	</div>
 	<button class='container_button'><p style='font-family:museo'>Good receipt</p></button>
@@ -16,7 +15,7 @@
 		<a href='<?= site_url('Good_receipt') ?>'><p>Create</p></a>	
 		<a href='<?= site_url('Good_receipt/archive') ?>'><p>Archive</p></a>	
 	</div>
-	<a href='<?= site_url() ?>'><button><p>Check stock</p></button></a>
+	<a href='<?= site_url('Stock/view/Inventory') ?>'><button><p>Check stock</p></button></a>
 </div>
 <script>
 	$('.container_button').click(function(){

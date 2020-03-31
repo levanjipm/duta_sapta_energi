@@ -45,6 +45,7 @@ class Purchase_order_model extends CI_Model {
 			$this->guid                     ='';
 			$this->supplier_id              ='';
 			$this->is_delete              	='';
+			$this->status              		= NULL;
 		}
 		
 		public function get_stub_from_db($db_item)
@@ -65,6 +66,7 @@ class Purchase_order_model extends CI_Model {
 			$this->guid                     = $db_item->guid;                    
 			$this->supplier_id              = $db_item->supplier_id;              
 			$this->is_delete	              = $db_item->is_delete;              
+			$this->status	              = $db_item->status;              
 			
 			return $this;
 		}
@@ -89,6 +91,7 @@ class Purchase_order_model extends CI_Model {
 			$db_item->guid                      = $this->guid;                    
 			$db_item->supplier_id               = $this->supplier_id;
 			$db_item->is_delete	               = $this->is_delete;
+			$db_item->status	               = $this->status;
 			
 			return $db_item;
 		}
@@ -113,6 +116,7 @@ class Purchase_order_model extends CI_Model {
 			$stub->guid                     = $db_item->guid;                    
 			$stub->supplier_id              = $db_item->supplier_id;     
 			$stub->is_delete	              = $db_item->is_delete;     
+			$stub->status		              = $db_item->status;     
 			
 			return $stub;
 		}
@@ -140,6 +144,7 @@ class Purchase_order_model extends CI_Model {
 			$stub->supplier_address         = $db_item->supplier_address;    
 			$stub->supplier_city	        = $db_item->supplier_city;    
 			$stub->is_delete	       		 = $db_item->is_delete;    
+			$stub->status		       		 = $db_item->status;    
 			
 			return $stub;
 		}
@@ -184,7 +189,7 @@ class Purchase_order_model extends CI_Model {
 			$this->db->join('supplier', 'code_purchase_order.supplier_id = supplier.id');
 			$this->db->where('code_purchase_order.is_confirm', 0);
 			$this->db->where('code_purchase_order.is_delete', 0);
-			$query = $this->db->get();
+			$query 		= $this->db->get();
 			$items	 	= $query->result();
 			
 			return $items;
@@ -212,8 +217,13 @@ class Purchase_order_model extends CI_Model {
 			$status			= $this->input->post('status');
 			if($status		== 1){
 				$date_send	= $this->input->post('date_send_request');
-			} else {
+				$stat		= null;
+			} else if($status == 2){
+				$stat		= 'TOP URGENT';
 				$date_send 	= null;
+			} else {
+				$date_send	= null;
+				$stat		= null;
 			}
 			
 			$this->load->model('Purchase_order_model');
@@ -227,6 +237,7 @@ class Purchase_order_model extends CI_Model {
 				$this->taxing				= $this->input->post('taxing');
 				$this->created_by			= $this->session->userdata('user_id');
 				$this->date_send_request	= $date_send;
+				$this->status				= $stat;
 				
 				if($this->input->post('dropship_address') != ''){
 					$this->dropship_address			= $this->input->post('dropship_address');
@@ -260,7 +271,7 @@ class Purchase_order_model extends CI_Model {
 		
 		public function show_by_id($id)
 		{
-			$this->db->select('code_purchase_order.*, supplier.name as supplier_name, supplier.address as supplier_address, supplier.city as supplier_city');
+			$this->db->select('code_purchase_order.*, supplier.name as supplier_name, supplier.address as supplier_address, supplier.city as supplier_city, supplier.number, supplier.rt, supplier.rw, supplier.postal_code, supplier.npwp, supplier.phone_number, supplier.block');
 			$this->db->from('code_purchase_order');
 			$this->db->join('supplier', 'code_purchase_order.supplier_id = supplier.id');
 			$this->db->where('code_purchase_order.id =', $id);

@@ -1,42 +1,52 @@
 <div class='dashboard'>
-	<h2 style='font-family:bebasneue'>Bank transaction</h2>
-	<hr>
-	<form action='<?= site_url('Finance/input') ?>' method='POST' id='transaction_form'>
-	<label>Account</label>
-	<select class='form-control' name='account' id='account'>
+	<div class='dashboard_head'>
+		<p style='font-family:museo'><a href='<?= site_url('Finance') ?>' title='Finance'><i class='fa fa-briefcase'></i></a> <a href='<?= site_url('Bank') ?>'>Bank</a> / Add transaction</p>
+	</div>
+	<br>
+	<div class='dashboard_in'>
+		<form action='<?= site_url('Finance/input') ?>' method='POST' id='transaction_form'>
+			<label>Account</label>
+			<select class='form-control' name='account' id='account'>
 <?php
 	foreach($accounts as $account){
 ?>
-		<option value='<?= $account->id ?>'><?= $account->number ?> - <?= $account->name ?> ( <?= $account->bank ?> )</option>
+				<option value='<?= $account->id ?>'><?= $account->number ?> - <?= $account->name ?> ( <?= $account->bank ?> )</option>
 <?php
 	}
 ?>
-	</select>
+			</select>
 	
-	<label>Date</label>
-	<input type='date' class='form-control' name='date' required min='2020-01-01' id='date'>
-	
-	<label>Value</label>
-	<input type='number' class='form-control' required min='1' name='value' id='value'>
-	
-	<label>Transaction</label>
-	<select class='form-control' name='transaction' id='transaction'>
-		<option value='1'>Credit</option>
-		<option value='2'>Debit</option>
-	</select>
-	
-	<label>Opponent</label>
-	<select class='form-control' id='opponent_type' name='type'>
-		<option value='' disabled selected>Please select opponent type</option>
-		<option value='customer'>Customer</option>
-		<option value='supplier'>Supplier</option>
-		<option value='other'>Other</option>
-	</select>
-	
-	<input type='hidden' id='opponent_id' name='id' required>
-	<p style='font-family:museo'><span id='opponent_selector_view'>No opponent</span> has been selected</p>
-	<button class='button button_default_light' type='button' id='submit_button'><i class='fa fa-long-arrow-right'></i></button>
-	</form>
+			<label>Date</label>
+			<input type='date' class='form-control' name='date' required min='2020-01-01' id='date'>
+			
+			<label>Value</label>
+			<input type='number' class='form-control' required min='1' name='value' id='value'>
+			
+			<label>
+				<input type='checkbox' name='petty_cash_transfer' id='petty_cash_transfer' onchange='adjust_form()'> Petty cash</input>
+			</label>
+			<br>
+			<div id='operational'>
+				<label>Transaction</label>
+				<select class='form-control' name='transaction' id='transaction'>
+					<option value='1'>Credit</option>
+					<option value='2'>Debit</option>
+				</select>
+		
+				<label>Opponent</label>
+				<select class='form-control' id='opponent_type' name='type'>
+					<option value='' disabled selected>Please select opponent type</option>
+					<option value='customer'>Customer</option>
+					<option value='supplier'>Supplier</option>
+					<option value='other'>Other</option>
+				</select>
+				
+				<input type='hidden' id='opponent_id' name='id' required>
+				<p style='font-family:museo'><span id='opponent_selector_view'>No opponent</span> has been selected</p>
+			</div>
+			<button class='button button_default_dark' type='button' id='submit_button'><i class='fa fa-long-arrow-right'></i></button>
+		</form>
+	</div>
 	<br>
 </div>
 <div class='alert_wrapper' id='opponent_alert_wrapper'>
@@ -85,6 +95,18 @@
 	</div>
 </div>
 <script>
+	function adjust_form(){
+		if($('#petty_cash_transfer').prop('checked') == true){
+			$('#operational').hide();
+			$('#transaction').val(2);
+			$('#opponent_id').attr('required', false);
+		} else {
+			$('#operational').show();
+			$('#transaction').val(1);
+			$('#opponent_id').attr('required', true);
+		}
+	}
+	
 	$("#transaction_form").validate({
 		ignore: '',
 		rules: {"hidden_field": {required: true}}
@@ -154,11 +176,19 @@
 			var value			= $('#value').val();
 			var transaction		= $('#transaction option:selected').html();
 			
-			$('#transaction_date_p').html(date);
-			$('#bank_name_p').html(bank_name);
-			$('#opponent_name_p').html(opponent_name);
-			$('#transaction_type_p').html(transaction);
-			$('#transaction_value_p').html('Rp. ' + numeral(value).format('0,0.00'));
+			if($('#petty_cash_transfer').prop('checked') == true){
+				$('#transaction_date_p').html(date);
+				$('#bank_name_p').html(bank_name);
+				$('#opponent_name_p').html('Petty cash transaction');
+				$('#transaction_type_p').html(transaction);
+				$('#transaction_value_p').html('Rp. ' + numeral(value).format('0,0.00'));
+			} else {
+				$('#transaction_date_p').html(date);
+				$('#bank_name_p').html(bank_name);
+				$('#opponent_name_p').html(opponent_name);
+				$('#transaction_type_p').html(transaction);
+				$('#transaction_value_p').html('Rp. ' + numeral(value).format('0,0.00'));
+			}
 			
 			$('#transaction_wrapper').fadeIn();
 		}

@@ -135,18 +135,90 @@ class Invoice_model extends CI_Model {
 		
 		public function view_incompleted_transaction($customer_id)
 		{
-			$this->db->select('invoice.*');
+			$this->db->select('invoice.*, sum(receivable.value) as paid');
 			$this->db->from('invoice');
 			$this->db->join('code_delivery_order', 'code_delivery_order.invoice_id = invoice.id');
 			$this->db->join('delivery_order', 'delivery_order.code_delivery_order_id = code_delivery_order.id', 'left');
 			$this->db->join('sales_order', 'delivery_order.sales_order_id = sales_order.id');
 			$this->db->join('code_sales_order', 'code_sales_order.id = sales_order.code_sales_order_id');
+			$this->db->join('receivable', 'invoice.id = receivable.invoice_id', 'left');
+			$this->db->group_by('receivable.invoice_id');
 			$this->db->where('code_sales_order.customer_id', $customer_id);
 			$this->db->where('invoice.is_done', 0);
 			$this->db->order_by('invoice.date');
 			
 			$query	= $this->db->get();
 			$result	= $query->result();
+			
+			return $result;
+		}
+		
+		public function view_receivable_chart($date_1, $date_2)
+		{
+			$this->db->select('sum(invoice.value) as value, customer.name, customer.city, code_sales_order.customer_id, COALESCE(SUM(receivable.value),0) as paid', FALSE);
+			$this->db->from('invoice');
+			$this->db->join('receivable', 'invoice.id = receivable.invoice_id', 'left');
+			$this->db->join('code_delivery_order', 'code_delivery_order.invoice_id = invoice.id');
+			$this->db->join('delivery_order', 'delivery_order.code_delivery_order_id = code_delivery_order.id', 'left');
+			$this->db->join('sales_order', 'delivery_order.sales_order_id = sales_order.id');
+			$this->db->join('code_sales_order', 'code_sales_order.id = sales_order.code_sales_order_id');
+			$this->db->join('customer', 'code_sales_order.customer_id = customer.id');
+			$this->db->group_by('code_sales_order.customer_id');
+			$this->db->where('invoice.is_done', 0);
+			
+			if($date_2 > 0){
+				$this->db->where('invoice.date >=', date('Y-m-d', strtotime('-' . $date_2 . ' days')));
+				$this->db->where('invoice.date <', date('Y-m-d', strtotime('-' . $date_1 . ' days')));
+			}
+			
+			$query	= $this->db->get();
+			$result	= $query->result();
+			
+			$data = $this->Invoice_model->convert_receivable_chart_array($result);
+			
+			return $data;
+		}
+		
+		public function convert_receivable_chart_array($receivable_array)
+		{
+			$chart_array		= array();
+			foreach($receivable_array as $receivable){
+				$customer_id		= $receivable->customer_id;
+				$customer_name		= $receivable->name;
+				$customer_city		= $receivable->city;
+				$invoice_value		= $receivable->value;
+				$paid				= $receivable->paid;
+				$chart_array[] = array(
+					'id' => $customer_id,
+					'name' => $customer_name,
+					'city' => $customer_city,
+					'value' => $invoice_value - $paid
+				);
+			}
+
+			usort($chart_array, function($a, $b) {
+				return $a['value'] - $b['value'];
+			});
+
+			return $chart_array;
+		}
+		
+		public function view_maximum_by_customer($customer_id)
+		{
+			$this->db->select('invoice.date, invoice.value, coalesce(sum(receivable.value),0) as paid, customer.term_of_payment');
+			$this->db->from('invoice');
+			$this->db->join('receivable', 'invoice.id = receivable.invoice_id', 'left');
+			$this->db->join('code_delivery_order', 'code_delivery_order.invoice_id = invoice.id');
+			$this->db->join('delivery_order', 'delivery_order.code_delivery_order_id = code_delivery_order.id', 'left');
+			$this->db->join('sales_order', 'delivery_order.sales_order_id = sales_order.id');
+			$this->db->join('code_sales_order', 'code_sales_order.id = sales_order.code_sales_order_id');
+			$this->db->join('customer', 'code_sales_order.customer_id = customer.id');
+			$this->db->where('code_sales_order.customer_id', $customer_id);
+			$this->db->where('invoice.is_done', 0);
+			$this->db->order_by('date', 'asc');
+			
+			$query		= $this->db->get();
+			$result		= $query->row();
 			
 			return $result;
 		}

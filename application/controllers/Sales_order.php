@@ -12,8 +12,15 @@ class Sales_order extends CI_Controller {
 	
 	public function index()
 	{
+		$user_id		= $this->session->userdata('user_id');
+		$this->load->model('User_model');
+		$data['user_login'] = $this->User_model->show_by_id($user_id);
+		
+		$this->load->model('Authorization_model');
+		$data['departments']	= $this->Authorization_model->show_by_user_id($user_id);
+		
 		$this->load->view('head');
-		$this->load->view('sales/header');
+		$this->load->view('sales/header', $data);
 		
 		$this->load->view('sales/sales_order');
 	}
@@ -33,8 +40,15 @@ class Sales_order extends CI_Controller {
 	
 	public function create()
 	{
+		$user_id		= $this->session->userdata('user_id');
+		$this->load->model('User_model');
+		$data['user_login'] = $this->User_model->show_by_id($user_id);
+		
+		$this->load->model('Authorization_model');
+		$data['departments']	= $this->Authorization_model->show_by_user_id($user_id);
+		
 		$this->load->view('head');
-		$this->load->view('sales/header');
+		$this->load->view('sales/header', $data);
 		
 		$this->load->model('Sales_order_model');
 		$guid = $this->Sales_order_model->create_guid();
@@ -47,12 +61,6 @@ class Sales_order extends CI_Controller {
 		$data['users'] = $this->User_model->show_all();
 		
 		$this->load->view('sales/sales_order_create_dashboard',$data);
-	}
-	
-	public function add_item_to_cart()
-	{
-		$this->load->model('Sales_order_model');
-		$this->Sales_order_model->add_item_to_cart();
 	}
 	
 	public function input_sales_order()
@@ -86,24 +94,32 @@ class Sales_order extends CI_Controller {
 		$this->load->model('Sales_order_detail_model');
 		$data['details'] = $this->Sales_order_detail_model->show_by_code_sales_order_id($id);
 		
+		$user_id		= $this->session->userdata('user_id');
+		$this->load->model('User_model');
+		$data['user_login'] = $this->User_model->show_by_id($user_id);
+		
+		$this->load->model('Authorization_model');
+		$data['departments']	= $this->Authorization_model->show_by_user_id($user_id);
+		
 		$this->load->view('head');
-		$this->load->view('sales/header');
+		$this->load->view('sales/header', $data);
 		$this->load->view('sales/sales_order_check_out', $data);
-	}
-	
-	public function track_sales_order()
-	{
-		$this->load->model('Sales_order_detail_model');
-		$this->load->view('head');
-		$this->load->view('sales/header');
 	}
 	
 	public function view_sales_order()
 	{
+		$user_id			= $this->session->userdata('user_id');
+		$this->load->model('User_model');
+		$data['user']		= $this->User_model->show_by_id($user_id);
+		
 		$sales_order_id		= $this->input->get('id');
 		$this->load->model('Sales_order_model');
 		$result = $this->Sales_order_model->show_by_id($sales_order_id);
 		$data['general']	= $result;
+		
+		$customer_id		= $result->customer_id;
+		$this->load->model('Invoice_model');
+		$data['receivable'] = $this->Invoice_model->view_maximum_by_customer($customer_id);
 		
 		$this->load->model('Sales_order_detail_model');
 		$data['detail'] = $this->Sales_order_detail_model->show_by_code_sales_order_id($sales_order_id);
@@ -126,5 +142,111 @@ class Sales_order extends CI_Controller {
 		$sales_order_id		= $this->input->post('id');
 		$this->load->model('Sales_order_model');
 		$this->Sales_order_model->delete($sales_order_id);
+	}
+	
+	public function track()
+	{
+		$user_id		= $this->session->userdata('user_id');
+		$this->load->model('User_model');
+		$data['user_login'] = $this->User_model->show_by_id($user_id);
+		
+		$this->load->model('Authorization_model');
+		$data['departments']	= $this->Authorization_model->show_by_user_id($user_id);
+		
+		$this->load->view('head');
+		$this->load->view('sales/header', $data);
+		
+		$this->load->view('sales/sales_order_track_dashboard');
+	}
+	
+	public function view_track()
+	{
+		$term		= $this->input->get('term');
+		$page		= $this->input->get('page');
+		$offset		= ($page -1 ) * 25;
+		
+		$this->load->model('Sales_order_model');
+		$data['sales_orders'] = $this->Sales_order_model->show_uncompleted_sales_order($offset, $term);
+
+		$data['pages'] = max(1, ceil($this->Sales_order_model->count_uncompleted_sales_order($term)/25));
+		
+		header('Content-Type: application/json');
+		echo json_encode($data);
+	}
+	
+	public function view_track_detail()
+	{
+		$code_sales_order_id		= $this->input->get('id');
+		$this->load->model('Sales_order_detail_model');
+		$data	= $this->Sales_order_detail_model->show_by_code_sales_order_id($code_sales_order_id);
+		
+		header('Content-Type: application/json');
+		echo json_encode($data);
+	}
+	
+	public function close()
+	{
+		$user_id		= $this->session->userdata('user_id');
+		$this->load->model('User_model');
+		$data['user_login'] = $this->User_model->show_by_id($user_id);
+		
+		$this->load->model('Authorization_model');
+		$data['departments']	= $this->Authorization_model->show_by_user_id($user_id);
+		
+		$this->load->view('head');
+		$this->load->view('sales/header', $data);
+		
+		$sales_order_id		= $this->input->post('id');
+		$this->load->model('Sales_order_model');
+		$data['sales_order'] = $this->Sales_order_model->show_by_id($sales_order_id);
+		
+		$this->load->model('Sales_order_detail_model');
+		$data['details']	= $this->Sales_order_detail_model->show_by_code_sales_order_id($sales_order_id);
+		
+		$this->load->view('sales/sales_order_close_dashboard', $data);
+	}
+	
+	public function close_do()
+	{
+		$this->load->model('Sales_order_close_request_model');
+		$result = $this->Sales_order_close_request_model->close();
+		
+		if($result != NULL){
+			redirect(site_url('Sales_order/close_check_out/') . $result);
+		} else {
+			redirect(site_url('Sales_order/close_check_out'));
+		}
+	}
+	
+	public function close_check_out($status)
+	{
+		$user_id		= $this->session->userdata('user_id');
+		$this->load->model('User_model');
+		$data['user_login'] = $this->User_model->show_by_id($user_id);
+		
+		$this->load->model('Authorization_model');
+		$data['departments']	= $this->Authorization_model->show_by_user_id($user_id);
+		
+		$this->load->view('head');
+		$this->load->view('sales/header', $data);
+		
+		if($status == 'failed'){
+			$this->load->view('sales/close_check_out_failed');
+		} else {
+			$this->load->model('Sales_order_model');
+			$data['general'] = $this->Sales_order_model->show_by_id($status);
+			
+			$customer_id = $data['general']->customer_id;
+			$this->load->model('Customer_model');
+			$data['customer'] = $this->Customer_model->show_by_id($customer_id);
+			
+			$this->load->model('Sales_order_detail_model');
+			$data['details'] = $this->Sales_order_detail_model->show_by_code_sales_order_id($status);
+			
+			$this->load->model('Sales_order_close_request_model');
+			$data['close_sales_order'] = $this->Sales_order_close_request_model->show_by_id($status);
+			
+			$this->load->view('sales/close_check_out', $data);
+		}
 	}
 }

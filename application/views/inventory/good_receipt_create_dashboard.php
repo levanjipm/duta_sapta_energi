@@ -1,27 +1,30 @@
 <div class='dashboard'>
-	<h2 style='font-family:bebasneue'>Good receipt</h2>
-	<p style='font-family:museo'>Create good receipt</p>
-	<hr>
-	<form id='good_receipt_general_form'>
-	<label>Date</label>
-	<input type='date' class='form-control' id='date' required>
+	<div class='dashboard_head'>
+		<p style='font-family:museo'><a href='<?= site_url('Inventory') ?>' title='Inventory'><i class='fa fa-briefcase'></i></a> /<a href='<?= site_url('Good_receipt') ?>'>Good receipt</a> /Create</p>
+	</div>
 	<br>
-	<label>Supplier</label>
-	<select class='form-control' id='supplier'>
+	<div class='dashboard_in'>
+		<form id='good_receipt_general_form'>
+			<label>Date</label>
+			<input type='date' class='form-control' id='date' required>
+			<br>
+			<label>Supplier</label>
+			<select class='form-control' id='supplier'>
 <?php
 	foreach($suppliers as $supplier){
 ?>
-		<option value='<?= $supplier->id ?>'><?= $supplier->name ?></option>
+				<option value='<?= $supplier->id ?>'><?= $supplier->name ?></option>
 <?php
 	}
 ?>
-	</select>
-	<br>
-	<label>Purchase order</label>
-	<select id='purchase_order_selector' class='form-control' required></select>
-	<br>
-	<button type='button' class='button button_default_light' onclick='get_purchase_order_detail()'>Submit</button>
-	</form>
+			</select>
+			<br>
+			<label>Purchase order</label>
+			<select id='purchase_order_selector' class='form-control' required></select>
+			<br>
+			<button type='button' class='button button_default_dark' onclick='get_purchase_order_detail()'>Submit</button>
+		</form>
+	</div>
 </div>
 
 <div class='alert_wrapper' id='validate_good_receipt_wrapper'>

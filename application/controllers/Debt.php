@@ -61,11 +61,8 @@ class Debt extends CI_Controller {
 	{
 		$this->load->view('head');
 		$this->load->view('accounting/header');
-		$this->load->model('Supplier_model');
-		$supplier = $this->Supplier_model->show_all();
-		$data['suppliers'] = $supplier;
 		
-		$this->load->view('accounting/create_blank_debt_document_dashboard', $data);
+		$this->load->view('accounting/create_blank_debt_document_dashboard');
 	}
 	
 	public function view_uninvoiced_documents_by_supplier()
@@ -118,9 +115,10 @@ class Debt extends CI_Controller {
 			$good_receipt_array[]	= $code_good_receipt_id;
 			next($document_array);
 		}
+		
 		$price_array	= $this->input->post('price');
 		$this->load->model('Debt_model');
-		$invoice_id	= $this->Debt_model->insert_from_post();
+		$invoice_id		= $this->Debt_model->insert_from_post();
 		
 		if($invoice_id != null){
 			$this->load->model('Good_receipt_model');

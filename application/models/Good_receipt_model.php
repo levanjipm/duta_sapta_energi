@@ -210,7 +210,6 @@ class Good_receipt_model extends CI_Model {
 			
 			$query		= $this->db->get();
 			$item		= $query->result();
-			print_r($this->db->last_query());
 			return $item;
 		}
 		
