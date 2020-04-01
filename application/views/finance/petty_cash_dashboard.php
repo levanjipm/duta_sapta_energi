@@ -66,7 +66,7 @@
 			var transaction			= $('#transaction option:selected').html();
 			var information			= $('#information').val();
 			
-			$('#date_p').html(date);
+			$('#date_p').html(my_date_format(date));
 			$('#transaction_p').html(transaction);
 			$('#value_p').html('Rp. ' + numeral(value).format('0,0.00'));
 			$('#class_p').html(transaction_class);

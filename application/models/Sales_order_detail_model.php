@@ -224,4 +224,32 @@ class Sales_order_detail_model extends CI_Model {
 			
 			$this->db->update_batch($this->table_sales_order,$batch, 'id'); 
 		}
+		
+		public function calculate_incomplete()
+		{
+			$this->db->select('SUM(sales_order.quantity - sales_order.sent) as quantity, price_list.item_id, item.reference, item.name');
+			$this->db->from('sales_order');
+			$this->db->join('price_list', 'sales_order.price_list_id = price_list.id');
+			$this->db->join('item', 'price_list.item_id = item.id');
+			$this->db->where('sales_order.status', 0);
+			$this->db->group_by('price_list.item_id');
+			$query		= $this->db->get();
+			$result		= $query->result();
+			
+			return $result;
+		}
+		
+		public function show_pending_value($customer_id)
+		{
+			$this->db->select('SUM((sales_order.quantity - sales_order.sent) * price_list.price_list) as value');
+			$this->db->from('sales_order');
+			$this->db->join('code_sales_order', 'sales_order.code_sales_order_id = code_sales_order.id', 'left');
+			$this->db->join('price_list', 'sales_order.price_list_id = price_list.id');
+			$this->db->where('code_sales_order.customer_id', $customer_id);
+			$query		= $this->db->get();
+			
+			$result		= $query->row();
+			
+			return $result;
+		}
 }

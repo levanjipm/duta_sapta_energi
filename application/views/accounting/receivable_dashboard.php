@@ -6,11 +6,13 @@
 		transition:0.3s all ease;
 		width:0;
 		cursor:pointer;
+		opacity:0.7;
 	}
 	
 	.receivable_line:hover{
 		background-color:#013663;
 		transition:0.3s all ease;
+		opacity:1;
 	}
 	
 	.center{
@@ -28,6 +30,7 @@
 
 	#receivable_chart{
 		position:relative;
+		z-index:5;
 	}
 
 	#receivable_view_pane{
@@ -41,6 +44,7 @@
 		width:100%;
 		height:100%;
 		padding:0;
+		z-index:0;
 	}
 	
 	.grid{
@@ -125,7 +129,7 @@
 					var city		= value.city;
 					if(receivable > max_receivable){
 						max_receivable = receivable;
-						$('#receivable_chart').prepend("<div class='row' id='receivable-" + id + "'><div class='col-sm-3 col-xs-3 center'><p>" + name + ", " + city + "</p></div><div class='col-sm-7 col-xs-6'><div class='receivable_line' id='receive-" + id + "'></div></div><div class='col-sm-2 col-xs-3 center' style='text-align:right'><p>Rp. " + numeral(receivable).format('0,0.00') + "</p></div></div><br>");
+						$('#receivable_chart').prepend("<div class='row' id='receivable-" + id + "'><div class='col-sm-3 col-xs-3 center'><p><strong>" + name + "</strong>, " + city + "</p></div><div class='col-sm-7 col-xs-6'><div class='receivable_line' id='receive-" + id + "'></div></div><div class='col-sm-2 col-xs-3 center' style='text-align:right'><p>Rp. " + numeral(receivable).format('0,0.00') + "</p></div></div><br>");
 					} else {
 						$('#receivable_chart').append("<div class='row' id='receivable-" + id + "'><div class='col-sm-3 col-xs-3 center'><p>" + name + ", " + city + "</p></div><div class='col-sm-7 col-xs-6'><div class='receivable_line' id='receive-" + id + "'></div></div><div class='col-sm-2 col-xs-3 center' style='text-align:right'><p>Rp. " + numeral(receivable).format('0,0.00') + "</p></div></div><br>");
 					}

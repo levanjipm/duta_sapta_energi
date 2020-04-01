@@ -12,17 +12,31 @@ class Supplier extends CI_Controller {
 	
 	public function index()
 	{
+		$user_id		= $this->session->userdata('user_id');
+		$this->load->model('User_model');
+		$data['user_login'] = $this->User_model->show_by_id($user_id);
+		
+		$this->load->model('Authorization_model');
+		$data['departments']	= $this->Authorization_model->show_by_user_id($user_id);
+		
 		$this->load->view('head');
-		$this->load->view('purchasing/header');
+		$this->load->view('purchasing/header', $data);
+		
+		$this->load->view('purchasing/supplier_manage_dashboard');
+	}
+	
+	public function view_items()
+	{
+		$page		= $this->input->get('page');
+		$term		= $this->input->get('term');
+		$offset		= ($page - 1) * 25;
 		
 		$this->load->model('Supplier_model');
-		$items = $this->Supplier_model->show_items(25);
-		$data['suppliers'] = $items;
+		$data['suppliers']	= $this->Supplier_model->show_items($offset, $term);
+		$data['pages']		= $this->Supplier_model->count_items($term);
 		
-		$this->load->model('Supplier_model');
-		$data['pages'] = ceil($this->Supplier_model->count_items() / 25);
-		
-		$this->load->view('purchasing/supplier_manage_dashboard',$data);
+		header('Content-Type: application/json');
+		echo json_encode($data);
 	}
 	
 	public function insert_new_supplier()
@@ -39,17 +53,6 @@ class Supplier extends CI_Controller {
 		$this->supplier_model->delete_by_id();
 	}
 	
-	public function update_supplier_view()
-	{
-		$this->load->model('supplier_model');
-		$data['supplier'] = $this->supplier_model->show_by_id();
-		
-		$this->load->model('Area_model');
-		$data['areas'] = $this->Area_model->show_all();
-		
-		$this->load->view('sales/supplier_edit_form',$data);
-	}
-	
 	public function update_supplier()
 	{
 		$this->load->model('supplier_model');
@@ -63,6 +66,7 @@ class Supplier extends CI_Controller {
 		$supplier_id	= $this->input->get('id');
 		$this->load->model('Supplier_model');
 		$item = $this->Supplier_model->select_by_id($supplier_id);
+		
 		header('Content-Type: application/json');
 		echo json_encode($item);
 	}

@@ -34,7 +34,12 @@
 				</select>
 			</div>
 			<div class='col-md-6 col-sm-4 col-xs-4 col-md-offset-2 col-sm-offset-2 col-xs-offset-0'>
-				<input type='text' class='form-control-text-custom' id='search_bar' placeholder='Search'>
+				<div class='input_group'>
+					<input type='text' class='form-control-text-custom' id='search_bar' placeholder='Search'>
+					<div class='input_group_append'>
+						<button type='button' class='button button_default_dark' id='search_button'><i class='fa fa-search'></i></button>
+					</div>
+				</div>
 			</div>
 		</div>
 		<br><br>
@@ -50,10 +55,45 @@
 <div class='alert_wrapper' id='view_delivery_order_wrapper'>
 	<button type='button' class='slide_alert_close_button'>&times </button>
 	<div class='alert_box_slide'>
+		<label>Delivery order</label>
+		<p style='font-family:museo' id='delivery_order_name_p'></p>
+		<p style='font-family:museo' id='delivery_order_date_p'></p>
+		
+		<label>Sales order</label>
+		<p style='font-family:museo' id='sales_order_name_p'></p>
+		<p style='font-family:museo' id='sales_order_date_p'></p>
+		
+		<label>Taxing</label>
+		<p style='font-family:museo' id='taxing_name_p'></p>
+		
+		<label>Invoicing method</label>
+		<p style='font-family:museo' id='invoicing_method_p'></p>
+		
+		<label>Seller</label>
+		<p style='font-family:museo' id='seller_name_p'></p>
+		
+		<label>Customer</label>
+		<p style='font-family:museo' id='customer_name_p'></p>
+		<p style='font-family:museo' id='customer_address_p'></p>
+		<p style='font-family:museo' id='customer_city_p'></p>
+		<p style='font-family:museo' id='customer_up_p'></p>
+		
+		<table class='table table-bordered'>
+			<tr>
+				<th>Reference</th>
+				<th>Name</th>
+				<th>Quantity</th>
+			</tr>
+			<tbody id='delivery_order_table'></tbody>
+		</table>
 	</div>
 </div>
 
 <script>
+	$('#search_button').click(function(){
+		refresh_view(1);
+	});
+	
 	$('#page').change(function(){
 		refresh_view();
 	});
@@ -80,6 +120,8 @@
 						$('#page').append("<option value='" + i + "'>" + i + "</option>");
 					}
 				}
+				
+				$('#archive_table').html('');
 				
 				var delivery_orders		= response.delivery_orders;
 				
@@ -134,8 +176,98 @@
 	}
 	
 	function open_view(n){
-		$('#view_delivery_order_wrapper').fadeIn(300, function(){
-			$('#view_delivery_order_wrapper .alert_box_slide').show("slide", { direction: "right" }, 250);
+		$.ajax({
+			url:'<?= site_url('Delivery_order/view_by_id') ?>',
+			data:{
+				id:n
+			},
+			success:function(response){
+				var general					= response.general;
+				var delivery_order_date		= general.date;
+				var delivery_order_name		= general.name;
+				var complete_address		= '';
+				var customer_name			= general.customer_name;
+				complete_address			+= general.address;
+				var customer_city			= general.city;
+				var customer_number			= general.number;
+				var customer_rt				= general.rt;
+				var customer_rw				= general.rw;
+				var customer_postal			= general.postal_code;
+				var customer_block			= general.block;
+				var customer_id				= general.id;
+	
+				if(customer_number != null){
+					complete_address	+= ' No. ' + customer_number;
+				}
+				
+				if(customer_block != null){
+					complete_address	+= ' Blok ' + customer_block;
+				}
+			
+				if(customer_rt != '000'){
+					complete_address	+= ' RT ' + customer_rt;
+				}
+				
+				if(customer_rw != '000' && customer_rt != '000'){
+					complete_address	+= ' /RW ' + customer_rw;
+				}
+				
+				if(customer_postal != null){
+					complete_address	+= ', ' + customer_postal;
+				}
+				
+				var customer_pic_name		= general.pic_name;
+				var taxing					= general.taxing;
+				if(taxing		== 0){
+					var taxing_p	= 'Non taxable sales';
+				} else {
+					var taxing_p	= 'Taxable sales';
+				}
+				
+				var invoicing_method		= general.invoicing_method;
+				if(invoicing_method	== 1){
+					var invoicing_method_p	= 'Retail type';
+				} else {
+					var invoicing_method_p	= 'Coorporate type';
+				}
+				
+				var seller_name		= general.seller;
+				if(seller_name	== null){
+					seller_name		= '<i>Not available</i>';
+				}
+				
+				var sales_order_name	= general.sales_order_name;
+				var sales_order_date	= my_date_format(general.sales_order_date);
+				
+				$('#taxing_name_p').html(taxing_p);
+				
+				$('#sales_order_name_p').html(sales_order_name);
+				$('#sales_order_date_p').html(sales_order_date);
+				
+				$('#invoicing_method_p').html(invoicing_method_p);
+				$('#seller_name_p').html(seller_name);
+				
+				$('#delivery_order_name_p').html(delivery_order_name);
+				$('#delivery_order_date_p').html(my_date_format(delivery_order_date));
+				$('#customer_name_p').html(customer_name);
+				$('#customer_address_p').html(complete_address);
+				$('#customer_city_p').html(customer_city);
+				$('#customer_up_p').html(customer_pic_name);
+				
+				$('#delivery_order_table').html('');
+				
+				var items		= response.items;
+				$.each(items, function(index, item){
+					var reference		= item.reference;
+					var name			= item.name;
+					var quantity		= item.quantity;
+					$('#delivery_order_table').append("<tr><td>" + reference + "</td><td>" + name + "</td><td>" + numeral(quantity).format('0,0') + "</td></tr>");
+				});
+				
+				$('#view_delivery_order_wrapper').fadeIn(300, function(){
+					$('#view_delivery_order_wrapper .alert_box_slide').show("slide", { direction: "right" }, 250);
+				});
+			}
 		});
 	}
 	

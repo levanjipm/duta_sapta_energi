@@ -222,4 +222,17 @@ class Delivery_order extends CI_Controller {
 		header('Content-Type: application/json');
 		echo json_encode($data);
 	}
+	
+	public function view_by_id()
+	{
+		$id				= $this->input->get('id');
+		$this->load->model('Delivery_order_model');
+		$data['general']	= $this->Delivery_order_model->show_by_id($id);
+		
+		$this->load->model('Delivery_order_detail_model');
+		$data['items']		= $this->Delivery_order_detail_model->show_by_code_delivery_order_id($id);
+		
+		header('Content-Type: application/json');
+		echo json_encode($data);
+	}
 }

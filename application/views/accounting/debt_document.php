@@ -94,7 +94,7 @@
 					var supplier_address	= value.address;
 					var supplier_city		= value.city;
 					
-					$('#debt_document_tbody').append("<tr><td>" + date + "</td><td><p>" + supplier_name + "</p><p>" + supplier_address + "</p><p>" + supplier_city + "</p></td><td><p>" + invoice_document + "</p><p>" + tax_document + "</p></td><td><button type='button' class='button button_default_light' onclick='view_debt_document(" + id + ")'><i class='fa fa-eye'></i></button></td></tr>");
+					$('#debt_document_tbody').append("<tr><td>" + my_date_format(date) + "</td><td><p>" + supplier_name + "</p><p>" + supplier_address + "</p><p>" + supplier_city + "</p></td><td><p>" + invoice_document + "</p><p>" + tax_document + "</p></td><td><button type='button' class='button button_default_dark' onclick='view_debt_document(" + id + ")' title='View " + invoice_document + "'><i class='fa fa-eye'></i></button></td></tr>");
 				});
 				
 				$('#page').html('');
@@ -132,7 +132,7 @@
 				var supplier_address	= debt_array.address;
 				var supplier_city		= debt_array.city;
 				
-				$('#invoice_date_p').html(invoice_date);
+				$('#invoice_date_p').html(my_date_format(invoice_date));
 				$('#invoice_document_p').html(invoice_name);
 				$('#invoice_tax_document_p').html(invoice_tax_name);
 				
@@ -145,7 +145,7 @@
 					var document_name			= value.name;
 					var document_received_date	= value.received_date;
 					var document_id				= value.id;
-					$('#good_receipt_table').append("<tr><td>" + document_date + "</td><td>" + document_name + "</td><td colspan='4'></td><td id='document_value-" + document_id + "'></td></tr>");
+					$('#good_receipt_table').append("<tr><td>" + my_date_format(document_date) + "</td><td>" + document_name + "</td><td colspan='4'></td><td id='document_value-" + document_id + "'></td></tr>");
 					
 					var document_value			= 0;
 					$.each(detail_array, function (index_a, value_a){

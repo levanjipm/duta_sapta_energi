@@ -16,6 +16,9 @@ class Expense extends CI_Controller {
 		$this->load->model('User_model');
 		$data['user_login'] = $this->User_model->show_by_id($user_id);
 		
+		$this->load->model('Authorization_model');
+		$data['departments']	= $this->Authorization_model->show_by_user_id($user_id);
+		
 		$this->load->view('head');
 		$this->load->view('finance/header', $data);
 		
@@ -45,10 +48,13 @@ class Expense extends CI_Controller {
 		$this->load->model('User_model');
 		$data['user_login'] = $this->User_model->show_by_id($user_id);
 		
+		$this->load->model('Authorization_model');
+		$data['departments']	= $this->Authorization_model->show_by_user_id($user_id);
+		
 		$this->load->view('head');
 		$this->load->view('finance/header', $data);
 		
-		$this->load->view('finance/petty_cash_report_dashboard');
+		$this->load->view('finance/expense_report');
 	}
 	
 	public function view_update_form($id)

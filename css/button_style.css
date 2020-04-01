@@ -76,3 +76,13 @@
 	background-color:transparent;
 	color:#E19B3C;
 }
+
+.button_rounded_dark{
+	border-radius:50px;
+	background-color:#E19B3C;
+	padding:3px 20px;
+	color:white;
+}
+
+.button_rounded_dark:hover{
+}

@@ -167,11 +167,12 @@ class Delivery_order_model extends CI_Model {
 		
 		public function show_by_id($id)
 		{
-			$this->db->select('code_delivery_order.*, customer.name as customer_name, customer.address, customer.city, code_sales_order.name as sales_order_name, customer.number, customer.rt, customer.rw, customer.block, customer.pic_name');
+			$this->db->select('code_delivery_order.*, customer.name as customer_name, customer.address, customer.city, code_sales_order.name as sales_order_name, customer.number, customer.rt, customer.rw, customer.block, customer.pic_name, code_sales_order.taxing, users.name as seller, code_sales_order.invoicing_method, code_sales_order.date as sales_order_date');
 			$this->db->from('code_delivery_order');
 			$this->db->join('delivery_order', 'delivery_order.code_delivery_order_id = code_delivery_order.id', 'inner');
 			$this->db->join('sales_order', 'delivery_order.sales_order_id = sales_order.id', 'inner');
 			$this->db->join('code_sales_order', 'sales_order.code_sales_order_id = code_sales_order.id');
+			$this->db->join('users', 'code_sales_order.seller = users.id', 'left');
 			$this->db->join('customer', 'code_sales_order.customer_id = customer.id');
 			$this->db->where('code_delivery_order.id',$id);
 			$query 		= $this->db->get();
@@ -312,16 +313,18 @@ class Delivery_order_model extends CI_Model {
 			$this->db->join('customer', 'code_sales_order.customer_id = customer.id');
 			$this->db->where('MONTH(code_delivery_order.date)',$month);
 			$this->db->where('YEAR(code_delivery_order.date)',$year);
+			$this->db->where('code_delivery_order.is_delete', 0);
 			if($term != ''){
 				$this->db->like('code_delivery_order.name', $term, 'both');
 				$this->db->or_like('customer.name', $term, 'both');
 				$this->db->or_like('customer.address', $term, 'both');
 				$this->db->or_like('customer.city', $term, 'both');
-				$this->db->or_like('v.name', $term, 'both');
+				$this->db->or_like('code_sales_order.name', $term, 'both');
 			}
 			
 			$this->db->order_by('code_delivery_order.date', 'asc');
 			$this->db->order_by('code_delivery_order.id', 'asc');
+			$this->db->limit($limit, $offset);
 			
 			$query		= $this->db->get();
 			$result		= $query->result();
@@ -339,6 +342,7 @@ class Delivery_order_model extends CI_Model {
 			$this->db->join('customer', 'code_sales_order.customer_id = customer.id');
 			$this->db->where('MONTH(code_delivery_order.date)',$month);
 			$this->db->where('YEAR(code_delivery_order.date)',$year);
+			$this->db->where('code_delivery_order.is_delete', 0);
 			if($term != ''){
 				$this->db->like('code_delivery_order.name', $term, 'both');
 				$this->db->or_like('customer.name', $term, 'both');
@@ -346,9 +350,6 @@ class Delivery_order_model extends CI_Model {
 				$this->db->or_like('customer.city', $term, 'both');
 				$this->db->or_like('code_sales_order.name', $term, 'both');
 			}
-			
-			$this->db->order_by('code_delivery_order.date', 'asc');
-			$this->db->order_by('code_delivery_order.id', 'asc');
 			
 			$query		= $this->db->get();
 			$result		= $query->num_rows();

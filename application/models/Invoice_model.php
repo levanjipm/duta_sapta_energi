@@ -205,7 +205,7 @@ class Invoice_model extends CI_Model {
 		
 		public function view_maximum_by_customer($customer_id)
 		{
-			$this->db->select('invoice.date, invoice.value, coalesce(sum(receivable.value),0) as paid, customer.term_of_payment');
+			$this->db->select('invoice.id, invoice.date, invoice.value, coalesce(sum(receivable.value),0) as paid, customer.term_of_payment');
 			$this->db->from('invoice');
 			$this->db->join('receivable', 'invoice.id = receivable.invoice_id', 'left');
 			$this->db->join('code_delivery_order', 'code_delivery_order.invoice_id = invoice.id');
@@ -218,7 +218,7 @@ class Invoice_model extends CI_Model {
 			$this->db->order_by('date', 'asc');
 			
 			$query		= $this->db->get();
-			$result		= $query->row();
+			$result		= $query->result();
 			
 			return $result;
 		}

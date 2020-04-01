@@ -91,7 +91,7 @@
 					
 					if(type == 1){
 						balance		-= value;
-						$('#petty_table').append("<tr><td>" + date + "</td><td>Rp. " + numeral(value).format('0,0.00') + "</td><td>Rp. " + numeral(0).format('0,0.00') + "</td><td>" + information + "</td><td>Rp. " + numeral(balance).format('0,0.00') + "</td></tr>");
+						$('#petty_table').append("<tr><td>" + my_date_format(date) + "</td><td>Rp. " + numeral(value).format('0,0.00') + "</td><td>Rp. " + numeral(0).format('0,0.00') + "</td><td>" + information + "</td><td>Rp. " + numeral(balance).format('0,0.00') + "</td></tr>");
 					} else if(type == 2){
 						balance		+= value;
 						$('#petty_table').append("<tr><td>" + date + "</td><td>Rp. " + numeral(0).format('0,0.00') + "</td><td>Rp. " + numeral(value).format('0,0.00') + "</td><td>Income</td><td>Rp. " + numeral(balance).format('0,0.00') + "</td></tr>");

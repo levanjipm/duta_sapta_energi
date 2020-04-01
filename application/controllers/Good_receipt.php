@@ -11,8 +11,15 @@ class Good_receipt extends CI_Controller {
 	
 	public function index()
 	{
+		$user_id		= $this->session->userdata('user_id');
+		$this->load->model('User_model');
+		$data['user_login'] = $this->User_model->show_by_id($user_id);
+		
+		$this->load->model('Authorization_model');
+		$data['departments']	= $this->Authorization_model->show_by_user_id($user_id);
+		
 		$this->load->view('head');
-		$this->load->view('inventory/header');
+		$this->load->view('inventory/header', $data);
 		
 		$this->load->model('Good_receipt_model');
 		$result	= $this->Good_receipt_model->show_unconfirmed_good_receipt();
@@ -23,8 +30,15 @@ class Good_receipt extends CI_Controller {
 	
 	public function create_dashboard()
 	{
+		$user_id		= $this->session->userdata('user_id');
+		$this->load->model('User_model');
+		$data['user_login'] = $this->User_model->show_by_id($user_id);
+		
+		$this->load->model('Authorization_model');
+		$data['departments']	= $this->Authorization_model->show_by_user_id($user_id);
+		
 		$this->load->view('head');
-		$this->load->view('inventory/header');
+		$this->load->view('inventory/header', $data);
 		
 		$this->load->model('Supplier_model');
 		$result = $this->Supplier_model->show_items();
@@ -107,13 +121,49 @@ class Good_receipt extends CI_Controller {
 	
 	public function archive()
 	{
+		$user_id		= $this->session->userdata('user_id');
+		$this->load->model('User_model');
+		$data['user_login'] = $this->User_model->show_by_id($user_id);
+		
+		$this->load->model('Authorization_model');
+		$data['departments']	= $this->Authorization_model->show_by_user_id($user_id);
+		
 		$this->load->view('head');
-		$this->load->view('inventory/header');
-		$this->load->view('inventory/good_receipt_archive');
+		$this->load->view('inventory/header', $data);
+		
+		$this->load->model('Good_receipt_model');
+		$data['years']	= $this->Good_receipt_model->show_years();
+		
+		$this->load->view('inventory/good_receipt_archive', $data);
 	}
 	
-	public function view_archive($offset, $year, $month, $limit)
+	public function view_archive()
 	{
+		$page			= $this->input->get('page');
+		$term			= $this->input->get('term');
+		$offset			= ($page - 1) * 25;
+		$year			= $this->input->get('year');
+		$month			= $this->input->get('month');
+		
+		$this->load->model('Good_receipt_model');
+		$data['good_receipts'] 	= $this->Good_receipt_model->show_items($year, $month, $offset, $term);
+		$data['pages']				= max(1, ceil($this->Good_receipt_model->count_items($year, $month, $term)/25));
+		
+		header('Content-Type: application/json');
+		echo json_encode($data);
+	}
+	
+	public function view_by_id()
+	{
+		$id			= $this->input->get('id');
+		$this->load->model('Good_receipt_model');
+		$data['general']	= $this->Good_receipt_model->show_by_id($id);
+		
+		$this->load->model('Good_receipt_detail_model');
+		$data['items']		= $this->Good_receipt_detail_model->show_by_code_good_receipt_id($id);
+		
+		header('Content-Type: application/json');
+		echo json_encode($data);
 	}
 	
 	public function select_by_invoice_id($invoice_id)

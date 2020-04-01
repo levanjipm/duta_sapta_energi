@@ -12,8 +12,15 @@ class Finance extends CI_Controller {
 	
 	public function index()
 	{
+		$user_id		= $this->session->userdata('user_id');
+		$this->load->model('User_model');
+		$data['user_login'] = $this->User_model->show_by_id($user_id);
+		
+		$this->load->model('Authorization_model');
+		$data['departments']	= $this->Authorization_model->show_by_user_id($user_id);
+		
 		$this->load->view('head');
-		$this->load->view('finance/header');
+		$this->load->view('finance/header', $data);
 	}
 	
 	public function show_opponent()

@@ -108,6 +108,8 @@
 	right:0;
 	display:none;
 	z-index:0;
+	padding:30px;
+	overflow-y:scroll;
 }
 
 .slide_alert_close_button{

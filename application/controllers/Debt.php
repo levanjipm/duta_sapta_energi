@@ -12,8 +12,15 @@ class Debt extends CI_Controller {
 	
 	public function index()
 	{
+		$user_id		= $this->session->userdata('user_id');
+		$this->load->model('User_model');
+		$data['user_login'] = $this->User_model->show_by_id($user_id);
+		
+		$this->load->model('Authorization_model');
+		$data['departments']	= $this->Authorization_model->show_by_user_id($user_id);
+		
 		$this->load->view('head');
-		$this->load->view('accounting/header');
+		$this->load->view('accounting/header', $data);
 		
 		$this->load->view('accounting/debt_document');
 	}
@@ -48,8 +55,16 @@ class Debt extends CI_Controller {
 	
 	public function create_dashboard()
 	{
+		$user_id		= $this->session->userdata('user_id');
+		$this->load->model('User_model');
+		$data['user_login'] = $this->User_model->show_by_id($user_id);
+		
+		$this->load->model('Authorization_model');
+		$data['departments']	= $this->Authorization_model->show_by_user_id($user_id);
+		
 		$this->load->view('head');
-		$this->load->view('accounting/header');
+		$this->load->view('accounting/header', $data);
+		
 		$this->load->model('Good_receipt_model');
 		$supplier = $this->Good_receipt_model->select_supplier_from_uninvoiced_document();
 		$data['suppliers'] = $supplier;
@@ -59,8 +74,15 @@ class Debt extends CI_Controller {
 	
 	public function create_blank_dashboard()
 	{
+		$user_id		= $this->session->userdata('user_id');
+		$this->load->model('User_model');
+		$data['user_login'] = $this->User_model->show_by_id($user_id);
+		
+		$this->load->model('Authorization_model');
+		$data['departments']	= $this->Authorization_model->show_by_user_id($user_id);
+		
 		$this->load->view('head');
-		$this->load->view('accounting/header');
+		$this->load->view('accounting/header', $data);
 		
 		$this->load->view('accounting/create_blank_debt_document_dashboard');
 	}
@@ -85,6 +107,16 @@ class Debt extends CI_Controller {
 	
 	public function create_debt_document()
 	{
+		$user_id		= $this->session->userdata('user_id');
+		$this->load->model('User_model');
+		$data['user_login'] = $this->User_model->show_by_id($user_id);
+		
+		$this->load->model('Authorization_model');
+		$data['departments']	= $this->Authorization_model->show_by_user_id($user_id);
+		
+		$this->load->view('head');
+		$this->load->view('accounting/header', $data);
+		
 		$supplier_id		= $this->input->post('supplier');
 		$this->load->model('Supplier_model');
 		$item				= $this->Supplier_model->show_by_id($supplier_id);
@@ -102,8 +134,6 @@ class Debt extends CI_Controller {
 		$item	= $this->Good_receipt_detail_model->select_by_code_good_receipt_id_array($documents);
 		$data['details']	= $item;
 		
-		$this->load->view('head');
-		$this->load->view('accounting/header');
 		$this->load->view('accounting/create_debt_document_validation', $data);
 	}
 	

@@ -11,7 +11,7 @@
 	<div class='sidenav_bar_departments'>
 <?php
 	foreach($departments as $department){
-		if($department->name == 'Sales'){
+		if($department->name == 'Purchasing'){
 ?>
 		<button class='button_departments' onclick='window.location.href="<?= site_url($department->index_url) ?>"' title='<?= $department->name ?>'><img src='<?= base_url() . 'assets/' . $department->icon . '.png' ?>' style='width:100%'></button>
 		<br><br>

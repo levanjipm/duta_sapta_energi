@@ -13,6 +13,7 @@
 			<table class='table table-bordered'>
 				<tr>
 					<th>Area name</th>
+					<th>Customer count</th>
 					<th>Action</th>
 				</tr>
 <?php
@@ -20,6 +21,7 @@
 ?>
 				<tr>
 					<td id='area_name-<?= $area->id ?>'><?= $area->name ?></td>
+					<td><?= number_format(max(0,$area->customer)) ?></td>
 					<td>
 						<button type='button' class='button button_success_dark' onclick='edit_area(<?= $area->id ?>)'><i class='fa fa-pencil'></i></button>
 <?php

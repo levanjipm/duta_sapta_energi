@@ -13,19 +13,18 @@ class Stock extends CI_Controller {
 	public function view($department)
 	{
 		$this->load->view('head');
+		$user_id		= $this->session->userdata('user_id');
+		$this->load->model('User_model');
+		$data['user_login'] = $this->User_model->show_by_id($user_id);
 		
-		if($department == 'Sales'){
-			$user_id		= $this->session->userdata('user_id');
-			$this->load->model('User_model');
-			$data['user_login'] = $this->User_model->show_by_id($user_id);
+		$this->load->model('Authorization_model');
+		$data['departments']	= $this->Authorization_model->show_by_user_id($user_id);
 			
-			$this->load->model('Authorization_model');
-			$data['departments']	= $this->Authorization_model->show_by_user_id($user_id);
-
+		if($department == 'Sales'){
 			$this->load->view('sales/header', $data);
 			$this->load->view('sales/stock_dashboard');
 		} else  if($department == 'Inventory'){
-			$this->load->view('inventory/header');
+			$this->load->view('inventory/header', $data);
 			$this->load->view('inventory/stock_dashboard');
 		}
 	}

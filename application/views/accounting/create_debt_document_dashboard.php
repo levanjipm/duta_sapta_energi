@@ -77,8 +77,8 @@
 					var date					= value.date;
 					var received_date			= value.received_date;
 					
-					$('#debt_document_by_supplier_tbody').append("<tr><td>" + date + "</td><td><p style='font-family:museo'>" + document + "</p><p sytle='font-family:museo'>Received on " + received_date + "</p></td>" + 
-						"<td><label>Purchase order</label><p style='font-family:museo'>" + purchase_order_name + "</p><p style='font-family:museo'>" + purchase_order_date + "</p></td>" + 
+					$('#debt_document_by_supplier_tbody').append("<tr><td>" + my_date_format(date) + "</td><td><p style='font-family:museo'>" + document + "</p><p sytle='font-family:museo'>Received on " + my_date_format(received_date) + "</p></td>" + 
+						"<td><label>Purchase order</label><p style='font-family:museo'>" + purchase_order_name + "</p><p style='font-family:museo'>" + my_date_format(purchase_order_date) + "</p></td>" + 
 						"<td><button type='button' class='button button_default_dark' onclick='add_code_good_receipt(" + code_good_receipt_id + ")' id='plus_button-" + code_good_receipt_id + "'><i class='fa fa-plus'></i></button>" + 
 						"<button type='button' class='button button_danger_dark' onclick='remove_code_good_receipt(" + code_good_receipt_id + ")' id='minus_button-" + code_good_receipt_id + "' style='display:none'><i class='fa fa-minus'></i></button></td></tr>");
 				});
@@ -123,13 +123,13 @@
 					var received_date			= value.received_date;
 					
 					if($('#document-' + code_good_receipt_id).length == 0){
-						$('#debt_document_by_supplier_tbody').append("<tr><td>" + date + "</td><td><p style='font-family:museo'>" + document + "</p><p sytle='font-family:museo'>Received on " + received_date + "</p></td>" + 
-							"<td><label>Purchase order</label><p style='font-family:museo'>" + purchase_order_name + "</p><p style='font-family:museo'>" + purchase_order_date + "</p></td>" + 
+						$('#debt_document_by_supplier_tbody').append("<tr><td>" + my_date_format(date) + "</td><td><p style='font-family:museo'>" + document + "</p><p sytle='font-family:museo'>Received on " + my_date_format(received_date) + "</p></td>" + 
+							"<td><label>Purchase order</label><p style='font-family:museo'>" + purchase_order_name + "</p><p style='font-family:museo'>" + my_date_format(purchase_order_date) + "</p></td>" + 
 							"<td><button type='button' class='button button_default_light' onclick='add_code_good_receipt(" + code_good_receipt_id + ")' id='plus_button-" + code_good_receipt_id + "'><i class='fa fa-plus'></i></button>" + 
 							"<button type='button' class='button button_danger_dark' onclick='remove_code_good_receipt(" + code_good_receipt_id + ")' id='minus_button-" + code_good_receipt_id + "' style='display:none'><i class='fa fa-minus'></i></button></td></tr>");
 					} else {
-						$('#debt_document_by_supplier_tbody').append("<tr><td>" + date + "</td><td><p style='font-family:museo'>" + document + "</p><p sytle='font-family:museo'>Received on " + received_date + "</p></td>" + 
-							"<td><label>Purchase order</label><p style='font-family:museo'>" + purchase_order_name + "</p><p style='font-family:museo'>" + purchase_order_date + "</p></td>" + 
+						$('#debt_document_by_supplier_tbody').append("<tr><td>" + my_date_format(date) + "</td><td><p style='font-family:museo'>" + document + "</p><p sytle='font-family:museo'>Received on " + my_date_format(received_date) + "</p></td>" + 
+							"<td><label>Purchase order</label><p style='font-family:museo'>" + purchase_order_name + "</p><p style='font-family:museo'>" + my_date_format(purchase_order_date) + "</p></td>" + 
 							"<td><button type='button' class='button button_default_light' onclick='add_code_good_receipt(" + code_good_receipt_id + ")' id='plus_button-" + code_good_receipt_id + "' style='display:none'><i class='fa fa-plus'></i></button>" + 
 							"<button type='button' class='button button_danger_dark' onclick='remove_code_good_receipt(" + code_good_receipt_id + ")' id='minus_button-" + code_good_receipt_id + "'><i class='fa fa-minus'></i></button></td></tr>");
 					}

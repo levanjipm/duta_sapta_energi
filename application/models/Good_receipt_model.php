@@ -279,7 +279,7 @@ class Good_receipt_model extends CI_Model {
 		
 		public function show_by_id($code_good_receipt_id)
 		{
-			$this->db->select('code_good_receipt.*, supplier.name as supplier_name, supplier.address, supplier.city');
+			$this->db->select('code_good_receipt.*, supplier.name as supplier_name, supplier.address, supplier.city, supplier.number, supplier.rt, supplier.rw, supplier.postal_code, code_purchase_order.name as purchase_order_name, code_purchase_order.date as purchase_order_date');
 			$this->db->from('code_good_receipt');
 			$this->db->join('good_receipt', 'good_receipt.code_good_receipt_id = code_good_receipt.id');
 			$this->db->join('purchase_order', 'good_receipt.purchase_order_id = purchase_order.id');
@@ -288,7 +288,7 @@ class Good_receipt_model extends CI_Model {
 			$this->db->where('code_good_receipt.id', $code_good_receipt_id);
 			
 			$query		= $this->db->get();
-			$item		= $query->result();
+			$item		= $query->row();
 			
 			return $item;
 		}
@@ -324,6 +324,72 @@ class Good_receipt_model extends CI_Model {
 			$item	= $query->result();
 			
 			return $item;
+		}
+		
+		public function show_years()
+		{
+			$this->db->select('DISTINCT(YEAR(date)) as year');
+			$this->db->order_by('date', 'asc');
+			$this->db->order_by('id', 'asc');
+			
+			$query		= $this->db->get($this->table_good_receipt);
+			$result		= $query->result();
+			
+			return $result;
+		}
+		
+		public function show_items($year, $month, $offset = 0, $term = '', $limit = 25)
+		{
+			$this->db->select('DISTINCT(code_good_receipt.id) as id, code_good_receipt.name, code_good_receipt.date, code_good_receipt.is_confirm, code_good_receipt.is_delete, code_good_receipt.invoice_id, code_good_receipt.received_date, code_good_receipt.created_by, code_good_receipt.confirmed_by, supplier.name as supplier_name, supplier.address, supplier.city, code_purchase_order.name as purchase_order_name, supplier.number, supplier.rt, supplier.rw, supplier.block');
+			$this->db->from('code_good_receipt');
+			$this->db->join('good_receipt', 'good_receipt.code_good_receipt_id = code_good_receipt.id', 'inner');
+			$this->db->join('purchase_order', 'good_receipt.purchase_order_id = purchase_order.id', 'inner');
+			$this->db->join('code_purchase_order', 'purchase_order.code_purchase_order_id = code_purchase_order.id');
+			$this->db->join('supplier', 'code_purchase_order.supplier_id = supplier.id');
+			$this->db->where('MONTH(code_good_receipt.date)',$month);
+			$this->db->where('YEAR(code_good_receipt.date)',$year);
+			$this->db->where('code_good_receipt.is_delete', 0);
+			if($term != ''){
+				$this->db->like('code_good_receipt.name', $term, 'both');
+				$this->db->or_like('supplier.name', $term, 'both');
+				$this->db->or_like('supplier.address', $term, 'both');
+				$this->db->or_like('supplier.city', $term, 'both');
+				$this->db->or_like('code_purchase_order.name', $term, 'both');
+			}
+			
+			$this->db->order_by('code_good_receipt.date', 'asc');
+			$this->db->order_by('code_good_receipt.id', 'asc');
+			$this->db->limit($limit, $offset);
+			
+			$query		= $this->db->get();
+			$result		= $query->result();
+			
+			return $result;
+		}
+		
+		public function count_items($year, $month, $term)
+		{
+			$this->db->select('DISTINCT(code_good_receipt.id)');
+			$this->db->from('code_good_receipt');
+			$this->db->join('good_receipt', 'good_receipt.code_good_receipt_id = code_good_receipt.id', 'inner');
+			$this->db->join('purchase_order', 'good_receipt.purchase_order_id = purchase_order.id', 'inner');
+			$this->db->join('code_purchase_order', 'purchase_order.code_purchase_order_id = code_purchase_order.id');
+			$this->db->join('supplier', 'code_purchase_order.supplier_id = supplier.id');
+			$this->db->where('MONTH(code_good_receipt.date)',$month);
+			$this->db->where('YEAR(code_good_receipt.date)',$year);
+			$this->db->where('code_good_receipt.is_delete', 0);
+			if($term != ''){
+				$this->db->like('code_good_receipt.name', $term, 'both');
+				$this->db->or_like('supplier.name', $term, 'both');
+				$this->db->or_like('supplier.address', $term, 'both');
+				$this->db->or_like('supplier.city', $term, 'both');
+				$this->db->or_like('code_purchase_order.name', $term, 'both');
+			}
+			
+			$query		= $this->db->get();
+			$result		= $query->num_rows();
+			
+			return $result;
 		}
 		
 		public function create_guid()

@@ -12,8 +12,12 @@
 			
 			<label>Customer</label>
 			<button class='form-control' type='button' id='select_customer_button' style='text-align:left'></button>
-			<p style='font-family:museo' id='customer_address_select'></p>
 			
+			<label>Customer detail</label>
+			<div class='information_box' id='customer_address_select'></div>
+			<div style='padding:2px 10px;background-color:#ffc107;width:100%;display:none' id='warning_text'>
+				<p ><i class='fa fa-exclamation-triangle'></i> Warning! This Sales Order might not be approved based on current customer's status</p>
+			</div>
 			<input type='hidden' name='customer_id' id='customer_id' required>
 			<br>
 			
@@ -409,7 +413,7 @@
 						complete_address	+= ' no. ' + customer_number;
 					};
 					
-					if(customer_block != null && customer_block != ''){
+					if(customer_block != null && customer_block != '000' && customer_block != ''){
 						complete_address	+= ', blok ' + customer_block;
 					};
 					
@@ -440,12 +444,43 @@
 	});
 	
 	function select_customer(n){
-		var customer_name		= $('#customer_name-' + n).html();
-		var customer_address	= $('#customer_address-' + n).html();
-		$('#select_customer_button').html(customer_name);
-		$('#customer_address_select').html(customer_address);
-		$('#select_customer_wrapper').fadeOut();		
-		$('#customer_id').val(n);		
+		$.ajax({
+			url:'<?= site_url('Customer/select_customer_sales_order') ?>',
+			data:{
+				id:n
+			},
+			success:function(response){
+				var customer		= response.customer;
+				var plafond			= customer.plafond;
+				var pending_value	= parseFloat(response.pending_value);
+				var value			= pending_value.value;
+				
+				var pending_invoice	= response.pending_invoice;	
+				var debt			= 0;
+				$.each(pending_invoice, function(index, invoice){
+					var invoice_value	= parseFloat(Math.max(0, parseFloat(invoice.value)));
+					var paid_value		= parseFloat(invoice.paid);
+					
+					var total_value		= invoice_value - paid_value;
+					debt				+= parseFloat(total_value);
+					
+				});
+				
+				var customer_name		= $('#customer_name-' + n).html();
+				var customer_address	= $('#customer_address-' + n).html();
+				$('#select_customer_button').html(customer_name);
+				alert(debt + pending_value);
+				if(debt + pending_value > plafond){
+					$('#warning_text').show();
+				} else {
+					$('#warning_text').hide();
+				}					
+				
+				$('#customer_address_select').html('<p>' + customer_address + '</p><label>Plafond</label><p>Rp. ' + numeral(plafond).format('0,0.00') + '</p><label>Pending sales order value</label><p>Rp. ' + numeral(value).format('0,0.00') + '</p><label>Receivable</label><p>Rp. ' + numeral(debt).format('0,0.00') + '</p>');
+				$('#select_customer_wrapper').fadeOut();
+				$('#customer_id').val(n);
+			}
+		});
 	};
 	
 	function remove_item(n){

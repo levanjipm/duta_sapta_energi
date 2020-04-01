@@ -1,31 +1,55 @@
 <div class='topnav_bar'>
-	<div style='width:50%;display:inline-block'><h3>Finance</h3></div><div style='width:50%;display:inline-block;text-align:right'><?php if(!empty($user_login)){ ?><h4>Hello, <?= $user_login->name ?></h4><?php } else { ?><button type='button' class='button button_default_dark'>Login</button> <?php } ?></div>
+	<h3>Finance</h3>
 </div>
 <div class='sidenav_bar'>
-	<a href='<?= site_url() ?>'><img src='<?= base_url('assets/Logo_light.png') ?>' style='width:80%'></a>
-	<br><br>
-	<button class='container_button'><p style='font-family:museo'>Bank</p></button>
-	<div class='container_bar'>
-		<a href='<?= site_url('Bank/transaction') ?>'><button><p style='font-family:museo'>Transaction</p></button></a>
-		<a href='<?= site_url('Bank/account') ?>'><button><p style='font-family:museo'>Account</p></button></a>
-		<a href='<?= site_url('Bank/mutation') ?>'><button><p style='font-family:museo'>Mutation</p></button></a>
-		<a href='<?= site_url('Bank/opponent') ?>'><button><p style='font-family:museo'>Opponent</p></button></a>
+	<button class='button_close_sidenav'>
+		<div class='bar bar_1'></div>
+		<div class='bar bar_2'></div>
+		<div class='bar bar_3'></div>
+	</button>
+	<a href='<?= site_url() ?>'><img src='<?= base_url('assets/Logo_light.png') ?>' style='width:70%;vertical-align:top;height:65px;'></a>
+	<div class='sidenav_bar_departments'>
+<?php
+	foreach($departments as $department){
+		if($department->name == 'Finance'){
+?>
+		<button class='button_departments' onclick='window.location.href="<?= site_url($department->index_url) ?>"' title='<?= $department->name ?>'><img src='<?= base_url() . 'assets/' . $department->icon . '.png' ?>' style='width:100%'></button>
+		<br><br>
+<?php
+		} else {
+?>
+		<button class='button_departments' onclick='window.location.href="<?= site_url($department->index_url) ?>"' title='<?= $department->name ?>'><img src='<?= base_url() . 'assets/' . $department->icon . '.png' ?>' style='width:100%;filter: brightness(0) invert(1);'></button>
+		<br><br>
+<?php
+		}
+	}
+?>
 	</div>
-	<button class='container_button'><p style='font-family:museo'>Petty cash</p></button>
-	<div class='container_bar'>
-		<a href='<?= site_url('Petty_cash/transaction') ?>'><button><p style='font-family:museo'>Transaction</p></button></a>
-		<a href='<?= site_url('Petty_cash/mutation') ?>'><button><p style='font-family:museo'>Mutation</p></button></a>
-		<a href='<?= site_url('Petty_cash/balance') ?>'><button><p style='font-family:museo'>Balance</p></button></a>
-	</div>
-	<button class='container_button'><p style='font-family:museo'>Expense</p></button>
-	<div class='container_bar'>
-		<a href='<?= site_url('Expense/class') ?>'><button><p style='font-family:museo'>Class</p></button></a>
-		<a href='<?= site_url('Expense/report') ?>'><button><p style='font-family:museo'>Report</p></button></a>
-	</div>
-	<button class='container_button'><p style='font-family:museo'>Income</p></button>
-	<div class='container_bar'>
-		<a href='<?= site_url('Income/class') ?>'><button><p style='font-family:museo'>Class</p></button></a>
-		<a href='<?= site_url('Income/report') ?>'><button><p style='font-family:museo'>Report</p></button></a>
+	<div class='sidenav_bar_functions'>
+		<button class='container_button'><p style='font-family:museo'>Bank</p></button>
+		<div class='container_bar'>
+			<a href='<?= site_url('Bank/transaction') ?>'><button><p style='font-family:museo'>Transaction</p></button></a>
+			<a href='<?= site_url('Bank/account') ?>'><button><p style='font-family:museo'>Account</p></button></a>
+			<a href='<?= site_url('Bank/mutation') ?>'><button><p style='font-family:museo'>Mutation</p></button></a>
+			<a href='<?= site_url('Bank/opponent') ?>'><button><p style='font-family:museo'>Opponent</p></button></a>
+		</div>
+		<button class='container_button'><p style='font-family:museo'>Petty cash</p></button>
+		<div class='container_bar'>
+			<a href='<?= site_url('Petty_cash/transaction') ?>'><button><p style='font-family:museo'>Transaction</p></button></a>
+			<a href='<?= site_url('Petty_cash/mutation') ?>'><button><p style='font-family:museo'>Mutation</p></button></a>
+			<a href='<?= site_url('Petty_cash/balance') ?>'><button><p style='font-family:museo'>Balance</p></button></a>
+		</div>
+		<button class='container_button'><p style='font-family:museo'>Expense</p></button>
+		<div class='container_bar'>
+			<a href='<?= site_url('Expense/class') ?>'><button><p style='font-family:museo'>Class</p></button></a>
+			<a href='<?= site_url('Expense/report') ?>'><button><p style='font-family:museo'>Report</p></button></a>
+		</div>
+		<button class='container_button'><p style='font-family:museo'>Income</p></button>
+		<div class='container_bar'>
+			<a href='<?= site_url('Income/class') ?>'><button><p style='font-family:museo'>Class</p></button></a>
+			<a href='<?= site_url('Income/report') ?>'><button><p style='font-family:museo'>Report</p></button></a>
+		</div>
+		<a href='<?= site_url('Report/cash_flow_report') ?>'><button><p>Cash flow report</p></button></a>
 	</div>
 </div>
 <script>

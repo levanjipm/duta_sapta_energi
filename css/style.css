@@ -191,3 +191,12 @@ html, body{
 	padding:5px;
 	color:white;
 }
+
+.information_box{
+	width:100%;
+	background-color:#eee;
+	cursor: not-allowed;
+	height:150px;
+	padding:10px;
+	overflow-y:scroll;
+}
