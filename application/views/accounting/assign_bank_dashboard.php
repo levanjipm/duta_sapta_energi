@@ -73,7 +73,7 @@
 					var date	= data.date;
 					var value	= data.value;
 					var name	= data.name;
-					$('#bank_table').append("<tr><td>" + date + "</td><td>Rp. " + numeral(value).format('0,0.00') + "</td><td>" + name + "</td><td><button type='button' class='button button_default_dark' onclick='assign_bank_data(" + id + ")'><i class='fa fa-long-arrow-right'></i></button></td></tr>");
+					$('#bank_table').append("<tr><td>" + my_date_format(date) + "</td><td>Rp. " + numeral(value).format('0,0.00') + "</td><td>" + name + "</td><td><button type='button' class='button button_default_dark' onclick='assign_bank_data(" + id + ")'><i class='fa fa-long-arrow-right'></i></button></td></tr>");
 				});
 				
 				for(i = 1; i <= pages; i++){

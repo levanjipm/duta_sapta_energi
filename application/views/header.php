@@ -53,6 +53,14 @@
 	}
 ?>
 </div>
+<div class='loader_wrapper'>
+	<div class='loader_dot_wrapper'>
+		<div class='loader_dot' id='loader_dot_1'></div>
+		<div class='loader_dot' id='loader_dot_2'></div>
+		<div class='loader_dot' id='loader_dot_3'></div>
+		<div class='loader_dot' id='loader_dot_4'></div>
+	</div>
+</div>
 <script>
 	function adjust_size(){
 		var min_size	= 100000;

@@ -11,8 +11,15 @@ class Bank extends CI_Controller {
 	}
 	public function account()
 	{
+		$user_id		= $this->session->userdata('user_id');
+		$this->load->model('User_model');
+		$data['user_login'] = $this->User_model->show_by_id($user_id);
+		
+		$this->load->model('Authorization_model');
+		$data['departments']	= $this->Authorization_model->show_by_user_id($user_id);
+		
 		$this->load->view('head');
-		$this->load->view('finance/header');
+		$this->load->view('finance/header', $data);
 		$this->load->model('Internal_bank_account_model');
 		
 		$data['accounts'] = $this->Internal_bank_account_model->show_all();
@@ -29,8 +36,15 @@ class Bank extends CI_Controller {
 	
 	public function transaction()
 	{
+		$user_id		= $this->session->userdata('user_id');
+		$this->load->model('User_model');
+		$data['user_login'] = $this->User_model->show_by_id($user_id);
+		
+		$this->load->model('Authorization_model');
+		$data['departments']	= $this->Authorization_model->show_by_user_id($user_id);
+		
 		$this->load->view('head');
-		$this->load->view('finance/header');
+		$this->load->view('finance/header', $data);
 		
 		$this->load->model('Internal_bank_account_model');
 		$data['accounts'] = $this->Internal_bank_account_model->show_all();
@@ -39,8 +53,15 @@ class Bank extends CI_Controller {
 	
 	public function assign()
 	{
+		$user_id		= $this->session->userdata('user_id');
+		$this->load->model('User_model');
+		$data['user_login'] = $this->User_model->show_by_id($user_id);
+		
+		$this->load->model('Authorization_model');
+		$data['departments']	= $this->Authorization_model->show_by_user_id($user_id);
+		
 		$this->load->view('head');
-		$this->load->view('accounting/header');
+		$this->load->view('accounting/header', $data);
 		
 		$this->load->model('Internal_bank_account_model');
 		$data['accounts'] = $this->Internal_bank_account_model->show_all();
@@ -81,8 +102,16 @@ class Bank extends CI_Controller {
 			$data['invoices'] = $this->Debt_model->view_incompleted_transaction($supplier_id);
 			$data['opponent'] = 'Supplier';
 		}
+		
+		$user_id		= $this->session->userdata('user_id');
+		$this->load->model('User_model');
+		$data['user_login'] = $this->User_model->show_by_id($user_id);
+		
+		$this->load->model('Authorization_model');
+		$data['departments']	= $this->Authorization_model->show_by_user_id($user_id);
+		
 		$this->load->view('head');
-		$this->load->view('accounting/header');
+		$this->load->view('accounting/header', $data);
 		$this->load->view('accounting/assign_bank', $data);
 	}
 	
