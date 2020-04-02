@@ -249,4 +249,51 @@ class Sales_order extends CI_Controller {
 			$this->load->view('sales/close_check_out', $data);
 		}
 	}
+	
+	public function archive()
+	{
+		$user_id		= $this->session->userdata('user_id');
+		$this->load->model('User_model');
+		$data['user_login'] = $this->User_model->show_by_id($user_id);
+		
+		$this->load->model('Authorization_model');
+		$data['departments']	= $this->Authorization_model->show_by_user_id($user_id);
+		
+		$this->load->view('head');
+		$this->load->view('sales/header', $data);
+		
+		$this->load->model('Sales_order_model');
+		$data['years']	= $this->Sales_order_model->show_years();
+		
+		$this->load->view('sales/sales_order_archive', $data);
+	}
+	
+	public function view_archive()
+	{
+		$page			= $this->input->get('page');
+		$term			= $this->input->get('term');
+		$offset			= ($page - 1) * 25;
+		$year			= $this->input->get('year');
+		$month			= $this->input->get('month');
+		
+		$this->load->model('Sales_order_model');
+		$data['sales_orders']		= $this->Sales_order_model->show_items($year, $month, $offset, $term);
+		$data['pages']				= max(1, ceil($this->Sales_order_model->count_items($year, $month, $term)/25));
+		
+		header('Content-Type: application/json');
+		echo json_encode($data);
+	}
+	
+	public function view_by_id()
+	{
+		$id			= $this->input->get('id');
+		$this->load->model('Sales_order_model');
+		$data['general']	= $this->Sales_order_model->show_by_id($id);
+		
+		$this->load->model('Sales_order_detail_model');
+		$data['items']		= $this->Sales_order_detail_model->show_by_code_sales_order_id($id);
+		
+		header('Content-Type: application/json');
+		echo json_encode($data);
+	}
 }

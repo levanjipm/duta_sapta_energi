@@ -111,15 +111,17 @@
 		$.ajax({
 			url:"<?= site_url('Delivery_order/show_by_code_delivery_order_id/') ?>" + n,
 			success:function(response){
-				$.each(response, function(index, value){
-					$('#delivery_order_table').append("<tr><td>" + value.reference + "</td><td>" + value.name + "</td><td>" + numeral(value.quantity).format('0,0') + "</td></tr>");
+				var delivery_orders		= response.general;
+				$.each(delivery_orders, function(index, delivery_order){
+					$('#delivery_order_table').append("<tr><td>" + delivery_order.reference + "</td><td>" + delivery_order.name + "</td><td>" + numeral(delivery_order.quantity).format('0,0') + "</td></tr>");
 				});
-				$('#delivery_order_name').html(response[0].do_name);
-				$('#delivery_order_date').html(response[0].date);
-				$('#customer_name').html(response[0].customer_name);
-				$('#customer_address').html(response[0].address);
-				$('#customer_city').html(response[0].city);
-				$('#delivery_order_id').val(response[0].id);
+				
+				$('#delivery_order_name').html(delivery_orders[0].name);
+				$('#delivery_order_date').html(delivery_orders[0].date);
+				$('#customer_name').html(delivery_orders[0].customer_name);
+				$('#customer_address').html(delivery_orders[0].address);
+				$('#customer_city').html(delivery_orders[0].city);
+				$('#delivery_order_id').val(delivery_orders[0].id);
 				$('#delivery_order_form').attr('action', '<?= site_url('Delivery_order/confirm') ?>');
 				$('#view_delivery_order_wrapper').fadeIn();
 			}

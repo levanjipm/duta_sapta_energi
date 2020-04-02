@@ -35,7 +35,12 @@
 		<a href='<?= site_url('Area') ?>'><button><p>Area</p></button></a>
 		<a href='<?= site_url('Item') ?>'><button><p>Item</p></button></a>
 		<a href='<?= site_url('Item_class') ?>'><button><p>Item class</p></button></a>
-		<a href='<?= site_url('Sales_order') ?>'><button><p>Sales order</p></button></a>
+		<button class='container_button'><p style='font-family:museo'>Sales order</p></button>
+		<div class='container_bar'>
+			<a href='<?= site_url('Sales_order') ?>'><p>Create</p></a>
+			<a href='<?= site_url('Sales_order/track') ?>'><p>Track</p></a>
+			<a href='<?= site_url('Sales_order/archive') ?>'>Archive</a>
+		</div>
 		<button class='container_button'><p style='font-family:museo'>Return</p></button>
 		<div class='container_bar'>
 			<a href='<?= site_url('Sales') ?>'><p>Create return</p></a>

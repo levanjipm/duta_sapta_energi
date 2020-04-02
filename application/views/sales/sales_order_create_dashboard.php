@@ -1,6 +1,6 @@
 <div class='dashboard'>
 	<div class='dashboard_head'>
-		<p style='font-family:museo'><a href='<?= site_url('Sales') ?>' title='Sales'><i class='fa fa-briefcase'></i></a> /<a href='<?= site_url('Sales_order') ?>'>Sales order </a> /Create sales order</p>
+		<p style='font-family:museo'><a href='<?= site_url('Sales') ?>' title='Sales'><i class='fa fa-briefcase'></i></a> /<a href='<?= site_url('Sales_order') ?>'>Sales order </a> /Create</p>
 	</div>
 	<br>
 	<div class='dashboard_in'>
@@ -451,26 +451,26 @@
 			},
 			success:function(response){
 				var customer		= response.customer;
-				var plafond			= customer.plafond;
-				var pending_value	= parseFloat(response.pending_value);
-				var value			= pending_value.value;
+				var plafond			= parseFloat(customer.plafond);
+				var pending_value	= response.pending_value;
+				var value			= parseFloat(pending_value.value);
 				
 				var pending_invoice	= response.pending_invoice;	
 				var debt			= 0;
 				$.each(pending_invoice, function(index, invoice){
-					var invoice_value	= parseFloat(Math.max(0, parseFloat(invoice.value)));
+					var invoice_value	= parseFloat(Math.max(0, invoice.value));
 					var paid_value		= parseFloat(invoice.paid);
 					
 					var total_value		= invoice_value - paid_value;
-					debt				+= parseFloat(total_value);
+					debt				+= total_value;
 					
 				});
 				
 				var customer_name		= $('#customer_name-' + n).html();
 				var customer_address	= $('#customer_address-' + n).html();
 				$('#select_customer_button').html(customer_name);
-				alert(debt + pending_value);
-				if(debt + pending_value > plafond){
+				
+				if(Math.max(0, debt) + Math.max(0, value) > plafond){
 					$('#warning_text').show();
 				} else {
 					$('#warning_text').hide();

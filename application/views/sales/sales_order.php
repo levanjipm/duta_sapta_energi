@@ -7,8 +7,7 @@
 		<div class='input_group'>
 			<input type='text' class='form-control' id='search_bar'>
 			<div class='input_group_append'>
-				<a href='<?= site_url('Sales_order/create') ?>'><button type='button' class='button button_default_dark'>Create Sales Order</button></a>
-				<a href='<?= site_url('Sales_order/track') ?>'><button type='button' class='button button_default_dark'>Track Sales Order</button></a>
+				<button type='button' class='button button_default_dark' onclick='window.location.href="<?= site_url('Sales_order/create') ?>"'>Create Sales Order</button>
 			</div>
 		</div>
 		<br>

@@ -53,17 +53,9 @@
 	}
 ?>
 </div>
-<div class='loader_wrapper'>
-	<div class='loader_dot_wrapper'>
-		<div class='loader_dot' id='loader_dot_1'></div>
-		<div class='loader_dot' id='loader_dot_2'></div>
-		<div class='loader_dot' id='loader_dot_3'></div>
-		<div class='loader_dot' id='loader_dot_4'></div>
-	</div>
-</div>
-<script>
+<script>	
 	function adjust_size(){
-		var min_size	= 100000;
+		var min_size	= 300;
 		$('.department_image').each(function(){
 			if($(this).height() < min_size && $(this).height() > 0){
 				min_size	= $(this).height();

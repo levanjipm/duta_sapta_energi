@@ -22,3 +22,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	<script src='<?= base_url('js/header.js') ?>'></script>
 	<script src='<?= base_url('third_party/validation/dist/jquery.validate.min.js') ?>'></script>
 </head>
+<div class='loader_wrapper'>
+	<div class='loader_screen_wrapper'>
+		<div class='loader_dot_wrapper'>
+			<div class='loader_dot' id='loader_dot_1'></div>
+			<div class='loader_dot' id='loader_dot_2'></div>
+			<div class='loader_dot' id='loader_dot_3'></div>
+			<div class='loader_dot' id='loader_dot_4'></div>
+		</div>
+	</div>
+</div>

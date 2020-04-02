@@ -12,15 +12,30 @@ class Asset extends CI_Controller {
 	
 	public function index()
 	{
+		$user_id		= $this->session->userdata('user_id');
+		$this->load->model('User_model');
+		$data['user_login'] = $this->User_model->show_by_id($user_id);
+		
+		$this->load->model('Authorization_model');
+		$data['departments']	= $this->Authorization_model->show_by_user_id($user_id);
+		
 		$this->load->view('head');
-		$this->load->view('accounting/header');
+		$this->load->view('accounting/header', $data);
+		
 		$this->load->view('accounting/asset');
 	}
 	
 	public function fixed()
 	{
+		$user_id		= $this->session->userdata('user_id');
+		$this->load->model('User_model');
+		$data['user_login'] = $this->User_model->show_by_id($user_id);
+		
+		$this->load->model('Authorization_model');
+		$data['departments']	= $this->Authorization_model->show_by_user_id($user_id);
+		
 		$this->load->view('head');
-		$this->load->view('accounting/header');
+		$this->load->view('accounting/header', $data);
 		
 		$this->load->model('Asset_type_model');
 		$result				= $this->Asset_type_model->show_all();
@@ -44,8 +59,16 @@ class Asset extends CI_Controller {
 	
 	public function class_dashboard()
 	{
+		$user_id		= $this->session->userdata('user_id');
+		$this->load->model('User_model');
+		$data['user_login'] = $this->User_model->show_by_id($user_id);
+		
+		$this->load->model('Authorization_model');
+		$data['departments']	= $this->Authorization_model->show_by_user_id($user_id);
+		
 		$this->load->view('head');
-		$this->load->view('accounting/header');
+		$this->load->view('accounting/header', $data);
+		
 		$this->load->view('accounting/fixed_asset_class');
 	}
 	

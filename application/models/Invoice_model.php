@@ -222,4 +222,29 @@ class Invoice_model extends CI_Model {
 			
 			return $result;
 		}
+		
+		public function create_recommendation_list()
+		{
+			$date_string		= date('Y-m-d');
+			$this->db->select('invoice.id, invoice.value, coalesce(sum(receivable.value),0) as paid, customer.term_of_payment, reminder_customer.id, DATEDIFF("' . $date_string . '", MIN(invoice.date)) as date_difference, customer.name, customer.address, customer.city, customer.number, customer.rt, customer.rw, customer.block, customer.postal_code');
+			$this->db->from('invoice');
+			$this->db->join('receivable', 'invoice.id = receivable.invoice_id', 'left');
+			$this->db->join('code_delivery_order', 'code_delivery_order.invoice_id = invoice.id');
+			$this->db->join('delivery_order', 'delivery_order.code_delivery_order_id = code_delivery_order.id', 'left');
+			$this->db->join('sales_order', 'delivery_order.sales_order_id = sales_order.id');
+			$this->db->join('code_sales_order', 'code_sales_order.id = sales_order.code_sales_order_id');
+			$this->db->join('customer', 'code_sales_order.customer_id = customer.id');
+			$this->db->join('reminder_customer', 'invoice.id = reminder_customer.invoice_id', 'left');
+			
+			$this->db->where('reminder_customer.id', null);
+			$this->db->where('invoice.is_done', 0);
+			
+			$this->db->group_by('code_sales_order.customer_id');
+			$this->db->order_by('date_difference', 'asc');
+			
+			$query		= $this->db->get();
+			$result		= $query->result();
+			
+			return $result;
+		}
 }

@@ -141,7 +141,7 @@ class Sales_order_model extends CI_Model {
 		
 		public function show_by_id($id)
 		{
-			$this->db->select('DISTINCT(sales_order.code_sales_order_id) as id, code_sales_order.*, customer.name as customer_name, customer.name as customer_name, customer.address as customer_address, customer.city as customer_city, users.name as seller');
+			$this->db->select('DISTINCT(sales_order.code_sales_order_id) as id, code_sales_order.*, customer.name as customer_name, customer.name as customer_name, customer.address as address, customer.city as city, users.name as seller, customer.rt, customer.rw, customer.block, customer.postal_code, customer.number');
 			$this->db->from('sales_order');
 			$this->db->join('code_sales_order', 'code_sales_order.id = sales_order.code_sales_order_id');
 			$this->db->join('customer', 'code_sales_order.customer_id = customer.id');
@@ -337,5 +337,64 @@ class Sales_order_model extends CI_Model {
 			$this->db->where('is_confirm', 0);
 			$this->db->where('id', $sales_order_id);
 			$this->db->update($this->table_sales_order);
+		}
+		
+		public function show_years()
+		{
+			$this->db->select('DISTINCT(YEAR(date)) as year');
+			$this->db->order_by('date', 'asc');
+			$query		= $this->db->get($this->table_sales_order);
+			$result		= $query->result();
+			
+			return $result;
+		}
+		
+		public function show_items($year, $month, $offset = 0, $term = '', $limit = 25)
+		{
+			$this->db->select('code_sales_order.*, customer.name as customer_name, customer.address, customer.city, customer.number, customer.rt, customer.rw, customer.block, customer.pic_name, users.name as seller');
+			$this->db->from('code_sales_order');
+			$this->db->join('sales_order', 'sales_order.code_sales_order_id = code_sales_order.id', 'inner');
+			$this->db->join('customer', 'code_sales_order.customer_id = customer.id');
+			$this->db->join('users', 'code_sales_order.seller = users.id', 'left');
+			$this->db->where('MONTH(code_sales_order.date)',$month);
+			$this->db->where('YEAR(code_sales_order.date)',$year);
+			$this->db->where('code_sales_order.is_delete', 0);
+			if($term != ''){
+				$this->db->like('code_sales_order.name', $term, 'both');
+				$this->db->or_like('customer.name', $term, 'both');
+				$this->db->or_like('customer.address', $term, 'both');
+				$this->db->or_like('customer.city', $term, 'both');
+			}
+			
+			$this->db->order_by('code_sales_order.date', 'asc');
+			$this->db->order_by('code_sales_order.id', 'asc');
+			$this->db->limit($limit, $offset);
+			
+			$query		= $this->db->get();
+			$result		= $query->result();
+			
+			return $result;
+		}
+		
+		public function count_items($year, $month, $term = '')
+		{
+			$this->db->select('code_sales_order.id');
+			$this->db->from('code_sales_order');
+			$this->db->join('sales_order', 'sales_order.code_sales_order_id = code_sales_order.id', 'inner');
+			$this->db->join('customer', 'code_sales_order.customer_id = customer.id');
+			$this->db->where('MONTH(code_sales_order.date)',$month);
+			$this->db->where('YEAR(code_sales_order.date)',$year);
+			$this->db->where('code_sales_order.is_delete', 0);
+			if($term != ''){
+				$this->db->like('code_sales_order.name', $term, 'both');
+				$this->db->or_like('customer.name', $term, 'both');
+				$this->db->or_like('customer.address', $term, 'both');
+				$this->db->or_like('customer.city', $term, 'both');
+			}
+			
+			$query		= $this->db->get();
+			$result		= $query->num_rows();
+			
+			return $result;
 		}
 }

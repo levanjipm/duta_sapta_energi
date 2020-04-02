@@ -54,7 +54,10 @@ class Expense extends CI_Controller {
 		$this->load->view('head');
 		$this->load->view('finance/header', $data);
 		
-		$this->load->view('finance/expense_report');
+		$this->load->model('Petty_cash_model');
+		$data['years']	= $this->Petty_cash_model->show_years();
+		
+		$this->load->view('finance/expense_report', $data);
 	}
 	
 	public function view_update_form($id)

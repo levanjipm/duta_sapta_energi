@@ -84,5 +84,21 @@
 	color:white;
 }
 
-.button_rounded_dark:hover{
+.button_mini_tab{
+	display:inline-block;
+	transition:0.3s all ease;
+	border-bottom:2px solid transparent;
+	color:#ccc;
+}
+
+.button_mini_tab.active{
+	color:#E19B3C;
+	font-weight:700;
+	border-bottom:2px solid #E19B3C;
+}
+
+.button_mini_tab:hover{
+	color:#E19B3C;
+	font-weight:700;
+	border-bottom:2px solid #E19B3C;
 }

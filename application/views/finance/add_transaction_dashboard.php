@@ -4,7 +4,7 @@
 	</div>
 	<br>
 	<div class='dashboard_in'>
-		<form action='<?= site_url('Finance/input') ?>' method='POST' id='transaction_form'>
+		<form action='<?= site_url('Bank/input') ?>' method='POST' id='transaction_form'>
 			<label>Account</label>
 			<select class='form-control' name='account' id='account'>
 <?php
@@ -126,7 +126,7 @@
 	
 	function refresh_view(page = $('#page').val()){	
 		$.ajax({
-			url:'<?= site_url('Finance/show_opponent') ?>',
+			url:'<?= site_url('Bank/show_opponent') ?>',
 			data:{
 				type:$('#opponent_type').val(),
 				page:page,

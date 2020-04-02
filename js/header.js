@@ -4,3 +4,9 @@ var my_date_format = function(date_string){
 	let formatted_date = current_datetime.getDate() + ' ' + months[current_datetime.getMonth()] + ' ' + current_datetime.getFullYear()
 	return formatted_date;
 }
+
+$(window).on('load', function(){
+	$('.loader_wrapper').fadeOut(400, function(){
+		// $('.loader_wrapper').remove();
+	});
+});

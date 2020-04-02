@@ -200,3 +200,19 @@ html, body{
 	padding:10px;
 	overflow-y:scroll;
 }
+
+.filter_form_wrapper{
+	position:absolute;
+	display:none;
+	background-color:transparent;
+}
+
+.filter_form{
+	position:relative;
+	width:300px;
+	background-color:white;
+	padding:10px;
+	box-shadow:3px 3px 3px 3px rgba(120, 120, 120, 0.2);
+	overflow-y:scroll;
+	max-height:400px;
+}

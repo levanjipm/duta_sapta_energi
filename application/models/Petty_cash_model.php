@@ -199,4 +199,14 @@ class Petty_cash_model extends CI_Model {
 			
 			return $value_2 + $value_4 - $value_3 - $value_1;
 		}
+		
+		public function show_years()
+		{
+			$this->db->select('DISTINCT(YEAR(date)) as year');
+			$this->db->order_by('date', 'asc');
+			$query		= $this->db->get($this->table_petty_cash);
+			$result		= $query->result();
+			
+			return $result;
+		}
 }

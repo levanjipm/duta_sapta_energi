@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Waktu pembuatan: 01 Apr 2020 pada 10.25
+-- Waktu pembuatan: 02 Apr 2020 pada 09.56
 -- Versi server: 10.1.38-MariaDB
 -- Versi PHP: 7.3.2
 
@@ -94,7 +94,8 @@ INSERT INTO `code_delivery_order` (`id`, `date`, `name`, `is_confirm`, `is_delet
 (14, '2020-03-27', 'DO-DSE-202003-014', 1, 0, 1, '495B69D5-4261-42D4-8467-10DDBEA2F442', 84),
 (15, '2020-03-27', 'DO-DSE-202003-015', 1, 0, 0, '4F89F6E2-14BB-4B7F-B038-6D4085164C89', 83),
 (16, '2020-03-27', 'DO-DSE-202003-016', 0, 0, 0, '6D18186C-F1F3-44AD-912B-CB1E88E7A78A', NULL),
-(17, '2020-03-27', 'DO-DSE-202003-017', 1, 0, 0, '85B0E962-024D-4DEE-B127-6D94C9DD4308', 86);
+(17, '2020-03-27', 'DO-DSE-202003-017', 1, 0, 0, '85B0E962-024D-4DEE-B127-6D94C9DD4308', 86),
+(18, '2020-01-01', 'DO-DSE-202001-001', 1, 0, 1, '1490D5FB-BB3D-4B52-B178-69385010A5F4', 87);
 
 -- --------------------------------------------------------
 
@@ -207,7 +208,8 @@ INSERT INTO `code_sales_order` (`id`, `customer_id`, `name`, `date`, `taxing`, `
 (16, 8, '202003.29748783', '2020-03-27', 0, 1, 1, 1, '08AA6525-3782-4B92-ABC3-86B30B8C7C49', 1, 1, 0),
 (17, 0, '202003.58962205', '2020-03-27', 0, NULL, 1, 1, '810E3F20-032C-4045-A4E4-DE2A6F05BB18', 1, 1, 0),
 (18, 42, '202003.51316165', '2020-03-28', 0, 1, 1, 1, '61C7CF5A-106B-4815-AB8C-76F0CB71550A', 1, 1, 0),
-(19, 6, '202003.57901549', '2020-03-30', 0, NULL, 1, 1, 'C2DE4709-85C5-4F76-9B6F-3BF35D71F134', 1, 1, 0);
+(19, 6, '202003.57901549', '2020-03-30', 0, NULL, 1, 1, 'C2DE4709-85C5-4F76-9B6F-3BF35D71F134', 1, 1, 0),
+(20, 5, '202004.88150657', '2020-04-02', 0, NULL, 0, NULL, '67D6CBB3-5C0F-4872-93DC-BE394DD77FE3', 1, 1, 0);
 
 -- --------------------------------------------------------
 
@@ -492,7 +494,8 @@ INSERT INTO `delivery_order` (`id`, `sales_order_id`, `code_delivery_order_id`, 
 (19, 22, 15, 10),
 (20, 23, 15, 8),
 (21, 24, 16, 1),
-(22, 27, 17, 1);
+(22, 27, 17, 1),
+(23, 31, 18, 10);
 
 -- --------------------------------------------------------
 
@@ -783,7 +786,8 @@ INSERT INTO `invoice` (`id`, `name`, `value`, `customer_id`, `date`, `informatio
 (83, 'INV.DSE202003-015', '18394240.00', 23, '2020-03-27', 'DO-DSE-202003-015', 0),
 (84, 'INV.DSE202003-014', '1075840.00', 0, '2020-03-27', 'DO-DSE-202003-014', 0),
 (85, 'INV.DSE202003-0070', '3576800.00', 27, '2020-03-16', 'DO-DSE-202003-0070', 0),
-(86, 'INV.DSE202003-017', '385728.00', 8, '2020-03-27', 'DO-DSE-202003-017', 0);
+(86, 'INV.DSE202003-017', '385728.00', 8, '2020-03-27', 'DO-DSE-202003-017', 0),
+(87, 'INV.DSE202001-001', '5379200.00', 6, '2020-01-01', 'DO-DSE-202001-001', 0);
 
 -- --------------------------------------------------------
 
@@ -1174,6 +1178,25 @@ INSERT INTO `receivable` (`id`, `bank_id`, `value`, `date`, `invoice_id`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Struktur dari tabel `reminder_customer`
+--
+
+CREATE TABLE `reminder_customer` (
+  `id` int(255) NOT NULL,
+  `customer_id` int(255) NOT NULL,
+  `invoice_id` int(255) NOT NULL,
+  `type` tinyint(1) NOT NULL,
+  `date_created` date NOT NULL,
+  `created_by` int(255) NOT NULL,
+  `confirmed_by` int(255) DEFAULT NULL,
+  `is_confirm` tinyint(1) NOT NULL DEFAULT '0',
+  `date_effective` date DEFAULT NULL,
+  `date_end` date DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
 -- Struktur dari tabel `sales_order`
 --
 
@@ -1222,7 +1245,8 @@ INSERT INTO `sales_order` (`id`, `price_list_id`, `discount`, `quantity`, `sent`
 (28, 6, '18.0000', 20, 0, 0, 17),
 (29, 57, '18.0000', 20, 0, 0, 18),
 (30, 35, '18.0000', 20, 0, 0, 18),
-(31, 6, '18.0000', 20, 0, 0, 19);
+(31, 6, '18.0000', 20, 10, 0, 19),
+(32, 57, '18.0000', 20, 0, 0, 20);
 
 -- --------------------------------------------------------
 
@@ -1252,7 +1276,7 @@ INSERT INTO `stock_in` (`id`, `item_id`, `quantity`, `residue`, `supplier_id`, `
 (2, 3, 10, 10, 1, NULL, 2, NULL, NULL, '1344800.0000'),
 (3, 6, 10, 10, 1, NULL, 3, NULL, NULL, '771456.0000'),
 (4, 2, 2, 0, 1, NULL, 4, NULL, NULL, '537920.0000'),
-(5, 2, 100, 100, 1, NULL, 5, NULL, NULL, '537920.0000'),
+(5, 2, 100, 90, 1, NULL, 5, NULL, NULL, '537920.0000'),
 (6, 1, 50, 50, 1, NULL, 6, NULL, NULL, '268960.0000');
 
 -- --------------------------------------------------------
@@ -1278,7 +1302,8 @@ CREATE TABLE `stock_out` (
 
 INSERT INTO `stock_out` (`id`, `in_id`, `quantity`, `customer_id`, `supplier_id`, `code_delivery_order_id`, `code_event_id`, `code_purchase_return_id`) VALUES
 (1, 1, 2, 12, NULL, 6, NULL, NULL),
-(2, 4, 0, 0, NULL, 14, NULL, NULL);
+(2, 4, 0, 0, NULL, 14, NULL, NULL),
+(3, 5, 10, 6, NULL, 18, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -1551,6 +1576,12 @@ ALTER TABLE `receivable`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indeks untuk tabel `reminder_customer`
+--
+ALTER TABLE `reminder_customer`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indeks untuk tabel `sales_order`
 --
 ALTER TABLE `sales_order`
@@ -1605,7 +1636,7 @@ ALTER TABLE `bank_transaction`
 -- AUTO_INCREMENT untuk tabel `code_delivery_order`
 --
 ALTER TABLE `code_delivery_order`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
 -- AUTO_INCREMENT untuk tabel `code_good_receipt`
@@ -1623,7 +1654,7 @@ ALTER TABLE `code_purchase_order`
 -- AUTO_INCREMENT untuk tabel `code_sales_order`
 --
 ALTER TABLE `code_sales_order`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- AUTO_INCREMENT untuk tabel `code_sales_order_close_request`
@@ -1647,7 +1678,7 @@ ALTER TABLE `customer_area`
 -- AUTO_INCREMENT untuk tabel `delivery_order`
 --
 ALTER TABLE `delivery_order`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
 
 --
 -- AUTO_INCREMENT untuk tabel `department`
@@ -1695,7 +1726,7 @@ ALTER TABLE `internal_bank_account`
 -- AUTO_INCREMENT untuk tabel `invoice`
 --
 ALTER TABLE `invoice`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=87;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=88;
 
 --
 -- AUTO_INCREMENT untuk tabel `item`
@@ -1764,10 +1795,16 @@ ALTER TABLE `receivable`
   MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
+-- AUTO_INCREMENT untuk tabel `reminder_customer`
+--
+ALTER TABLE `reminder_customer`
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT untuk tabel `sales_order`
 --
 ALTER TABLE `sales_order`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=32;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=33;
 
 --
 -- AUTO_INCREMENT untuk tabel `stock_in`
@@ -1779,7 +1816,7 @@ ALTER TABLE `stock_in`
 -- AUTO_INCREMENT untuk tabel `stock_out`
 --
 ALTER TABLE `stock_out`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT untuk tabel `supplier`
