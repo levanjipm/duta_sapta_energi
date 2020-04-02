@@ -14,6 +14,7 @@
 		z-index:20;
 		height:80%;
 		text-align:center;
+		display:none;
 	}
 </style>
 <div class='dashboard'>
@@ -85,6 +86,7 @@
 							
 							$('#warning_text').hide();
 							$('#recommended_table_wrapper').show();
+							$('.recommendation_cards_cover').show();
 							count++;
 						}
 					}

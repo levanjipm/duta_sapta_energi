@@ -110,7 +110,22 @@
 		};
 	};
 	
+	adjust_dashboard();
 	refresh_view();
+
+	function adjust_dashboard()
+	{
+		var dashboard_height		= $('.dashboard').height();
+		var dashboard_head_height	= $('.dashboard_head').height();
+		var minimum_height			= dashboard_height - dashboard_head_height - 60;
+		var dashboard_in_height		= $('.dashboard_in').height();
+		
+		if(dashboard_in_height < minimum_height){
+			$('.dashboard_in').css('height', minimum_height);
+		} else {
+			$('.dashboard_in').css('height', '');
+		}
+	}
 
 	function refresh_view(date_1 = 0, date_2 = 0){
 		$.ajax({

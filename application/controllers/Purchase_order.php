@@ -11,8 +11,18 @@ class Purchase_order extends CI_Controller {
 	
 	public function index()
 	{
+		$this->load->model('Internal_bank_account_model');
+		$data['accounts'] = $this->Internal_bank_account_model->show_all();
+		
+		$user_id		= $this->session->userdata('user_id');
+		$this->load->model('User_model');
+		$data['user_login'] = $this->User_model->show_by_id($user_id);
+		
+		$this->load->model('Authorization_model');
+		$data['departments']	= $this->Authorization_model->show_by_user_id($user_id);
+		
 		$this->load->view('head');
-		$this->load->view('purchasing/header');
+		$this->load->view('purchasing/header', $data);
 		
 		$this->load->model('Purchase_order_model');
 		$result = $this->Purchase_order_model->show_unconfirmed_purchase_order();
@@ -23,8 +33,18 @@ class Purchase_order extends CI_Controller {
 	
 	public function create()
 	{
-		$this->session->unset_userdata('purchase_cart_products');
-		$this->session->unset_userdata('purchase_cart_bonus_products');
+		$this->load->model('Internal_bank_account_model');
+		$data['accounts'] = $this->Internal_bank_account_model->show_all();
+		
+		$user_id		= $this->session->userdata('user_id');
+		$this->load->model('User_model');
+		$data['user_login'] = $this->User_model->show_by_id($user_id);
+		
+		$this->load->model('Authorization_model');
+		$data['departments']	= $this->Authorization_model->show_by_user_id($user_id);
+		
+		$this->load->view('head');
+		$this->load->view('purchasing/header', $data);
 		
 		$this->load->model('Supplier_model');
 		$result = $this->Supplier_model->show_items();
@@ -34,9 +54,6 @@ class Purchase_order extends CI_Controller {
 		$guid	= $this->Purchase_order_model->create_guid();
 		
 		$data['guid'] = $guid;
-		
-		$this->load->view('head');
-		$this->load->view('purchasing/header');
 		$this->load->view('Purchasing/purchase_order_create_dashboard', $data);
 	}
 	
@@ -58,22 +75,6 @@ class Purchase_order extends CI_Controller {
 		
 		header('Content-Type: application/json');
 		echo json_encode($item);
-	}
-	
-	public function update_cart_view()
-	{
-		if($this->session->has_userdata('purchase_cart_products')){
-			$detail = array();
-			$products = $this->session->userdata('purchase_cart_products');
-			$bonus_products = $this->session->userdata('purchase_cart_bonus_products');
-			
-			$this->load->model('Item_model');
-			$data['carts'] = $this->Item_model->show_purchase_cart($products);
-			$data['bonus_carts'] = $this->Item_model->show_purchase_cart($bonus_products);
-			
-			header('Content-Type: application/json');
-			echo json_encode($data);
-		}
 	}
 	
 	public function input_purchase_order()
@@ -148,7 +149,55 @@ class Purchase_order extends CI_Controller {
 		
 		$this->load->view('head');
 		$this->load->view('purchasing/purchase_order_print', $data);
+	}
+	
+	public function archive()
+	{
+		$this->load->model('Internal_bank_account_model');
+		$data['accounts'] = $this->Internal_bank_account_model->show_all();
 		
-		print_r($data);
+		$user_id		= $this->session->userdata('user_id');
+		$this->load->model('User_model');
+		$data['user_login'] = $this->User_model->show_by_id($user_id);
+		
+		$this->load->model('Authorization_model');
+		$data['departments']	= $this->Authorization_model->show_by_user_id($user_id);
+		
+		$this->load->view('head');
+		$this->load->view('purchasing/header', $data);
+		
+		$this->load->model('Purchase_order_model');
+		$data['years']	= $this->Purchase_order_model->show_years();
+		
+		$this->load->view('purchasing/purchase_order_archive', $data);
+	}
+	
+	public function view_archive()
+	{
+		$page			= $this->input->get('page');
+		$term			= $this->input->get('term');
+		$offset			= ($page - 1) * 25;
+		$year			= $this->input->get('year');
+		$month			= $this->input->get('month');
+		
+		$this->load->model('Purchase_order_model');
+		$data['purchase_orders'] 	= $this->Purchase_order_model->show_items($year, $month, $offset, $term);
+		$data['pages']				= max(1, ceil($this->Purchase_order_model->count_items($year, $month, $term)/25));
+		
+		header('Content-Type: application/json');
+		echo json_encode($data);
+	}
+	
+	public function view_by_id()
+	{
+		$id				= $this->input->get('id');
+		$this->load->model('Purchase_order_model');
+		$data['general']	= $this->Purchase_order_model->show_by_id($id);
+		
+		$this->load->model('Purchase_order_detail_model');
+		$data['items']		= $this->Purchase_order_detail_model->show_by_purchase_order_id($id);
+		
+		header('Content-Type: application/json');
+		echo json_encode($data);
 	}
 }

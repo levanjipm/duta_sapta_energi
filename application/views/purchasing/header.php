@@ -29,7 +29,8 @@
 		<button class='container_button'><p style='font-family:museo'>Purchase order</p></button>
 		<div class='container_bar'>
 			<a href='<?= site_url('Purchase_order') ?>'><p>Create</p></a>
-			<a href='<?= site_url() ?>'><p>Track purchase order</p></a>	
+			<a href='<?= site_url() ?>'><p>Track</p></a>	
+			<a href='<?= site_url('Purchase_order/archive') ?>'><p>Archive</p></a>	
 		</div>
 		<a href='<?= site_url('Supplier') ?>'><button><p>Supplier</p></button></a>
 		<a href='<?= site_url('Item') ?>'><button><p>Item</p></button></a>

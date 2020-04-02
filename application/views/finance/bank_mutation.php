@@ -109,10 +109,10 @@
 					
 					if(type == 1){
 						current_balance	+= parseFloat(value);
-						$('#mutation_table').append("<tr><td>" + date + "</td><td>" + name + "</td><td>Rp. " + numeral(value).format('0,0.00') + "</td><td>Rp. " + numeral(0).format('0,0.00') + "</td><td>Rp. " + numeral(current_balance).format('0,0.00') + "</td></tr>");
+						$('#mutation_table').append("<tr><td>" + my_date_format(date) + "</td><td>" + name + "</td><td>Rp. " + numeral(value).format('0,0.00') + "</td><td>Rp. " + numeral(0).format('0,0.00') + "</td><td>Rp. " + numeral(current_balance).format('0,0.00') + "</td></tr>");
 					} else {
 						current_balance -= parseFloat(value);
-						$('#mutation_table').append("<tr><td>" + date + "</td><td>" + name + "</td><td>Rp. " + numeral(0).format('0,0.00') + "</td><td>Rp. " + numeral(value).format('0,0.00') + "</td><td>Rp. " + numeral(current_balance).format('0,0.00') + "</td></tr>");
+						$('#mutation_table').append("<tr><td>" + my_date_format(date) + "</td><td>" + name + "</td><td>Rp. " + numeral(0).format('0,0.00') + "</td><td>Rp. " + numeral(value).format('0,0.00') + "</td><td>Rp. " + numeral(current_balance).format('0,0.00') + "</td></tr>");
 					}						
 				});
 			}

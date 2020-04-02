@@ -297,6 +297,61 @@ class Purchase_order_model extends CI_Model {
 			$this->db->update($this->table_purchase_order);
 		}
 		
+		public function show_years()
+		{
+			$this->db->select('DISTINCT(YEAR(date)) as year');
+			$this->db->order_by('date', 'asc');
+			$query		= $this->db->get($this->table_purchase_order);
+			$result		= $query->result();
+			
+			return $result;
+		}
+		
+		public function show_items($year, $month, $offset = 0, $term = '', $limit = 25)
+		{
+			$this->db->select('code_purchase_order.*, supplier.name as supplier_name, supplier.address as address, supplier.city as city, supplier.number, supplier.rt, supplier.rw, supplier.postal_code, supplier.npwp, supplier.phone_number, supplier.block');
+			$this->db->from('code_purchase_order');
+			$this->db->join('supplier', 'code_purchase_order.supplier_id = supplier.id');
+			
+			if($term != ''){
+				$this->db->like('supplier.name', $term, 'both');
+				$this->db->or_like('supplier.address', $term, 'both');
+				$this->db->or_like('code_purchase_order.name', $term, 'both');
+			}
+			
+			$this->db->where('MONTH(date)', $month);
+			$this->db->where('YEAR(date)', $year);
+			
+			$this->db->order_by('code_purchase_order.date', 'asc');
+			$this->db->order_by('code_purchase_order.id', 'asc');
+			$this->db->limit($limit, $offset);
+			
+			$query		= $this->db->get();
+			$result		= $query->result();
+			
+			return $result;
+		}
+		
+		public function count_items($year, $month, $term = '')
+		{
+			$this->db->select('code_purchase_order.id');
+			$this->db->from('code_purchase_order');
+			$this->db->join('supplier', 'code_purchase_order.supplier_id = supplier.id');
+			
+			if($term != ''){
+				$this->db->like('supplier.name', $term, 'both');
+				$this->db->or_like('supplier.address', $term, 'both');
+				$this->db->or_like('code_purchase_order.name', $term, 'both');
+			}
+			
+			$this->db->order_by('code_purchase_order.date', 'asc');
+			$this->db->order_by('code_purchase_order.id', 'asc');
+			
+			$query		= $this->db->get();
+			$result		= $query->num_rows();
+			
+			return $result;
+		}
 		
 		public function create_guid()
 		{	

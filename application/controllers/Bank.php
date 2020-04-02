@@ -69,15 +69,17 @@ class Bank extends CI_Controller {
 		$this->load->view('accounting/assign_bank_dashboard', $data);
 	}
 	
-	public function view_unassigned_data()
+	public function view_unassigned_data($department)
 	{
-		$type		= $this->input->get('type');
-		$account	= $this->input->get('account');
-		$page		= $this->input->get('page');
-		$offset		= ($page - 1) * 25;
-		$this->load->model('Bank_model');
-		$data['banks'] = $this->Bank_model->view_unassigned_data($account, $type, $offset);
-		$data['pages'] = max(1, ceil($this->Bank_model->count_unassigned_data($account, $type)/25));
+		if($department == 'accounting'){
+			$type		= $this->input->get('type');
+			$account	= $this->input->get('account');
+			$page		= $this->input->get('page');
+			$offset		= ($page - 1) * 25;
+			$this->load->model('Bank_model');
+			$data['banks'] = $this->Bank_model->view_unassigned_data(1, $account, $type, $offset);
+			$data['pages'] = max(1, ceil($this->Bank_model->count_unassigned_data($account, $type)/25));
+		}
 		
 		header('Content-Type: application/json');
 		echo json_encode($data);
@@ -140,8 +142,15 @@ class Bank extends CI_Controller {
 		$this->load->model('Internal_bank_account_model');
 		$data['accounts'] = $this->Internal_bank_account_model->show_all();
 		
+		$user_id		= $this->session->userdata('user_id');
+		$this->load->model('User_model');
+		$data['user_login'] = $this->User_model->show_by_id($user_id);
+		
+		$this->load->model('Authorization_model');
+		$data['departments']	= $this->Authorization_model->show_by_user_id($user_id);
+		
 		$this->load->view('head');
-		$this->load->view('finance/header');
+		$this->load->view('finance/header', $data);
 		$this->load->view('finance/bank_mutation', $data);
 	}
 	
@@ -156,7 +165,7 @@ class Bank extends CI_Controller {
 		$this->load->model('Bank_model');
 		$data['balance']	= $this->Bank_model->calculate_balance($account_id, $date_start);
 		$data['mutations'] 	= $this->Bank_model->view_mutation($account_id, $date_start, $date_end, $offset);
-		$data['pages'] 		= $this->Bank_model->count_mutation($account_id, $date_start, $date_end, $offset);
+		$data['pages'] 		= max(1, ceil($this->Bank_model->count_mutation($account_id, $date_start, $date_end, $offset)/25));
 		
 		header('Content-Type: application/json');
 		echo json_encode($data);

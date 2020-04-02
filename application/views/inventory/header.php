@@ -38,6 +38,7 @@
 			<a href='<?= site_url('Good_receipt/archive') ?>'><p>Archive</p></a>	
 		</div>
 		<a href='<?= site_url('Stock/view/Inventory') ?>'><button><p>Check stock</p></button></a>
+		<a href='<?= site_url('Inventory_case') ?>'><button><p>Cases</p></button></a>
 	</div>
 </div>
 <script>

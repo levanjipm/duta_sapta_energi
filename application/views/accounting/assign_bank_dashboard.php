@@ -55,7 +55,7 @@
 	
 	function refresh_view(page = $('#page').val()){
 		$.ajax({
-			url:'<?= site_url('Bank/view_unassigned_data') ?>',
+			url:'<?= site_url('Bank/view_unassigned_data/accounting') ?>',
 			data:{
 				type:$('#transaction').val(),
 				page:page,

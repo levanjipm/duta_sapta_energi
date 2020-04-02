@@ -11,7 +11,6 @@
 				<th>Reference</th>
 				<th>Name</th>
 				<th>Stock</th>
-				<th>Action</th>
 			</tr>
 			<tbody id='stock_table'></tbody>
 		</table>
@@ -61,7 +60,7 @@
 					var reference		= stock.reference;
 					var current_stock	= stock.stock;
 					
-					$('#stock_table').append("<tr><td>" + reference + "</td><td>" + name + "</td><td>" + numeral(current_stock).format('0,0') + "</td><td><button type='button' class='button button_default_dark'><i class='fa fa-eye'></i></button></tr>");
+					$('#stock_table').append("<tr><td>" + reference + "</td><td>" + name + "</td><td>" + numeral(current_stock).format('0,0') + "</td></tr>");
 				});
 				
 				if($('#stock_table tr').length > 0){
