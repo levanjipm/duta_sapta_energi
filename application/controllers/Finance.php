@@ -48,4 +48,15 @@ class Finance extends CI_Controller {
 		
 		$this->load->view('finance/recommended_dashboard');
 	}
+	
+	public function view_recommendation_by_customer_id()
+	{
+		$customer_id		= $this->input->get('customer_id');
+		$invoice_id			= $this->input->get('invoice_id');
+		$this->load->model('Reminder_model');
+		$data['status']		= $this->Reminder_model->show_status_by_customer_id($customer_id);
+		
+		header('Content-Type: application/json');
+		echo json_encode($data);
+	}
 }

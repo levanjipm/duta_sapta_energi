@@ -18,7 +18,7 @@
 	}
 </style>
 <div class='dashboard'>
-	<div style='padding:20px'><h3 style='font-family:bebasneue;color:white'>Recommended suspend customers</h3><hr style='border-top:2px solid #E19B3C;margin:0'></div>
+	<div style='padding:20px'><h3 style='font-family:bebasneue;color:white'>Recommended suspend customers (<span id='count_customer'></span>)</h3><hr style='border-top:2px solid #E19B3C;margin:0'></div>
 	<div class='recommendation_cards_wrapper'>
 		<p style='font-family:museo;color:white' id='warning_text'>No customer in the recommended list</p>
 		
@@ -37,16 +37,12 @@
 <script>
 	view_recommendation_list();
 	
-	function view_recommendation_list()
-	{
+	function view_recommendation_list(){
 		$.ajax({
 			url:'<?= site_url('Finance/view_recommendation_list') ?>',
 			success:function(response){
 				var count				= 1;
 				$.each(response, function(index, value){
-					if(count > 3){
-						return false;
-					} else {
 						var date_difference		= parseFloat(value.date_difference);
 						var term_of_payment		= parseFloat(value.term_of_payment);
 						var difference			= date_difference - term_of_payment;
@@ -81,17 +77,21 @@
 							if(customer_postal != null){
 								complete_address	+= ', ' + customer_postal;
 							}
+
+							if(count <= 2){
+								$('#recommended_table').append("<tr><td><label>" + customer_name + "</label><p>" + complete_address + "</p><p>" + customer_city + "</p></td><td><p>" + numeral(date_difference).format('0,0') + " days since delivery</p><p> (" + numeral(difference).format('0,0') + " days since due date)</p></td></tr>");
 							
-							$('#recommended_table').append("<tr><td><label>" + customer_name + "</label><p>" + complete_address + "</p><p>" + customer_city + "</p></td><td><p>" + numeral(date_difference).format('0,0') + " days since delivery</p><p> (" + numeral(difference).format('0,0') + " days since due date)</p></td></div>");
+								$('#warning_text').hide();
+								$('#recommended_table_wrapper').show();
+								$('.recommendation_cards_cover').show();
+							};
 							
-							$('#warning_text').hide();
-							$('#recommended_table_wrapper').show();
-							$('.recommendation_cards_cover').show();
 							count++;
 						}
-					}
-				});
-			}
-		});
-	}
+					});
+					
+					$('#count_customer').html(numeral(count - 1).format('0,0'));	
+				}
+			});
+		}
 </script>

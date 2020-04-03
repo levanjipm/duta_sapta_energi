@@ -226,7 +226,7 @@ class Invoice_model extends CI_Model {
 		public function create_recommendation_list()
 		{
 			$date_string		= date('Y-m-d');
-			$this->db->select('invoice.id, invoice.value, coalesce(sum(receivable.value),0) as paid, customer.term_of_payment, reminder_customer.id, DATEDIFF("' . $date_string . '", MIN(invoice.date)) as date_difference, customer.name, customer.address, customer.city, customer.number, customer.rt, customer.rw, customer.block, customer.postal_code');
+			$this->db->select('invoice.id as invoice_id, invoice.value, coalesce(sum(receivable.value),0) as paid, customer.term_of_payment, reminder_customer.id, DATEDIFF("' . $date_string . '", MIN(invoice.date)) as date_difference, customer.name, customer.address, customer.city, customer.number, customer.rt, customer.rw, customer.block, customer.postal_code, customer.id as customer_id');
 			$this->db->from('invoice');
 			$this->db->join('receivable', 'invoice.id = receivable.invoice_id', 'left');
 			$this->db->join('code_delivery_order', 'code_delivery_order.invoice_id = invoice.id');

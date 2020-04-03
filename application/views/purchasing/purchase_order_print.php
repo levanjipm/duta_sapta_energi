@@ -28,7 +28,8 @@
 	$supplier_rw			= $general->rw;
 	$supplier_postal_code	= $general->postal_code;
 	
-	print_r($general);
+	$created_by				= $general->created_by;
+	$confirmed_by			= $general->confirmed_by;
 	
 	$complete_address		.= 'No. ' . $supplier_number;
 	
@@ -105,7 +106,7 @@
 			</tr>
 		</table>
 		<br>
-		<p>Please supply or manufacture the following items:</p>
+		<p>Please supply or manufacture the following items in accordance with the terms and conditions or purchase order attached.</p>
 		
 		<table class='table table-bordered'>
 			<tr>
@@ -158,11 +159,46 @@
 				<td>Rp.<?= number_format($purchase_order_value,2) ?></td>
 			</tr>
 		</table>
+		
+		<table style='width:100%'>
+			<tr style='border:1px solid #ddd'>
+				<td style='padding:20px;width:40%;border-right:1px solid #ddd' valign='top'>
+					<label>Note</label>
+					<p><?= $general->note ?></p>
+				</td>
+				<td style='padding:20px;border-right:1px solid #ddd;width:20%' valign='top'>
+					<label>Supplier</label>
+					<br><br><br><br><br>
+					<hr style='border-top:1px solid black'>
+					<p><?= $general->supplier_name ?></p>
+				</td>
+				<td style='padding:20px;border-right:1px solid #ddd;width:20%' valign='top'>
+					<label>Created by</label>
+					<br><br><br><br><br>
+					<hr style='border-top:1px solid black'>
+					<p><?= $general->created_by ?></p>
+				</td>
+				<td style='padding:20px;border-right:1px solid #ddd;width:20%' valign='top'>
+					<label>Confirmed by</label>
+					<br><br><br><br><br>
+					<hr style='border-top:1px solid black'>
+					<p><?= $general->confirmed_by ?></p>
+				</td>
+			</tr>
+		</table>
 	</div>
 </div>
 <br>
 <div class='row' style='margin:0'>
 	<div class='col-xs-12' style='text-align:center'>
-		<button type='button' class='button button_default_light' onclick='window.print()'><i class='fa fa-print'></i></button>
+		<button type='button' class='button button_default_light' onclick='print_purchase_order()' id='print_button'><i class='fa fa-print'></i></button>
+		<button type='button' class='button button_success_dark' onclick='window.location.href="<?= site_url('Purchase_order') ?>"' id='back_button' style='display:none'><i class='fa fa-long-arrow-left'></i></button>
 	</div>
 </div>
+<script>
+	function print_purchase_order(){
+		window.print();
+		$('#print_button').hide();
+		$('#back_button').show();
+	}
+</script>

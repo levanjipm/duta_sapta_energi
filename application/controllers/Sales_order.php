@@ -114,10 +114,20 @@ class Sales_order extends CI_Controller {
 		
 		$sales_order_id		= $this->input->get('id');
 		$this->load->model('Sales_order_model');
-		$result = $this->Sales_order_model->show_by_id($sales_order_id);
+		$result 			= $this->Sales_order_model->show_by_id($sales_order_id);
 		$data['general']	= $result;
 		
 		$customer_id		= $result->customer_id;
+		
+		$this->load->model('Customer_model');
+		$data['customer']	= $this->Customer_model->show_by_id($customer_id);
+		
+		$this->load->model('Sales_order_detail_model');
+		$data['pending_value']	= $this->Sales_order_detail_model->show_pending_value($customer_id);
+		
+		$this->load->model('Bank_model');
+		$data['pending_bank_data']	= $this->Bank_model->show_pending_value('customer', $customer_id);
+		
 		$this->load->model('Invoice_model');
 		$data['receivable'] = $this->Invoice_model->view_maximum_by_customer($customer_id);
 		

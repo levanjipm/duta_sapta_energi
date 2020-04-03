@@ -241,7 +241,7 @@ class Sales_order_detail_model extends CI_Model {
 		
 		public function show_pending_value($customer_id)
 		{
-			$this->db->select('SUM((sales_order.quantity - sales_order.sent) * price_list.price_list) as value');
+			$this->db->select('SUM((sales_order.quantity - sales_order.sent) * price_list.price_list * (100 - sales_order.discount) / 100) as value');
 			$this->db->from('sales_order');
 			$this->db->join('code_sales_order', 'sales_order.code_sales_order_id = code_sales_order.id', 'left');
 			$this->db->join('price_list', 'sales_order.price_list_id = price_list.id');

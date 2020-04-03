@@ -62,9 +62,6 @@ class Delivery_order extends CI_Controller {
 	public function view_sales_order()
 	{
 		$id		= $this->input->get('sales_order_id');
-		$this->load->model('Sales_order_model');
-		$result	= $this->Sales_order_model->show_by_id($id);
-		$data['sales_order'] = $result;
 		
 		$this->load->model('Sales_order_detail_model');
 		$result	= $this->Sales_order_detail_model->show_by_code_sales_order_id($id);
@@ -72,6 +69,28 @@ class Delivery_order extends CI_Controller {
 		
 		$this->load->model('Delivery_order_model');
 		$data['guid'] = $this->Delivery_order_model->create_guid();
+		
+		$user_id			= $this->session->userdata('user_id');
+		$this->load->model('User_model');
+		$data['user']		= $this->User_model->show_by_id($user_id);
+
+		$this->load->model('Sales_order_model');
+		$result 			= $this->Sales_order_model->show_by_id($id);
+		$data['general']	= $result;
+		
+		$customer_id		= $result->customer_id;
+		
+		$this->load->model('Customer_model');
+		$data['customer']	= $this->Customer_model->show_by_id($customer_id);
+		
+		$this->load->model('Sales_order_detail_model');
+		$data['pending_value']	= $this->Sales_order_detail_model->show_pending_value($customer_id);
+		
+		$this->load->model('Bank_model');
+		$data['pending_bank_data']	= $this->Bank_model->show_pending_value('customer', $customer_id);
+		
+		$this->load->model('Invoice_model');
+		$data['receivable'] = $this->Invoice_model->view_maximum_by_customer($customer_id);
 		
 		header('Content-Type: application/json');
 		echo json_encode($data);

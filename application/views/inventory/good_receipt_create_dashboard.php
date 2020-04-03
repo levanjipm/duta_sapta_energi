@@ -27,35 +27,38 @@
 	</div>
 </div>
 
-<div class='alert_wrapper' id='validate_good_receipt_wrapper'>
-	<button type='button' class='alert_close_button'>&times </button>
-	<div class='alert_box_default'>
-		<form action='<?= site_url('Good_receipt/input') ?>' method='POST' id='good_receipt_form'>
-		<h2 style='font-family:bebasneue'>Good receipt</h2>
-		<hr>
-		<label>Document</label>
-		<input type='text' class='form-control' name='document' required>
-		<label>Purchase order</label>
-		<p style='font-family:museo' id='purchase_order_name_p'></p>
-		<input type='hidden' id='submit_date' name='submit_date'>
-		<input type='hidden' id='guid' name='guid'>
-		
-		<label>Delivery address</label>
-		<div id='delivery_address_p'></div>
-		
-		<table class='table table-bordered'>
-			<tr>
-				<th>Reference</th>
-				<th>Name</th>
-				<th>Quantity</th>
-				<th>Received</th>
-				<th>Action</th>
-			</tr>
-			<tbody id='good_receipt_tbody'></tbody>
-		</table>
-		<input type='hidden' id='total_good_receipt' min='1' value='0'>
-		<button class='button button_default_dark'><i class='fa fa-long-arrow-right'></i></button>
-		</form>
+	<div class='alert_wrapper' id='validate_good_receipt_wrapper'>
+		<button type='button' class='slide_alert_close_button'>&times </button>
+		<div class='alert_box_slide'>
+			<form action='<?= site_url('Good_receipt/input') ?>' method='POST' id='good_receipt_form'>
+				<h2 style='font-family:bebasneue'>Good receipt</h2>
+				<hr>
+				<label>Document</label>
+				<p style='font-family:museo' id='document_date_p'></p>
+				<input type='text' class='form-control' name='document' required><br>
+				
+				<label>Purchase order</label>
+				<p style='font-family:museo' id='purchase_order_name_p'></p><br>
+				
+				<input type='hidden' id='submit_date' name='submit_date'>
+				<input type='hidden' id='guid' name='guid'><br>
+				
+				<label>Delivery address</label>
+				<div id='delivery_address_p'></div><br>
+				
+				<table class='table table-bordered'>
+					<tr>
+						<th>Reference</th>
+						<th>Name</th>
+						<th>Quantity</th>
+						<th>Received</th>
+						<th>Action</th>
+					</tr>
+					<tbody id='good_receipt_tbody'></tbody>
+				</table>
+				<input type='hidden' id='total_good_receipt' min='1' value='0'><br>
+				<button class='button button_default_dark'><i class='fa fa-long-arrow-right'></i></button>
+			</form>
 	</div>
 </div>
 
@@ -108,9 +111,14 @@
 							$('#good_receipt_tbody').append("<tr><td>" + reference + "</td><td>" + name + "</td><td>" + numeral(quantity).format('0,0') + "</td><td>" + numeral(received).format('0,0') + "</td><td><input type='number' class='form-control' name='quantity[" + purchase_order_id + "]' id='quantity-" + purchase_order_id + "' max='" + maximum + "' min='0' onchange='update_total_value()'><input type='hidden' value='" + net_price + "' name='net_price[" + purchase_order_id + "]'></td></tr>");
 						}
 					});
-					
-					$('#validate_good_receipt_wrapper').fadeIn();
+
 					$('#submit_date').val($('#date').val());
+					
+					$('#document_date_p').html(my_date_format($('#date').val()));
+					
+					$('#validate_good_receipt_wrapper').fadeIn(300, function(){
+						$('#validate_good_receipt_wrapper .alert_box_slide').show("slide", { direction: "right" }, 250);
+					});
 				}
 			});
 		};
@@ -140,7 +148,9 @@
 		$('#total_good_receipt').val(total);
 	}
 	
-	$('.alert_close_button').click(function(){
-		$(this).parent().fadeOut();
+	$('.slide_alert_close_button').click(function(){
+		$('#validate_good_receipt_wrapper .alert_box_slide').hide("slide", { direction: "right" }, 250, function(){
+			$('#validate_good_receipt_wrapper').fadeOut();
+		});
 	});
 </script>

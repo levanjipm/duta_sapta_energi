@@ -113,7 +113,7 @@ class Good_receipt extends CI_Controller {
 		if($result){
 			$this->load->model('Good_receipt_detail_model');
 			$batch = $this->Good_receipt_detail_model->show_by_code_good_receipt_id($id);
-			
+
 			$this->load->model('Purchase_order_detail_model');
 			$this->Purchase_order_detail_model->delete_from_good_receipt($batch);
 		}

@@ -242,7 +242,7 @@
 			
 			$('#customer_p').html(customer);
 			$('#customer_address_p').html(customer_address_select);
-			$('#date').html(date);
+			$('#date').html(my_date_format(date));
 			$('#taxing_p').html(taxing);
 			$('#seller_p').html(seller);
 			$('#invoicing_p').html(method);

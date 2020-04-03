@@ -74,8 +74,8 @@
 </div>
 
 <div class='alert_wrapper' id='view_delivery_order_wrapper'>
-	<button class='alert_close_button'>&times </button>
-	<div class='alert_box_default' id='view_delivery_order_box'>
+	<button type='button' class='slide_alert_close_button'>&times </button>
+	<div class='alert_box_slide'>
 		<label>Customer</label>
 		<p id='customer_name'></p>
 		<p id='customer_address'></p>
@@ -86,7 +86,7 @@
 		<p id='delivery_order_date'></p>
 		
 		
-		<table class='table table-bordered'>
+		<table class='table table-bordered' style='margin-bottom:0'>
 			<tr>
 				<th>Reference</th>
 				<th>Name</th>
@@ -96,11 +96,12 @@
 			</tbody>
 		</table>
 		
-		<p style='font-family:museo' id='warning_text' style='display:none'>Warning! Insufficient stock detected</p>
+		<div style='padding:2px 10px;background-color:#ffc107;width:100%;display:none;' id='warning_text'><p style='font-family:museo'><i class='fa fa-exclamation-triangle'></i> Warning! Insufficient stock detected.</p></div><br>
 		
 		<form action='<?= site_url('Delivery_order/confirm') ?>' method='POST' id='delivery_order_form'>
 			<input type='hidden' id='delivery_order_id' name='id'>
 			<button class='button button_default_dark' id='send_delivery_order_button'><i class='fa fa-long-arrow-right'></i></button>
+			<button type='button' class='button button_danger_dark' id='cancel_delivery_order_button'><i class='fa fa-trash'></i></button>
 		</form>
 	</div>
 </div>
@@ -123,17 +124,26 @@
 				$('#customer_city').html(delivery_orders[0].city);
 				$('#delivery_order_id').val(delivery_orders[0].id);
 				$('#delivery_order_form').attr('action', '<?= site_url('Delivery_order/confirm') ?>');
-				$('#view_delivery_order_wrapper').fadeIn();
+				
+				var info		= response.info;
+				if(info == 'Stock'){
+					$('#warning_text').show();
+				} else {
+					$('#warning_text').hide();
+				}
+				
+				$('#view_delivery_order_wrapper').fadeIn(300, function(){
+					$('#view_delivery_order_wrapper .alert_box_slide').show("slide", { direction: "right" }, 250);
+				});
 			}
 		});
 	}
 	
-		function send_delivery_order_detail(n){
+	function send_delivery_order_detail(n){
 		$('#delivery_order_table').html('');
 		$.ajax({
 			url:"<?= site_url('Delivery_order/show_by_code_delivery_order_id/') ?>" + n,
 			success:function(response){
-				console.log(response);
 				var general		= response.general;
 				$.each(general, function(index, value){
 					var reference	= value.reference;
@@ -150,7 +160,6 @@
 				$('#customer_city').html(general[0].city);
 				$('#delivery_order_id').val(general[0].id);
 				$('#delivery_order_form').attr('action', '<?= site_url('Delivery_order/send') ?>');
-				$('#view_delivery_order_wrapper').fadeIn();
 				
 				var info		= response.info;
 				if(info == 'Stock'){
@@ -160,11 +169,17 @@
 					$('#warning_text').hide();
 					$('#send_delivery_order_button').attr('disabled', false);
 				}
+				
+				$('#view_delivery_order_wrapper').fadeIn(300, function(){
+					$('#view_delivery_order_wrapper .alert_box_slide').show("slide", { direction: "right" }, 250);
+				});
 			}
 		});
 	}
 	
-	$('.alert_close_button').click(function(){
-		$(this).parent().fadeOut();
+	$('.slide_alert_close_button').click(function(){
+		$('#view_delivery_order_wrapper .alert_box_slide').hide("slide", { direction: "right" }, 250, function(){
+			$('#view_delivery_order_wrapper').fadeOut();
+		});
 	});
 </script>

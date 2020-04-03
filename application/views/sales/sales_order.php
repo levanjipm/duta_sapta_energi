@@ -31,12 +31,31 @@
 	<button type='button' class='alert_close_button'>&times </button>
 	<div class='alert_box_default'>
 		<label>Customer</label>
-		<p style='font-family:museo' id='customer_name_p'></p>
-		<p style='font-family:museo' id='customer_address_p'></p>
-		<p style='font-family:museo' id='customer_city_p'></p>
+		<div class='information_box' id='customer_address_select' style='height:200px'>
+			<label>Detail</label>
+			<p style='font-family:museo' id='customer_name_p'></p>
+			<p style='font-family:museo' id='customer_address_p'></p>
+			<p style='font-family:museo' id='customer_city_p'></p>
+			
+			<label>Plafond</label>
+			<p style='font-family:museo'>Rp. <span id='customer_plafond_p'></span></p>
+			
+			<label>Pending sales order</label>
+			<p style='font-family:museo'>Rp. <span id='pending_sales_order_value_p'></span></p>
+			
+			<label>Unpaid invoice</label>
+			<p style='font-family:museo'>Rp. <span id='receivable_value_p'></span></p>
+			
+			<label>Pending bank data</label>
+			<p style='font-family:museo'>Rp. <span id='pending_bank_value_p'></span></p>
+		</div>
+		<div style='padding:2px 10px;background-color:#ffc107;width:100%;display:none' id='warning_text_1'>
+				<p ><i class='fa fa-exclamation-triangle'></i> Customer's plafond exceeded</p>
+			</div>
 		
 		<label>Sales order</label>
 		<p style='font-family:museo' id='sales_order_name'></p>
+		<p style='font-family:museo' id='taxing_name_p'></p>
 		
 		<label>Item</label>
 		<table class='table table-bordered'>
@@ -97,7 +116,7 @@
 						seller		= "<i>Not available</i>";
 					}
 					
-					$('#sales_order_table').append("<tr><td>" + sales_order_date + "</td><td><label>Name</label><p>" + sales_order_name + "</p><label>Seller</label><p>" + seller + "</p></td><td><p style='font-family:museo'>" + customer_name + "</p><p style='font-family:museo'>" + customer_address + "</p><p style='font-family:museo'>" + customer_city + "</p></td><td><button type='button' class='button button_success_dark' title='View " + sales_order_name + "' onclick='view_sales_order(" + sales_order_id + ")'><i class='fa fa-eye'></i></button></td></tr>");
+					$('#sales_order_table').append("<tr><td>" + my_date_format(sales_order_date) + "</td><td><label>Name</label><p>" + sales_order_name + "</p><label>Seller</label><p>" + seller + "</p></td><td><p style='font-family:museo'>" + customer_name + "</p><p style='font-family:museo'>" + customer_address + "</p><p style='font-family:museo'>" + customer_city + "</p></td><td><button type='button' class='button button_success_dark' title='View " + sales_order_name + "' onclick='view_sales_order(" + sales_order_id + ")'><i class='fa fa-eye'></i></button></td></tr>");
 				});
 				$('#page').html('');
 				for(i = 1; i <= pages; i++){
@@ -119,11 +138,11 @@
 			},
 			success:function(response){
 				var user				= response.user;
-				var access_level		= response.access_level;
+				var access_level		= user.access_level;
 				
 				var receivable_array	= response.receivable;
 				var date				= receivable_array.date;
-				console.log(date);
+				
 				var term_of_payment		= receivable_array.term_of_payment;
 				
 				var time_difference		= Math.abs(date - <?= date('Y-m-d'); ?>);
@@ -131,8 +150,8 @@
 				
 				if(date != null && day_difference > term_of_payment){
 					$('#warning_text').show();
-					if(access_level > 1){
-						$('#confirm_button').attr('disabled', true);
+					if(access_level > 2){
+						$('#confirm_button').attr('disabled', false);
 					} else {
 						$('#confirm_button').attr('disabled', true);
 					}
@@ -143,17 +162,73 @@
 				
 				var sales_order_array	= response.general;
 				var sales_order_id		= sales_order_array.id;
-				var customer_name		= sales_order_array.customer_name;
-				var customer_address	= sales_order_array.customer_address;
-				var customer_city		= sales_order_array.customer_city;
 				var seller				= sales_order_array.seller;
 				var invoicing_method	= sales_order_array.invoicing_method;
 				var sales_order_name	= sales_order_array.name;
+				var taxing				= sales_order_array.taxing;
+				var customer_name		= sales_order_array.customer_name;
 				
+				if(taxing == 0){
+					var taxing_name		= 'Non taxable sales';
+				} else {
+					var taxing_name		= 'Taxable sales';
+				}
+				
+				var complete_address		= '';
+				complete_address			+= sales_order_array.address;
+				var customer_city			= sales_order_array.city;
+				var customer_number			= sales_order_array.number;
+				var customer_rt				= sales_order_array.rt;
+				var customer_rw				= sales_order_array.rw;
+				var customer_postal			= sales_order_array.postal_code;
+				var customer_block			= sales_order_array.block;
+	
+				if(customer_number != null){
+					complete_address	+= ' No. ' + customer_number;
+				}
+				
+				if(customer_block != null){
+					complete_address	+= ' Blok ' + customer_block;
+				}
+			
+				if(customer_rt != '000'){
+					complete_address	+= ' RT ' + customer_rt;
+				}
+				
+				if(customer_rw != '000' && customer_rt != '000'){
+					complete_address	+= ' /RW ' + customer_rw;
+				}
+				
+				if(customer_postal != null){
+					complete_address	+= ', ' + customer_postal;
+				}
+				
+				var receivable			= response.receivable;
+				var receivable_value	= 0;
+				$.each(receivable, function(index, value){
+					if(value.value == null){
+						var invoice_value	= 0;
+					} else {
+						var invoice_value		= parseFloat(value.value);
+					}
+					
+					var paid_value			= parseFloat(value.paid);
+					
+					receivable_value		= receivable_value + invoice_value - paid_value;
+				});
+				
+				var customer_array			= response.customer;
+				var plafond					= parseFloat(customer_array.plafond);
+				
+				$('#customer_plafond_p').html(numeral(plafond).format('0,0.00'));
+				$('#receivable_value_p').html(numeral(receivable_value).format('0,0.00'));
+				
+				$('#taxing_name_p').html(taxing_name);
+
 				$('#sales_order_id').val(sales_order_id);
 				
 				$('#customer_name_p').html(customer_name);
-				$('#customer_address_p').html(customer_address);
+				$('#customer_address_p').html(complete_address);
 				$('#customer_city_p').html(customer_city);
 				$('#sales_order_name').html(sales_order_name);
 				
@@ -173,6 +248,41 @@
 					$('#sales_order_item_table').append("<tr><td>" + reference + "</td><td>" + name + "</td><td>" + numeral(quantity).format('0,0') + "</td><td>Rp. " + numeral(price_list).format('0,0.00') + "</td><td>" + numeral(discount).format('0,0.00') + "%</td><td>Rp. " + numeral(net_price).format('0,0.00') + "</td><td>Rp. " + numeral(item_price).format('0,0.00') + "</td></tr>");
 				});
 				$('#sales_order_item_table').append("<tr><td colspan='5'></td><td>Total</td><td>Rp. " + numeral(sales_order_value).format('0,0.00') + "</td></tr>");
+				
+				var pending_value_array		= response.pending_value;
+				var pending_value			= parseFloat(pending_value_array.value);
+				
+				$('#pending_sales_order_value_p').html(numeral(pending_value - sales_order_value).format('0,0.00'));
+				
+				var pending_bank_value_array		= response.pending_bank_data;
+				if(pending_bank_value_array.value == null){
+					var pending_bank_value				= 0;
+				} else {
+					var pending_bank_value				= parseFloat(pending_bank_value_array.value);
+				}
+				
+				$('#pending_bank_value_p').html(numeral(pending_bank_value).format('0,0.00'));
+				
+				var total_debit				= pending_value + receivable_value;
+				var total_credit			= plafond + pending_bank_value;
+				
+				if(total_credit <= total_debit){
+					$('#warning_text_1').show();
+					if(access_level > 2){
+						$('#confirm_button').attr('disabled', false);
+					} else {
+						$('#confirm_button').attr('disabled', true);
+					}
+				} else {
+					$('#warning_text_1').hide();
+					$('#confirm_button').attr('disabled', false);
+				}
+				
+				if(total_credit < total_debit){
+					$('#warning_text_1').show();
+				} else {
+					$('#warning_text_1').hide();
+				}
 				
 				$('#sales_order_wrapper').fadeIn();
 			}

@@ -183,7 +183,7 @@ class Purchase_order_detail_model extends CI_Model {
 				$items						= $this->Purchase_order_detail_model->show_by_id($purchase_order_id);
 				$received					= $items->received;
 				$ordered					= $items->quantity;
-				$final_quantity				= $quantity + $received;
+				$final_quantity				= $received - $quantity;
 				if($final_quantity			== $ordered){
 					$status					= 1;
 				} else {
@@ -230,5 +230,19 @@ class Purchase_order_detail_model extends CI_Model {
 			}
 			
 			$this->db->update_batch($this->table_purchase_order,$batch, 'id'); 
+		}
+		
+		public function show_supplier_for_incomplete_purchase_orders()
+		{
+			$this->db->select('DISTINCT(supplier.id) as id, supplier.name, supplier.address, supplier.number, supplier.rt, supplier.rw, supplier.city, supplier.postal_code, supplier.phone_number, supplier.pic_name');
+			$this->db->from('purchase_order');
+			$this->db->join('code_purchase_order', 'purchase_order.code_purchase_order_id = code_purchase_order.id', 'inner');
+			$this->db->join('supplier', 'code_purchase_order.supplier_id = supplier.id');
+			$this->db->where('purchase_order.status', 0);
+			
+			$query		= $this->db->get();
+			$result		= $query->result();
+			
+			return $result;
 		}
 }

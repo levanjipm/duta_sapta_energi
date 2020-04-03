@@ -28,7 +28,7 @@
 				<td><?= $name ?></td>
 				<td><?= date('d M Y',strtotime($date)) ?></td>
 				<td>
-					<button type='button' class='button button_default_light' id='button_<?= $id ?>' onclick='validate_good_receipt(<?= $id ?>)'><i class='fa fa-long-arrow-right'></i></button>
+					<button type='button' class='button button_default_dark' id='button_<?= $id ?>' onclick='validate_good_receipt(<?= $id ?>)'><i class='fa fa-long-arrow-right'></i></button>
 				</td>
 			</tr>
 <?php
@@ -37,8 +37,8 @@
 		</table>
 	
 		<div class='alert_wrapper' id='good_receipt_validation_wrapper'>
-			<button type='button' class='alert_close_button'>&times </button>
-			<div class='alert_box_default'>
+			<button type='button' class='slide_alert_close_button'>&times </button>
+			<div class='alert_box_slide'>
 				<h3 style='font-family:bebasneue'>Confirm good receipt</h3>
 				<hr>
 				<label>Good receipt</label>
@@ -66,9 +66,9 @@
 				
 				<form action='<?= site_url('Good_receipt/confirm') ?>' method='POST'>
 					<input type='hidden' id='good_receipt_id' name='id'>
-					<button class='button button_default_dark'>Submit</button>
+					<button class='button button_default_dark' title='Submit good receipt'><i class='fa fa-long-arrow-right'></i></button>
 					
-					<button type='button' class='button button_danger_dark' onclick='delete_good_receipt()'>Delete</button>
+					<button type='button' class='button button_danger_dark' onclick='delete_good_receipt()' title='Delete good receipt'><i class='fa fa-trash'></i></button>
 				</form>
 			</div>
 		</div>
@@ -85,18 +85,17 @@
 				success:function(response){
 					var detail_data		= response.detail;
 					var general_data 	= response.general;
-					console.log(general_data);
-					var date			= general_data[0].date;
-					var document 		= general_data[0].name;
-					var received_date 	= general_data[0].received_date;
+					var date			= general_data.date;
+					var document 		= general_data.name;
+					var received_date 	= general_data.received_date;
 					
 					$('#good_receipt_date').html(date);
 					$('#good_receipt_document').html(document);
 					$('#good_receipt_received_date').html(received_date);
 					
-					var supplier_name		= general_data[0].supplier_name;
-					var supplier_address	= general_data[0].address;
-					var supplier_city		= general_data[0].city;
+					var supplier_name		= general_data.supplier_name;
+					var supplier_address	= general_data.address;
+					var supplier_city		= general_data.city;
 					
 					$('#supplier_name_p').html(supplier_name);
 					$('#supplier_address_p').html(supplier_address);
@@ -106,7 +105,10 @@
 					$.each(detail_data, function(index, value){
 						$('#good_receipt_table').append("<tr><td>" + value.reference + "</td><td>" + value.name + "</td><td>" + numeral(value.quantity).format('0,0') + "</td></tr>");
 					});
-					$('#good_receipt_validation_wrapper').fadeIn();
+					
+					$('#good_receipt_validation_wrapper').fadeIn(300, function(){
+						$('#good_receipt_validation_wrapper .alert_box_slide').show("slide", { direction: "right" }, 250);
+					});
 				}
 			});
 		};
@@ -128,8 +130,10 @@
 			});
 		}
 		
-		$('.alert_close_button').click(function(){
-			$(this).parent().fadeOut();
+		$('.slide_alert_close_button').click(function(){
+			$('#good_receipt_validation_wrapper .alert_box_slide').hide("slide", { direction: "right" }, 250, function(){
+				$('#good_receipt_validation_wrapper').fadeOut();
+			});
 		});
 	</script>
 <?php

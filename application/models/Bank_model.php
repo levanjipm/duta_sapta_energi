@@ -445,4 +445,20 @@ class Bank_model extends CI_Model {
 			
 			return $result;
 		}
+		
+		public function show_pending_value($type, $id)
+		{
+			if($type == 'customer'){
+				$this->db->select_sum('value');
+				$this->db->where('customer_id', $id);
+				$this->db->where('is_done', 0);
+				$this->db->where('is_delete', 0);
+				$this->db->where('transaction', 1);
+			}
+			
+			$query		= $this->db->get($this->table_bank);
+			$result		= $query->row();
+			
+			return $result;
+		}
 }
