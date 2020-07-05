@@ -189,6 +189,7 @@ class Purchase_order_model extends CI_Model {
 			$this->db->join('supplier', 'code_purchase_order.supplier_id = supplier.id');
 			$this->db->where('code_purchase_order.is_confirm', 0);
 			$this->db->where('code_purchase_order.is_delete', 0);
+			
 			$query 		= $this->db->get();
 			$items	 	= $query->result();
 			
@@ -225,7 +226,7 @@ class Purchase_order_model extends CI_Model {
 				$date_send	= null;
 				$stat		= null;
 			}
-			
+
 			$this->load->model('Purchase_order_model');
 			$check_guid = $this->Purchase_order_model->check_guid($guid);
 			if($check_guid){
@@ -238,6 +239,7 @@ class Purchase_order_model extends CI_Model {
 				$this->created_by			= $this->session->userdata('user_id');
 				$this->date_send_request	= $date_send;
 				$this->status				= $stat;
+				$this->note					= $this->input->post('note');
 				
 				if($this->input->post('dropship_address') != ''){
 					$this->dropship_address			= $this->input->post('dropship_address');
@@ -275,7 +277,7 @@ class Purchase_order_model extends CI_Model {
 			$this->db->from('code_purchase_order');
 			$this->db->join('supplier', 'code_purchase_order.supplier_id = supplier.id');
 			$this->db->join('users as x', 'code_purchase_order.created_by = x.id');
-			$this->db->join('users as y', 'code_purchase_order.confirmed_by = y.id');
+			$this->db->join('users as y', 'code_purchase_order.confirmed_by = y.id', 'left');
 			$this->db->where('code_purchase_order.id =', $id);
 			
 			$query 		= $this->db->get();

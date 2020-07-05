@@ -21,14 +21,18 @@
 	</div>
 </div>
 <script>
+	refresh_view();
+	
 	function refresh_view(page = $('#page').val()){
-		url:'<?= site_url('Stock/card_view') ?>',
-		data:{
-			page:page,
-			item_id:'<?= $items->id ?>',
-		},
-		success:function(response){
-			console.log(response);
-		}
+		$.ajax({
+			url:'<?= site_url('Stock/card_view') ?>',
+			data:{
+				page:page,
+				item_id:'<?= $items->id ?>',
+			},
+			success:function(response){
+				console.log(response);
+			}
+		});
 	}
 </script>

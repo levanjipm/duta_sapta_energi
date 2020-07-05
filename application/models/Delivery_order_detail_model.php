@@ -205,4 +205,48 @@ class Delivery_order_detail_model extends CI_Model {
 			
 			return $items;
 		}
+		
+		public function select_by_code_delivery_order_id($delivery_order_id)
+		{
+			$this->db->select('delivery_order.*, sales_order.quantity as ordered, sales_order.sent');
+			$this->db->from('delivery_order');
+			$this->db->join('sales_order', 'delivery_order.sales_order_id = sales_order.id');
+			$this->db->where('delivery_order.code_delivery_order_id', $delivery_order_id);
+			$query		= $this->db->get();
+			$result		= $query->result();
+			
+			$sales_order_array		= $this->Delivery_order_detail_model->create_sales_order_batch($result);
+			return $sales_order_array;
+		}
+		
+		public function create_sales_order_batch($delivery_order_array)
+		{
+			$batch		= array();
+			foreach($delivery_order_array as $delivery_order)
+			{
+				$sales_order_id		= $delivery_order->sales_order_id;
+				$quantity			= $delivery_order->quantity;
+				$ordered			= $delivery_order->ordered;
+				$sent				= $delivery_order->sent;
+				
+				$final_quantity		= $sent - $quantity;
+				if($final_quantity < $ordered){
+					$batch[] = array(
+						'id' => $sales_order_id,
+						'status' => 0,
+						'sent' => $final_quantity
+					);
+				} else if($final_quantity == $ordered){
+					$batch[] = array(
+						'id' => $sales_order_id,
+						'status' => 1,
+						'sent' => $final_quantity
+					);
+				}
+				
+				next($delivery_order_array);
+			}
+			
+			return $batch;
+		}
 }

@@ -181,7 +181,6 @@
 				id:n
 			},
 			success:function(response){
-				console.log(response);
 				var general					= response.general;
 				var sales_order_date		= general.date;
 				var sales_order_name		= general.name;

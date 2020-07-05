@@ -55,6 +55,10 @@
 				<label>Contact number</label>
 				<input type='text' class='form-control' name='dropship_contact'>
 			</div>
+			
+			<br><br>
+			<label>Note</label>
+			<textarea class='form-control' style='resize:none' name='note' rows='3' id='note'></textarea>
 	
 			<br>
 			<button type='button' class='button button_default_dark' id='add_item_button'><i class='fa fa-shopping-cart'></i> Add item</button>
@@ -118,10 +122,9 @@
 		</div>
 	</div>
 </div>
-
 <div class='alert_wrapper' id='validate_purchase_order_wrapper'>
-	<button class='alert_close_button'>&times</button>
-	<div class='alert_box_default' id='validate_purchase_order_box'>
+	<button type='button' class='slide_alert_close_button'>&times </button>
+	<div class='alert_box_slide'>
 		<label>Date</label>
 		<p id='date'></p>
 		
@@ -129,9 +132,9 @@
 		<p id='taxing_p'></p>
 		
 		<label>Supplier</label>
-		<p id='supplier_p'></p>		
+		<p id='supplier_p'></p>			
 		<p id='supplier_address_p'></p>		
-		<p id='supplier_city_p'></p>		
+		<p id='supplier_city_p'></p>
 		
 		<table class='table table-bordered'>
 			<tr>
@@ -145,6 +148,9 @@
 			</tr>
 			<tbody id='purchase_order_tbody'></tbody>
 		</table>
+		
+		<label>Note</label>
+		<p id='purchases_order_note'></p>
 		<button class='button button_default_dark' onclick='submit_form()'>Submit</button>
 	</div>
 </div>
@@ -230,10 +236,17 @@
 			$('input').attr('readonly',true);
 			$('select').attr('readonly',true);
 			
-			var taxing 		= $("#taxing option:selected").html();
+			var taxing 		= $("#taxing").val();
+			
+			if(taxing == 1){
+				var taxing_p	= 'Taxable purchase';
+			} else {
+				var taxing_p	= 'Non-taxable purchase';
+			}
+			
 			var date 		= $("#purchase_order_date").val();
 			var supplier	= $("#supplier").val();
-			
+			var note		= $('#note').val();
 			
 			$.ajax({
 				url:'<?= site_url('Supplier/select_by_id') ?>',
@@ -242,18 +255,46 @@
 				},
 				type:'GET',
 				success:function(response){
-					var supplier_name		= response.name;
-					var supplier_address	= response.address;
-					var supplier_city		= response.city;
+					var complete_address		= '';
+					var supplier_name			= response.name;
+					complete_address			+= response.address;
+					var supplier_city			= response.city;
+					var supplier_number			= response.number;
+					var supplier_rt				= response.rt;
+					var supplier_rw				= response.rw;
+					var supplier_postal			= response.postal_code;
+					var supplier_block			= response.block;
+		
+					if(supplier_number != null){
+						complete_address	+= ' No. ' + supplier_number;
+					}
+					
+					if(supplier_block != null){
+						complete_address	+= ' Blok ' + supplier_block;
+					}
+				
+					if(supplier_rt != '000'){
+						complete_address	+= ' RT ' + supplier_rt;
+					}
+					
+					if(supplier_rw != '000' && supplier_rt != '000'){
+						complete_address	+= ' /RW ' + supplier_rw;
+					}
+					
+					if(supplier_postal != null){
+						complete_address	+= ', ' + supplier_postal;
+					}
 					
 					$('#supplier_p').html(supplier_name);
-					$('#supplier_address_p').html(supplier_address);
+					$('#supplier_address_p').html(complete_address);
 					$('#supplier_city_p').html(supplier_city);
 				}
 			});
 			
-			$('#date').html(date);
-			$('#taxing_p').html(taxing);
+			$('#date').html(my_date_format(date));
+			$('#taxing_p').html(taxing_p);
+			
+			$('#purchases_order_note').html(note);
 			
 			var purchase_order_value = 0;
 			
@@ -320,17 +361,21 @@
 				"</tr>"
 			);
 			
-			$('#validate_purchase_order_wrapper').fadeIn();
+			$('#validate_purchase_order_wrapper').fadeIn(300, function(){
+				$('#validate_purchase_order_wrapper .alert_box_slide').show("slide", { direction: "right" }, 250);
+			});
 		}
 	};
+	
+	$('.slide_alert_close_button').click(function(){
+		$('#validate_purchase_order_wrapper .alert_box_slide').hide("slide", { direction: "right" }, 250, function(){
+			$('#validate_purchase_order_wrapper').fadeOut();
+		});
+	});
 	
 	function submit_form(){
 		$('#purchase_order_form').submit();
 	};
-	
-	$('.alert_close_button').click(function(){
-		$(this).parent().fadeOut();
-	});
 	
 	function add_to_cart(n){
 		$.ajax({
@@ -356,7 +401,7 @@
 						"<td><button type='button' class='button button_danger_dark' onclick='remove_item(" + n + ")'><i class='fa fa-trash'></i></button></td>");
 				}
 				$('button').attr('disabled',false);
-				$('.alert_close_button').click();
+				$('#add_item_wrapper').fadeOut();
 				
 				if($('#cart_products tr').length > 0){
 					$('#cart_products_table').show();
@@ -387,7 +432,7 @@
 						"<td><button type='button' class='button button_danger_dark' onclick='remove_bonus_item(" + n + ")'><i class='fa fa-trash'></i></button></td>");
 				}
 				$('button').attr('disabled',false);
-				$('.alert_close_button').click();
+				$('#add_item_wrapper').fadeOut();
 				
 				if($('#bonus_cart_products tr').length > 0){
 					$('#bonus_cart_products_table').show();

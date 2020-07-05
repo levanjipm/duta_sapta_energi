@@ -10,9 +10,9 @@ class Stock_in_model extends CI_Model {
 		public $residue;
 		public $supplier_id;
 		public $customer_id;
-		public $code_good_receipt_id;
-		public $code_sales_return_id;
-		public $code_event_id;
+		public $good_receipt_id;
+		public $sales_return_id;
+		public $event_id;
 		public $price;
 		
 		public function __construct()
@@ -25,9 +25,9 @@ class Stock_in_model extends CI_Model {
 			$this->residue					='';
 			$this->supplier_id				='';
 			$this->customer_id				='';
-			$this->code_good_receipt_id		='';
-			$this->code_sales_return_id		='';
-			$this->code_event_id			='';
+			$this->good_receipt_id			='';
+			$this->sales_return_id			='';
+			$this->event_id					='';
 			$this->price					='';
 		}
 		
@@ -39,9 +39,9 @@ class Stock_in_model extends CI_Model {
 			$this->residue					= $db_item->residue;
 			$this->supplier_id				= $db_item->supplier_id;
 			$this->customer_id				= $db_item->customer_id;
-			$this->code_good_receipt_id		= $db_item->code_good_receipt_id;
-			$this->code_sales_return_id		= $db_item->code_sales_return_id;
-			$this->code_event_id			= $db_item->code_event_id;
+			$this->good_receipt_id			= $db_item->good_receipt_id;
+			$this->sales_return_id			= $db_item->sales_return_id;
+			$this->event_id					= $db_item->event_id;
 			$this->price					= $db_item->price;
 			
 			return $this;
@@ -57,9 +57,9 @@ class Stock_in_model extends CI_Model {
 			$db_item->residue					= $this->residue;
 			$db_item->supplier_id				= $this->supplier_id;
 			$db_item->customer_id				= $this->customer_id;
-			$db_item->code_good_receipt_id		= $this->code_good_receipt_id;
-			$db_item->code_sales_return_id		= $this->code_sales_return_id;
-			$db_item->code_event_id				= $this->code_event_id;
+			$db_item->good_receipt_id			= $this->good_receipt_id;
+			$db_item->sales_return_id			= $this->sales_return_id;
+			$db_item->event_id					= $this->event_id;
 			$db_item->price						= $this->price;
 			
 			return $db_item;
@@ -75,9 +75,9 @@ class Stock_in_model extends CI_Model {
 			$stub->residue					= $db_item->residue;
 			$stub->supplier_id				= $db_item->supplier_id;
 			$stub->customer_id				= $db_item->customer_id;
-			$stub->code_good_receipt_id		= $db_item->code_good_receipt_id;
-			$stub->code_sales_return_id		= $db_item->code_sales_return_id;
-			$stub->code_event_id			= $db_item->code_event_id;
+			$stub->good_receipt_id			= $db_item->good_receipt_id;
+			$stub->sales_return_id			= $db_item->sales_return_id;
+			$stub->event_id					= $db_item->event_id;
 			$stub->price					= $db_item->price;
 			
 			return $stub;
@@ -96,6 +96,11 @@ class Stock_in_model extends CI_Model {
 		public function input_from_code_good_receipt($good_receipt_array)
 		{
 			$this->db->insert_batch($this->table_stock_in, $good_receipt_array);
+		}
+		
+		public function input_from_code_event($event_array)
+		{
+			$this->db->insert_batch($this->table_stock_in, $event_array);
 		}
 		
 		public function search_by_item_id($item_id)
@@ -135,28 +140,34 @@ class Stock_in_model extends CI_Model {
 		public function check_stock($stock_array)
 		{
 			$final_stock_array		= array();
-			foreach($stock_array as $stock){
-				$item_id				= $stock['item_id'];
-				$quantity				= $stock['quantity'];
-				if(array_key_exists($item_id, $final_stock_array)){
-					$final_quantity	= $final_stock_array[$item_id] + $quantity;
-					$final_stock_array[$item_id] = $final_quantity;
-				} else {
-					$final_stock_array[$item_id] = $quantity;
+			if(!empty($stock_array)){
+				foreach($stock_array as $stock){
+					$item_id				= $stock['item_id'];
+					$quantity				= $stock['quantity'];
+					if(array_key_exists($item_id, $final_stock_array)){
+						$final_quantity	= $final_stock_array[$item_id] + $quantity;
+						$final_stock_array[$item_id] = $final_quantity;
+					} else {
+						$final_stock_array[$item_id] = $quantity;
+					}
 				}
 			}
 			
 			$sufficient_stock	= TRUE;
 			
-			foreach($final_stock_array as $final_stock){
-				$this->db->select_sum('residue');
-				$this->db->where('item_id', $item_id);
-				$query		= $this->db->get($this->table_stock_in);
-				$result		= $query->row();
-				
-				$stock		= $result->residue;
-				if($stock < $final_stock){
-					$sufficient_stock = FALSE;
+			if(!empty($final_stock_array)){
+				foreach($final_stock_array as $final_stock){
+					$item_id	= key($final_stock_array);
+					
+					$this->db->select_sum('residue');
+					$this->db->where('item_id', $item_id);
+					$query		= $this->db->get($this->table_stock_in);
+					$result		= $query->row();
+					
+					$stock		= max(0, $result->residue);
+					if($stock < $final_stock){
+						$sufficient_stock = FALSE;
+					}
 				}
 			}
 			
@@ -192,6 +203,24 @@ class Stock_in_model extends CI_Model {
 			
 			$query		= $this->db->get($this->table_stock_in);
 			$result		= $query->num_rows();
+			
+			return $result;
+		}
+		
+		public function card_view($item_id)
+		{
+			$this->db->select('stock_in.*, COALESCE(code_good_receipt.name, code_sales_return.name, code_event.name) as name, COALESCE(customer.name, supplier.name) as opponent_name');
+			$this->db->from('stock_in');
+			$this->db->where('item_id', $item_id);
+			$this->db->join('good_receipt', 'stock_in.good_receipt_id = good_receipt.id', 'left');
+			$this->db->join('code_good_receipt', 'good_receipt.code_good_receipt_id = code_good_receipt.id');
+			$this->db->join('event', 'stock_in.event_id = event.id', 'left');
+			$this->db->join('code_event', 'event.code_event_id = code_event.id');
+			$this->db->join('sales_return', 'stock_in.sales_return_id = sales_return.id', 'left');
+			$this->db->join('code_sales_return', 'sales_return.code_sales_return.id = code_sales_return.id');
+			
+			$query		= $this->db->get();
+			$result		= $query->result();
 			
 			return $result;
 		}

@@ -252,4 +252,9 @@ class Sales_order_detail_model extends CI_Model {
 			
 			return $result;
 		}
+		
+		public function update_from_delivery_order_cancelation($sales_order_array)
+		{
+			$this->db->update_batch($this->table_sales_order, $sales_order_array, 'id');
+		}
 }

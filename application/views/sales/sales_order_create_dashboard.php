@@ -517,12 +517,12 @@
 				var price_list	= response.price_list;
 				
 				if($('#item_row-' + item_id).length == 0){
-					$('#cart_products').append("<tr id='item_row-" + item_id + "'><td id='reference-" + item_id + "'>" + reference + "</td>" + 
-						"<td id='name-" + item_id + "'>" + name + "</td>" + 
-						"<td>Rp. " + numeral(price_list).format('0,0.00') + "</td><input type='hidden' id='price_list-" + item_id + "' value='" + price_list+ "'>" +
-						"<td><input type='number' class='form-control' min='0' max='100' required name='discount[" + item_id + "]' id='discount-" + item_id + "'></td>" +
-						"<td><input type='number' class='form-control' min='0' max='100' required name='quantity[" + item_id + "]' id='quantity-" + item_id + "'></td>" + 
-						"<td><button type='button' class='button button_danger_dark' onclick='remove_item(" + item_id + ")'><i class='fa fa-trash'></i></button></td></tr>");
+					$('#cart_products').append("<tr id='item_row-" + n + "'><td id='reference-" + n + "'>" + reference + "</td>" + 
+						"<td id='name-" + n + "'>" + name + "</td>" + 
+						"<td>Rp. " + numeral(price_list).format('0,0.00') + "</td><input type='hidden' id='price_list-" + n + "' value='" + price_list+ "'>" +
+						"<td><input type='number' class='form-control' min='0' max='100' required name='discount[" + n + "]' id='discount-" + n + "'></td>" +
+						"<td><input type='number' class='form-control' min='0' max='100' required name='quantity[" + n + "]' id='quantity-" + n + "'></td>" + 
+						"<td><button type='button' class='button button_danger_dark' onclick='remove_item(" + n + ")'><i class='fa fa-trash'></i></button></td></tr>");
 				}
 				
 				$('button').attr('disabled',false);

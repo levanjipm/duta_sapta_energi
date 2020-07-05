@@ -43,7 +43,7 @@
 		</div>
 		<button class='container_button'><p style='font-family:museo'>Return</p></button>
 		<div class='container_bar'>
-			<a href='<?= site_url('Sales') ?>'><p>Create return</p></a>
+			<a href='<?= site_url('Sales_return/create') ?>'><p>Create return</p></a>
 			<a href='<?= site_url() ?>'><p>Confirm return</p></a>	
 		</div>
 		<a href='<?= site_url('Stock/view/Sales') ?>'><button><p>Check stock</p></button></a>

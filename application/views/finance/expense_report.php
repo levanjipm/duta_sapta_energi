@@ -62,7 +62,7 @@
 						<label>Sort type</label>
 						<select class='form-control' id='type_order_select'>
 							<option value='1'>Ascending</option>
-							<option value='2'>DescendingG</option>
+							<option value='2'>Descending</option>
 						</select>
 						<br>
 						
@@ -124,6 +124,7 @@
 				});
 			}
 		});
+		
 		var position	= $('#filter_button_wrapper').position();
 		var width		= $('#filter_button_wrapper').outerWidth();
 		var height		= $('#filter_button_wrapper').height();
@@ -136,7 +137,7 @@
 		
 		$('.filter_form_wrapper').css('right', far_left);
 		$('.filter_form_wrapper').css('top', far_top);
-		$('.filter_form_wrapper').fadeIn();
+		$('.filter_form_wrapper').toggle(450);
 	}
 	
 	function refresh_view(page = $('#page').val()){

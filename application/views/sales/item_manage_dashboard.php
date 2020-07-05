@@ -161,7 +161,7 @@
 				$.each(item_array, function(index, item){
 					var reference	= item.reference;
 					var description	= item.name;
-					var id			=item.id;
+					var id			= item.item_id;
 					$('#item_table').append("<tr><td>" + reference + "</td><td>" + description + "</td><td><button type='button' class='button button_success_dark' onclick='open_edit_form(" + id + ")' title='Edit " + reference + "'><i class='fa fa-pencil'></i></button> <button type='button' class='button button_danger_dark' onclick='open_delete_confirmation(" + id + ")' title='Delete " + reference + "'><i class='fa fa-trash'></i></button> <button type='button' class='button button_default_dark' title='View " + reference + "'><i class='fa fa-eye'></i></button>");
 				});
 				

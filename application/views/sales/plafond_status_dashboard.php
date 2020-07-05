@@ -23,8 +23,8 @@
 </div>
 
 <div class='alert_wrapper' id='plafond_confirm_wrapper'>
-	<button type='button' class='alert_close_button'>&times </button>
-	<div class='alert_box_default'>
+	<button type='button' class='slide_alert_close_button'>&times </button>
+	<div class='alert_box_slide'>
 		<h2 style='font-family:bebasneue'>View Plafond submission</h2>
 		
 		<label>Customer</label>
@@ -57,8 +57,10 @@
 		});
 	}
 	
-	$('.alert_close_button').click(function(){
-		$(this).parent().fadeOut();
+	$('.slide_alert_close_button').click(function(){
+		$('#plafond_confirm_wrapper .alert_box_slide').hide("slide", { direction: "right" }, 250, function(){
+			$('#plafond_confirm_wrapper').fadeOut();
+		});
 	});
 
 	$('#search_bar').change(function(){
@@ -127,8 +129,9 @@
 				
 				$('#customer_href').attr('href', '<?= site_url('Customer/view_detail/') ?>' + customer_id);
 				
-				$('#plafond_confirm_wrapper').fadeIn();
-				console.log(response);
+				$('#plafond_confirm_wrapper').fadeIn(300, function(){
+					$('#plafond_confirm_wrapper .alert_box_slide').show("slide", { direction: "right" }, 250);
+				});
 			}
 		});
 	}
@@ -188,7 +191,7 @@
 <?php
 	if($user_login->access_level > 2){
 ?>
-					$('#plafond_table').append("<tr><td>" + customer_name + "</td><td><p>" + complete_address + "</p><p>" + customer_city + "</p></td><td><p>" + created_by + "</p><p>" + submitted_date + "</p></td><td><button type='button' class='button button_default_dark' title='View plafond change submission for " + customer_name + "' onclick='open_edit_form(" + submission_id + ")'><i class='fa fa-long-arrow-right'></i></button></td></tr>");
+					$('#plafond_table').append("<tr><td>" + customer_name + "</td><td><p>" + complete_address + "</p><p>" + customer_city + "</p></td><td><p>" + created_by + "</p><p>" + my_date_format(submitted_date) + "</p></td><td><button type='button' class='button button_default_dark' title='View plafond change submission for " + customer_name + "' onclick='open_edit_form(" + submission_id + ")'><i class='fa fa-long-arrow-right'></i></button></td></tr>");
 <?php
 	} else {
 ?>

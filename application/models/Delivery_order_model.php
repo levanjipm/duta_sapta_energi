@@ -155,7 +155,6 @@ class Delivery_order_model extends CI_Model {
 		{
 			$this->db->where('month(date)',date('m',strtotime($date)));
 			$this->db->where('year(date)',date('Y',strtotime($date)));
-			$this->db->where('is_delete',0);
 			$query	= $this->db->get($this->table_delivery_order);
 			$item 	= $query-> num_rows();
 			
@@ -365,6 +364,13 @@ class Delivery_order_model extends CI_Model {
 			$result		= $query->result();
 			
 			return $result;
+		}
+		
+		public function delete_by_id($id)
+		{
+			$this->db->set('is_delete', 1);
+			$this->db->where('id', $id);
+			$query		= $this->db->update($this->table_delivery_order);
 		}
 		
 		public function create_guid()

@@ -50,8 +50,8 @@
 			<p style='font-family:museo'>Rp. <span id='pending_bank_value_p'></span></p>
 		</div>
 		<div style='padding:2px 10px;background-color:#ffc107;width:100%;display:none' id='warning_text_1'>
-				<p ><i class='fa fa-exclamation-triangle'></i> Customer's plafond exceeded</p>
-			</div>
+			<p ><i class='fa fa-exclamation-triangle'></i> Customer's plafond exceeded</p>
+		</div>
 		
 		<label>Sales order</label>
 		<p style='font-family:museo' id='sales_order_name'></p>

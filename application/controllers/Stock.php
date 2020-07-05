@@ -45,11 +45,20 @@ class Stock extends CI_Controller {
 	
 	public function card($item_id)
 	{
+		$this->load->view('head');
+		$user_id		= $this->session->userdata('user_id');
+		$this->load->model('User_model');
+		$data['user_login'] = $this->User_model->show_by_id($user_id);
+		
+		$this->load->model('Authorization_model');
+		$data['departments']	= $this->Authorization_model->show_by_user_id($user_id);
+			
+		$this->load->view('head');
+		$this->load->view('inventory/header', $data);
+		
 		$this->load->model('Item_model');
 		$data['items'] = $this->Item_model->select_by_id($item_id);
 		
-		$this->load->view('head');
-		$this->load->view('inventory/header');
 		$this->load->view('inventory/stock_card', $data);
 	}
 	
@@ -58,7 +67,7 @@ class Stock extends CI_Controller {
 		$item_id		= $this->input->get('item_id');
 		$page			= $this->input->get('page');
 		$offset			= ($page - 1) * 25;
-		$this->load->model('Stock_model');
+		$this->load->model('Stock_in_model');
 		$data['stock'] = $this->Stock_in_model->card_view($item_id, $offset);
 		
 		$data['pages'] = $this->Stock_in_model->count_card($item_id);

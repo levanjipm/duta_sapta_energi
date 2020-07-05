@@ -17,30 +17,17 @@
 				<th>Description</th>
 				<th>Action</th>
 			</tr>
-<?php
-	foreach($classes as $class){
-		$class_id		= $class->id;
-		$class_name		= $class->name;		
-		$description	= $class->description;		
-?>
-			<tr>
-				<td id='name-<?= $class_id ?>'><?= $class_name ?></td>
-				<td id='description-<?= $class_id ?>'><?= $description ?></td>
-				<td>
-					<button type='button' class='button button_success_dark' onclick='open_edit_form(<?= $class_id ?>)'><i class='fa fa-pencil'></i></button>
-					<button type='button' class='button button_danger_dark' onclick='open_delete_confirmation(<?= $class_id ?>)'><i class='fa fa-trash'></i></button>
-					<button type='button' class='button button_default_light'><i class='fa fa-eye'></i></button>
-				</td>
-			</tr>
-<?php
-	}
-?>
+			<tbody id='item_class_table'></tbody>
 		</table>
+		
+		<select class='form-control' id='page' style='width:100px'>
+			<option value='1'>1</option>
+		</select>
 	</div>
 </div>
 
 <div class='alert_wrapper' id='add_item_class_wrapper'>
-	<button class='alert_close_button'>&times</button>
+	<button class='alert_close_button'>&times </button>
 	<div class='alert_box_default'>
 		<form action='<?= site_url('Item_class/insert_new_class/') ?>' method='POST'>
 		<h2 style='font-family:bebasneue'>Add item class form</h2>
@@ -63,7 +50,7 @@
 		<br><br>
 		<h4 style='font-family:museo'>Are you sure?</h4>
 		<br><br>
-		<button class='button button_danger_dark' onclick='close_alert("delete_confirmation_wrapper")'>Not sure</button>
+		<button class='button button_danger_dark' onclick="$('#delete_confirmation_wrapper').fadeOut()">Not sure</button>
 		<button class='button button_success_dark' onclick='confirm_delete()'>Yes</button>
 		
 		<input type='hidden' id='item_class_id'>
@@ -90,6 +77,59 @@
 </div>
 
 <script>
+	refresh_view();
+	
+	$('#page').change(function(){
+		refresh_view();
+	});
+	
+	$('#search_bar').change(function(){
+		refresh_view(1);
+	});
+	
+	function refresh_view(page = $('#page').val()){
+		$.ajax({
+			url:'<?= site_url('Item_class/show_items') ?>',
+			data:{
+				term:$('#search_bar').val(),
+				page:page
+			},
+			success:function(response){
+				console.log(response);
+				$('#item_class_table').html('');
+				var items		= response.items;
+				$.each(items, function(index, item){
+					var id 				= item.id;
+					var name			= item.name;
+					var description		= item.description;
+					var quantity		= item.quantity;
+					
+					if(quantity == 0){
+						$('#item_class_table').append("<tr><td id='name-" + id + "'>" + name + "</td><td id='description-" + id + "'>" + description + "</td>" +
+							"<td><button type='button' class='button button_success_dark' onclick='open_edit_form(" + id + ")'><i class='fa fa-pencil'></i></button> " +
+							"<button type='button' class='button button_danger_dark' onclick='open_delete_confirmation(" + id + ")'><i class='fa fa-trash'></i></button> " +
+							"<button type='button' class='button button_default_dark'><i class='fa fa-eye'></i></button></td></tr>");
+					} else {
+						$('#item_class_table').append("<tr><td id='name-" + id + "'>" + name + "</td><td id='description-" + id + "'>" + description + "</td>" +
+							"<td><button type='button' class='button button_success_dark' onclick='open_edit_form(" + id + ")'><i class='fa fa-pencil'></i></button> " +
+							"<button type='button' class='button button_danger_dark' disabled><i class='fa fa-trash'></i></button> " +
+							"<button type='button' class='button button_default_dark'><i class='fa fa-eye'></i></button></td></tr>");
+					}
+				});
+				
+				var pages		= response.pages;
+				$('#page').html('');
+				for(i = 1; i <= pages; i++){
+					if(i == page){
+						$('#page').append("<option value='" + i + "' selected>" + i + "</option>");
+					} else {
+						$('#page').append("<option value='" + i + "'>" + i + "</option>");
+					}
+				}
+			}
+		});
+	}
+	
 	$('#add_item_class_button').click(function(){
 		$('#add_item_class_wrapper').fadeIn();
 	});
@@ -111,6 +151,10 @@
 			},
 			success:function(){
 				window.location.reload();
+			},
+			error:function(){
+				alert("We're sorry, we are running into some problem");
+				$('button').attr('disabled',false);
 			}
 		})
 	};

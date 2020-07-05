@@ -171,8 +171,6 @@ class Delivery_order extends CI_Controller {
 		
 		$this->load->view('head');
 		$this->load->view('Inventory/delivery_order_print', $data);
-		
-		print_r($data['general']);
 	}
 	
 	public function send()
@@ -253,5 +251,20 @@ class Delivery_order extends CI_Controller {
 		
 		header('Content-Type: application/json');
 		echo json_encode($data);
+	}
+	
+	public function cancel()
+	{
+		$id				= $this->input->post('id');
+		$this->load->model('Delivery_order_detail_model');
+		$sales_order_array		= $this->Delivery_order_detail_model->select_by_code_delivery_order_id($id);
+
+		if(count($sales_order_array) > 0){
+			$this->load->model('Sales_order_detail_model');
+			$this->Sales_order_detail_model->update_from_delivery_order_cancelation($sales_order_array);
+			
+			$this->load->model('Delivery_order_model');
+			$this->Delivery_order_model->delete_by_id($id);
+		}
 	}
 }

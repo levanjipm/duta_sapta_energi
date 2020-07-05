@@ -91,9 +91,9 @@ class Stock_out_model extends CI_Model {
 				$quantity				= $delivery_order['quantity'];
 				$code_delivery_order_id	= $delivery_order['code_delivery_order_id'];
 				$customer_id			= $delivery_order['customer_id'];
-				$stock_in		= $this->Stock_in_model->search_by_item_id($item_id);
-				$residue		= $stock_in->residue;
-				$in_id			= $stock_in->id;
+				$stock_in				= $this->Stock_in_model->search_by_item_id($item_id);
+				$residue				= $stock_in->residue;
+				$in_id					= $stock_in->id;
 				while($quantity > 0){
 					if($residue		> $quantity){
 						$current_residue	= $residue - $quantity;
@@ -119,8 +119,51 @@ class Stock_out_model extends CI_Model {
 				'code_delivery_order_id' => $code_delivery_order_id,
 				'customer_id' => $customer_id,
 				'supplier_id' => null,
-				'code_event_id' => null,
+				'event_id' => null,
 				'code_purchase_return_id' => null
+			);
+				
+			$this->db->insert($this->table_stock_out, $db_item);
+		}
+		
+		public function send_event($event_array)
+		{
+			$this->load->model('Stock_in_model');
+			foreach($event_array as $event){
+				$item_id				= $event['item_id'];
+				$quantity				= $event['quantity'];
+				$event_id				= $event['event_id'];
+				print_r($event);
+				$stock_in				= $this->Stock_in_model->search_by_item_id($item_id);
+				$residue				= $stock_in->residue;
+				$in_id					= $stock_in->id;
+				while($quantity > 0){
+					if($residue		> $quantity){
+						$current_residue	= $residue - $quantity;
+						$this->Stock_in_model->update_stock_in($in_id, $current_residue);
+						$this->Stock_out_model->insert_stock_out_event($in_id, $quantity, $event_id); 
+						break;
+					} else {
+						$current_residue		= $quantity - $residue;
+						$this->Stock_in_model->update_stock_in($in_id, 0);
+						$this->Stock_out_model->insert_stock_out_event($in_id, $current_residue, $event_id);
+						
+						$quantity = $quantity - $residue;
+					}
+				}
+			}
+		}
+		
+		public function insert_stock_out_event($in_id, $quantity, $event_id)
+		{
+			$db_item		= array(
+				'in_id' => $in_id,
+				'quantity' => $quantity,
+				'event_id' => $event_id,
+				'customer_id' => null,
+				'supplier_id' => null,
+				'code_purchase_return_id' => null,
+				'code_delivery_order_id' => null
 			);
 				
 			$this->db->insert($this->table_stock_out, $db_item);

@@ -107,6 +107,23 @@
 </div>
 
 <script>
+	$('#cancel_delivery_order_button').click(function(){
+		$.ajax({
+			url:'<?= site_url('Delivery_order/cancel') ?>',
+			data:{
+				id:$('#delivery_order_id').val()
+			},
+			type:'POST',
+			beforeSend:function(){
+				$('button').attr('disabled', true);
+			},
+			success:function(){
+				$('button').attr('disabled', false);
+				window.location.reload();
+			}
+		});
+	});
+	
 	function view_delivery_order_detail(n){
 		$('#delivery_order_table').html('');
 		$.ajax({

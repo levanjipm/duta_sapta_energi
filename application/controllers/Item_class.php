@@ -22,11 +22,7 @@ class Item_class extends CI_Controller {
 		$this->load->view('head');
 		$this->load->view('sales/header', $data);
 		
-		$this->load->model('Item_class_model');
-		$items = $this->Item_class_model->show_limited(25,0);
-		$data['classes'] = $items;
-		
-		$this->load->view('sales/item_class_manage_dashboard',$data);
+		$this->load->view('sales/item_class_manage_dashboard');
 	}
 	
 	public function insert_new_class()
@@ -55,5 +51,18 @@ class Item_class extends CI_Controller {
 		$this->Item_class_model->update_from_post($id, $name, $description);
 		
 		redirect(site_url('Item_class'));
+	}
+	
+	public function show_items()
+	{
+		$term			= $this->input->get('term');
+		$page			= $this->input->get('page');
+		$offset			= ($page - 1) * 25;
+		$this->load->model('Item_class_model');
+		$data['items']			= $this->Item_class_model->show_items($offset, $term);
+		$data['pages']			= max(0, ceil($this->Item_class_model->count_items($term)/25));
+		
+		header('Content-Type: application/json');
+		echo json_encode($data);
 	}
 }

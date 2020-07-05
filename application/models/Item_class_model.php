@@ -57,23 +57,44 @@ class Item_class_model extends CI_Model {
 			return $result;
 		}
 		
+		public function show_items($offset = 0, $term = '', $limit = 25)
+		{
+			$this->db->select('item_class.*, COUNT(item.id) as quantity');
+			if($term != ''){
+				$this->db->like('item_class.name', $term, 'both');
+				$this->db->or_like('item_class.description', $term, 'both');
+			}
+			
+			$this->db->from('item_class');
+			$this->db->join('item', 'item.type = item_class.id', 'left');
+			$this->db->group_by('item.type');
+			$this->db->limit($limit, $offset);
+			
+			$query		= $this->db->get();
+			$result		= $query->result();
+			
+			return $result;
+		}
+		
+		public function count_items($term = '')
+		{
+			if($term != ''){
+				$this->db->like('name', $term, 'both');
+				$this->db->or_like('description', $term, 'both');
+			}
+			
+			$query		= $this->db->get($this->table_item_class);
+			$result		= $query->num_rows();
+			
+			return $result;
+		}
+		
 		public function show_all()
 		{
 			$query 		= $this->db->get($this->table_item_class);
 			$items	 	= $query->result();
 			
 			$result 	= $this->map_list($items);
-			
-			return $result;
-			
-		}
-		
-		public function show_limited($limit, $offset)
-		{
-			$query 		= $this->db->get($this->table_item_class, $limit, $offset);
-			$items	 	= $query->result();
-			
-			$result = $this->map_list($items);
 			
 			return $result;
 			

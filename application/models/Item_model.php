@@ -199,7 +199,7 @@ class Item_model extends CI_Model {
 		public function select_by_price_list_id($price_list_id)
 		{
 			$query 				= $this->db->query("
-				SELECT price_list.price_list, item.reference, item.name, item.type, price_list.id
+				SELECT price_list.price_list, item.reference, item.name, item.type, item.id
 					FROM price_list
 					JOIN item ON item.id = price_list.item_id
 					WHERE price_list.id IN (

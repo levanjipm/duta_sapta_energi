@@ -33,12 +33,10 @@
 			<a href='<?= site_url('Purchase_order/archive') ?>'><p>Archive</p></a>	
 		</div>
 		<a href='<?= site_url('Supplier') ?>'><button><p>Supplier</p></button></a>
-		<a href='<?= site_url('Item') ?>'><button><p>Item</p></button></a>
-		<a href='<?= site_url('Item_class') ?>'><button><p>Item class</p></button></a>	
 		<button class='container_button'><p style='font-family:museo'>Return</p></button>
 		<div class='container_bar'>
-			<a href='<?= site_url() ?>'><p>Create return</p></a>
-			<a href='<?= site_url() ?>'><p>Confirm return</p></a>	
+			<a href='<?= site_url('Item_return/purchasing') ?>'><p>Create return</p></a>
+			<a href='<?= site_url('Item_return/confirm/purchasing') ?>'><p>Confirm return</p></a>	
 		</div>
 	</div>
 </div>

@@ -169,8 +169,8 @@
 <br>
 <div class='row' style='margin:0'>
 	<div class='col-xs-12' style='text-align:center'>
-		<a href='<?= site_url('Accounting') ?>'><button type='button' class='button button_success_dark' style='display:none' id='back_button'><i class='fa fa-long-arrow-left'></i></button></a>
-		<button type='button' class='button button_default_dark' onclick="window.print();$('#back_button').show();$('#print_button').hide();" id='print_button'><i class='fa fa-print'></i></button>
+		<a href='<?= site_url('Invoice') ?>'><button type='button' class='button button_success_dark' style='display:none' id='back_button'><i class='fa fa-long-arrow-left'></i></button></a>
+		<button type='button' class='button button_default_light' onclick="window.print();$('#back_button').show();$('#print_button').hide();" id='print_button'><i class='fa fa-print'></i></button>
 	</div>
 </div>
 <script>
