@@ -130,9 +130,9 @@ class Bank_model extends CI_Model {
 						'date'=>$date,
 						'value' => $value,
 						'transaction' => $transaction,
-						'supplier_id' => $opponent_id,
+						'supplier_id' => NULL,
 						'customer_id' => NULL,
-						'other_id' => NULL,
+						'other_id' => $opponent_id,
 						'account_id' => $account
 					);
 				break;

@@ -4,8 +4,8 @@
 	</div>
 	<br>
 	<div class='dashboard_in'>
-		<div class='input_group'>
-			<input type='text' class='form-control' id='search_bar'>
+		<div class='input_group input-group-lg'>
+			<input for="customer" type='text' class='form-control' id='search_bar' style='border-radius:0' placeholder="Search customer">
 			<div class='input_group_append'>
 				<button type='button' class='button button_default_dark' id='add_customer_button'>Add customer</button>
 			</div>
@@ -33,8 +33,8 @@
 </div>
 
 <div class='alert_wrapper' id='add_customer_wrapper'>
-	<button class='alert_close_button'>&times</button>
-	<div class='alert_box_default'>
+	<button class='slide_alert_close_button'>&times</button>
+	<div class='alert_box_slide'>
 		<form action='<?= site_url('Customer/insert_new_customer/') ?>' method='POST'>
 		<h2 style='font-family:bebasneue'>Add customer form</h2>
 		<hr>
@@ -108,15 +108,17 @@
 </div>
 
 <div class='alert_wrapper' id='edit_customer_wrapper'>
-	<button class='alert_close_button'>&times</button>
-	<div class='alert_box_default'>
+	<button class='slide_alert_close_button'>&times</button>
+	<div class='alert_box_slide'>
 	</div>
 </div>
 
 <script>
 	update_view();
 	$('#add_customer_button').click(function(){
-		$('#add_customer_wrapper').fadeIn();
+		$('#add_customer_wrapper').fadeIn(300, function(){
+			$('#add_customer_wrapper .alert_box_slide').show("slide", { direction: "right" }, 250);
+		});
 	});
 	
 	function open_delete_confirmation(n){
@@ -152,14 +154,18 @@
 			},
 			success:function(response){
 				$('button').attr('disabled',false);
-				$('#edit_customer_wrapper .alert_box_default').html(response);
-				$('#edit_customer_wrapper').fadeIn();
+				$('#edit_customer_wrapper .alert_box_slide').html(response);
+				$('#edit_customer_wrapper').fadeIn(300, function(){
+					$('#edit_customer_wrapper .alert_box_slide').show("slide", { direction: "right" }, 250);
+				});
 			}
 		})
 	};
 	
-	$('.alert_close_button').click(function(){
-		$(this).parents('.alert_wrapper').fadeOut();
+	$('.slide_alert_close_button').click(function(){
+		$(this).siblings('.alert_box_slide').hide("slide", { direction: "right" }, 250, function(){
+			$(this).parent().fadeOut();
+		});
 	});
 	
 	function update_view(page = $('#page').val()){

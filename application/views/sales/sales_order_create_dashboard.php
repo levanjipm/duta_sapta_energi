@@ -134,8 +134,8 @@
 </div>
 
 <div class='alert_wrapper' id='validate_sales_order_wrapper'>
-	<button class='alert_close_button'>&times </button>
-	<div class='alert_box_default' id='validate_sales_order_box'>
+	<button class='slide_alert_close_button'>&times </button>
+	<div class='alert_box_slide' id='validate_sales_order_box'>
 		<label>Date</label>
 		<p id='date'></p>
 		
@@ -169,11 +169,14 @@
 	</div>
 </div>
 <script>
-	$('.alert_close_button').click(function(){
-		$(this).parent().fadeOut();
+	$('.slide_alert_close_button').click(function(){
 		$('input').attr('readonly',false);
 		$('select').attr('readonly',false);
 		$('#table_item_confirm').html('');
+		
+		$(this).siblings('.alert_box_slide').hide("slide", { direction: "right" }, 250, function(){
+			$(this).parent().fadeOut();
+		});
 	});
 	
 	$('#add_item_button').click(function(){
@@ -300,8 +303,9 @@
 					"<td>Rp. " + numeral(sales_order_value).format('0,0.00') + "</td>"+
 				"</tr>"
 			);
-			
-			$('#validate_sales_order_wrapper').fadeIn();
+			$('#validate_sales_order_wrapper').fadeIn(300, function(){
+				$('#validate_sales_order_wrapper .alert_box_slide').show("slide", { direction: "right" }, 250);
+			});
 		}
 	};
 	

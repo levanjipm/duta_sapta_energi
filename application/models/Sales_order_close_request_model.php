@@ -111,4 +111,17 @@ class Sales_order_close_request_model extends CI_Model {
 			
 			return $result;
 		}
+		
+		public function get_unconfirmed()
+		{
+			$query = $this->db->query("SELECT code_sales_order_close_request.*, a.name as requested_by, customer.*, code_sales_order.date as sales_order_date, code_sales_order.name as sales_order_name
+			FROM code_sales_order_close_request
+			JOIN code_sales_order ON code_sales_order_close_request.code_sales_order_id = code_sales_order.id
+			JOIN customer ON code_sales_order.customer_id = customer.id
+			JOIN (SELECT id, name FROM users) as a ON a.id = code_sales_order_close_request.requested_by = a.id
+			WHERE code_sales_order_close_request.is_approved IS NULL
+			ORDER BY code_sales_order_close_request.date");
+			$result = $query->result();
+			return $result;
+		}
 }

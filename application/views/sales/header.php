@@ -1,5 +1,5 @@
 <div class='topnav_bar'>
-	<div style='width:50%;display:inline-block'><h3>Sales</h3></div><div style='width:50%;display:inline-block;text-align:right'><?php if(!empty($user_login)){ ?><h4>Hello, <?= $user_login->name ?></h4><?php } else { ?><button type='button' class='button button_default_dark'>Login</button> <?php } ?></div>
+	<div style='width:50%;display:inline-block'><h3>Sales</h3></div><div style='width:50%;display:inline-block;text-align:right;color:white'><?php if(!empty($user_login)){ ?><h4>Hello, <?= $user_login->name ?></h4><?php } else { ?><button type='button' class='button button_default_dark'>Login</button> <?php } ?></div>
 </div>
 <div class='sidenav_bar'>
 	<button class='button_close_sidenav'>
@@ -26,7 +26,7 @@
 ?>
 	</div>
 	<div class='sidenav_bar_functions'>
-		<button class='container_button'><p style='font-family:museo'>Customer</p></button>
+		<button class='container_button'><p style='font-family:museo'>Customer <i class='fa fa-caret-down'></i></p></button>
 		<div class='container_bar'>
 			<a href='<?= site_url('Customer') ?>'><button><p>Manage</p></button></a>
 			<a href='<?= site_url('Customer/plafond') ?>'><button><p>Plafond</p></button></a>
@@ -35,18 +35,22 @@
 		<a href='<?= site_url('Area') ?>'><button><p>Area</p></button></a>
 		<a href='<?= site_url('Item') ?>'><button><p>Item</p></button></a>
 		<a href='<?= site_url('Item_class') ?>'><button><p>Item class</p></button></a>
-		<button class='container_button'><p style='font-family:museo'>Sales order</p></button>
+		<button class='container_button'><p style='font-family:museo'>Sales order  <i class='fa fa-caret-down'></i></p></button>
 		<div class='container_bar'>
 			<a href='<?= site_url('Sales_order') ?>'><p>Create</p></a>
 			<a href='<?= site_url('Sales_order/track') ?>'><p>Track</p></a>
+		<?php if($user_login->access_level > 2) { ?>
+			<a href='<?= site_url('Sales_order/close_confirmation') ?>'>Close</p></a>
+		<?php } ?>
 			<a href='<?= site_url('Sales_order/archive') ?>'>Archive</a>
 		</div>
-		<button class='container_button'><p style='font-family:museo'>Return</p></button>
+		<button class='container_button'><p style='font-family:museo'>Return  <i class='fa fa-caret-down'></i></p></button>
 		<div class='container_bar'>
 			<a href='<?= site_url('Sales_return/create') ?>'><p>Create return</p></a>
 			<a href='<?= site_url() ?>'><p>Confirm return</p></a>	
 		</div>
 		<a href='<?= site_url('Stock/view/Sales') ?>'><button><p>Check stock</p></button></a>
+		<a href='<?= site_url('') ?>'><button><p>Analytic</p></button></a>
 	</div>
 </div>
 <script>

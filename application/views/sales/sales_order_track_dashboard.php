@@ -24,8 +24,8 @@
 </div>
 
 <div class='alert_wrapper' id='track_sales_order_wrapper'>
-	<button type='button' class='alert_close_button'>&times </button>
-	<div class='alert_box_default'>
+	<button type='button' class='slide_alert_close_button'>&times </button>
+	<div class='alert_box_slide'>
 		<label>Sales order</label>
 		<p style='font-family:museo' id='sales_order_name_p'></p>
 		<p style='font-family:museo' id='sales_order_date_p'></p>
@@ -69,7 +69,7 @@
 		var sales_order_date	= $('#date_table_p-' + n).html();
 		var sales_order_name	= $('#name_table_p-' + n).html();
 		
-		$('#sales_order_date_p').html(sales_order_date);
+		$('#sales_order_date_p').html(my_date_format(sales_order_date));
 		$('#sales_order_name_p').html(sales_order_name);
 		$('#customer_p').html(customer_data);
 		$('#sales_order_id').val(n);
@@ -84,8 +84,8 @@
 				$.each(response, function(index, sales_order){
 					var name		= sales_order.name;
 					var reference	= sales_order.reference;
-					var sent		= sales_order.sent;
-					var quantity	= sales_order.quantity;
+					var sent		= parseInt(sales_order.sent);
+					var quantity	= parseInt(sales_order.quantity);
 					var pending		= quantity - sent;
 					
 					$('#sales_order_detail_table').append("<tr><td>" + reference + "</td><td>" + name + "</td><td>" + numeral(quantity).format('0,0') + "</td><td>" + numeral(sent).format('0,0') + "</td><td>" + numeral(pending).format('0,0') + "</td></tr>");
@@ -119,7 +119,7 @@
 							var text	= 'Pending';
 						}
 						
-						$('#delivery_order_detail_table').append("<tr><td>" + date + "</td><td>" + name + "</td><td>" + text + "</td></tr>");
+						$('#delivery_order_detail_table').append("<tr><td>" + my_date_format(date) + "</td><td>" + name + "</td><td>" + text + "</td></tr>");
 					});
 					
 					$('#delivery_order_history_table').show();
@@ -128,9 +128,9 @@
 			}
 		});
 		
-		
-		
-		$('#track_sales_order_wrapper').fadeIn();
+		$('#track_sales_order_wrapper').fadeIn(300, function(){
+			$('#track_sales_order_wrapper .alert_box_slide').show("slide", { direction: "right" }, 250);
+		});
 	}
 	
 	$('.alert_close_button').click(function(){
@@ -170,7 +170,7 @@
 						seller				= "<i>Not available</i>";
 					}
 					
-					$('#sales_order_table').append("<tr><td id='date_table_p-" + id + "'>" + date + "</td><td id='name_table_p-" + id + "'>" + name + "<td>" + seller + "</p></td><td id='customer_table_p-" + id + "'><p>" + customer_name +"</p><p>" + customer_address + "</p><p>" + customer_city + "</p></td><td><button type='button' class='button button_default_dark' onclick='track(" + id + ")'><i class='fa fa-search-plus'></i></button></td></tr>");
+					$('#sales_order_table').append("<tr><td id='date_table_p-" + id + "'>" + my_date_format(date) + "</td><td id='name_table_p-" + id + "'>" + name + "<td>" + seller + "</p></td><td id='customer_table_p-" + id + "'><p>" + customer_name +"</p><p>" + customer_address + "</p><p>" + customer_city + "</p></td><td><button type='button' class='button button_default_dark' onclick='track(" + id + ")'><i class='fa fa-search-plus'></i></button></td></tr>");
 				});
 				$('#page').html('');
 				for(i = 1; i <= pages; i++){
@@ -183,4 +183,10 @@
 			}
 		});
 	}
+	
+	$('.slide_alert_close_button').click(function(){
+		$(this).siblings('.alert_box_slide').hide("slide", { direction: "right" }, 250, function(){
+			$(this).parent().fadeOut();
+		});
+	});
 </script>

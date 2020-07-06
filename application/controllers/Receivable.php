@@ -36,4 +36,17 @@ class Receivable extends CI_Controller {
 		header('Content-Type: application/json');
 		echo json_encode($data);
 	}
+	
+	public function view_receivable_by_customer_id()
+	{
+		$customer_id = $this->input->post('id');
+		$this->load->model('Invoice_model');
+		$data['receivable'] = $this->Invoice_model->view_receivable_by_customer_id($customer_id);
+		
+		$this->load->model('Customer_model');
+		$data['customer'] = $this->Customer_model->show_by_id($customer_id);
+		
+		header('Content-Type: application/json');
+		echo json_encode($data);
+	}
 }

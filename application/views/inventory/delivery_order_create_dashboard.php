@@ -70,6 +70,7 @@
 					<th>Name</th>
 					<th>Ordered</th>
 					<th>Sent</th>
+					<th>Stock</th>
 					<th>Quantity</th>
 				</tr>
 				<tbody id='sales_order_table'></tbody>
@@ -196,6 +197,7 @@
 					var reference	= detail.reference;
 					var quantity	= parseFloat(detail.quantity);
 					var sent		= detail.sent;
+					var stock		= detail.stock;
 					
 					var price_list	= parseFloat(detail.price_list);
 					var discount	= parseFloat(detail.discount);
@@ -204,7 +206,7 @@
 					var net_price	= price_list * (100 - discount) / 100;
 					
 					
-					$('#sales_order_table').append("<tr><td>" + reference + "</td><td>" + name + "</td><td>" + numeral(quantity).format('0,0') + "</td><td>" + numeral(sent).format('0,0') + "</td><td><input type='number' class='form-control' name='quantity[" + id + "]' min='0' max='" + maximum + "' onkeyup='change_total()' value='0' id='quantity-" + id + "'><input type='hidden' id='net_price-" + id + "' value='" + net_price + "'></tr>")
+					$('#sales_order_table').append("<tr><td>" + reference + "</td><td>" + name + "</td><td>" + numeral(quantity).format('0,0') + "</td><td>" + numeral(sent).format('0,0') + "</td><td>" + numeral(stock).format('0,0') + "</td><td><input type='number' class='form-control' name='quantity[" + id + "]' min='0' max='" + maximum + "' onkeyup='change_total()' value='0' id='quantity-" + id + "'><input type='hidden' id='net_price-" + id + "' value='" + net_price + "'></tr>")
 				});
 				
 				var receivable_status		= 0;

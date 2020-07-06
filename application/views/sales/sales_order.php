@@ -5,7 +5,7 @@
 	<br>
 	<div class='dashboard_in'>
 		<div class='input_group'>
-			<input type='text' class='form-control' id='search_bar'>
+			<input type='text' class='form-control input-lg' id='search_bar' placeholder="Search sales order">
 			<div class='input_group_append'>
 				<button type='button' class='button button_default_dark' onclick='window.location.href="<?= site_url('Sales_order/create') ?>"'>Create Sales Order</button>
 			</div>
@@ -28,8 +28,8 @@
 	</div>
 </div>
 <div class='alert_wrapper' id='sales_order_wrapper'>
-	<button type='button' class='alert_close_button'>&times </button>
-	<div class='alert_box_default'>
+	<button type='button' class='slide_alert_close_button'>&times </button>
+	<div class='alert_box_slide'>
 		<label>Customer</label>
 		<div class='information_box' id='customer_address_select' style='height:200px'>
 			<label>Detail</label>
@@ -106,8 +106,6 @@
 				$('#sales_order_table').html('');
 				$.each(sales_order_array, function(index, sales_order){
 					var customer_name		= sales_order.customer_name;
-					var customer_address	= sales_order.customer_address;
-					var customer_city		= sales_order.customer_city;
 					var sales_order_date	= sales_order.date;
 					var sales_order_name	= sales_order.name;
 					var sales_order_id		= sales_order.id;
@@ -116,8 +114,38 @@
 						seller		= "<i>Not available</i>";
 					}
 					
-					$('#sales_order_table').append("<tr><td>" + my_date_format(sales_order_date) + "</td><td><label>Name</label><p>" + sales_order_name + "</p><label>Seller</label><p>" + seller + "</p></td><td><p style='font-family:museo'>" + customer_name + "</p><p style='font-family:museo'>" + customer_address + "</p><p style='font-family:museo'>" + customer_city + "</p></td><td><button type='button' class='button button_success_dark' title='View " + sales_order_name + "' onclick='view_sales_order(" + sales_order_id + ")'><i class='fa fa-eye'></i></button></td></tr>");
+					var complete_address		= '';
+					complete_address			+= sales_order.customer_address;
+					var customer_city			= sales_order.customer_city;
+					var customer_number			= sales_order.customer_number;
+					var customer_rt				= sales_order.customer_rt;
+					var customer_rw				= sales_order.customer_rw;
+					var customer_postal			= sales_order.customer_postal_code;
+					var customer_block			= sales_order.customer_block;
+		
+					if(customer_number != null){
+						complete_address	+= ' No. ' + customer_number;
+					}
+					
+					if(customer_block != null){
+						complete_address	+= ' Blok ' + customer_block;
+					}
+				
+					if(customer_rt != '000'){
+						complete_address	+= ' RT ' + customer_rt;
+					}
+					
+					if(customer_rw != '000' && customer_rt != '000'){
+						complete_address	+= ' /RW ' + customer_rw;
+					}
+					
+					if(customer_postal != null){
+						complete_address	+= ', ' + customer_postal;
+					}
+					
+					$('#sales_order_table').append("<tr><td>" + my_date_format(sales_order_date) + "</td><td><label>Name</label><p>" + sales_order_name + "</p><label>Seller</label><p>" + seller + "</p></td><td><p style='font-family:museo'>" + customer_name + "</p><p style='font-family:museo'>" + complete_address + "</p><p style='font-family:museo'>" + customer_city + "</p></td><td><button type='button' class='button button_success_dark' title='View " + sales_order_name + "' onclick='view_sales_order(" + sales_order_id + ")'><i class='fa fa-eye'></i></button></td></tr>");
 				});
+				
 				$('#page').html('');
 				for(i = 1; i <= pages; i++){
 					$('#page').append("<option value='" + i + "'>" + i + "</option>");
@@ -284,7 +312,9 @@
 					$('#warning_text_1').hide();
 				}
 				
-				$('#sales_order_wrapper').fadeIn();
+				$('#sales_order_wrapper').fadeIn(300, function(){
+					$('#sales_order_wrapper .alert_box_slide').show("slide", { direction: "right" }, 250);
+				});
 			}
 		});
 	}
@@ -302,7 +332,9 @@
 		});
 	}
 	
-	$('.alert_close_button').click(function(){
-		$(this).parent().fadeOut();
+	$('.slide_alert_close_button').click(function(){
+		$(this).siblings('.alert_box_slide').hide("slide", { direction: "right" }, 250, function(){
+			$(this).parent().fadeOut();
+		});
 	});
 </script>

@@ -3,8 +3,8 @@
 		<p style='font-family:museo'><a href='<?= site_url('Sales') ?>' title='Sales'><i class='fa fa-briefcase'></i></a> /<a href='<?= site_url('Customer') ?>'>Customer </a>/ Customer plafond</p>
 	</div>
 	<br>
-	<div  class='dashboard_in'>
-		<input type='text' class='form-control' id='search_bar'>
+	<div class='dashboard_in'>
+		<input type='text' class='form-control input-lg' id='search_bar' placeholder="Search customer">
 		<br>
 		<table class='table table-bordered'>
 			<tr>
@@ -23,8 +23,8 @@
 </div>
 
 <div class='alert_wrapper' id='plafond_raise_wrapper'>
-	<button type='button' class='alert_close_button'>&times </button>
-	<div class='alert_box_default'>
+	<button type='button' class='slide_alert_close_button'>&times </button>
+	<div class='alert_box_slide'>
 		<h3 style='font-family:bebasneue'>Plafond change form</h3>
 		<form action='<?= site_url('Customer/submit_plafond') ?>' method='POST' id='plafond_form'>
 			<input type='hidden' id='customer_id' name='id'>
@@ -168,12 +168,16 @@
 				
 				$('#customer_id').val(customer_id);
 				
-				$('#plafond_raise_wrapper').fadeIn();
+				$('#plafond_raise_wrapper').fadeIn(300, function(){
+					$('#plafond_raise_wrapper .alert_box_slide').show("slide", { direction: "right" }, 250);
+				});
 			}
 		});
 	}
 	
-	$('.alert_close_button').click(function(){
-		$(this).parent().fadeOut();
+	$('.slide_alert_close_button').click(function(){
+		$(this).siblings('.alert_box_slide').hide("slide", { direction: "right" }, 250, function(){
+			$(this).parent().fadeOut();
+		});
 	});
 </script>

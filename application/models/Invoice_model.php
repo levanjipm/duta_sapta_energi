@@ -247,4 +247,17 @@ class Invoice_model extends CI_Model {
 			
 			return $result;
 		}
+		
+		public function view_receivable_by_customer_id($customer_id)
+		{
+			$query = $this->db->query("SELECT invoice.*, COALESCE(a.value,0) as paid FROM invoice LEFT JOIN
+				(
+					SELECT SUM(value) as value, invoice_id FROM receivable GROUP BY invoice_id
+				) as a
+				ON a.invoice_id = invoice.id
+				WHERE invoice.is_done = '0' AND invoice.customer_id = '$customer_id'");
+			$result = $query->result();
+			
+			return $result;
+		}
 }

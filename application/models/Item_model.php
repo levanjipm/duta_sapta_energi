@@ -84,6 +84,7 @@ class Item_model extends CI_Model {
 						FROM price_list
 						GROUP BY price_list.item_id
 					) AND (item.name LIKE '%$filter%' OR reference LIKE '%$filter%') 
+					ORDER BY item.reference
 					LIMIT $limit OFFSET $offset");
 			} else {
 				$query = $this->db->query("
@@ -94,6 +95,7 @@ class Item_model extends CI_Model {
 						SELECT MAX(price_list.id)
 						FROM price_list
 						GROUP BY price_list.item_id)
+					ORDER BY item.reference
 					LIMIT $limit OFFSET $offset");
 			}
 			
@@ -163,7 +165,8 @@ class Item_model extends CI_Model {
 							SELECT MAX(price_list.id)
 							FROM price_list
 							GROUP BY price_list.item_id
-						) AND price_list.item_id IN (" . implode (',',$ids) . ")");
+						) AND price_list.item_id IN (" . implode (',',$ids) . ")
+						ORDER BY item.reference");
 				$item = $query->result();
 				
 				return $item;

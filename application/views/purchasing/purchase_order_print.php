@@ -73,8 +73,10 @@
 <div class='row' style='margin:0'>	
 	<div class='col-sm-10 col-sm-offset-1' style='background-color:white;padding:20px' id='printable'>
 		<div class='row'>
-			<div class='col-xs-10 col-xs-offset-1'><img src='<?= base_url('assets/Logo.png') ?>' style='width:100%'></img></div>
+			<div class='col-xs-2 col-xs-offset-5'><img src='<?= base_url('assets/logo_dark.png') ?>' style='width:100%'></img></div>
 		</div>
+		<hr style='border-bottom:2px solid #e2bc53;margin-bottom:1px'>
+		<hr style='border-bottom:5px solid #2b2f38;margin-top:1px'>
 		<br><br>
 		<table class='table table-bordered'>
 			<tr>

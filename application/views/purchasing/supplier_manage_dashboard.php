@@ -1,10 +1,10 @@
 <div class='dashboard'>
 	<div class='dashboard_head'>
-		<p style='font-family:museo'><a href='<?= site_url('Inventory') ?>' title='Inventory'><i class='fa fa-briefcase'></i></a> /Delivery order</p>
+		<p style='font-family:museo'><a href='<?= site_url('Purchasing') ?>' title='Purchasing'><i class='fa fa-briefcase'></i></a> /Supplier</p>
 	</div>
 	<div class='dashboard_in'>
 		<div class='input_group'>
-			<input type='text' class='form-control' id='search_bar'>
+			<input type='text' class='form-control input-lg' id='search_bar' placeholder="Search supplier">
 			<div class='input_group_append'>
 				<button type='button' class='button button_default_dark' id='add_supplier_button'>Add supplier</button>
 			</div>
@@ -25,8 +25,8 @@
 </div>
 
 <div class='alert_wrapper' id='add_supplier_wrapper'>
-	<button class='alert_close_button'>&times </button>
-	<div class='alert_box_default'>
+	<button class='slide_alert_close_button'>&times </button>
+	<div class='alert_box_slide'>
 		<form action='<?= site_url('Supplier/insert_new_supplier/') ?>' method='POST'>
 			<h2 style='font-family:bebasneue'>Add supplier form</h2>
 			<hr>
@@ -86,8 +86,8 @@
 </div>
 
 <div class='alert_wrapper' id='edit_supplier_wrapper'>
-	<button class='alert_close_button'>&times </button>
-	<div class='alert_box_default'>
+	<button class='slide_alert_close_button'>&times </button>
+	<div class='alert_box_slide'>
 		<form action='<?= site_url('Supplier/update_supplier/') ?>' method='POST'>
 			<h2 style='font-family:bebasneue'>Add supplier form</h2>
 			<hr>
@@ -138,7 +138,9 @@
 	refresh_view();
 	
 	$('#add_supplier_button').click(function(){
-		$('#add_supplier_wrapper').fadeIn();
+		$('#add_supplier_wrapper').fadeIn(300, function(){
+			$('#add_supplier_wrapper .alert_box_slide').show("slide", { direction: "right" }, 250);
+		});
 	});
 	
 	function open_delete_confirmation(n){
@@ -195,13 +197,17 @@
 				$('#edit_supplier_phone').val(phone);
 				$('#edit_supplier_pic').val(pic_name);
 				
-				$('#edit_supplier_wrapper').fadeIn();
+				$('#edit_supplier_wrapper').fadeIn(300, function(){
+					$('#edit_supplier_wrapper .alert_box_slide').show("slide", { direction: "right" }, 250);
+				});
 			}
 		})
 	};
 	
-	$('.alert_close_button').click(function(){
-		$(this).parents('.alert_wrapper').fadeOut();
+	$('.slide_alert_close_button').click(function(){
+		$(this).siblings('.alert_box_slide').hide("slide", { direction: "right" }, 250, function(){
+			$(this).parent().fadeOut();
+		});
 	});
 	
 	function refresh_view(page = $('#page').val())

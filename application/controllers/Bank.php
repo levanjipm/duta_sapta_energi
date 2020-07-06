@@ -256,7 +256,7 @@ class Bank extends CI_Controller {
 		$type			= $this->input->post('type');
 		$opponent_id	= $this->input->post('id');
 		$petty_cash		= $this->input->post('petty_cash_transfer');
-		if($petty_cash	== 'on'){		
+		if($petty_cash	== 'on'){
 			$opponent_id	= 1;
 			$type			= 'other';
 		}

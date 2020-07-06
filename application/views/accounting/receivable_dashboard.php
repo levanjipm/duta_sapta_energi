@@ -71,6 +71,21 @@
 	</div>
 	<br>
 	<div class='dashboard_in'>
+		<div class='row'>
+			<div class='col-xs-4'>
+				<select class='form-control' id='category'>
+					<option value='1'>Show all</option>
+					<option value='1'>Past due date</option>
+					<option value='2'>Less than 30 days</option>
+					<option value='3'>30 - 45 days</option>
+					<option value='4'>45 - 60 days</option>
+					<option value='5'>More than 60 days</option>
+				</select>
+			</div>
+			<div class='col-xs-12'>
+				<hr>
+			</div>
+		</div>
 		<div id='receivable_view_pane'>
 			<div id='receivable_chart'></div>
 			<div id='receivable_grid'>
@@ -92,9 +107,29 @@
 		</div>
 	</div>
 </div>
+
+<div class='alert_wrapper' id='receivable_detail_wrapper'>
+	<button class='slide_alert_close_button'>&times;</button>
+	<div class='alert_box_slide'>
+		<p><strong><span id='customer_name_p'></span></strong></p>
+		<p id='customer_address_p'></p>
+		<p id='customer_city_p'></p>
+		<hr>
+		
+		<table class='table table-bordered'>
+			<tr>
+				<th>Date</th>
+				<th>Name</th>
+				<th>Value</th>
+				<th>Paid</th>
+				<th>Balance</th>
+			</tr>
+			<tbody id='receivable_table'></tbody>
+		</table>
+	</div>
+</div>
 <script>
-	function adjust_grid()
-	{
+	function adjust_grid(){
 		var width		= $('#grid_wrapper').width();
 		var each		= (width) / 10;
 		$('.grid').width(each);
@@ -110,11 +145,16 @@
 		};
 	};
 	
-	adjust_dashboard();
-	refresh_view();
+	$(document).ready(function(){
+		adjust_dashboard();
+		refresh_view();
+	});
+	
+	$(window).resize(function(){
+		adjust_grid();
+	});
 
-	function adjust_dashboard()
-	{
+	function adjust_dashboard(){
 		var dashboard_height		= $('.dashboard').height();
 		var dashboard_head_height	= $('.dashboard_head').height();
 		var minimum_height			= dashboard_height - dashboard_head_height - 60;
@@ -144,9 +184,9 @@
 					var city		= value.city;
 					if(receivable > max_receivable){
 						max_receivable = receivable;
-						$('#receivable_chart').prepend("<div class='row' id='receivable-" + id + "'><div class='col-sm-3 col-xs-3 center'><p><strong>" + name + "</strong>, " + city + "</p></div><div class='col-sm-7 col-xs-6'><div class='receivable_line' id='receive-" + id + "'></div></div><div class='col-sm-2 col-xs-3 center' style='text-align:right'><p>Rp. " + numeral(receivable).format('0,0.00') + "</p></div></div><br>");
+						$('#receivable_chart').prepend("<div class='row' id='receivable-" + id + "'><div class='col-sm-3 col-xs-3 center'><p><strong>" + name + "</strong>, " + city + "</p></div><div class='col-sm-7 col-xs-6'><div class='receivable_line' id='receive-" + id + "' onclick='view_receivable_detail(" + id + ")'></div></div><div class='col-sm-2 col-xs-3 center' style='text-align:right'><p>Rp. " + numeral(receivable).format('0,0.00') + "</p></div></div><br>");
 					} else {
-						$('#receivable_chart').append("<div class='row' id='receivable-" + id + "'><div class='col-sm-3 col-xs-3 center'><p>" + name + ", " + city + "</p></div><div class='col-sm-7 col-xs-6'><div class='receivable_line' id='receive-" + id + "'></div></div><div class='col-sm-2 col-xs-3 center' style='text-align:right'><p>Rp. " + numeral(receivable).format('0,0.00') + "</p></div></div><br>");
+						$('#receivable_chart').append("<div class='row' id='receivable-" + id + "'><div class='col-sm-3 col-xs-3 center'><p>" + name + ", " + city + "</p></div><div class='col-sm-7 col-xs-6'><div class='receivable_line' id='receive-" + id + "' onclick='view_receivable_detail(" + id + ")'></div></div><div class='col-sm-2 col-xs-3 center' style='text-align:right'><p>Rp. " + numeral(receivable).format('0,0.00') + "</p></div></div><br>");
 					}
 				});
 				
@@ -163,5 +203,77 @@
 		setTimeout(function(){
 			adjust_grid();
 		},300);
-	}		
+	}
+
+	function view_receivable_detail(n){
+		$.ajax({
+			url:'<?= site_url('Receivable/view_receivable_by_customer_id') ?>',
+			data:{
+				id: n
+			},
+			type:'POST',
+			success:function(response){
+				var customer = response.customer;
+				var customer_name = customer.name;
+				var complete_address = customer.address;
+				var customer_number = customer.number;
+				var customer_block = customer.block;
+				var customer_rt = customer.rt;
+				var customer_rw = customer.rw;
+				var customer_city = customer.city;
+				var customer_postal = customer.postal;
+				
+				if(customer_number != null){
+					complete_address	+= ' No. ' + customer_number;
+				}
+				
+				if(customer_block != null){
+					complete_address	+= ' Blok ' + customer_block;
+				}
+			
+				if(customer_rt != '000'){
+					complete_address	+= ' RT ' + customer_rt;
+				}
+				
+				if(customer_rw != '000' && customer_rt != '000'){
+					complete_address	+= ' /RW ' + customer_rw;
+				}
+				
+				if(customer_postal != null){
+					complete_address	+= ', ' + customer_postal;
+				}
+				
+				$('#customer_name_p').html(customer_name);
+				$('#customer_address_p').html(complete_address);
+				$('#customer_city_p').html(customer_city);
+				
+				$('#receivable_table').html('');
+				var receivable_array = response.receivable;
+				$.each(receivable_array, function(index, receivable){
+					var invoice_name = receivable.name;
+					var today_date = new date();
+					var date = receivable.date;
+					var paid = parseFloat(receivable.paid);
+					var value = parseFloat(receivable.value);
+					
+					var date_diff = today_date - date;
+					console.log(date_diff);
+					
+					var residue = value - paid;
+					
+					$('#receivable_table').append("<tr><td>" + my_date_format(date) + "</td><td>" + invoice_name + "</td><td>Rp. " + numeral(value).format('0,0.00') + "</td><td>Rp. " + numeral(paid).format('0,0.00') + "</td><td>Rp. " + numeral(residue).format('0,0.00') + "</td></tr>");
+				});
+
+				$('#receivable_detail_wrapper').fadeIn(300, function(){
+					$('#receivable_detail_wrapper .alert_box_slide').show("slide", { direction: "right" }, 250);
+				});
+			}
+		});
+	}
+	
+	$('.slide_alert_close_button').click(function(){
+		$(this).siblings('.alert_box_slide').hide("slide", { direction: "right" }, 250, function(){
+			$(this).parent().fadeOut();
+		});
+	});
 </script>

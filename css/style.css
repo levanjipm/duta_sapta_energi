@@ -57,10 +57,6 @@ html, body{
 	transition:0.3s all ease;
 }
 
-.button_departments:hover .button_departments>img{
-	filter:none!important;
-}
-
 .sidenav_bar{
 	background-color:#2b2f38;
 	position:fixed;

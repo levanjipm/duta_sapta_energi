@@ -20,14 +20,14 @@
 			<tbody id='item_table'></tbody>
 		</table>
 		<select class='form-control' id='page' style='width:100px'>
-			<option value='1'>1</option>
+			<option value='1' selected>1</option>
 		</select>
 	</div>
 </div>
 
 <div class='alert_wrapper' id='add_item_wrapper'>
-	<button class='alert_close_button'>&times</button>
-	<div class='alert_box_default'>
+	<button class='slide_alert_close_button'>&times</button>
+	<div class='alert_box_slide'>
 		<form action='<?= site_url('Item/insert_new_item/') ?>' method='POST'>
 		<h2 style='font-family:bebasneue'>Add item form</h2>
 		<hr>
@@ -71,8 +71,8 @@
 </div>
 
 <div class='alert_wrapper' id='edit_item_wrapper'>
-	<button type='button' class='alert_close_button'>&times </button>
-	<div class='alert_box_default'>
+	<button type='button' class='slide_alert_close_button'>&times </button>
+	<div class='alert_box_slide'>
 		<form action='<?= site_url('Item/update_item') ?>' method='POST'>
 			<h3 style='font-family:bebasneue'>Edit item</h3>
 			<hr>
@@ -110,7 +110,9 @@
 	});
 	
 	$('#add_item_button').click(function(){
-		$('#add_item_wrapper').fadeIn();
+		$('#add_item_wrapper').fadeIn(300, function(){
+			$('#add_item_wrapper .alert_box_slide').show("slide", { direction: "right" }, 250);
+		});
 	});
 	
 	function open_edit_form(item_id){
@@ -136,13 +138,17 @@
 				$('#price_list_edit').val(price_list);
 				$('#item_type').val(type);
 				
-				$('#edit_item_wrapper').fadeIn();
+				$('#edit_item_wrapper').fadeIn(300, function(){
+					$('#edit_item_wrapper .alert_box_slide').show("slide", { direction: "right" }, 250);
+				});
 			}
 		})
 	};
 	
-	$('.alert_close_button').click(function(){
-		$(this).parent().fadeOut();
+	$('.slide_alert_close_button').click(function(){
+		$(this).siblings('.alert_box_slide').hide("slide", { direction: "right" }, 250, function(){
+			$(this).parent().fadeOut();
+		});
 	});
 	
 	function update_view(page = $('#page').val()){

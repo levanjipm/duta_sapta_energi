@@ -13,8 +13,8 @@
 		
 		<label>Customer</label>
 		<p style='font-family:museo'><?= $sales_order->customer_name ?></p>
-		<p style='font-family:museo'><?= $sales_order->customer_address ?></p>
-		<p style='font-family:museo'><?= $sales_order->customer_city ?></p>
+		<p style='font-family:museo'><?= $sales_order->address ?></p>
+		<p style='font-family:museo'><?= $sales_order->city ?></p>
 		
 		<table class='table table-bordered'>
 			<tr>

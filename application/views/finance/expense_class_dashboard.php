@@ -19,8 +19,8 @@
 </div>
 
 <div class='alert_wrapper' id='add_class_wrapper'>
-	<button type='button' class='alert_close_button'>&times </button>
-	<div class='alert_box_default'>
+	<button type='button' class='slide_alert_close_button'>&times </button>
+	<div class='alert_box_slide'>
 		<h2 style='font-family:bebasneue'>Create new class form</h2>
 		<hr>
 		<form action='<?= site_url('Expense/add_class') ?>' method='POST' id='add_class_form'>
@@ -42,8 +42,8 @@
 </div>
 
 <div class='alert_wrapper' id='edit_class_wrapper'>
-	<button type='button' class='alert_close_button'>&times </button>
-	<div class='alert_box_default'>
+	<button type='button' class='slide_alert_close_button'>&times </button>
+	<div class='alert_box_slide'>
 		<h2 style='font-family:bebasneue'>Edit class form</h2>
 		<hr>
 		<form action='<?= site_url('Expense/update_class') ?>' method='POST' id='edit_class_form'>
@@ -67,7 +67,9 @@
 </div>
 <script>
 	$('#create_account_button').click(function(){
-		$('#add_class_wrapper').fadeIn();
+		$('#add_class_wrapper').fadeIn(300, function(){
+			$('#add_class_wrapper .alert_box_slide').show("slide", { direction: "right" }, 250);
+		});
 	});
 	
 	$('.alert_close_button').click(function(){
@@ -150,8 +152,16 @@
 					$('#parent_update_id').attr('required', true);
 				}
 				
-				$('#edit_class_wrapper').fadeIn();
+				$('#edit_class_wrapper').fadeIn(300, function(){
+					$('#edit_class_wrapper .alert_box_slide').show("slide", { direction: "right" }, 250);
+				});
 			}
 		});
 	}
+	
+	$('.slide_alert_close_button').click(function(){
+		$(this).siblings('.alert_box_slide').hide("slide", { direction: "right" }, 250, function(){
+			$(this).parent().fadeOut();
+		});
+	});
 </script>

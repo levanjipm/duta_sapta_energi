@@ -142,13 +142,15 @@ class Sales_order_detail_model extends CI_Model {
 		
 		public function show_by_code_sales_order_id($id)
 		{
-			$this->db->select('sales_order.id, item.name, item.reference, price_list.price_list, sales_order.quantity, sales_order.discount, sales_order.sent');
-			$this->db->from('sales_order');
-			$this->db->join('price_list', 'price_list.id = sales_order.price_list_id');
-			$this->db->join('item', 'price_list.item_id = item.id');
-			$this->db->where('sales_order.code_sales_order_id',$id);
-			$query 	= $this->db->get();
-			
+			$query = $this->db->query("SELECT sales_order.id, item.name, item.reference, price_list.price_list, sales_order.quantity, stock_table.stock, sales_order.sent, sales_order.discount
+				FROM sales_order JOIN price_list ON price_list.id = sales_order.price_list_id
+				JOIN item ON price_list.item_id = item.id
+				LEFT JOIN (
+					SELECT SUM(residue) as stock, item_id FROM stock_in GROUP BY item_id
+				) as stock_table
+				ON item.id = stock_table.item_id
+				WHERE sales_order.code_sales_order_id = '$id'
+			");			
 			$items	= $query->result();
 			
 			return $items;
