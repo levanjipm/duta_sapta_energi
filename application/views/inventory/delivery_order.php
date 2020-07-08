@@ -76,6 +76,8 @@
 <div class='alert_wrapper' id='view_delivery_order_wrapper'>
 	<button type='button' class='slide_alert_close_button'>&times </button>
 	<div class='alert_box_slide'>
+		<h3 style='font-family:bebasneue'>Confirm delivery order</h3>
+		<hr>
 		<label>Customer</label>
 		<p id='customer_name'></p>
 		<p id='customer_address'></p>
@@ -97,6 +99,8 @@
 		</table>
 		
 		<div style='padding:2px 10px;background-color:#ffc107;width:100%;display:none;' id='warning_text'><p style='font-family:museo'><i class='fa fa-exclamation-triangle'></i> Warning! Insufficient stock detected.</p></div><br>
+		
+		<div style='padding:2px 10px;background-color:#ff4507;width:100%;display:none;' id='warning_text_2'><p style='font-family:museo'><i class='fa fa-exclamation-triangle'></i> Delivery order cannot be proceed. Please ask accounting department to create invoice first.</p></div><br>
 		
 		<form action='<?= site_url('Delivery_order/confirm') ?>' method='POST' id='delivery_order_form'>
 			<input type='hidden' id='delivery_order_id' name='id'>
@@ -147,6 +151,18 @@
 					$('#warning_text').show();
 				} else {
 					$('#warning_text').hide();
+				}
+				
+				var invoice = response.invoice;
+				var invoice_id = invoice.invoice_id;
+				var invoice_method = invoice.invoice_method;
+				
+				if(invoice_id != null && invoice_method == 1){
+					$('#warning_text_2').show();
+					$('#send_delivery_order_button').attr('disabled', true);
+				} else {
+					$('#warning_text_2').hide();
+					$('#send_delivery_order_button').attr('disabled', false);
 				}
 				
 				$('#view_delivery_order_wrapper').fadeIn(300, function(){

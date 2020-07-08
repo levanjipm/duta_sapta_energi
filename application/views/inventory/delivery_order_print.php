@@ -38,36 +38,30 @@
 <div class='row' style='margin:0'>	
 	<div class='col-sm-10 col-sm-offset-1' style='background-color:white;padding:20px' id='printable'>
 		<div class='row' style='border-bottom:2px solid black;padding:15px'>
-			<div class='col-xs-2'><img src='<?= base_url('assets/Logo.png') ?>' style='width:90%'></img></div>
-			<div class='col-xs-4'>
+			<div class='col-xs-1'><img src='<?= base_url('assets/Logo.png') ?>' style='width:90%'></img></div>
+			<div class='col-xs-5' style='padding:0'>
 				<h3 style='margin-top:0'><b>PT Duta Sapta Energi</b></h3>
 				<p style='margin:0'>Jalan Babakan Hantap no. 23</p>
 				<p style='margin:0'>Bandung, 40281</p>
 				<p style='margin:0'><b>Ph. </b>(022) 7102225</p>
 				<p style='margin:0'><b>Email </b>marketing@dutasaptaenergi.com</p>
 			</div>
-			<div class='col-xs-6'>
-				<h3 style='text-align:right'>SURAT JALAN</h3>
-			</div>
-		</div>
-		<div class='row'>
-			<div class='col-xs-6'>
-				<div style='line-height:1'>
+			<div class='col-xs-4 col-xs-offset-2'>
+				<div style='line-height:1;text-align:left'>
+					<p>Bandung, <?= date('d M Y',strtotime($general->date));?></p>
 					<p>Kepada Yth.</p>
 					<p><b><?= $general->customer_name ?></b></p>
 					<p><?= $complete_address ?></p>
 					<p><?= $general->city ?></p>
 				</div>
 			</div>
-			<div class='col-xs-6' style='text-align:right'>
-				<p style='margin:0'>Bandung, <?= date('d M Y',strtotime($general->date));?></p>
-				<p style='margin:0'><strong>Nomor Surat Jalan : </strong><?= $general->name ?></p>
-				<p style='margin:0'><strong>Nomor Order Penjualan : </strong><?= $general->sales_order_name ?></p>
-			</div>
 		</div>
 		<br><br>
 		<div class='row'>
 			<div class='col-xs-12'>
+				<p style='margin:5px'><strong>Nomor Surat Jalan : </strong><?= $general->name ?></p>
+				<p style='margin:5px'><strong>Nomor Order Penjualan : </strong><?= $general->sales_order_name ?></p>
+				<br>
 				<table class='table'>
 					<tr>
 						<th>Referensi</th>

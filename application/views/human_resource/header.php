@@ -29,6 +29,7 @@
 		<a href='<?= site_url('Users') ?>'><button><p style='font-family:museo'>Users</p></button></a>
 		<a href='<?= site_url('Users/salary_slip_dashboard') ?>'><button><p style='font-family:museo'>Salary Slip</p></button></a>
 		<a href='<?= site_url('Users/absentee') ?>'><button><p style='font-family:museo'>Absentee</p></button></a>
+		<a href='<?= site_url('Benefits') ?>'><button><p style='font-family:museo'>Benefits</p></button></a>
 	</div>
 </div>
 <script>

@@ -65,8 +65,11 @@
 					var customer_name			= delivery_order.customer_name;
 					var customer_address		= delivery_order.customer_address;
 					var customer_city			= delivery_order.customer_city;
+					var is_sent					= delivery_order.is_sent;
 					
-					$('#delivery_order_tbody').append("<tr><td>" + my_date_format(date) + "</td><td>" + delivery_order_name + "</td><td><p>" + customer_name + "</p><p>" + customer_address + "</p><p>" + customer_city + "</p></td><td><button class='button button_default_dark' onclick='submit_form(" + delivery_order_id + ")'><i class='fa fa-long-arrow-right'></i></button></td>");
+					if(is_sent == 1){
+						$('#delivery_order_tbody').append("<tr><td>" + my_date_format(date) + "</td><td>" + delivery_order_name + "</td><td><p>" + customer_name + "</p><p>" + customer_address + "</p><p>" + customer_city + "</p></td><td><button class='button button_default_dark' onclick='submit_form(" + delivery_order_id + ")'><i class='fa fa-long-arrow-right'></i></button></td>");
+					}
 				});
 				var pages					= response.pages;
 				for(i = 1; i <= pages; i++){

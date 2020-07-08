@@ -12,6 +12,12 @@
 			<div class='col-md-3 col-sm-4 col-xs-6'>
 				<a href='<?= site_url('Inventory_case/found_goods') ?>'>Found goods</a>
 			</div>
+			<div class='col-md-3 col-sm-4 col-xs-6'>
+				<a href='<?= site_url('Inventory_case/dematerialized') ?>'>Dematerialized goods</a>
+			</div>
+			<div class='col-md-3 col-sm-4 col-xs-6'>
+				<a href='<?= site_url('Inventory_case/materialized') ?>'>Materialized goods</a>
+			</div>
 		</div>
 	</div>
 </div>

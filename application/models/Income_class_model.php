@@ -112,4 +112,21 @@ class Income_class_model extends CI_Model {
 			
 			$this->db->insert($this->table_income, $db_item);
 		}
+		
+		public function get_by_id($id)
+		{
+			$this->db->where('id', $id);
+			$query = $this->db->get($this->table_income);
+			$result = $query->row();
+			
+			return $result;
+		}
+		
+		public function update_class_by_id($id, $name, $description)
+		{
+			$this->db->set('name', $name);
+			$this->db->set('description', $description);
+			$this->db->where('id', $id);
+			$this->db->update($this->table_income);
+		}
 }

@@ -114,14 +114,27 @@ class Sales_order_close_request_model extends CI_Model {
 		
 		public function get_unconfirmed()
 		{
-			$query = $this->db->query("SELECT code_sales_order_close_request.*, a.name as requested_by, customer.*, code_sales_order.date as sales_order_date, code_sales_order.name as sales_order_name
+			$query = $this->db->query("SELECT code_sales_order_close_request.*, a.name as created_by, b.name as seller, customer.name, customer.address, customer.city, customer.block, customer.number, customer.rt, customer.rw, code_sales_order.date as sales_order_date, code_sales_order.name as sales_order_name
 			FROM code_sales_order_close_request
 			JOIN code_sales_order ON code_sales_order_close_request.code_sales_order_id = code_sales_order.id
 			JOIN customer ON code_sales_order.customer_id = customer.id
-			JOIN (SELECT id, name FROM users) as a ON a.id = code_sales_order_close_request.requested_by = a.id
+			JOIN (SELECT id, name FROM users) as a ON a.id = code_sales_order_close_request.created_by
+			LEFT JOIN (SELECT id, name FROM users) as b ON b.id = code_sales_order.seller
 			WHERE code_sales_order_close_request.is_approved IS NULL
 			ORDER BY code_sales_order_close_request.date");
 			$result = $query->result();
 			return $result;
+		}
+		
+		public function update_status($status, $id, $approval)
+		{
+			$this->db->set('is_approved', $status);
+			$this->db->set('approved_by', $approval);
+			$this->db->set('approved_date', date('Y-m-d'));
+			$this->db->where('id', $id);
+			
+			$this->db->update($this->table_close_sales_order);
+			
+			return $this->db->affected_rows();
 		}
 }

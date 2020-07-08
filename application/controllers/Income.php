@@ -45,4 +45,26 @@ class Income extends CI_Controller {
 		$this->Income_class_model->insert_from_post();
 		redirect(site_url('Income/class'));
 	}
+	
+	public function get_by_id()
+	{
+		$this->load->model('Income_class_model');
+		$id = $this->input->post('id');
+		$data = $this->Income_class_model->get_by_id($id);
+		
+		header('Content-Type: application/json');
+		echo json_encode($data);
+	}
+	
+	public function update_class()
+	{
+		$id = $this->input->post('id');
+		$name = $this->input->post('name');
+		$description = $this->input->post('information');
+		
+		$this->load->model('Income_class_model');
+		$this->Income_class_model->update_class_by_id($id, $name, $description);
+		
+		redirect(site_url('Income/class'));
+	}
 }

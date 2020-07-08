@@ -26,6 +26,7 @@
 	<button type='button' class='slide_alert_close_button'>&times </button>
 	<div class='alert_box_slide'>
 		<h3 style='font-family:bebasneue'>Plafond change form</h3>
+		<hr>
 		<form action='<?= site_url('Customer/submit_plafond') ?>' method='POST' id='plafond_form'>
 			<input type='hidden' id='customer_id' name='id'>
 			

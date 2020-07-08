@@ -127,6 +127,9 @@ class Delivery_order extends CI_Controller {
 	public function show_by_code_delivery_order_id($id)
 	{
 		$this->load->model('Delivery_order_detail_model');
+		$this->load->model('Delivery_order_model');
+		
+		$data['invoice'] = $this->Delivery_order_model->show_by_id($id);
 		$data['general'] = $this->Delivery_order_detail_model->show_by_code_delivery_order_id($id);
 		
 		$delivery_order_array 	= $this->Delivery_order_detail_model->get_batch_by_code_delivery_order_id($id);

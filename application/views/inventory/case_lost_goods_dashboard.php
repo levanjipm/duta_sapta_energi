@@ -59,8 +59,8 @@
 </div>
 
 <div class='alert_wrapper' id='lost_goods_form_validation'>
-	<button type='button' class='alert_close_button'>&times</button>
-	<div class='alert_box_default'>
+	<button type='button' class='slide_alert_close_button'>&times;</button>
+	<div class='alert_box_slide'>
 		<h3 style='font-family:bebasneue'>Add lost goods case</h3>
 		<hr>
 		
@@ -136,8 +136,10 @@
 		});
 	}
 	
-	$('.alert_full_close_button').click(function(){
-		$(this).parents().find('.alert_wrapper').fadeOut();
+	$('.slide_alert_close_button').click(function(){
+		$('#view_delivery_order_wrapper .alert_box_slide').hide("slide", { direction: "right" }, 250, function(){
+			$('#view_delivery_order_wrapper').fadeOut();
+		});
 	});
 	
 	function add_to_cart(n){
@@ -202,13 +204,14 @@
 			
 			var date		= $('#case_date').val();
 			$('#date_p').html(my_date_format(date));
-			
-			$('#lost_goods_form_validation').fadeIn();
+			$('#lost_goods_form_validation').fadeIn(300, function(){
+				$('#lost_goods_form_validation .alert_box_slide').show("slide", { direction: "right" }, 250);
+			});
 		};
 	});
 	
-	$('.alert_close_button').click(function(){
-		$(this).parent().fadeOut();
+	$('.alert_full_close_button').click(function(){
+		$(this).parent().parent().parent().parent().fadeOut();
 	});
 	
 	$('#confirm_button').click(function(){
@@ -217,5 +220,11 @@
 		if($('#lost_goods_form').valid()){
 			$('#lost_goods_form').submit();
 		};
+	});
+	
+	$('.slide_alert_close_button').click(function(){
+		$(this).siblings('.alert_box_slide').hide("slide", { direction: "right" }, 250, function(){
+			$(this).parent().fadeOut();
+		});
 	});
 </script>

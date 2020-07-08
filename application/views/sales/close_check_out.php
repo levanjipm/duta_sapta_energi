@@ -178,7 +178,7 @@
 			</tr>
 		</table>
 		
-		<a href='<?= site_url('Sales_order') ?>'><button type='button' class='button button_default_dark'><i class='fa fa-long-arrow-left'></i></button></a>
+		<a href='<?= site_url('Sales_order/track') ?>'><button type='button' class='button button_default_dark'><i class='fa fa-long-arrow-left'></i></button></a>
 	</div>
 </div>
 <script>

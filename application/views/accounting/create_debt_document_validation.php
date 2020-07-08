@@ -80,8 +80,8 @@
 	</div>
 </div>
 <div class='alert_wrapper' id='debt_document_validation_wrapper'>
-	<button type='button' class='alert_close_button'>&times </button>
-	<div class='alert_box_default'>
+	<button type='button' class='slide_alert_close_button'>&times </button>
+	<div class='alert_box_slide'>
 		<h2 style='font-family:bebasneue'>Debt document</h2>
 		<hr>
 		<label>Date</label>
@@ -177,7 +177,9 @@
 		$('#tax_document_name_p').html(tax_document);
 		$('#grand_total_debt_p').html('Rp. ' + numeral(total_price).format('0,0.00'));
 		
-		$('#debt_document_validation_wrapper').fadeIn();
+		$('#debt_document_validation_wrapper').fadeIn(300, function(){
+			$('#debt_document_validation_wrapper .alert_box_slide').show("slide", { direction: "right" }, 250);
+		});
 	}
 	
 	$('.alert_close_button').click(function(){
@@ -186,5 +188,11 @@
 	
 	$('#submit_button').click(function(){
 		$('#debt_document_form').submit();
+	});
+	
+	$('.slide_alert_close_button').click(function(){
+		$(this).siblings('.alert_box_slide').hide("slide", { direction: "right" }, 250, function(){
+			$(this).parent().fadeOut();
+		});
 	});
 </script>

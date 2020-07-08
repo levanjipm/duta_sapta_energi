@@ -251,17 +251,16 @@
 				var receivable_array = response.receivable;
 				$.each(receivable_array, function(index, receivable){
 					var invoice_name = receivable.name;
-					var today_date = new date();
+					var todayDate = new Date().toISOString().slice(0,10);
 					var date = receivable.date;
 					var paid = parseFloat(receivable.paid);
 					var value = parseFloat(receivable.value);
 					
-					var date_diff = today_date - date;
-					console.log(date_diff);
+					var date_diff = Math.ceil((Date.parse(todayDate) - Date.parse(date))/(1000 * 60 * 60 * 24));
 					
 					var residue = value - paid;
 					
-					$('#receivable_table').append("<tr><td>" + my_date_format(date) + "</td><td>" + invoice_name + "</td><td>Rp. " + numeral(value).format('0,0.00') + "</td><td>Rp. " + numeral(paid).format('0,0.00') + "</td><td>Rp. " + numeral(residue).format('0,0.00') + "</td></tr>");
+					$('#receivable_table').append("<tr><td>" + my_date_format(date) + " (" + numeral(date_diff).format('0,0') + " days)</td><td>" + invoice_name + "</td><td>Rp. " + numeral(value).format('0,0.00') + "</td><td>Rp. " + numeral(paid).format('0,0.00') + "</td><td>Rp. " + numeral(residue).format('0,0.00') + "</td></tr>");
 				});
 
 				$('#receivable_detail_wrapper').fadeIn(300, function(){

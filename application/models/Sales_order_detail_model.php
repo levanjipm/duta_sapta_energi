@@ -259,4 +259,11 @@ class Sales_order_detail_model extends CI_Model {
 		{
 			$this->db->update_batch($this->table_sales_order, $sales_order_array, 'id');
 		}
+		
+		public function update_status_by_code_sales_order_id($sales_order_id)
+		{
+			$this->db->set('status', 1);
+			$this->db->where('code_sales_order_id', $sales_order_id);
+			$this->db->update($this->table_sales_order);
+		}
 }

@@ -5,10 +5,10 @@
 	<br>
 	<div class='dashboard_in'>
 		<div class='input_group'>
-			<input type='text' class='form-control' id='search_bar'>
-			<div class='input_group_append'>
-				<a href='<?= site_url('Debt/create_dashboard') ?>'><button type='button' class='button button_default_dark'>Create debt document</button></a>
-				<a href='<?= site_url('Debt/create_blank_dashboard') ?>'><button type='button' class='button button_default_dark'>Create blank debt document</button></a>
+			<input type='text' class='form-control input-lg' id='search_bar'>
+			<div class='input-group-append'>
+				<a href='<?= site_url('Debt/create_dashboard') ?>' role='button' class='button button_default_dark'>Create</a>
+				<a href='<?= site_url('Debt/create_blank_dashboard') ?>' role='button' class='button button_default_dark'>Create blank </a>
 			</div>
 		</div>
 		<br>
@@ -28,8 +28,8 @@
 </div>
 
 <div class='alert_wrapper' id='view_debt_wrapper'>
-	<button type='button' class='alert_close_button'>&times </button>
-	<div class='alert_box_default'>
+	<button type='button' class='slide_alert_close_button'>&times </button>
+	<div class='alert_box_slide'>
 		<form action='<?= site_url('Debt/confirm') ?>' method='POST'>
 			<input type='hidden' id='purchase_invoice_id' name='id'>
 			<h2 style='font-family:bebasneue'>Debt document</h2>
@@ -139,7 +139,7 @@
 				$('#supplier_name_p').html(supplier_name);
 				$('#supplier_address_p').html(supplier_address);
 				$('#supplier_city_p').html(supplier_city);
-				
+				$('#good_receipt_table').html('');
 				$.each(document_array, function(index, value){
 					var document_date			= value.date;
 					var document_name			= value.name;
@@ -167,7 +167,9 @@
 				
 				$('#good_receipt_table').append("<tr><td colspan='5'></td><td>Total</td><td>Rp. " + numeral(total_value).format('0,0.00') + "</td></tr>");
 				
-				$('#view_debt_wrapper').fadeIn();
+				$('#view_debt_wrapper').fadeIn(300, function(){
+					$('#view_debt_wrapper .alert_box_slide').show("slide", { direction: "right" }, 250);
+				});
 			}
 		});
 	}
@@ -187,7 +189,9 @@
 		});
 	});
 	
-	$('.alert_close_button').click(function(){
-		$(this).parent().fadeOut();
+	$('.slide_alert_close_button').click(function(){
+		$(this).siblings('.alert_box_slide').hide("slide", { direction: "right" }, 250, function(){
+			$(this).parent().fadeOut();
+		});
 	});
 </script>	

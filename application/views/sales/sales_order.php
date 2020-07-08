@@ -56,6 +56,7 @@
 		<label>Sales order</label>
 		<p style='font-family:museo' id='sales_order_name'></p>
 		<p style='font-family:museo' id='taxing_name_p'></p>
+		<p style='font-family:museo' id='invoicing_method_p'></p>
 		
 		<label>Item</label>
 		<table class='table table-bordered'>
@@ -202,6 +203,12 @@
 					var taxing_name		= 'Taxable sales';
 				}
 				
+				if(invoicing_method == 1){
+					var invoicing_method_text = "Retail method";
+				} else {
+					var invoicing_method_text = "Coorporate method";
+				}
+				
 				var complete_address		= '';
 				complete_address			+= sales_order_array.address;
 				var customer_city			= sales_order_array.city;
@@ -248,6 +255,8 @@
 				var customer_array			= response.customer;
 				var plafond					= parseFloat(customer_array.plafond);
 				
+				
+				$('#invoicing_method_p').html(invoicing_method_text);
 				$('#customer_plafond_p').html(numeral(plafond).format('0,0.00'));
 				$('#receivable_value_p').html(numeral(receivable_value).format('0,0.00'));
 				

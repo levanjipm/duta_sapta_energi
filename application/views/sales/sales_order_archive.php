@@ -123,6 +123,8 @@
 				
 				$.each(sales_orders, function(index, sales_order){
 					var seller					= sales_order.seller;
+					var is_approved				= sales_order.is_approved;
+					var approved_date			= sales_order.approved_date;
 					
 					if(seller	== null){
 						seller		= "<i>Not available</i>";
@@ -164,7 +166,11 @@
 					if(is_confirm == 0){
 						$('#archive_table').append("<div class='row archive_row'><div class='col-md-3 col-sm-3 col-xs-4'><p><strong>" + sales_order_name + "</strong></p><p>" + seller + "</p></div><div class='col-md-3 col-sm-3 col-xs-3'><p><strong>" + customer_name + "</strong></p><p>" + complete_address + "</p><p>" + customer_city + "</p></div><div class='col-md-4 col-sm-5 col-xs-5 col-md-offset-2 col-sm-offset-1 col-xs-offset-2'><p style='display:inline-block'>" + my_date_format(sales_order_date) + " <strong>|</strong> </p> <button type='button' class='button button_transparent' onclick='open_view(" + sales_order_id + ")' title='View " + sales_order_name + "'><i class='fa fa-eye'></i></button></div>");
 					} else {
-						$('#archive_table').append("<div class='row archive_row'><div class='col-md-3 col-sm-3 col-xs-4'><p><strong>" + sales_order_name + "</strong></p><p>" + seller + "</p></div><div class='col-md-3 col-sm-3 col-xs-3'><p><strong>" + customer_name + "</strong></p><p>" + complete_address + "</p><p>" + customer_city + "</p></div><div class='col-md-4 col-sm-5 col-xs-5 col-md-offset-2 col-sm-offset-1 col-xs-offset-2'><p style='display:inline-block'>" + my_date_format(sales_order_date) + " <strong>|</strong> </p> <button type='button' class='button button_transparent' onclick='open_view(" + sales_order_id + ")' title='View " + sales_order_name + "'><i class='fa fa-eye'></i></button> <button type='button' class='button button_verified' title='Confirmed'><i class='fa fa-check'></i></button></div>");
+						if(is_approved == 1){
+							$('#archive_table').append("<div class='row archive_row'><div class='col-md-3 col-sm-3 col-xs-4'><p><strong>" + sales_order_name + "</strong></p><p>" + seller + "</p></div><div class='col-md-3 col-sm-3 col-xs-3'><p><strong>" + customer_name + "</strong></p><p>" + complete_address + "</p><p>" + customer_city + "</p></div><div class='col-md-4 col-sm-5 col-xs-5 col-md-offset-2 col-sm-offset-1 col-xs-offset-2'><p style='display:inline-block'>" + my_date_format(sales_order_date) + " <strong>|</strong> </p> <button type='button' class='button button_transparent' onclick='open_view(" + sales_order_id + ")' title='View " + sales_order_name + "'><i class='fa fa-eye'></i></button> <button type='button' class='button button_verified' title='Confirmed'><i class='fa fa-check'></i></button> <button class='button button_verified_false' title='Closed on " + my_date_format(approved_date) + "'><i class='fa fa-times'></i></button></div>");
+						} else {
+							$('#archive_table').append("<div class='row archive_row'><div class='col-md-3 col-sm-3 col-xs-4'><p><strong>" + sales_order_name + "</strong></p><p>" + seller + "</p></div><div class='col-md-3 col-sm-3 col-xs-3'><p><strong>" + customer_name + "</strong></p><p>" + complete_address + "</p><p>" + customer_city + "</p></div><div class='col-md-4 col-sm-5 col-xs-5 col-md-offset-2 col-sm-offset-1 col-xs-offset-2'><p style='display:inline-block'>" + my_date_format(sales_order_date) + " <strong>|</strong> </p> <button type='button' class='button button_transparent' onclick='open_view(" + sales_order_id + ")' title='View " + sales_order_name + "'><i class='fa fa-eye'></i></button> <button type='button' class='button button_verified' title='Confirmed'><i class='fa fa-check'></i></button></div>");
+						}
 					}
 				});
 				

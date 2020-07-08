@@ -117,4 +117,53 @@ class User_model extends CI_Model {
 			
 			return $user;
 		}
+		
+		public function get_users($offset = 0, $term = "", $limit = 10)
+		{
+			if($term != ""){
+				$this->db->like('name', $term, 'both');
+			}
+			$this->db->limit($limit, $offset);
+			$query = $this->db->get($this->table_user);
+			$result = $query->result();
+			
+			return $result;
+		}
+		
+		public function count_users($term = "")
+		{
+			if($term != ""){
+				$this->db->like('name', $term, 'both');
+			}
+			$query = $this->db->get($this->table_user);
+			$result = $query->num_rows();
+			
+			return $result;
+		}
+		
+		public function update_status($status, $id)
+		{
+			$this->db->set('is_active', $status);
+			$this->db->where('id', $id);
+			
+			$this->db->update($this->table_user);
+		}
+		
+		public function insert_from_post()
+		{
+			$this->id					= "";
+			$this->name					= $this->input->post('name');
+			$this->address				= $this->input->post('address');
+			$this->bank_account			= $this->input->post('bank_account');
+			$this->is_active			= 1;
+			$this->entry_date			= date('Y-m-d');
+			$this->password				= md5($this->input->post('password'));
+			$this->image_url			= null;
+			$this->access_level			= $this->input->post('access_level');
+			$this->email				= $this->input->post('email');
+			$db_item 					= $this->get_db_from_stub($this);
+			$db_result 					= $this->db->insert($this->table_user, $db_item);
+
+			return $this->db->affected_rows();
+		}
 }

@@ -24,9 +24,9 @@
 </div>
 
 <div class='alert_wrapper' id='add_class_wrapper'>
-	<button type='button' class='alert_close_button'>&times </button>
-	<div class='alert_box_default'>
-		<h2 style='font-family:bebasneue'>Create new class form</h2>
+	<button type='button' class='slide_alert_close_button'>&times </button>
+	<div class='alert_box_slide'>
+		<h3 style='font-family:bebasneue'>Create new class form</h2>
 		<hr>
 		<form action='<?= site_url('Income/add_class') ?>' method='POST' id='add_class_form'>
 			<label>Name</label>
@@ -40,7 +40,28 @@
 		</form>
 	</div>
 </div>
+
+<div class='alert_wrapper' id='edit_class_wrapper'>
+	<button type='button' class='slide_alert_close_button'>&times;</button>
+	<div class='alert_box_slide'>
+		<h3 style='font-family:bebasneue'>Edit class form</h2>
+		<hr>
+		<form action='<?= site_url('Income/update_class') ?>' method='POST' id='edit_class_form'>
+			<input type='hidden' id='income_id' name='id'>
+			
+			<label>Name</label>
+			<input type='text' class='form-control' id='income_name' name='name' required>
+			
+			<label>Information</label>
+			<textarea class='form-control' name='information' id='income_information' required style='resize:none'></textarea>
+			<br>
+			<button class='button button_default_dark'><i class='fa fa-long-arrow-right'></i></button>
+		</form>
+	</div>
+</div>
 <script>
+	$('#edit_class_form').validate();
+	
 	$('#search_bar').change(function(){
 		refresh_view(1);
 	});
@@ -49,7 +70,9 @@
 		refresh_view();
 	});
 	
-	refresh_view();
+	$(document).ready(function(){
+		refresh_view();
+	});
 	
 	function refresh_view(page = $('#page').val()){
 		$.ajax({
@@ -85,11 +108,37 @@
 		});
 	}
 	
+	function open_edit_form(income_id){
+		$.ajax({
+			url:'<?= site_url('Income/get_by_id') ?>',
+			data:{
+				id:income_id
+			},
+			type:'POST',
+			success:function(response){
+				var id = response.id;
+				var name = response.name;
+				var description = response.description;
+				
+				$('#income_id').val(id);
+				$('#income_name').val(name);
+				$('#income_information').val(description);
+				$('#edit_class_wrapper').fadeIn(300, function(){
+					$('#edit_class_wrapper .alert_box_slide').show("slide", { direction: "right" }, 250);
+				});
+			}
+		});
+	}
+	
 	$('#create_account_button').click(function(){
-		$('#add_class_wrapper').fadeIn();
+		$('#add_class_wrapper').fadeIn(300, function(){
+			$('#add_class_wrapper .alert_box_slide').show("slide", { direction: "right" }, 250);
+		});
 	});
 	
-	$('.alert_close_button').click(function(){
-		$(this).parent().fadeOut();
+	$('.slide_alert_close_button').click(function(){
+		$(this).siblings('.alert_box_slide').hide("slide", { direction: "right" }, 250, function(){
+			$(this).parent().fadeOut();
+		});
 	});
 </script>

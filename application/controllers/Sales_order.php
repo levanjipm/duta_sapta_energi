@@ -334,4 +334,44 @@ class Sales_order extends CI_Controller {
 		header('Content-Type: application/json');
 		echo json_encode($data);
 	}
+	
+	public function get_close_request_by_id()
+	{
+		$this->load->model('Sales_order_close_request_model');
+		$this->load->model('Sales_order_model');
+		$this->load->model('Sales_order_detail_model');
+		
+		$id = $this->input->get('id');
+		$data['general'] = $this->Sales_order_close_request_model->show_by_id($id);
+		
+		$code_sales_order_id = $data['general']->code_sales_order_id;
+		$data['sales_order'] = $this->Sales_order_model->show_by_id($code_sales_order_id);
+		
+		$data['items'] = $this->Sales_order_detail_model->show_by_code_sales_order_id($code_sales_order_id);
+		
+		header('Content-Type: application/json');
+		echo json_encode($data);
+	}
+	
+	public function update_close_status()
+	{
+		$status = $this->input->post('status');
+		$id = $this->input->post('id');
+		$user_id	= $this->session->userdata('user_id');
+		$this->load->model('User_model');
+		$data['user_login'] = $this->User_model->show_by_id($user_id);
+		if($data['user_login']->access_level > 2){
+			$this->load->model('Sales_order_close_request_model');
+			$data['general'] = $this->Sales_order_close_request_model->show_by_id($id);
+			
+			$code_sales_order_id = $data['general']->code_sales_order_id;
+			
+			$result = $this->Sales_order_close_request_model->update_status($status, $id, $user_id);
+			
+			if($result == 1 && $status == 1){
+				$this->load->model('Sales_order_detail_model');
+				$this->Sales_order_detail_model->update_status_by_code_sales_order_id($code_sales_order_id);
+			}
+		}
+	}
 }
