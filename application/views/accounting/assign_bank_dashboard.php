@@ -63,7 +63,6 @@
 			},
 			type:'GET',
 			success:function(response){
-				var current_page	= $('#page').val();
 				var pages 			= response.pages;
 				var bank_data		= response.banks;
 				$('#bank_table').html('');
@@ -77,7 +76,7 @@
 				});
 				
 				for(i = 1; i <= pages; i++){
-					if(i == current_page){
+					if(i == page){
 						$('#page').append("<option value='" + i + "' selected>" + i + "</option>");
 					} else {
 						$('#page').append("<option value='" + i + "'>" + i + "</option>");

@@ -21,5 +21,20 @@ class Benefits extends CI_Controller {
 		
 		$this->load->view('head');
 		$this->load->view('human_resource/header', $data);
+		$this->load->view('human_resource/benefit_dashboard');
+	}
+	
+	public function get_benefits()
+	{
+		$page = $this->input->get('page');
+		$term = $this->input->get('term');
+		$offset = ($page - 1) * 10;
+		
+		$this->load->model('Benefit_model');
+		$data['benefits'] = $this->Benefit_model->get_benefits($offset, $term);
+		$data['pages'] = $this->Benefit_model->count_benefits($term);
+		
+		header('Content-Type: application/json');
+		echo json_encode($data);
 	}
 }

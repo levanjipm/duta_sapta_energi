@@ -46,8 +46,6 @@ class Item extends CI_Controller {
 	{
 		$this->load->model('Item_model');
 		$this->Item_model->update_from_post();
-		
-		redirect(site_url('Item'));
 	}
 	
 	public function shopping_cart_view()
@@ -93,11 +91,12 @@ class Item extends CI_Controller {
 		$data['pages'] = ceil($this->Item_model->count_page() / 25);
 	}
 	
-	public function item_edit_form()
+	public function get_item_by_id()
 	{
 		$item_id		= $this->input->get('id');
 		$this->load->model('Item_model');
-		$data	= $this->Item_model->select_by_id($item_id);
+		
+		$data	= $this->Item_model->get_item_by_id($item_id);
 		
 		header('Content-Type: application/json');
 		echo json_encode($data);

@@ -4,221 +4,192 @@
 	</div>
 	<br>
 	<div class='dashboard_in'>
-<?php
-	if(!empty($areas)){
-?>
-		<div id='area_table_wrapper'>
-			<button type='button' class='button button_default_dark' id='add_area_button'>Add new area</button>
-			<br><br>
-			<table class='table table-bordered'>
-				<tr>
-					<th>Area name</th>
-					<th>Customer count</th>
-					<th>Action</th>
-				</tr>
-<?php
-		foreach($areas as $area){
-?>
-				<tr>
-					<td id='area_name-<?= $area->id ?>'><?= $area->name ?></td>
-					<td><?= number_format(max(0,$area->customer)) ?></td>
-					<td>
-						<button type='button' class='button button_success_dark' onclick='edit_area(<?= $area->id ?>)'><i class='fa fa-pencil'></i></button>
-<?php
-	if($area->customer == 0){
-?>
-						<button type='button' class='button button_danger_dark' onclick='delete_area(<?= $area->id ?>)'><i class='fa fa-trash'></i></button>
-<?php
-	} else {
-?>
-						<button type='button' class='button button_danger_dark' disabled><i class='fa fa-trash'></i></button>
-<?php
-	}
-?>
-						<button type='button' class='button button_default_dark' onclick='view_customer_by_area(<?= $area->id ?>, 1)'><i class='fa fa-eye'></i></button>
-					</td>
-				</tr>
-<?php
-		}
-?>
-			</table>
-<?php
-	}
-?>
+		<div class='input_group'>
+			<input type='text' class='form-control input-lg' id='search_bar'>
+			<div class='input_group_append'>
+				<button class='button button_default_dark' id='add_area_button'>Add area</button>
+			</div>
 		</div>
-		<div id='area_customer_wrapper' style='display:none'>
-			<input type='hidden' id='area_id'>
-			<button type='button' class='button button_danger_dark' onclick='change_view()' title='Back'><i class='fa fa-long-arrow-left'></i></button>
-			<h2 style='font-family:bebasneue' id='area_name_p'></h2>
-			<hr>
-			<input type='text' class='form-control' id='search_bar'>
-			<br>
-			<table class='table table-bordered'>
-				<tr>
-					<th>Name</th>
-					<th>Address</th>
-					<th>City</th>
-				</tr>
-				<tbody id='customer_table'></tbody>
-			</table>
-			
-			<select class='form-control' id='page' style='width:100px'>
-				<option value='1'>1</option>
-			</select>
-		</div>
+		<br>
+		<table class='table table-bordered'>
+			<tr>
+				<th>Area name</th>
+				<th>Action</th>
+			</tr>
+			<tbody id='area_table'></tbody>
+		</table>
+		
+		<select class='form-control' id='page' style='width:100px'>
+			<option value='1'>1<option>
+		</select>
 	</div>
 </div>
+
 <div class='alert_wrapper' id='add_area_wrapper'>
-	<button class='alert_close_button'>&times </button>
-	<div class='alert_box_default'>
-		<h2 style='font-family:bebasneue'>Insert area</h2>
+	<button class='slide_alert_close_button'>&times;</button>
+	<div class='alert_box_slide'>
+		<h3 style='font-family:bebasneue'>Insert area</h3>
 		<hr>
-		<form action='<?= site_url('Area/insert_new_area') ?>' method='POST'>
+		<form id='insert_area_form'>
 			<label>Area name</label>
-			<input type='text' class='form-control' name='area' required>
+			<input type='text' class='form-control' id='area' required>
+			<div style='padding:2px 10px;background-color:#ffc107;width:100%;display:none;' id='error_insert_area'><p style='font-family:museo'><i class='fa fa-exclamation-triangle'></i> Insert data failed.</p></div><br>
 			
-			<br>
-			<button class='button button_default_dark'><i class='fa fa-long-arrow-right'></i></button>
+			<button class='button button_default_dark' type='button' id='insert_area_button'><i class='fa fa-long-arrow-right'></i></button>
 		</form>
 	</div>
 </div>
 
 <div class='alert_wrapper' id='edit_area_wrapper'>
-	<button class='alert_close_button'>&times </button>
-	<div class='alert_box_default'>
+	<button class='slide_alert_close_button'>&times;</button>
+	<div class='alert_box_slide'>
 		<h2 style='font-family:bebasneue'>Edit area</h2>
 		<hr>
-		<form action='<?= site_url('Area/update_area') ?>' method='POST'>
-			<input type='hidden' name='id' id='area_id'>
+		<form id='edit_area_form'>
+			<input type='hidden' id='area_id'>
 			<label>Area name</label>
 			<input type='text' class='form-control' name='name' id='area_name' required>
+			<div style='padding:2px 10px;background-color:#ffc107;width:100%;display:none;' id='error_update_area'><p style='font-family:museo'><i class='fa fa-exclamation-triangle'></i> Insert data failed.</p></div><br>
 			
-			<br>
-			<button class='button button_default_dark'><i class='fa fa-long-arrow-right'></i></button>
+			<button class='button button_default_dark' type='button' id='edit_area_button'><i class='fa fa-long-arrow-right'></i></button>
 		</form>
 	</div>
 </div>
 
-<div class='alert_wrapper' id='delete_area_wrapper'>
-	<div class='alert_box_confirm'>
-		<form action='<?= site_url('Area/delete') ?>' method='POST'>
-			<input type='hidden' id='area_delete_id' name='id'>
-			<img src='<?= base_url('assets/exclamation.png') ?>' style='width:40%'></img>
-			<br><br>
-			<h4 style='font-family:museo'>Are you sure?</h4>
-			<button type='button' class='button button_danger_dark' id='close_notif_button'>Check again</button>
-			<button class='button button_default_dark'>Confirm</button>
-		</form>
-	</div>
-</div>
 <script>
-	function change_view(){
-		$('#area_customer_wrapper').fadeOut(300);
-		setTimeout(function(){
-			$('#area_table_wrapper').fadeIn()
-		}, 300);
-	}
-	
-	$('#page').change(function(){
-		var id	= $('#area_id').val();
-		view_customer_by_area(id);
+	$(document).ready(function(){
+		refresh_view();
 	});
 	
-	function view_customer_by_area(n, page = $('#page').val()){
-		var id			= n;
-		var area_name	= $('#area_name-' + id).text();
-		$('#area_id').val(id);
-		$('#area_name_p').html(area_name);
+	$('#page').change(function(){
+		refresh_view();
+	});
+	
+	$('#search_bar').change(function(){
+		refresh_view(1);
+	});
+	
+	function refresh_view(page = $('#page').val()){
 		$.ajax({
-			url:'<?= site_url('Area/view_customer') ?>',
+			url:'<?= site_url('Area/get_areas') ?>',
 			data:{
-				id:n,
-				page:page,
-				term:$('#search_bar').val()
+				page: page,
+				term: $('#search_bar').val()
 			},
 			success:function(response){
-				$('#customer_table').html('');
-				var customers		= response.customers;
-				var pages			= response.pages;
-				var page			= $('#page').val();
-				
-				$('#page').html('');
-				
-				$.each(customers, function(index, customer){
-					var complete_address		= '';
-					var customer_name			= customer.name;
-					complete_address		+= customer.address;
-					var customer_city			= customer.city;
-					var customer_number			= customer.number;
-					var customer_rt				= customer.rt;
-					var customer_rw				= customer.rw;
-					var customer_postal			= customer.postal_code;
-					var customer_block			= customer.block;
-					var customer_id				= customer.id;
-		
-					if(customer_number != null){
-						complete_address	+= ' No. ' + customer_number;
-					}
-					
-					if(customer_block != null){
-						complete_address	+= ' Blok ' + customer_block;
-					}
-				
-					if(customer_rt != '000'){
-						complete_address	+= ' RT ' + customer_rt;
-					}
-					
-					if(customer_rw != '000' && customer_rt != '000'){
-						complete_address	+= ' /RW ' + customer_rw;
-					}
-					
-					if(customer_postal != null){
-						complete_address	+= ', ' + customer_postal;
-					}
-					
-					$('#customer_table').append("<tr><td>" + customer_name + "</td><td>" + complete_address + "</td><td>" + customer_city + "</td></tr>");
+				var areas = response.areas;
+				$('#area_table').html('');
+				$.each(areas, function(index, area){
+					var name = area.name;
+					var id = area.id;
+					$('#area_table').append("<tr id='area-" + id + "'><td>" + name + "</td><td><button class='button button_success_dark' onclick='open_edit_view(" + id + ")'><i class='fa fa-pencil'></i></button> <button class='button button_danger_dark' onclick='delete_area(" + id + ")'><i class='fa fa-trash'></i></button> <button class='button button_default_dark'><i class='fa fa-eye'></i></button></td></tr>");
 				});
 				
+				var pages = response.pages;
+				$('#page').html('');
 				for(i = 1; i <= pages; i++){
 					if(i == page){
-						$('#page').append("<option value='" + i + "' selected>" + i + "</option");
+						$('#page').append("<option value='" + i + "' selected>" + i + "</option>");
 					} else {
-						$('#page').append("<option value='" + i + "'>" + i + "</option");
+						$('#page').append("<option value='" + i + "'>" + i + "</option>");
 					}
 				}
-				
-				$('#area_table_wrapper').fadeOut(300);
-				setTimeout(function(){
-					$('#area_customer_wrapper').fadeIn()
-				}, 300);
-				
+			}
+		});
+	}
+	
+	$('#insert_area_form').validate();
+	
+	$('#add_area_button').click(function(){
+		$('#add_area_wrapper').fadeIn(300, function(){
+			$('#add_area_wrapper .alert_box_slide').show("slide", { direction: "right" }, 250);
+		});
+	});
+	
+	$("#insert_area_form").submit(function(e){
+		return false;
+	});
+	
+	$('#insert_area_button').click(function(){
+		if($('#insert_area_form').valid()){
+			$.ajax({
+				url:'<?= site_url('Area/insert_new_area') ?>',
+				data:{
+					name: $('#area').val()
+				},
+				type:'POST',
+				success:function(response){
+					if(response == 1){
+						$('#area').val('');
+						$('#add_area_wrapper .slide_alert_close_button').click();
+					} else {
+						$('#error_insert_area').show();
+						setTimeout(function(){
+							$('#error_insert_area').fadeOut()
+						}, 1000);
+					}
+				}
+			});
+		}
+	});
+	
+	function delete_area(n){
+		$.ajax({
+			url:'<?= site_url('Area/delete_area') ?>',
+			data:{
+				id:n
+			},
+			type:'POST',
+			success:function(response){
+				if(response == 1){
+					$('#area-' + n).remove();
+				}
 			}
 		})
 	}
 	
-	$('#add_area_button').click(function(){
-		$('#add_area_wrapper').fadeIn();
-	});
-	
-	$('.alert_close_button').click(function(){
-		$(this).parents('.alert_wrapper').fadeOut();
-	});
-	
-	function edit_area(n){
-		var area_name	= $('#area_name-' + n).text();
-		
-		$('#area_id').val(n);
-		$('#area_name').val(area_name);
-		
-		$('#edit_area_wrapper').fadeIn();
+	function open_edit_view(n){
+		$.ajax({
+			url:'<?= site_url('Area/get_area_by_id') ?>',
+			data:{
+				id: n
+			},
+			success:function(response){
+				var area_name = response.name;
+				$('#area_name').val(area_name);
+				$('#area_id').val(n);
+				$('#edit_area_wrapper').fadeIn(300, function(){
+					$('#edit_area_wrapper .alert_box_slide').show("slide", { direction: "right" }, 250);
+				});
+			}
+		});
 	}
 	
-	function delete_area(n){
-		$('#area_delete_id').val(n);
-		$('#delete_area_wrapper').fadeIn();
-	}
+	$('#edit_area_button').click(function(){
+		$.ajax({
+			url:'<?= site_url('Area/update_area') ?>',
+			data:{
+				id: $('#area_id').val(),
+				name: $('#area_name').val()
+			},
+			type:'POST',
+			success:function(response){
+				if(response == 1){
+					refresh_view();
+					$('#edit_area_wrapper .slide_alert_close_button').click();
+				} else {
+					$('#error_update_area').show();
+					setTimeout(function(){
+						$('#error_update_area').fadeOut()
+					}, 1000);
+				}
+			}	
+		});
+	});
 	
-	$('#close_notif_button').click(function(){
-		$('#delete_area_wrapper').fadeOut();
+	$('.slide_alert_close_button').click(function(){
+		$(this).siblings('.alert_box_slide').hide("slide", { direction: "right" }, 250, function(){
+			$(this).parent().fadeOut();
+		});
 	});
 </script>

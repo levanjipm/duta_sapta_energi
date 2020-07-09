@@ -9,6 +9,8 @@ class Item_model extends CI_Model {
 		public $reference;
 		public $name;
 		public $type;
+		public $is_notified_stock;
+		public $confidence_level;
 		
 		public $price_list;
 
@@ -23,6 +25,8 @@ class Item_model extends CI_Model {
 			$this->reference			= $db_item->reference;
 			$this->name					= $db_item->name;
 			$this->type					= $db_item->type;
+			$this->is_notified_stock	= $db_item->is_notified_stock;
+			$this->confidence_level		= $db_item->confidence_level;
 			
 			return $this;
 		}
@@ -35,6 +39,8 @@ class Item_model extends CI_Model {
 			$db_item->reference			= $this->reference;
 			$db_item->name				= $this->name;
 			$db_item->type				= $this->type;
+			$db_item->is_notified_stock	= $this->is_notified_stock;
+			$db_item->confidence_level	= $this->confidence_level;
 			
 			return $db_item;
 		}
@@ -46,6 +52,8 @@ class Item_model extends CI_Model {
 			$db_item->reference			= $this->reference;
 			$db_item->name				= $this->name;
 			$db_item->type				= $this->type;
+			$db_item->is_notified_stock	= $this->is_notified_stock;
+			$db_item->confidence_level	= $this->confidence_level;
 			
 			return $db_item;
 		}
@@ -58,6 +66,8 @@ class Item_model extends CI_Model {
 			$stub->reference			= $db_item->reference;
 			$stub->name					= $db_item->name;
 			$stub->type					= $db_item->type;
+			$stub->is_notified_stock	= $db_item->is_notified_stock;
+			$stub->confidence_level		= $db_item->confidence_level;
 			
 			return $stub;
 		}
@@ -76,7 +86,7 @@ class Item_model extends CI_Model {
 		{
 			if($filter != ''){
 				$query = $this->db->query("
-					SELECT price_list.id, price_list.price_list, item.name, item.reference, price_list.item_id
+					SELECT price_list.id, price_list.price_list, item.id as item_id, item.reference, item.name
 					FROM price_list
 					JOIN item ON item.id = price_list.item_id
 					WHERE price_list.id IN (
@@ -88,7 +98,7 @@ class Item_model extends CI_Model {
 					LIMIT $limit OFFSET $offset");
 			} else {
 				$query = $this->db->query("
-					SELECT price_list.id, price_list.price_list, item.name, item.reference, price_list.item_id
+					SELECT price_list.id, price_list.price_list, item.id as item_id, item.reference, item.name
 					FROM price_list
 					JOIN item ON item.id = price_list.item_id
 					WHERE price_list.id IN (
@@ -142,6 +152,8 @@ class Item_model extends CI_Model {
 				$this->reference			= $this->input->post('item_reference');
 				$this->name					= $this->input->post('item_name');
 				$this->type					= $this->input->post('class_id');
+				$this->is_notified_stock	= $this->input->post('is_notified');
+				$this->confidence_level		= $this->input->post('confidence_level');
 				
 				$db_item 					= $this->get_db_from_stub();
 				$db_result 					= $this->db->insert($this->table_item, $db_item);
@@ -183,10 +195,10 @@ class Item_model extends CI_Model {
 			}
 		}
 		
-		public function select_by_id($item_id)
+		public function get_item_by_id($item_id)
 		{
 			$query 				= $this->db->query("
-				SELECT price_list.price_list, item.reference, item.name, item.type, item.id
+				SELECT price_list.price_list, item.*
 					FROM price_list
 					JOIN item ON item.id = price_list.item_id
 					WHERE price_list.id IN (
@@ -194,7 +206,7 @@ class Item_model extends CI_Model {
 						FROM price_list
 						GROUP BY item_id
 					) AND item.id = '$item_id'");	
-			$item 				= $query->row();
+			$item 	= $query->row();
 			
 			return $item;
 		}
@@ -222,6 +234,8 @@ class Item_model extends CI_Model {
 			$updated_price_list = $this->input->post('price_list');
 			$name				= $this->input->post('name');
 			$type				= $this->input->post('type');
+			$confidence_level	= $this->input->post('confidence_level');
+			$is_notified_stock	= $this->input->post('is_notified');
 			
 			$query 				= $this->db->query("
 				SELECT price_list.price_list
@@ -243,9 +257,12 @@ class Item_model extends CI_Model {
 			$count = $this->db->count_all_results();
 			
 			if($count == 0){
-				$this->reference	= $reference;
-				$this->name			= $name;
-				$this->type			= $type;
+				$this->reference			= $reference;
+				$this->name					= $name;
+				$this->type					= $type;
+				$this->is_notified_stock	= $is_notified_stock;
+				$this->confidence_level		= $confidence_level;
+				
 				$db_item			= $this->update_db_from_stub();
 					
 				$this->db->where('id', $item_id);

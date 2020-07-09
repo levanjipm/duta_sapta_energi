@@ -65,29 +65,47 @@ class Area_model extends CI_Model {
 			
 		}
 		
-		public function show_limited($offset = 0, $term = '', $limit = 25)
+		public function show_limited($offset = 0, $term = '', $limit = 10)
 		{
-			$query	= $this->db->query("SELECT asdf.customer, `customer_area`.* FROM `customer_area` LEFT JOIN 
-						(SELECT COUNT(customer.id) as customer, area_id FROM customer GROUP BY customer.area_id) AS asdf 
-						ON asdf.area_id = customer_area.id LIMIT $limit OFFSET $offset");
-			$areas	 	= $query->result();
+			if($term != ""){
+				$this->db->like('name', $term, 'both');
+			}
+			$this->db->limit($limit, $offset);
+			$query = $this->db->get($this->table_area);
+			$result = $query->result();
 			
-			return $areas;
+			return $result;
 			
+		}
+		
+		public function count_areas($term = "")
+		{
+			if($term != ""){
+				$this->db->like('name', $term, 'both');
+			}
+			
+			$query = $this->db->get($this->table_area);
+			$result = $query->num_rows();
+			
+			return $result;
 		}
 		
 		public function insert_from_post()
 		{
 			$this->db->select('*');
 			$this->db->from($this->table_area);
-			$this->db->where('name =', $this->input->post('area'));;
+			$this->db->where('name =', $this->input->post('name'));;
 			$item = $this->db->count_all_results();
 			
 			if($item == 0){
 				$this->id					= '';
-				$this->name					= $this->input->post('area');
+				$this->name					= $this->input->post('name');
 				$db_item 					= $this->get_db_from_stub($this);
 				$db_result 					= $this->db->insert($this->table_area, $db_item);
+				
+				return $this->db->affected_rows();
+			} else {
+				return 0;
 			}
 		}
 		
@@ -102,6 +120,10 @@ class Area_model extends CI_Model {
 				$this->db->set('name', $area_name);
 				$this->db->where('id', $area_id);
 				$this->db->update($this->table_area);
+				
+				return $this->db->affected_rows();
+			} else {
+				return 0;
 			}
 		}
 		
@@ -109,5 +131,17 @@ class Area_model extends CI_Model {
 		{
 			$this->db->where('id', $area_id);
 			$this->db->delete($this->table_area);
+			
+			return $this->db->affected_rows();
+		}
+		
+		public function get_area_by_id($area_id)
+		{
+			$this->db->where('id', $area_id);
+			$query = $this->db->get($this->table_area);
+			
+			$result = $query->row();
+			
+			return $result;
 		}
 }

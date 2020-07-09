@@ -11,27 +11,34 @@
 			</div>
 		</div>
 		<br>
-
-		<table class='table table-bordered'>
-			<tr>
-				<th>Date</th>
-				<th>Name</th>
-				<th>Customer</th>
-				<th>Action</th>
-			</tr>
-			<tbody id='sales_order_table'></tbody>
-		</table>
-	
-		<select class='form-control' id='page' style='width:100px'>
-			<option value='1'>1</option>
-		</select>
+		
+		<div id='empty_text'>
+			<p>There is no sales order to be confirmed</p>
+			<a href='<?= site_url('Sales_order/create') ?>'>Create a new one</a>
+		</div>
+		
+		<div id='sales_order_text'>
+			<table class='table table-bordered'>
+				<tr>
+					<th>Date</th>
+					<th>Name</th>
+					<th>Customer</th>
+					<th>Action</th>
+				</tr>
+				<tbody id='sales_order_table'></tbody>
+			</table>
+		
+			<select class='form-control' id='page' style='width:100px'>
+				<option value='1'>1</option>
+			</select>
+		</div>
 	</div>
 </div>
 <div class='alert_wrapper' id='sales_order_wrapper'>
 	<button type='button' class='slide_alert_close_button'>&times </button>
 	<div class='alert_box_slide'>
 		<label>Customer</label>
-		<div class='information_box' id='customer_address_select' style='height:200px'>
+		<div class='information_box' id='customer_address_select' style='height:350px'>
 			<label>Detail</label>
 			<p style='font-family:museo' id='customer_name_p'></p>
 			<p style='font-family:museo' id='customer_address_p'></p>
@@ -102,6 +109,15 @@
 			},
 			success:function(response){
 				var sales_order_array		= response.sales_orders;
+				var i 						= sales_order_array.length;
+				if(i == 0){
+					$('#empty_text').show();
+					$('#sales_order_text').hide();
+				} else {
+					$('#empty_text').hide();
+					$('#sales_order_text').show();
+				}
+				
 				var pages					= response.pages;
 				$('#page').html('');
 				$('#sales_order_table').html('');
@@ -154,7 +170,7 @@
 				
 				setTimeout(function(){
 					refresh_sales_order();
-				},500);
+				},5000);
 			}
 		});
 	}

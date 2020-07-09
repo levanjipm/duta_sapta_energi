@@ -115,6 +115,10 @@ class Item_class_model extends CI_Model {
 				$db_item 					= $this->get_db_from_stub($this);
 				
 				$db_result 					= $this->db->insert($this->table_item_class, $db_item);
+				
+				return $this->db->affected_rows();
+			} else {
+				return 0;
 			}
 		}
 		
@@ -124,8 +128,21 @@ class Item_class_model extends CI_Model {
 			$this->db->delete($this->table_item_class);
 		}
 		
-		public function update_from_post($id, $name, $description)
+		public function get_by_id($id)
 		{
+			$this->db->where('id', $id);
+			$query = $this->db->get($this->table_item_class);
+			$result = $query->row();
+			
+			return $result;
+		}
+		
+		public function update_from_post()
+		{
+			$id				= $this->input->post('id');
+			$name			= $this->input->post('name');
+			$description	= $this->input->post('description');
+			
 			$this->db->select('id');
 			$this->db->from($this->table_item_class);
 			$this->db->where('name', $name);
@@ -137,6 +154,10 @@ class Item_class_model extends CI_Model {
 				$this->db->set('description', $description);
 				$this->db->where('id', $id);
 				$this->db->update($this->table_item_class);
+				
+				return $this->db->affected_rows();
+			} else {
+				return 0;
 			}
 		}
 }

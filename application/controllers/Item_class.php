@@ -25,12 +25,12 @@ class Item_class extends CI_Controller {
 		$this->load->view('sales/item_class_manage_dashboard');
 	}
 	
-	public function insert_new_class()
+	public function insert_from_post()
 	{
 		$this->load->model('Item_class_model');
-		$this->Item_class_model->insert_from_post();
+		$result = $this->Item_class_model->insert_from_post();
 		
-		redirect(site_url('Item_class'));
+		echo $result;
 	}
 	
 	public function delete_item_class()
@@ -41,16 +41,12 @@ class Item_class extends CI_Controller {
 		redirect(site_url('Item_class'));
 	}
 	
-	public function update_item_class()
-	{
-		$id				= $this->input->post('id');
-		$name			= $this->input->post('name');
-		$description	= $this->input->post('description');
-		
+	public function update_from_post()
+	{		
 		$this->load->model('Item_class_model');
-		$this->Item_class_model->update_from_post($id, $name, $description);
+		$result = $this->Item_class_model->update_from_post();
 		
-		redirect(site_url('Item_class'));
+		echo $result;
 	}
 	
 	public function show_items()
@@ -61,6 +57,16 @@ class Item_class extends CI_Controller {
 		$this->load->model('Item_class_model');
 		$data['items']			= $this->Item_class_model->show_items($offset, $term);
 		$data['pages']			= max(0, ceil($this->Item_class_model->count_items($term)/25));
+		
+		header('Content-Type: application/json');
+		echo json_encode($data);
+	}
+	
+	public function get_by_id()
+	{
+		$this->load->model('Item_class_model');
+		$id 	= $this->input->get('id');
+		$data	= $this->Item_class_model->get_by_id($id);
 		
 		header('Content-Type: application/json');
 		echo json_encode($data);

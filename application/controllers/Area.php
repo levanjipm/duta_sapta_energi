@@ -20,19 +20,14 @@ class Area extends CI_Controller {
 		
 		$this->load->view('head');
 		$this->load->view('sales/header', $data);
-		
-		$this->load->model('Area_model');
-		$items = $this->Area_model->show_limited();
-		$data['areas'] = $items;
-		$this->load->view('sales/area_manage_dashboard',$data);
+		$this->load->view('sales/area_manage_dashboard');
 	}
 
 	public function insert_new_area()
 	{
 		$this->load->model('Area_model');
-		$this->Area_model->insert_from_post();
-		
-		redirect('Area');
+		$result = $this->Area_model->insert_from_post();
+		echo $result;
 	}
 	
 	public function update_area()
@@ -41,19 +36,19 @@ class Area extends CI_Controller {
 		$area_name	= $this->input->post('name');
 		
 		$this->load->model('Area_model');
-		$this->Area_model->update_from_post($area_id, $area_name);
+		$result = $this->Area_model->update_from_post($area_id, $area_name);
 		
-		redirect('Area');
+		echo $result;
 	}
 	
-	public function delete()
+	public function delete_area()
 	{
 		$area_id	= $this->input->post('id');
 		
 		$this->load->model('Area_model');
-		$this->Area_model->delete_area($area_id);
+		$result = $this->Area_model->delete_area($area_id);
 		
-		redirect('Area');
+		echo $result;
 	}
 	
 	public function view_customer()
@@ -66,6 +61,31 @@ class Area extends CI_Controller {
 		$this->load->model('Customer_model');
 		$data['customers']		= $this->Customer_model->view_by_area_id($area_id, $offset, $term);
 		$data['pages']			= max(1, ceil($this->Customer_model->count_by_area_id($area_id)/25));
+		
+		header('Content-Type: application/json');
+		echo json_encode($data);
+	}
+	
+	public function get_areas()
+	{
+		$page = $this->input->get('page');
+		$term = $this->input->get('term');
+		$offset = ($page - 1) * 25;
+		
+		$this->load->model('Area_model');
+		$data['areas'] = $this->Area_model->show_limited($offset, $term);
+		
+		$data['pages'] = max(1, ceil($this->Area_model->count_areas($term)/10));
+		
+		header('Content-Type: application/json');
+		echo json_encode($data);
+	}
+	
+	public function get_area_by_id()
+	{
+		$id = $this->input->get('id');
+		$this->load->model('Area_model');
+		$data = $this->Area_model->get_area_by_id($id);
 		
 		header('Content-Type: application/json');
 		echo json_encode($data);

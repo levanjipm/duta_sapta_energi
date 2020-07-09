@@ -73,7 +73,7 @@
 <div class='alert_wrapper' id='edit_item_wrapper'>
 	<button type='button' class='slide_alert_close_button'>&times </button>
 	<div class='alert_box_slide'>
-		<form action='<?= site_url('Item/update_item') ?>' method='POST'>
+		<form id='update_item_form'>
 			<h3 style='font-family:bebasneue'>Edit item</h3>
 			<hr>
 			<input type='hidden' id='item_id' name='id'>
@@ -96,17 +96,31 @@
 	}
 ?>
 			</select>
+			
+			<input type='checkbox' id='is_notified'>
+			<label>Notify if stock reaches minimum</label>
+			
 			<br>
-			<button class='button button_default_dark'><i class='fa fa-long-arrow-right'></i></button>
+			
+			<label>Confidence level</label>
+			<input type='number' class='form-control' min='0' max='99' id='confidence_level'>
+			<br>
+			<button class='button button_default_dark' type='button' id='submit_update_item_button'><i class='fa fa-long-arrow-right'></i></button>
 		</form>
 	</div>
 </div>
 
 <script>
-	update_view();
+	$(document).ready(function(){
+		refresh_view();
+	});
 	
 	$('#page').change(function(){
-		update_view();
+		refresh_view();
+	});
+	
+	$('#search_bar').change(function(){
+		refresh_view(1);
 	});
 	
 	$('#add_item_button').click(function(){
@@ -115,9 +129,42 @@
 		});
 	});
 	
+	$('#update_item_form').validate();
+	
+	$("#update_item_form").submit(function(e){
+		return false;
+	});
+	
+	$('#submit_update_item_button').click(function(){
+		if($('#update_item_form').valid()){
+			if($('#is_notified').attr('checked', true)){
+				var is_notified = 1;
+			} else {
+				var is_notified = 0;
+			}
+			$.ajax({
+				url:'<?= site_url('Item/update_item') ?>',
+				data:{
+					id: $('#item_id').val(),
+					reference: $('#reference_edit').val(),
+					name: $('#description_edit').val(),
+					price_list: $('#price_list_edit').val(),
+					type: $('#item_type').val(),
+					is_notified: is_notified,
+					confidence_level: $('#confidence_level').val()					
+				},
+				type:'POST',
+				success:function(response){
+					refresh_view();
+					$('#edit_item_wrapper .slide_alert_close_button').click();
+				}
+			});
+		};
+	});
+	
 	function open_edit_form(item_id){
 		$.ajax({
-			url:'<?= site_url('Item/item_edit_form') ?>',
+			url:'<?= site_url('Item/get_item_by_id') ?>',
 			type:'GET',
 			data:{
 				id: item_id
@@ -132,6 +179,16 @@
 				var name		= response.name;
 				var price_list	= response.price_list;
 				var type		= response.type;
+				var confidence_level = response.confidence_level;
+				var is_notified_stock = response.is_notified_stock;
+				
+				if(is_notified_stock == 1){
+					$('#is_notified').attr("checked", true);
+				} else {
+					$('#is_notified').attr('checked', false);
+				}
+				
+				$('#confidence_level').val(confidence_level);
 				
 				$('#reference_edit').val(reference);
 				$('#description_edit').val(name);
@@ -151,7 +208,7 @@
 		});
 	});
 	
-	function update_view(page = $('#page').val()){
+	function refresh_view(page = $('#page').val()){
 		$.ajax({
 			url:'<?= site_url('Item/search_item_cart') ?>',
 			data:{
@@ -185,8 +242,4 @@
 			
 		});
 	};
-	
-	$('#search_bar').change(function(){
-		update_view(1);
-	});
 </script>

@@ -153,18 +153,6 @@
 					$('#warning_text').hide();
 				}
 				
-				var invoice = response.invoice;
-				var invoice_id = invoice.invoice_id;
-				var invoice_method = invoice.invoice_method;
-				
-				if(invoice_id != null && invoice_method == 1){
-					$('#warning_text_2').show();
-					$('#send_delivery_order_button').attr('disabled', true);
-				} else {
-					$('#warning_text_2').hide();
-					$('#send_delivery_order_button').attr('disabled', false);
-				}
-				
 				$('#view_delivery_order_wrapper').fadeIn(300, function(){
 					$('#view_delivery_order_wrapper .alert_box_slide').show("slide", { direction: "right" }, 250);
 				});
@@ -202,6 +190,20 @@
 					$('#warning_text').hide();
 					$('#send_delivery_order_button').attr('disabled', false);
 				}
+				var invoice = response.invoice;
+				var invoice_id = invoice.invoice_id;
+				var invoice_method = invoice.invoicing_method;
+				
+				console.log(invoice_id);
+				console.log(invoice_method);
+				
+				if(invoice_id == null && invoice_method == 1){
+					$('#warning_text_2').show();
+					$('#send_delivery_order_button').attr('disabled', true);
+				} else {
+					$('#warning_text_2').hide();
+					$('#send_delivery_order_button').attr('disabled', false);
+				}				
 				
 				$('#view_delivery_order_wrapper').fadeIn(300, function(){
 					$('#view_delivery_order_wrapper .alert_box_slide').show("slide", { direction: "right" }, 250);
@@ -211,8 +213,8 @@
 	}
 	
 	$('.slide_alert_close_button').click(function(){
-		$('#view_delivery_order_wrapper .alert_box_slide').hide("slide", { direction: "right" }, 250, function(){
-			$('#view_delivery_order_wrapper').fadeOut();
+		$(this).siblings('.alert_box_slide').hide("slide", { direction: "right" }, 250, function(){
+			$(this).parent().fadeOut();
 		});
 	});
 </script>

@@ -228,6 +228,7 @@ class Bank_model extends CI_Model {
 						'bank_transaction_major' => $bank_id,
 						'value' => $not_assigned,
 						'is_done' => 0,
+						'account_id' => $account_id
 					);
 					
 					$this->db->insert($this->table_bank, $db_item);
@@ -240,6 +241,7 @@ class Bank_model extends CI_Model {
 						'bank_transaction_major' => $bank_id,
 						'value' => $assigned,
 						'is_done' => 1,
+						'account_id' => $account_id
 					);
 					
 					$this->db->insert($this->table_bank, $db_item);
@@ -330,6 +332,7 @@ class Bank_model extends CI_Model {
 						'bank_transaction_major' => $bank_id,
 						'value' => $not_assigned,
 						'is_done' => 0,
+						'account_id' => $account_id
 					);
 					
 					$this->db->insert($this->table_bank, $db_item);
@@ -342,6 +345,7 @@ class Bank_model extends CI_Model {
 						'bank_transaction_major' => $bank_id,
 						'value' => $assigned,
 						'is_done' => 1,
+						'account_id' => $account_id
 					);
 					
 					$this->db->insert($this->table_bank, $db_item);
