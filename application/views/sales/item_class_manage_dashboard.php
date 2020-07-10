@@ -65,6 +65,25 @@
 	</div>
 </div>
 
+<div class='alert_wrapper' id='delete_class_wrapper'>
+	<div class='alert_box_confirm_wrapper'>
+		<div class='alert_box_confirm_icon'><i class='fa fa-trash'></i></div>
+		<div class='alert_box_confirm'>
+			<input type='hidden' id='delete_class_id'>
+			<h3>Delete confirmation</h3>
+			
+			<p>You are about to delete this data.</p>
+			<p>Are you sure?</p>
+			<button class='button button_default_dark' onclick="$('#delete_class_wrapper').fadeOut()">Cancel</button>
+			<button class='button button_danger_dark' onclick='delete_class()'>Delete</button>
+			
+			<br><br>
+			
+			<p style='font-family:museo;background-color:#f63e21;width:100%;padding:5px;color:white;position:relative;bottom:0;left:0;opacity:0' id='error_delete_item_class'>Deletation failed.</p>
+		</div>
+	</div>
+</div>
+
 <script>
 	$(document).ready(function(){
 		refresh_view();
@@ -86,7 +105,6 @@
 				page:page
 			},
 			success:function(response){
-				console.log(response);
 				$('#item_class_table').html('');
 				var items		= response.items;
 				$.each(items, function(index, item){
@@ -94,11 +112,11 @@
 					var name			= item.name;
 					var description		= item.description;
 					var quantity		= item.quantity;
-					
+
 					if(quantity == 0){
 						$('#item_class_table').append("<tr><td id='name-" + id + "'>" + name + "</td><td id='description-" + id + "'>" + description + "</td>" +
 							"<td><button type='button' class='button button_success_dark' onclick='open_edit_form(" + id + ")'><i class='fa fa-pencil'></i></button> " +
-							"<button type='button' class='button button_danger_dark' onclick='open_delete_confirmation(" + id + ")'><i class='fa fa-trash'></i></button> " +
+							"<button type='button' class='button button_danger_dark' onclick='confirm_delete(" + id + ")'><i class='fa fa-trash'></i></button> " +
 							"<button type='button' class='button button_default_dark'><i class='fa fa-eye'></i></button></td></tr>");
 					} else {
 						$('#item_class_table').append("<tr><td id='name-" + id + "'>" + name + "</td><td id='description-" + id + "'>" + description + "</td>" +
@@ -135,11 +153,6 @@
 		return false;
 	});
 	
-	function open_delete_confirmation(n){
-		$('#delete_confirmation_wrapper').fadeIn();
-		$('#item_class_id').val(n);
-	};
-	
 	$('#add_item_button').click(function(){
 		$.ajax({
 			url:'<?= site_url('Item_class/insert_from_post') ?>',
@@ -154,7 +167,7 @@
 					$('#item_class_description').val('');
 					
 					refresh_view();
-					$('#add_item_class_button .slide_alert_close_button').click();
+					$('#add_item_class_wrapper .slide_alert_close_button').click();
 				} else {
 					$('#error_insert_item_class').show();
 					setTimeout(function(){
@@ -164,22 +177,6 @@
 			}
 		});
 	});
-	
-	function confirm_delete(){
-		$.ajax({
-			url:'<?= site_url('Item_class/delete_item_class') ?>',
-			type:'POST',
-			data:{
-				item_class_id: $('#item_class_id').val()
-			},
-			beforeSend:function(){
-				$('button').attr('disabled',true);
-			},
-			success:function(){
-				window.location.reload();
-			}
-		})
-	};
 	
 	function open_edit_form(n){
 		$.ajax({
@@ -224,6 +221,38 @@
 			}
 		});
 	});
+	
+	function confirm_delete(n){
+		$('#delete_class_id').val(n);
+		$('#delete_class_wrapper').fadeIn();
+	}
+	
+	function delete_class(){
+		if($('#delete_class_id').val() != ""){
+			$.ajax({
+				url:'<?= site_url('Item_class/delete_by_id') ?>',
+				data:{
+					id:$('#delete_class_id').val()
+				},
+				type:'POST',
+				beforeSend:function(){
+					$('button').attr('disabled', true);
+				},
+				success:function(response){
+					$('button').attr('disabled', false);
+					if(response == 1){
+						refresh_view();
+						$('#delete_class_wrapper').fadeOut()
+					} else {
+						$('#error_delete_item_class').fadeTo(250, 1);
+						setTimeout(function(){
+							$('#error_delete_item_class').fadeTo(250, 0);
+						}, 1000);
+					}						
+				}
+			})
+		}
+	}
 	
 	$('.slide_alert_close_button').click(function(){
 		$(this).siblings('.alert_box_slide').hide("slide", { direction: "right" }, 250, function(){

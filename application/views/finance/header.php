@@ -49,7 +49,6 @@
 			<a href='<?= site_url('Income/class') ?>'><button><p style='font-family:museo'>Class</p></button></a>
 			<a href='<?= site_url('Income/report') ?>'><button><p style='font-family:museo'>Report</p></button></a>
 		</div>
-		<a href='<?= site_url('Report/cash_flow_report') ?>'><button><p>Cash flow report</p></button></a>
 	</div>
 </div>
 <script>

@@ -57,16 +57,22 @@
 	</div>
 </div>
 
-<div class='alert_wrapper' id='delete_confirmation_wrapper'>
-	<div class='alert_box_confirm'>
-		<img src='<?= base_url('assets/exclamation.png') ?>' style='width:40%'></img>
-		<br><br>
-		<h4 style='font-family:museo'>Are you sure?</h4>
-		<br><br>
-		<button class='button button_danger_dark' onclick='close_alert("delete_confirmation_wrapper")'>Not sure</button>
-		<button class='button button_success_dark' onclick='confirm_delete()'>Yes</button>
-		
-		<input type='hidden' id='customer_delete_id'>
+<div class='alert_wrapper' id='delete_item_wrapper'>
+	<div class='alert_box_confirm_wrapper'>
+		<div class='alert_box_confirm_icon'><i class='fa fa-trash'></i></div>
+		<div class='alert_box_confirm'>
+			<input type='hidden' id='delete_item_id'>
+			<h3>Delete confirmation</h3>
+			
+			<p>You are about to delete this data.</p>
+			<p>Are you sure?</p>
+			<button class='button button_default_dark' onclick="$('#delete_item_wrapper').fadeOut()">Cancel</button>
+			<button class='button button_danger_dark' onclick='delete_item()'>Delete</button>
+			
+			<br><br>
+			
+			<p style='font-family:museo;background-color:#f63e21;width:100%;padding:5px;color:white;position:relative;bottom:0;left:0;opacity:0' id='error_delete_item'>Deletation failed.</p>
+		</div>
 	</div>
 </div>
 
@@ -208,6 +214,35 @@
 		});
 	});
 	
+	function confirm_delete(n){
+		$('#delete_item_id').val(n);
+		$('#delete_item_wrapper').fadeIn();
+	}
+	
+	function delete_item(){
+		$.ajax({
+			url:'<?= site_url('Item/delete_by_id') ?>',
+			data:{
+				id: $('#delete_item_id').val()
+			},
+			beforeSend:function(){
+				$('button').attr('disabled', true);
+			},
+			success:function(response){
+				$('button').attr('disabled', false);
+				if(response == 1){
+					refresh_view();
+					$('#delete_item_wrapper').fadeOut();
+				} else {
+					$('#error_delete_item').fadeTo(250, 1);
+					setTimeout(function(){
+						$('#error_delete_item').fadeTo(250, 0);
+					}, 1000);
+				}
+			}
+		});
+	}
+	
 	function refresh_view(page = $('#page').val()){
 		$.ajax({
 			url:'<?= site_url('Item/search_item_cart') ?>',
@@ -225,7 +260,7 @@
 					var reference	= item.reference;
 					var description	= item.name;
 					var id			= item.item_id;
-					$('#item_table').append("<tr><td>" + reference + "</td><td>" + description + "</td><td><button type='button' class='button button_success_dark' onclick='open_edit_form(" + id + ")' title='Edit " + reference + "'><i class='fa fa-pencil'></i></button> <button type='button' class='button button_danger_dark' onclick='open_delete_confirmation(" + id + ")' title='Delete " + reference + "'><i class='fa fa-trash'></i></button> <button type='button' class='button button_default_dark' title='View " + reference + "'><i class='fa fa-eye'></i></button>");
+					$('#item_table').append("<tr><td>" + reference + "</td><td>" + description + "</td><td><button type='button' class='button button_success_dark' onclick='open_edit_form(" + id + ")' title='Edit " + reference + "'><i class='fa fa-pencil'></i></button> <button type='button' class='button button_danger_dark' onclick='confirm_delete(" + id + ")' title='Delete " + reference + "'><i class='fa fa-trash'></i></button> <button type='button' class='button button_default_dark' title='View " + reference + "'><i class='fa fa-eye'></i></button>");
 				});
 				
 				

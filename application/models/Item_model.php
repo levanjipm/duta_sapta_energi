@@ -274,4 +274,17 @@ class Item_model extends CI_Model {
 				$this->Price_list_model->insert_from_post($item_id, $updated_price_list);
 			}
 		}
+		
+		public function delete_by_id($id)
+		{
+			$this->db->db_debug = FALSE;
+			$this->db->where('id', $area_id);
+			$this->db->delete($this->table_item);
+			
+			if($this->db->affected_rows() == 1){
+				return 1;
+			} else {
+				return 0;
+			}
+		}
 }

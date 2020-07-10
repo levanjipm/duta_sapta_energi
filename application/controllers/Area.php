@@ -51,21 +51,6 @@ class Area extends CI_Controller {
 		echo $result;
 	}
 	
-	public function view_customer()
-	{
-		$area_id	= $this->input->get('id');
-		$page		= $this->input->get('page');
-		$offset		= ($page - 1) * 25;
-		$term		= $this->input->get('term');
-		
-		$this->load->model('Customer_model');
-		$data['customers']		= $this->Customer_model->view_by_area_id($area_id, $offset, $term);
-		$data['pages']			= max(1, ceil($this->Customer_model->count_by_area_id($area_id)/25));
-		
-		header('Content-Type: application/json');
-		echo json_encode($data);
-	}
-	
 	public function get_areas()
 	{
 		$page = $this->input->get('page');

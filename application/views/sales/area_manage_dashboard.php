@@ -56,6 +56,25 @@
 	</div>
 </div>
 
+<div class='alert_wrapper' id='delete_area_wrapper'>
+	<div class='alert_box_confirm_wrapper'>
+		<div class='alert_box_confirm_icon'><i class='fa fa-trash'></i></div>
+		<div class='alert_box_confirm'>
+			<input type='hidden' id='delete_area_id'>
+			<h3>Delete confirmation</h3>
+			
+			<p>You are about to delete this data.</p>
+			<p>Are you sure?</p>
+			<button class='button button_default_dark' onclick="$('#delete_area_wrapper').fadeOut()">Cancel</button>
+			<button class='button button_danger_dark' onclick='delete_area()'>Delete</button>
+			
+			<br><br>
+			
+			<p style='font-family:museo;background-color:#f63e21;width:100%;padding:5px;color:white;position:relative;bottom:0;left:0;opacity:0' id='error_delete_area'>Deletation failed.</p>
+		</div>
+	</div>
+</div>
+
 <script>
 	$(document).ready(function(){
 		refresh_view();
@@ -82,7 +101,7 @@
 				$.each(areas, function(index, area){
 					var name = area.name;
 					var id = area.id;
-					$('#area_table').append("<tr id='area-" + id + "'><td>" + name + "</td><td><button class='button button_success_dark' onclick='open_edit_view(" + id + ")'><i class='fa fa-pencil'></i></button> <button class='button button_danger_dark' onclick='delete_area(" + id + ")'><i class='fa fa-trash'></i></button> <button class='button button_default_dark'><i class='fa fa-eye'></i></button></td></tr>");
+					$('#area_table').append("<tr id='area-" + id + "'><td>" + name + "</td><td><button class='button button_success_dark' onclick='open_edit_view(" + id + ")'><i class='fa fa-pencil'></i></button> <button class='button button_danger_dark' onclick='confirm_delete(" + id + ")'><i class='fa fa-trash'></i></button> <button class='button button_default_dark'><i class='fa fa-eye'></i></button></td></tr>");
 				});
 				
 				var pages = response.pages;
@@ -133,16 +152,27 @@
 		}
 	});
 	
-	function delete_area(n){
+	function confirm_delete(n){
+		$('#delete_area_id').val(n);
+		$('#delete_area_wrapper').fadeIn();
+	}
+	
+	function delete_area(){
 		$.ajax({
 			url:'<?= site_url('Area/delete_area') ?>',
 			data:{
-				id:n
+				id:$('#delete_area_id').val()
 			},
 			type:'POST',
 			success:function(response){
 				if(response == 1){
-					$('#area-' + n).remove();
+					refresh_view();
+					$('#delete_area_wrapper').fadeOut();
+				} else {
+					$('#error_delete_area').fadeTo(250, 1);
+					setTimeout(function(){
+						$('#error_delete_area').fadeTo(250, 0);
+					}, 1000);
 				}
 			}
 		})

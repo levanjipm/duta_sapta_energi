@@ -59,18 +59,13 @@ class Item_class_model extends CI_Model {
 		
 		public function show_items($offset = 0, $term = '', $limit = 25)
 		{
-			$this->db->select('item_class.*, COUNT(item.id) as quantity');
-			if($term != ''){
-				$this->db->like('item_class.name', $term, 'both');
-				$this->db->or_like('item_class.description', $term, 'both');
-			}
-			
-			$this->db->from('item_class');
-			$this->db->join('item', 'item.type = item_class.id', 'left');
-			$this->db->group_by('item.type');
-			$this->db->limit($limit, $offset);
-			
-			$query		= $this->db->get();
+			$query = $this->db->query("SELECT item_class.*, COALESCE(a.quantity,0) as quantity FROM item_class
+				LEFT JOIN (
+					SELECT COUNT(id) as quantity, type FROM item GROUP BY type
+				) as a
+				ON a.type = item_class.id
+				WHERE item_class.name LIKE '%$term%' OR item_class.description LIKE '%$term%'
+				LIMIT $limit OFFSET $offset");
 			$result		= $query->result();
 			
 			return $result;
@@ -109,8 +104,8 @@ class Item_class_model extends CI_Model {
 			
 			if($item == 0){
 				$this->id					= '';
-				$this->name					= $this->input->post('item_class_name');
-				$this->description			= $this->input->post('item_class_description');
+				$this->name					= $this->input->post('name');
+				$this->description			= $this->input->post('description');
 				$this->created_by			= $this->session->userdata('user_id');
 				$db_item 					= $this->get_db_from_stub($this);
 				
@@ -124,8 +119,10 @@ class Item_class_model extends CI_Model {
 		
 		public function delete_by_id()
 		{
-			$this->db->where('id', $this->input->post('item_class_id'));
+			$this->db->where('id', $this->input->post('id'));
 			$this->db->delete($this->table_item_class);
+			
+			return $this->db->affected_rows();
 		}
 		
 		public function get_by_id($id)

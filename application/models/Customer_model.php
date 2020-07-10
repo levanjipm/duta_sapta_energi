@@ -21,6 +21,8 @@ class Customer_model extends CI_Model {
 		public $created_by;
 		public $is_black_list;
 		public $term_of_payment;
+		public $latitude;
+		public $longitude;
 		
 		public $complete_address;
 		
@@ -47,6 +49,8 @@ class Customer_model extends CI_Model {
 			$this->date_created			= $db_item->date_created;
 			$this->created_by			= $db_item->created_by;
 			$this->is_black_list		= $db_item->is_black_list;
+			$this->latitude				= $db_item->latitude;
+			$this->longitude			= $db_item->longitude;
 			$this->term_of_payment		= $db_item->term_of_payment;
 			
 			return $this;
@@ -71,6 +75,8 @@ class Customer_model extends CI_Model {
 			$db_item->pic_name				= $this->pic_name;
 			$db_item->date_created			= $this->date_created;
 			$db_item->created_by			= $this->created_by;
+			$db_item->latitude				= $this->latitude;
+			$db_item->longitude				= $this->longitude;
 			$db_item->is_black_list			= $this->is_black_list;
 			$db_item->term_of_payment		= $this->term_of_payment;
 			
@@ -96,6 +102,8 @@ class Customer_model extends CI_Model {
 			$stub->pic_name				= $db_item->pic_name;
 			$stub->date_created			= $db_item->date_created;
 			$stub->created_by			= $db_item->created_by;
+			$stub->latitude				= $db_item->latitude;
+			$stub->longitude			= $db_item->longitude;
 			$stub->is_black_list		= $db_item->is_black_list;
 			$stub->term_of_payment		= $db_item->term_of_payment;
 			
@@ -133,6 +141,7 @@ class Customer_model extends CI_Model {
 				$this->db->or_like('address', $filter, 'both');
 				$this->db->or_like('city', $filter, 'both');
 			}
+			$this->db->order_by('name');
 			$this->db->limit($limit, $offset);			
 			$query 		= $this->db->get($this->table_customer);
 			$items	 	= $query->result();
@@ -175,6 +184,8 @@ class Customer_model extends CI_Model {
 				$this->area_id				= $this->input->post('area_id');
 				$this->npwp					= $this->input->post('customer_npwp');
 				$this->phone_number			= $this->input->post('customer_phone');
+				$this->latitude				= $this->input->post('customer_latitude');
+				$this->longitude			= $this->input->post('longitude');
 				$this->pic_name				= $this->input->post('customer_pic');
 				$this->date_created			= date('Y-m-d');
 				$this->created_by			= $this->session->userdata('user_id');
@@ -184,13 +195,25 @@ class Customer_model extends CI_Model {
 				
 				$db_item 					= $this->get_db_from_stub($this);
 				$db_result 					= $this->db->insert($this->table_customer, $db_item);
+				
+				return $this->db->affected_rows();
+			} else {
+				return 0;
 			}
 		}
 		
 		public function delete_by_id()
 		{
-			$this->db->where('id', $this->input->post('customer_id'));
+			$this->db->db_debug = FALSE;
+			
+			$this->db->where('id', $this->input->post('id'));
 			$this->db->delete($this->table_customer);
+			
+			if($this->db->affected_rows() == 1){
+				return 1;
+			} else {
+				return 0;
+			}
 		}
 		
 		public function show_by_id_from_post()
@@ -216,26 +239,31 @@ class Customer_model extends CI_Model {
 		
 		public function update_from_post()
 		{
-			$customer_id				= $this->input->post('customer_id');
-			
+			$this->db->db_debug = FALSE;
+			$customer_id				= $this->input->post('id');
+
 			$db_item			= array(
-				'name'=> $this->input->post('customer_name'),
-				'address' => $this->input->post('customer_address'),
-				'number' => $this->input->post('address_number'),
-				'block' => $this->input->post('address_block'),
-				'rt' => $this->input->post('address_rt'),
-				'rw' => $this->input->post('address_rw'),
-				'city' => $this->input->post('customer_city'),
-				'postal_code' => $this->input->post('address_postal'),
-				'area_id' => $this->input->post('area_id'),
-				'npwp' => $this->input->post('customer_npwp'),
-				'phone_number' => $this->input->post('customer_phone'),
-				'pic_name' => $this->input->post('customer_pic'),
-				'term_of_payment' => $this->input->post('term_of_payment')
+				'name'				=> $this->input->post('name'),
+				'address' 			=> $this->input->post('address'),
+				'number' 			=> $this->input->post('number'),
+				'block' 			=> $this->input->post('block'),
+				'rt' 				=> $this->input->post('rt'),
+				'rw' 				=> $this->input->post('rw'),
+				'city' 				=> $this->input->post('city'),
+				'latitude'			=> ($this->input->post('latitude') == "")? null : $this->input->post('latitude'),
+				'longitude'			=> ($this->input->post('longitude') == "")? null : $this->input->post('longitude'),
+				'postal_code' 		=> $this->input->post('postal'),
+				'area_id' 			=> $this->input->post('area_id'),
+				'npwp' 				=> $this->input->post('npwp'),
+				'phone_number' 		=> $this->input->post('phone'),
+				'pic_name' 			=> $this->input->post('pic'),
+				'term_of_payment' 	=> $this->input->post('term_of_payment')
 			);
 			
 			$this->db->where('id', $customer_id);
 			$this->db->update($this->table_customer, $db_item);
+			
+			return $this->db->affected_rows();
 		}
 		
 		public function show_search_result($limit, $offset)

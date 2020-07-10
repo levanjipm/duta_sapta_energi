@@ -71,4 +71,12 @@ class Item_class extends CI_Controller {
 		header('Content-Type: application/json');
 		echo json_encode($data);
 	}
+	
+	public function delete_by_id()
+	{
+		$this->load->model('Item_class_model');
+		$result = $this->Item_class_model->delete_by_id();
+		
+		echo $result;
+	}
 }

@@ -35,126 +35,295 @@
 <div class='alert_wrapper' id='add_customer_wrapper'>
 	<button class='slide_alert_close_button'>&times</button>
 	<div class='alert_box_slide'>
-		<form action='<?= site_url('Customer/insert_new_customer/') ?>' method='POST'>
-		<h2 style='font-family:bebasneue'>Add customer form</h2>
-		<hr>
-		
-		<label>Customer name</label>
-		<input type='text' class='form-control' name='customer_name' required>
-		
-		<label>Address</label>
-		<textarea class='form-control' name='customer_address' rows='3' style='resize:none' required></textarea>
-		
-		<label>Number</label>
-		<input type='text' class='form-control' name='address_number'>
-		
-		<label>Block</label>
-		<input type='text' class='form-control' name='address_block'>
-		
-		<label>Neighbourhood (RT)</label>
-		<input type='text' class='form-control' name='address_rt' minlength='3' maxlength='3' required>
-		
-		<label>Hamlet (RW)</label>
-		<input type='text' class='form-control' name='address_rw' minlength='3' maxlength='3' required>
-		
-		<label>Postal code</label>
-		<input type='number' class='form-control' name='address_postal' minlength='4'>
-		
-		<label>City</label>
-		<input type='text' class='form-control' name='customer_city' required>
-		
-		<label>Phone number</label>
-		<input type='text' class='form-control' name='customer_phone' required>
-		
-		<label>PIC</label>
-		<input type='text' class='form-control' name='customer_pic'>
-		
-		<label>Tax identification number</label>
-		<input type='text' class='form-control' name='customer_npwp' id='customer_npwp'>
-		<script>
-			$("#customer_npwp").inputmask("99.999.999.9-999.999");
-		</script>
-		
-		<label>Area</label>
-		<select class='form-control' name='area_id'>
+		<form id='add_customer_form'>
+			<h2 style='font-family:bebasneue'>Add customer form</h2>
+			<hr>
+			
+			<label>Customer name</label>
+			<input type='text' class='form-control' id='customer_name' required>
+			
+			<label>Address</label>
+			<textarea class='form-control' id='customer_address' rows='3' style='resize:none' required></textarea>
+			
+			<label>Number</label>
+			<input type='text' class='form-control' id='address_number'>
+			
+			<label>Block</label>
+			<input type='text' class='form-control' id='address_block'>
+			
+			<label>Neighbourhood (RT)</label>
+			<input type='text' class='form-control' id='address_rt' minlength='3' maxlength='3' required>
+			
+			<label>Hamlet (RW)</label>
+			<input type='text' class='form-control' id='address_rw' minlength='3' maxlength='3' required>
+			
+			<label>Postal code</label>
+			<input type='number' class='form-control' id='address_postal'>
+			
+			<label>City</label>
+			<input type='text' class='form-control' id='customer_city' required>
+			
+			<label>Phone number</label>
+			<input type='text' class='form-control' id='customer_phone' required>
+			
+			<label>PIC</label>
+			<input type='text' class='form-control' id='customer_pic'>
+			
+			<label>Tax identification number</label>
+			<input type='text' class='form-control' id='customer_npwp'>
+			<script>
+				$("#customer_npwp").inputmask("99.999.999.9-999.999");
+			</script>
+			
+			<label>Area</label>
+			<select class='form-control' id='area_id'>
 <?php
 	foreach($areas as $area){
 ?>
-			<option value='<?= $area->id ?>'><?= $area->name ?></option>
+				<option value='<?= $area->id ?>'><?= $area->name ?></option>
 <?php
 	}
 ?>
-		</select>
-		
-		<label>Default payment</label>
-		<input type='number' class='form-control' min='0' required name='term_of_payment'>
-		<br>
-		<button class='button button_default_dark'><i class='fa fa-long-arrow-right'></i></button>
+			</select>
+			
+			<label>Default payment</label>
+			<input type='number' class='form-control' min='0' required id='term_of_payment'>
+			
+			<label>Location</label>
+			<input type='number' class='form-control' id='latitude' placeholder='Latitude'>
+			
+			<input type='number' class='form-control' id='longitude' placeholder='Longitude'>
+			<br>
+			<button class='button button_default_dark' type='button' id='submit_add_customer_button'><i class='fa fa-long-arrow-right'></i></button>
 		</form>
-	</div>
-</div>
-
-<div class='alert_wrapper' id='delete_confirmation_wrapper'>
-	<div class='alert_box_confirm'>
-		<img src='<?= base_url('assets/exclamation.png') ?>' style='width:40%'></img>
-		<br><br>
-		<h4 style='font-family:museo'>Are you sure?</h4>
-		<br><br>
-		<button class='button button_danger_dark' onclick='close_alert("delete_confirmation_wrapper")'>Not sure</button>
-		<button class='button button_success_dark' onclick='confirm_delete()'>Yes</button>
-		
-		<input type='hidden' id='customer_delete_id'>
 	</div>
 </div>
 
 <div class='alert_wrapper' id='edit_customer_wrapper'>
 	<button class='slide_alert_close_button'>&times</button>
 	<div class='alert_box_slide'>
+		<form id='edit_customer_form'>
+			<h2 style='font-family:bebasneue'>Edit customer form</h2>
+			<hr>
+			<input type='hidden' id='customer_id_edit'>
+			
+			<label>Customer name</label>
+			<input type='text' class='form-control' id='name_edit' required>
+			
+			<label>Address</label>
+			<textarea class='form-control' id='address_edit' rows='3' style='resize:none' required></textarea>
+			
+			<label>Number</label>
+			<input type='text' class='form-control' id='number_edit'>
+			
+			<label>Block</label>
+			<input type='text' class='form-control' id='block_edit'>
+			
+			<label>Neighbourhood (RT)</label>
+			<input type='text' class='form-control' id='rt_edit' minlength='3' maxlength='3' required>
+			
+			<label>Hamlet (RW)</label>
+			<input type='text' class='form-control' id='rw_edit' minlength='3' maxlength='3' required>
+			
+			<label>Postal code</label>
+			<input type='number' class='form-control' id='postal_edit'>
+			
+			<label>City</label>
+			<input type='text' class='form-control' id='city_edit' required>
+			
+			<label>Phone number</label>
+			<input type='text' class='form-control' id='phone_edit' required>
+			
+			<label>PIC</label>
+			<input type='text' class='form-control' id='pic_edit'>
+			
+			<label>Tax identification number</label>
+			<input type='text' class='form-control' id='npwp_edit'>
+			<script>
+				$("#npwp_edit").inputmask("99.999.999.9-999.999");
+			</script>
+			
+			<label>Area</label>
+			<select class='form-control' id='area_id_edit'>
+<?php
+	foreach($areas as $area){
+?>
+				<option value='<?= $area->id ?>'><?= $area->name ?></option>
+<?php
+	}
+?>
+			</select>
+			
+			<label>Default payment</label>
+			<input type='number' class='form-control' min='0' required id='term_of_payment_edit'>
+			
+			<label>Location</label>
+			<input type='number' class='form-control' id='latitude_edit' placeholder='Latitude'>
+			
+			<input type='number' class='form-control' id='longitude_edit' placeholder='Longitude'>
+			<br>
+			<button class='button button_default_dark' type='button' id='submit_edit_customer_button'><i class='fa fa-long-arrow-right'></i></button>
+		</form>
+	</div>
+</div>
+
+<div class='alert_wrapper' id='delete_customer_wrapper'>
+	<div class='alert_box_confirm_wrapper'>
+		<div class='alert_box_confirm_icon'><i class='fa fa-trash'></i></div>
+		<div class='alert_box_confirm'>
+			<input type='hidden' id='delete_customer_id'>
+			<h3>Delete confirmation</h3>
+			
+			<p>You are about to delete this data.</p>
+			<p>Are you sure?</p>
+			<button class='button button_default_dark' onclick="$('#delete_customer_wrapper').fadeOut()">Cancel</button>
+			<button class='button button_danger_dark' onclick='delete_customer()'>Delete</button>
+			
+			<br><br>
+			
+			<p style='font-family:museo;background-color:#f63e21;width:100%;padding:5px;color:white;position:relative;bottom:0;left:0;opacity:0' id='error_delete_customer'>Deletation failed.</p>
+		</div>
 	</div>
 </div>
 
 <script>
-	update_view();
+	$(document).ready(function(){
+		refresh_view();
+	});
+	
+	$('#search_bar').change(function(){
+		refresh_view(1);
+	});
+	
+	$('#page').change(function(){
+		refresh_view();
+	});	
+	
 	$('#add_customer_button').click(function(){
 		$('#add_customer_wrapper').fadeIn(300, function(){
 			$('#add_customer_wrapper .alert_box_slide').show("slide", { direction: "right" }, 250);
 		});
 	});
 	
-	function open_delete_confirmation(n){
-		$('#delete_confirmation_wrapper').fadeIn();
-		$('#customer_delete_id').val(n);
-	};
+	$('#add_customer_form').validate();
 	
-	function confirm_delete(){
+	$('#edit_customer_form').validate();
+	
+	$('#add_customer_form').on('submit', function(){
+		return false;
+	});
+	
+	$('#submit_add_customer_button').click(function(){
+		if($('#submit_add_customer_button').valid()){
+			$.ajax({
+				url:'<?= site_url('Customer/insert_customer') ?>',
+				data:{
+					customer_name: $('#customer_name').val(),
+					customer_address: $('#customer_address').val(),
+					address_number: $('#address_number').val(),
+					address_block: $('#address_block').val(),
+					address_postal: $('#address_postal').val(),
+					address_rt: $('#address_rt').val(),
+					address_rw: $('#address_rw').val(),
+					customer_city: $('#customer_city').val(),
+					area_id: $('#area_id').val(),
+					customer_npwp: $('#customer_npwp').val(),
+					customer_phone: $('#customer_phone').val(),
+					customer_pic: $('#customer_pic').val(),
+					term_of_payment: $('#term_of_payment').val()
+				},
+				type:'POST',
+				beforeSend:function(){
+					$('button').attr('disabled', true);
+				},
+				success:function(response){
+					$('button').attr('disabled', false);
+					if(response == 1){
+						$('#add_customer_form').trigger("reset");
+						refresh_view();
+						$('#add_customer_wrapper .slide_alert_close_button').click();
+					}
+				}
+			});
+		}
+	});
+	
+	function confirm_delete(n){
+		$('#delete_customer_id').val(n);
+		$('#delete_customer_wrapper').fadeIn();
+	}
+	
+	function delete_customer(){
 		$.ajax({
 			url:'<?= site_url('Customer/delete_customer') ?>',
 			type:'POST',
 			data:{
-				customer_id: $('#customer_delete_id').val()
+				id: $('#delete_customer_id').val()
 			},
 			beforeSend:function(){
 				$('button').attr('disabled',true);
 			},
-			success:function(){
-				window.location.reload();
+			success:function(response){
+				$('button').attr('disabled', false);
+				if(response == 1){
+					refresh_view();
+					$('#delete_customer_wrapper').fadeOut();
+				} else {
+					$('#error_delete_customer').fadeTo(250, 1);
+					setTimeout(function(){
+						$('#error_delete_customer').fadeTo(250, 0);
+					}, 1000);
+				}				
 			}
 		})
 	};
 	
 	function open_edit_form(n){
 		$.ajax({
-			url:'<?= site_url('Customer/update_customer_view') ?>',
+			url:'<?= site_url('Customer/get_customer_by_id') ?>',
 			type:'GET',
 			data:{
-				customer_id: n
+				id: n
 			},
 			beforeSend:function(){
 				$('button').attr('disabled',true);
 			},
 			success:function(response){
-				$('button').attr('disabled',false);
-				$('#edit_customer_wrapper .alert_box_slide').html(response);
+				$('button').attr('disabled', false);
+				var name 			= response.name;
+				var id 				= response.id;
+				var address 		= response.address;
+				var block 			= response.block;
+				var postal 			= response.postal_code;
+				var area_id 		= response.area_id;
+				var npwp 			= response.npwp;
+				var latitude 		= response.latitude;
+				var longitude 		= response.longitude;
+				var number 			= response.number;
+				var pic 			= response.pic_name;
+				var phone 			= response.phone_number;
+				var rt 				= response.rt;
+				var rw 				= response.rw;
+				var term_of_payment = response.term_of_payment;
+				var city			= response.city;
+				
+				$('#name_edit').val(name)			
+				$('#customer_id_edit').val(id)			
+				$('#address_edit').val(address) 		
+				$('#block_edit').val(block) 			
+				$('#postal_edit').val(postal) 			
+				$('#area_id_edit').val(area_id) 		
+				$('#npwp_edit').val(npwp) 			
+				$('#latitude_edit').val(latitude) 		
+				$('#longitude_edit').val(longitude) 		
+				$('#number_edit').val(number) 			
+				$('#pic_edit').val(pic) 			
+				$('#phone_edit').val(phone) 			
+				$('#rt_edit').val(rt) 				
+				$('#rw_edit').val(rw) 				
+				$('#term_of_payment_edit').val(term_of_payment);
+				$('#city_edit').val(city);
+				
 				$('#edit_customer_wrapper').fadeIn(300, function(){
 					$('#edit_customer_wrapper .alert_box_slide').show("slide", { direction: "right" }, 250);
 				});
@@ -162,13 +331,46 @@
 		})
 	};
 	
+	$('#submit_edit_customer_button').click(function(){
+		$.ajax({
+			url:'<?= site_url('Customer/update_customer') ?>',
+			data:{
+				name 			: $('#name_edit').val(),
+				id 				: $('#customer_id_edit').val(),		
+				address 		: $('#address_edit').val(), 		
+				block 			: $('#block_edit').val(), 			
+				postal 			: $('#postal_edit').val(), 			
+				area_id 		: $('#area_id_edit').val(), 		
+				npwp 			: $('#npwp_edit').val(), 				
+				latitude 		: $('#latitude_edit').val(), 		
+				longitude 		: $('#longitude_edit').val(),	
+				number 			: $('#number_edit').val(),				
+				pic 			: $('#pic_edit').val(), 				
+				phone 			: $('#phone_edit').val(), 				
+				rt 				: $('#rt_edit').val(), 					
+				rw 				: $('#rw_edit').val(), 					
+				term_of_payment : $('#term_of_payment_edit').val(),
+				city			: $('#city_edit').val() 
+			},
+			type:'POST',
+			beforeSend: function(){
+				$('button').attr('disabled', true);
+			},
+			success:function(response){
+				$('button').attr('disabled', false);
+				refresh_view();
+				$('#edit_customer_wrapper .slide_alert_close_button').click();
+			}
+		});
+	});
+	
 	$('.slide_alert_close_button').click(function(){
 		$(this).siblings('.alert_box_slide').hide("slide", { direction: "right" }, 250, function(){
 			$(this).parent().fadeOut();
 		});
 	});
 	
-	function update_view(page = $('#page').val()){
+	function refresh_view(page = $('#page').val()){
 		$.ajax({
 			url:'<?= site_url('Customer/show_items') ?>',
 			data:{
@@ -217,7 +419,7 @@
 						complete_address	+= ', ' + customer_postal;
 					}
 					
-					$('#customer_table').append("<tr><td>" + customer_name + "</td><td><p>" + complete_address + "</p><p>" + customer_city + "</p></td><td><button type='button' class='button button_success_dark' onclick='open_edit_form(" + customer_id + ")'><i class='fa fa-pencil'></i></button> <button type='button' class='button button_danger_dark' onclick='open_delete_confirmation(" + customer_id + ")'><i class='fa fa-trash'></i></button> <button type='button' class='button button_default_dark'><i class='fa fa-eye'></i></button></tr>");
+					$('#customer_table').append("<tr><td>" + customer_name + "</td><td><p>" + complete_address + "</p><p>" + customer_city + "</p></td><td><button type='button' class='button button_success_dark' onclick='open_edit_form(" + customer_id + ")'><i class='fa fa-pencil'></i></button> <button type='button' class='button button_danger_dark' onclick='confirm_delete(" + customer_id + ")'><i class='fa fa-trash'></i></button> <button type='button' class='button button_default_dark'><i class='fa fa-eye'></i></button></tr>");
 				});
 				
 				for(i = 1; i <= pages; i++){
@@ -231,8 +433,4 @@
 			
 		});
 	};
-	
-	$('#search_bar').change(function(){
-		update_view(1);
-	});
 </script>

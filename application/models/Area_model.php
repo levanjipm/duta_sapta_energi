@@ -129,10 +129,15 @@ class Area_model extends CI_Model {
 		
 		public function delete_area($area_id)
 		{
+			$this->db->db_debug = FALSE;
 			$this->db->where('id', $area_id);
 			$this->db->delete($this->table_area);
 			
-			return $this->db->affected_rows();
+			if($this->db->affected_rows() == 1){
+				return 1;
+			} else {
+				return 0;
+			}
 		}
 		
 		public function get_area_by_id($area_id)

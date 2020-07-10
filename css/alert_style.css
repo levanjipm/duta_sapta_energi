@@ -40,17 +40,42 @@
 	z-index:500;
 }
 
-.alert_box_confirm{
-	width:350px;
-	z-index:300;
-	background-color:#fff;
+.alert_box_confirm_icon{
 	text-align:center;
+	color:white;
 	margin: auto;
-	color:#333;
-	padding:20px;
-	box-shadow:3px 3px 3px 3px rgba(50,50,50,0.8);
-	margin-top:5%;
-	z-index:500;
+	border-radius:50%;
+	background-color:#f63e21;
+	border:none;
+	position:relative;
+	width:40px;
+	height:40px;
+	bottom:-20px;
+	font-size:30px;
+}
+
+.alert_box_confirm_wrapper{
+	top:5%;
+	width:30%;
+	min-width:300px;
+	margin: auto;
+	text-align:center;
+	border-radius:5px;
+	position:relative;
+}
+
+.alert_box_confirm{
+	border-top:4px solid #f63e21;
+	width:100%;
+	background-color:white;
+	border-radius:5px;
+	padding:10px;
+	box-shadow:5px 5px 5px 5px rgba(50,50,50,0.5);
+	color:#111216;
+}
+
+.alert_box_confirm h3{
+	font-weight:bold;
 }
 
 .alert_close_button{
