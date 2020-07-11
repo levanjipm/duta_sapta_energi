@@ -271,4 +271,13 @@ class Bank extends CI_Controller {
 		
 		redirect(site_url('Bank/transaction'));
 	}
+	
+	public function delete_account()
+	{
+		$id		= $this->input->post('id');
+		$this->load->model('Internal_bank_account_model');
+		
+		$result = $this->Internal_bank_account_model->delete_by_id($id);
+		echo $result;
+	}
 }

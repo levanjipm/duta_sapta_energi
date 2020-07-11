@@ -270,4 +270,13 @@ class Delivery_order extends CI_Controller {
 			$this->Delivery_order_model->delete_by_id($id);
 		}
 	}
+	
+	public function select_by_name()
+	{
+		$name			= $this->input->post('name');
+		$this->load->model('Delivery_order_model');
+		$id				= $this->Delivery_order_model->select_by_name($name);
+		
+		echo $id;		
+	}
 }

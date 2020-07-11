@@ -4,6 +4,8 @@
 	</div>
 	<br>
 	<div class='dashboard_in'>
+		<button class='button button_default_dark'>Create salary slip</button>
+		<br><br>
 		<p>Last 10 salary slips</p>
 		<hr style='border-bottom:2px solid #2b2f38'>
 		<table class='table table-bordered'>
@@ -18,4 +20,7 @@
 			<tbody id='salary_table'></tbody>
 		</table>
 	</div>
+</div>
+
+<div class='alert_wrapper' id='create_salary_wrapper'>
 </div>

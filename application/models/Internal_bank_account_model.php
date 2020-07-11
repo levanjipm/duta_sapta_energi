@@ -45,4 +45,13 @@ class Internal_bank_account_model extends CI_Model {
 			
 			$this->db->insert($this->table_account, $db_item);
 		}
+		
+		public function delete_by_id($id)
+		{
+			$this->db->db_debug = FALSE;
+			$this->db->where('id', $id);
+			$this->db->delete($this->table_account);
+			
+			return $this->db->affected_rows();
+		}
 }

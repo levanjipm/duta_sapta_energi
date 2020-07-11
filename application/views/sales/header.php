@@ -46,8 +46,8 @@
 		</div>
 		<button class='container_button'><p style='font-family:museo'>Return  <i class='fa fa-caret-down'></i></p></button>
 		<div class='container_bar'>
-			<a href='<?= site_url('Sales_return/create') ?>'><p>Create return</p></a>
-			<a href='<?= site_url() ?>'><p>Confirm return</p></a>	
+			<a href='<?= site_url('Sales_return/create') ?>'><p>Create</p></a>
+			<a href='<?= site_url('Sales_return/confirm') ?>'><p>Confirm</p></a>	
 		</div>
 		<a href='<?= site_url('Stock/view/Sales') ?>'><button><p>Check stock</p></button></a>
 		<a href='<?= site_url('') ?>'><button><p>Analytic</p></button></a>

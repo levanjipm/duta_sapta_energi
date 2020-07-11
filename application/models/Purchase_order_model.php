@@ -20,6 +20,7 @@ class Purchase_order_model extends CI_Model {
 		public $guid;
 		public $supplier_id;
 		public $is_delete;
+		public $note;
 		
 		public $supplier_name;
 		public $supplier_address;
@@ -46,6 +47,7 @@ class Purchase_order_model extends CI_Model {
 			$this->supplier_id              ='';
 			$this->is_delete              	='';
 			$this->status              		= NULL;
+			$this->note						= "";
 		}
 		
 		public function get_stub_from_db($db_item)

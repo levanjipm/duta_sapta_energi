@@ -377,4 +377,14 @@ class Delivery_order_model extends CI_Model {
 		{	
 			return sprintf('%04X%04X-%04X-%04X-%04X-%04X%04X%04X', mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(16384, 20479), mt_rand(32768, 49151), mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(0, 65535));
 		}
+		
+		public function select_by_name($name)
+		{
+			$this->db->where("name", $this->db->escape($name));
+			$query = $this->db->get($this->table_delivery_order);
+			
+			$result = $query->row();
+			
+			($result == null)? null: $result;
+		}
 }
