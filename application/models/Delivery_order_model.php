@@ -166,7 +166,7 @@ class Delivery_order_model extends CI_Model {
 		
 		public function show_by_id($id)
 		{
-			$this->db->select('code_delivery_order.*, customer.name as customer_name, customer.address, customer.city, code_sales_order.name as sales_order_name, customer.number, customer.rt, customer.rw, customer.block, customer.pic_name, code_sales_order.taxing, users.name as seller, code_sales_order.invoicing_method, code_sales_order.date as sales_order_date');
+			$this->db->select('code_delivery_order.*, customer.name as customer_name, customer.address, customer.city, code_sales_order.name as sales_order_name, customer.number, customer.rt, customer.rw, customer.block, customer.pic_name, customer.postal_code, code_sales_order.taxing, users.name as seller, code_sales_order.invoicing_method, code_sales_order.date as sales_order_date');
 			$this->db->from('code_delivery_order');
 			$this->db->join('delivery_order', 'delivery_order.code_delivery_order_id = code_delivery_order.id', 'inner');
 			$this->db->join('sales_order', 'delivery_order.sales_order_id = sales_order.id', 'inner');
@@ -380,11 +380,13 @@ class Delivery_order_model extends CI_Model {
 		
 		public function select_by_name($name)
 		{
-			$this->db->where("name", $this->db->escape($name));
+			$this->db->where("name", $name);
+			$this->db->where('is_confirm', 1);
+			$this->db->where('is_sent', 1);
+			$this->db->where('invoice_id IS NOT NULL', null, false);
 			$query = $this->db->get($this->table_delivery_order);
 			
 			$result = $query->row();
-			
-			($result == null)? null: $result;
+			return ($result == null)? null: $result;
 		}
 }

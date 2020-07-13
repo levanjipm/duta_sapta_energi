@@ -6,11 +6,13 @@
 	<div class='dashboard_in'>
 		<label>Delivery order</label>
 		<input type='text' class='form-control' id='delivery_order_name' placeholder="Delivery order number">
-		<div style='padding:2px 10px;background-color:#ffc107;width:100%;display:none;' id='error_delivery_order'><p style='font-family:museo'><i class='fa fa-exclamation-triangle'></i> Delivery order not found</p></div><br>
-		<br>
+		<div style='padding:2px 10px;background-color:#ffc107;width:100%;opacity:0;' id='error_delivery_order'><p style='font-family:museo'><i class='fa fa-exclamation-triangle'></i> Delivery order not found</p></div><br>
 		<button class='button button_default_dark' onclick="check_delivery_order()"><i class='fa fa-long-arrow-right'></i></button>
 	</div>
 </div>
+<form action='<?= site_url('Sales_return/authenticate') ?>' method='POST' id='return_form'>
+	<input type='hidden' id='delivery_order_id' name='id'>
+</form>
 <script>
 	function check_delivery_order(){
 		$.ajax({
@@ -20,7 +22,15 @@
 			},
 			type:'POST',
 			success:function(response){
-				console.log(response):
+				if(response == null){
+					$('#error_delivery_order').fadeTo(250, 1);
+					setTimeout(function(){
+						$('#error_delivery_order').fadeTo(250, 0);
+					}, 1000);
+				} else {
+					$('#delivery_order_id').val(response.id);
+					$('#return_form').submit();
+				}
 			}
 		});
 	}

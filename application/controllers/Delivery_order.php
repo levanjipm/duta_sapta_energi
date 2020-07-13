@@ -275,8 +275,9 @@ class Delivery_order extends CI_Controller {
 	{
 		$name			= $this->input->post('name');
 		$this->load->model('Delivery_order_model');
-		$id				= $this->Delivery_order_model->select_by_name($name);
+		$data	= $this->Delivery_order_model->select_by_name($name);
 		
-		echo $id;		
+		header('Content-Type: application/json');
+		echo json_encode($data);
 	}
 }
