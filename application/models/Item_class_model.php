@@ -57,7 +57,7 @@ class Item_class_model extends CI_Model {
 			return $result;
 		}
 		
-		public function show_items($offset = 0, $term = '', $limit = 25)
+		public function showItems($offset = 0, $term = '', $limit = 25)
 		{
 			$query = $this->db->query("SELECT item_class.*, COALESCE(a.quantity,0) as quantity FROM item_class
 				LEFT JOIN (
@@ -71,7 +71,7 @@ class Item_class_model extends CI_Model {
 			return $result;
 		}
 		
-		public function count_items($term = '')
+		public function countItems($term = '')
 		{
 			if($term != ''){
 				$this->db->like('name', $term, 'both');
@@ -84,7 +84,7 @@ class Item_class_model extends CI_Model {
 			return $result;
 		}
 		
-		public function show_all()
+		public function showAllItems()
 		{
 			$query 		= $this->db->get($this->table_item_class);
 			$items	 	= $query->result();
@@ -95,7 +95,7 @@ class Item_class_model extends CI_Model {
 			
 		}
 		
-		public function insert_from_post()
+		public function insertItem()
 		{
 			$this->db->select('*');
 			$this->db->from($this->table_item_class);
@@ -117,7 +117,7 @@ class Item_class_model extends CI_Model {
 			}
 		}
 		
-		public function delete_by_id()
+		public function deleteById()
 		{
 			$this->db->where('id', $this->input->post('id'));
 			$this->db->delete($this->table_item_class);
@@ -125,7 +125,7 @@ class Item_class_model extends CI_Model {
 			return $this->db->affected_rows();
 		}
 		
-		public function get_by_id($id)
+		public function showById($id)
 		{
 			$this->db->where('id', $id);
 			$query = $this->db->get($this->table_item_class);
@@ -134,7 +134,7 @@ class Item_class_model extends CI_Model {
 			return $result;
 		}
 		
-		public function update_from_post()
+		public function updateById()
 		{
 			$id				= $this->input->post('id');
 			$name			= $this->input->post('name');

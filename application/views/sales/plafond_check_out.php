@@ -112,7 +112,7 @@
 			<label>Submitted by</label>
 			<p style='font-family:museo'><?= $submission->created_by ?></p>
 			
-			<a href='<?= site_url('Customer/plafond') ?>'><button type='button' class='button button_default_dark'><i class='fa fa-long-arrow-left'></i></button></a>
+			<a href='<?= site_url('Plafond') ?>'><button type='button' class='button button_default_dark'><i class='fa fa-long-arrow-left'></i></button></a>
 		</div>
 	</div>
 </div>
@@ -198,7 +198,7 @@
 		<div style='text-align:center'>
 			<h2>Plafond change submission failed</h2>
 			<p>Please check for the last submission or try again later</p>
-			<a href='<?= site_url('Customer/plafond') ?>'><button type='button' class='button button_default_dark'><i class='fa fa-long-arrow-left'></i></button></a>
+			<a href='<?= site_url('Plafond') ?>'><button type='button' class='button button_default_dark'><i class='fa fa-long-arrow-left'></i></button></a>
 		</div>
 	</div>
 </div>

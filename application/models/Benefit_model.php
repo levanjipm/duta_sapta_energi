@@ -54,7 +54,7 @@ class Benefit_model extends CI_Model {
 			return $result;
 		}
 		
-		public function get_benefits($offset = 0, $term = "", $limit = 10)
+		public function getItems($offset = 0, $term = "", $limit = 10)
 		{
 			if($term != ""){
 				$this->db->like('name', $term, 'both');
@@ -68,7 +68,7 @@ class Benefit_model extends CI_Model {
 			return $result;
 		}
 		
-		public function count_benefits($term)
+		public function countItems($term)
 		{
 			if($term != ""){
 				$this->db->like('name', $term, 'both');
@@ -79,5 +79,62 @@ class Benefit_model extends CI_Model {
 			$result = $query->num_rows();
 			
 			return $result;
+		}
+		
+		public function insertItem()
+		{
+			$this->db->db_debug = false;
+			
+			$db_item = array(
+				'id' => '',
+				'name' => $this->input->post('name'),
+				'information' => $this->input->post('information')
+			);
+			
+			$db_result 	= $this->db->insert($this->table_benefit, $db_item);
+
+			return ($this->db->affected_rows());
+		}
+		
+		public function deleteById($id)
+		{
+			$this->db->db_debug = false;
+			
+			$this->db->where('id', $id);
+			$this->db->delete($this->table_benefit);
+
+			if($this->db->affected_rows() == 1){
+				return 1;
+			} else {
+				return 0;
+			}
+		}
+		
+		public function getById($id)
+		{
+			$this->db->where('id', $id);
+			$query = $this->db->get($this->table_benefit);
+			$result = $query->row();
+			
+			return $result;
+		}
+		
+		public function updateById()
+		{
+			$id = $this->input->post('id');
+			$name = $this->input->post('name');
+			$information = $this->input->post('information');
+			
+			$this->db->set('name', $name);
+			$this->db->set('information', $information);
+			$this->db->where('id', $id);
+			
+			$this->db->update($this->table_benefit);
+			
+			if($this->db->affected_rows() == 1){
+				return 1;
+			} else {
+				return 0;
+			}
 		}
 }

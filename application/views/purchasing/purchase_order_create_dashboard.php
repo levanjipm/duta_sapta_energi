@@ -379,7 +379,7 @@
 	
 	function add_to_cart(n){
 		$.ajax({
-			url:'<?= site_url('Purchase_order/add_item_to_cart') ?>',
+			url:'<?= site_url('Purchase_order/addItemToCart') ?>',
 			data:{
 				item_id:n
 			},
@@ -413,7 +413,7 @@
 	
 	function add_to_cart_as_bonus(n){
 		$.ajax({
-			url:'<?= site_url('Purchase_order/add_item_to_cart_as_bonus') ?>',
+			url:'<?= site_url('Purchase_order/addBonusItemToCart') ?>',
 			data:{
 				item_id:n
 			},

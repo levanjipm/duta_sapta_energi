@@ -25,8 +25,8 @@
 <div class='alert_wrapper' id='plafond_confirm_wrapper'>
 	<button type='button' class='slide_alert_close_button'>&times </button>
 	<div class='alert_box_slide'>
-		<h2 style='font-family:bebasneue'>View Plafond submission</h2>
-		
+		<h3 style='font-family:bebasneue'>View Plafond submission</h3>
+		<hr>
 		<label>Customer</label>
 		<a id='customer_href' target='blank' style='text-decoration:none;color:black'><p style='font-family:museo' id='customer_name_p'></p>
 		<p style='font-family:museo' id='customer_address_p'></p>
@@ -35,7 +35,7 @@
 		<label>Plafond</label>
 		<p style='font-family:museo' id='plafond_change_p'></p><br>
 		
-		<form action='<?= site_url('Customer/confirm_plafond') ?>' method='POST'>
+		<form action='<?= site_url('Plafond/confirm') ?>' method='POST'>
 			<input type='hidden' id='submission_id' name='id'>
 			<button class='button button_default_dark'><i class='fa fa-long-arrow-right'></i></button>
 			<button type='button' class='button button_danger_dark' onclick='delete_plafond_submission()'><i class='fa fa-trash'></i></button>
@@ -47,10 +47,11 @@
 	function delete_plafond_submission(){
 		var id		= $('#submission_id').val();
 		$.ajax({
-			url:'<?= site_url('Customer/delete_plafond_submission') ?>',
+			url:'<?= site_url('Plafond/deleteById') ?>',
 			data:{
 				id:id,
 			},
+			type:'POST',
 			success:function(){
 				window.location.reload();
 			}
@@ -58,8 +59,8 @@
 	}
 	
 	$('.slide_alert_close_button').click(function(){
-		$('#plafond_confirm_wrapper .alert_box_slide').hide("slide", { direction: "right" }, 250, function(){
-			$('#plafond_confirm_wrapper').fadeOut();
+		$(this).siblings('.alert_box_slide').hide("slide", { direction: "right" }, 250, function(){
+			$(this).parent().fadeOut();
 		});
 	});
 
@@ -75,7 +76,7 @@
 	
 	function open_edit_form(n){
 		$.ajax({
-			url:'<?= site_url('Customer/show_by_plafond_submission_id') ?>',
+			url:'<?= site_url('Plafond/showById') ?>',
 			data:{
 				id:n,
 			},
@@ -118,6 +119,7 @@
 				$('#customer_city_p').html(customer_city);
 				
 				var initial_plafond			= customer.plafond;
+				
 				var plafond					= response.plafond;
 				var submitted_plafond		= plafond.submitted_plafond;
 				var created_by				= plafond.created_by;
@@ -138,7 +140,7 @@
 	
 	function refresh_view(page = $('#page').val()){
 		$.ajax({
-			url:'<?= site_url('Customer/show_unconfirmed_plafond') ?>',
+			url:'<?= site_url('Customer/showUnconfirmed') ?>',
 			data:{
 				page:page,
 				term:$('#search_bar').val(),

@@ -120,21 +120,7 @@ class Customer_model extends CI_Model {
 			return $result;
 		}
 		
-		public function show_plafonded_customers($offset = 0, $filter = '', $limit = 25)
-		{
-			$this->db->select('customer.*');
-			if($filter != ''){
-				$this->db->like('customer.name', $filter, 'both');
-				$this->db->or_like('customer.address', $filter, 'both');
-				$this->db->or_like('customer.city', $filter, 'both');
-			};
-			
-			$query		= $this->db->get($this->table_customer, $limit, $offset);
-			$result		= $query->result();
-			return $result;
-		}
-		
-		public function show_items($offset = 0, $filter = '', $limit = 25)
+		public function showItems($offset = 0, $filter = '', $limit = 25)
 		{
 			if($filter != ''){
 				$this->db->like('name', $filter, 'both');
@@ -149,7 +135,7 @@ class Customer_model extends CI_Model {
 			return $items;
 		}
 		
-		public function count_items($filter = '')
+		public function countItems($filter = '')
 		{
 			if($filter != ''){
 				$this->db->like('name', $filter, 'both');
@@ -162,7 +148,7 @@ class Customer_model extends CI_Model {
 			return $result;
 		}
 		
-		public function insert_from_post()
+		public function insertItem()
 		{
 			$this->load->model('Customer_model');
 			$this->db->select('*');
@@ -202,7 +188,7 @@ class Customer_model extends CI_Model {
 			}
 		}
 		
-		public function delete_by_id()
+		public function deleteById()
 		{
 			$this->db->db_debug = FALSE;
 			
@@ -216,18 +202,7 @@ class Customer_model extends CI_Model {
 			}
 		}
 		
-		public function show_by_id_from_post()
-		{
-			$this->db->where('id', $this->input->post('customer_id'));
-			$this->db->where('is_black_list',0);
-			$query = $this->db->get($this->table_customer, 1);
-			
-			$item = $query->row();
-			
-			return ($item !== null) ? $this->get_stub_from_db($item) : null;
-		}
-		
-		public function show_by_id($id)
+		public function getById($id)
 		{
 			$this->db->where('id', $id);
 			$query = $this->db->get($this->table_customer, 1);
@@ -237,7 +212,7 @@ class Customer_model extends CI_Model {
 			return ($item !== null) ? $item : null;
 		}
 		
-		public function update_from_post()
+		public function updateItemById()
 		{
 			$this->db->db_debug = FALSE;
 			$customer_id				= $this->input->post('id');
@@ -294,45 +269,6 @@ class Customer_model extends CI_Model {
 
 			$query = $this->db->get($this->table_customer);
 			$items	= $query->result();
-			return $items;
-		}
-		
-		public function view_by_area_id($area_id, $offset, $term = '', $limit = 25)
-		{
-			$this->db->where('area_id', $area_id);
-			if($term != ''){
-				$this->db->like('name', $term , 'both');
-				$this->db->or_like('address', $term , 'both');
-				$this->db->or_like('postal_code', $term , 'both');
-				$this->db->or_like('block', $term , 'both');
-				$this->db->or_like('pic_name', $term , 'both');
-				$this->db->or_like('rt', $term , 'both');
-				$this->db->or_like('rw', $term , 'both');
-				$this->db->or_like('city', $term , 'both');
-			}
-			$query	= $this->db->get($this->table_customer, $limit, $offset);
-			$items	= $query->result();
-			
-			return $items;
-		}
-		
-		public function count_by_area_id($area_id, $term = '')
-		{
-			$this->db->where('area_id', $area_id);
-			if($term != ''){
-				$this->db->like('name', $term , 'both');
-				$this->db->or_like('address', $term , 'both');
-				$this->db->or_like('postal_code', $term , 'both');
-				$this->db->or_like('block', $term , 'both');
-				$this->db->or_like('pic_name', $term , 'both');
-				$this->db->or_like('rt', $term , 'both');
-				$this->db->or_like('rw', $term , 'both');
-				$this->db->or_like('city', $term , 'both');
-			};
-			
-			$query	= $this->db->get($this->table_customer);
-			$items	= $query->num_rows();
-			
 			return $items;
 		}
 		

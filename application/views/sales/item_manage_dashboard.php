@@ -1,3 +1,6 @@
+<head>
+	<title>Manage items</title>
+</head>
 <div class='dashboard'>
 	<div class='dashboard_head'>
 		<p style='font-family:museo'><a href='<?= site_url('Sales') ?>' title='Sales'><i class='fa fa-briefcase'></i></a> /Items</p>
@@ -170,7 +173,7 @@
 	
 	function open_edit_form(item_id){
 		$.ajax({
-			url:'<?= site_url('Item/get_item_by_id') ?>',
+			url:'<?= site_url('Item/showById') ?>',
 			type:'GET',
 			data:{
 				id: item_id
@@ -221,7 +224,7 @@
 	
 	function delete_item(){
 		$.ajax({
-			url:'<?= site_url('Item/delete_by_id') ?>',
+			url:'<?= site_url('Item/deleteById') ?>',
 			data:{
 				id: $('#delete_item_id').val()
 			},
@@ -245,7 +248,7 @@
 	
 	function refresh_view(page = $('#page').val()){
 		$.ajax({
-			url:'<?= site_url('Item/search_item_cart') ?>',
+			url:'<?= site_url('Item/showItems') ?>',
 			data:{
 				term:$('#search_bar').val(),
 				page:page

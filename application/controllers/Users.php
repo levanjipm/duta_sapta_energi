@@ -14,7 +14,7 @@ class Users extends CI_Controller {
 	{
 		$user_id		= $this->session->userdata('user_id');
 		$this->load->model('User_model');
-		$data['user_login'] = $this->User_model->show_by_id($user_id);
+		$data['user_login'] = $this->User_model->getById($user_id);
 		
 		$this->load->model('Authorization_model');
 		$data['departments']	= $this->Authorization_model->show_by_user_id($user_id);
@@ -42,7 +42,7 @@ class Users extends CI_Controller {
 	{
 		$id = $this->input->get('id');
 		$this->load->model('User_model');
-		$data = $this->User_model->show_by_id($id);
+		$data = $this->User_model->getById($id);
 		
 		header('Content-Type: application/json');
 		echo json_encode($data);
@@ -52,7 +52,7 @@ class Users extends CI_Controller {
 	{
 		$user_id		= $this->session->userdata('user_id');
 		$this->load->model('User_model');
-		$data['user_login'] = $this->User_model->show_by_id($user_id);
+		$data['user_login'] = $this->User_model->getById($user_id);
 		
 		$this->load->model('Authorization_model');
 		$data['departments']	= $this->Authorization_model->show_by_user_id($user_id);
@@ -66,7 +66,7 @@ class Users extends CI_Controller {
 	{
 		$user_id = $this->input->post('id');
 		$this->load->model('User_model');
-		$data = $this->User_model->show_by_id($user_id);
+		$data = $this->User_model->getById($user_id);
 		$is_active = $data->is_active;
 		
 		if($is_active == 1){

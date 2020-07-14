@@ -450,7 +450,7 @@ class Bank_model extends CI_Model {
 			return $result;
 		}
 		
-		public function show_pending_value($type, $id)
+		public function getPendingValueByOpponentId($type, $id)
 		{
 			if($type == 'customer'){
 				$this->db->select_sum('value');

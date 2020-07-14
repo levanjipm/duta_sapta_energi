@@ -54,7 +54,7 @@ class Area_model extends CI_Model {
 			return $result;
 		}
 		
-		public function show_all()
+		public function showAllItems()
 		{
 			$query 		= $this->db->get($this->table_area);
 			$areas	 	= $query->result();
@@ -65,7 +65,7 @@ class Area_model extends CI_Model {
 			
 		}
 		
-		public function show_limited($offset = 0, $term = '', $limit = 10)
+		public function showItems($offset = 0, $term = '', $limit = 10)
 		{
 			if($term != ""){
 				$this->db->like('name', $term, 'both');
@@ -78,7 +78,7 @@ class Area_model extends CI_Model {
 			
 		}
 		
-		public function count_areas($term = "")
+		public function countItems($term = "")
 		{
 			if($term != ""){
 				$this->db->like('name', $term, 'both');
@@ -90,7 +90,7 @@ class Area_model extends CI_Model {
 			return $result;
 		}
 		
-		public function insert_from_post()
+		public function insertItem()
 		{
 			$this->db->select('*');
 			$this->db->from($this->table_area);
@@ -109,7 +109,7 @@ class Area_model extends CI_Model {
 			}
 		}
 		
-		public function update_from_post($area_id, $area_name)
+		public function updateById($area_id, $area_name)
 		{
 			$this->db->where('id !=', $area_id);
 			$this->db->where('name', $area_name);
@@ -127,7 +127,7 @@ class Area_model extends CI_Model {
 			}
 		}
 		
-		public function delete_area($area_id)
+		public function deleteById($area_id)
 		{
 			$this->db->db_debug = FALSE;
 			$this->db->where('id', $area_id);
@@ -140,7 +140,7 @@ class Area_model extends CI_Model {
 			}
 		}
 		
-		public function get_area_by_id($area_id)
+		public function getItemById($area_id)
 		{
 			$this->db->where('id', $area_id);
 			$query = $this->db->get($this->table_area);

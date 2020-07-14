@@ -14,7 +14,7 @@ class Supplier extends CI_Controller {
 	{
 		$user_id		= $this->session->userdata('user_id');
 		$this->load->model('User_model');
-		$data['user_login'] = $this->User_model->show_by_id($user_id);
+		$data['user_login'] = $this->User_model->getById($user_id);
 		
 		$this->load->model('Authorization_model');
 		$data['departments']	= $this->Authorization_model->show_by_user_id($user_id);
@@ -25,7 +25,7 @@ class Supplier extends CI_Controller {
 		$this->load->view('purchasing/supplier_manage_dashboard');
 	}
 	
-	public function view_items()
+	public function getItems()
 	{
 		$page		= $this->input->get('page');
 		$term		= $this->input->get('term');
@@ -39,7 +39,7 @@ class Supplier extends CI_Controller {
 		echo json_encode($data);
 	}
 	
-	public function insert_new_supplier()
+	public function insertItem()
 	{
 		$this->load->model('supplier_model');
 		$this->supplier_model->insert_from_post();
@@ -47,25 +47,27 @@ class Supplier extends CI_Controller {
 		redirect(site_url('supplier'));
 	}
 	
-	public function delete_supplier()
+	public function deleteById()
 	{
 		$this->load->model('supplier_model');
-		$this->supplier_model->delete_by_id();
+		$result = $this->supplier_model->deleteById();
+		
+		echo $result;
 	}
 	
-	public function update_supplier()
+	public function updateById()
 	{
 		$this->load->model('supplier_model');
-		$this->supplier_model->update_from_post();
+		$this->supplier_model->updateById();
 		
 		redirect(site_url('supplier'));
 	}
 	
-	public function select_by_id()
+	public function getById()
 	{
 		$supplier_id	= $this->input->get('id');
 		$this->load->model('Supplier_model');
-		$item = $this->Supplier_model->select_by_id($supplier_id);
+		$item = $this->Supplier_model->getById($supplier_id);
 		
 		header('Content-Type: application/json');
 		echo json_encode($item);

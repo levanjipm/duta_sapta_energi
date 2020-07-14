@@ -163,13 +163,16 @@ class Supplier_model extends CI_Model {
 			}
 		}
 		
-		public function delete_by_id()
+		public function deleteById()
 		{
-			$this->db->where('id', $this->input->post('supplier_id'));
+			$this->db->db_debug = FALSE;
+			$this->db->where('id', $this->input->post('id'));
 			$this->db->delete($this->table_supplier);
+			
+			return $this->db->affected_rows();
 		}
 		
-		public function show_by_id($supplier_id)
+		public function getById($supplier_id)
 		{
 			$this->db->where('id', $supplier_id);
 			$query = $this->db->get($this->table_supplier, 1);
@@ -179,39 +182,38 @@ class Supplier_model extends CI_Model {
 			return ($item !== null) ? $this->get_stub_from_db($item) : null;
 		}
 		
-		public function update_from_post()
+		public function updateById()
 		{
-			$where['id']				= $this->input->post('supplier_id');
+			$where['id']				= $this->input->post('id');
 			
-			$this->name					= $this->input->post('supplier_name');
-			$this->address				= $this->input->post('supplier_address');
-			$this->number				= $this->input->post('address_number');
-			$this->block				= $this->input->post('address_block');
-			$this->rt					= $this->input->post('address_rt');
-			$this->rw					= $this->input->post('address_rw');
-			$this->city					= $this->input->post('supplier_city');
-			$this->postal_code			= $this->input->post('address_postal');
-			$this->area_id				= $this->input->post('area_id');
-			$this->npwp					= $this->input->post('supplier_pic');
-			$this->phone_number			= $this->input->post('supplier_phone');
-			$this->pic_name				= $this->input->post('supplier_pic');
+			$name					= $this->input->post('supplier_name');
+			$address				= $this->input->post('supplier_address');
+			$number				= $this->input->post('address_number');
+			$block				= $this->input->post('address_block');
+			$rt					= $this->input->post('address_rt');
+			$rw					= $this->input->post('address_rw');
+			$city					= $this->input->post('supplier_city');
+			$postal_code			= $this->input->post('address_postal');
+			$area_id				= $this->input->post('area_id');
+			$npwp					= $this->input->post('supplier_npwp');
+			$phone_number			= $this->input->post('supplier_phone');
+			$pic_name				= $this->input->post('supplier_pic');
 			
 			$db_item = $this->get_db_from_stub();
 			
 			$this->db->where($where);
 			
-			$this->db->set('name', $this->name);			
-			$this->db->set('address', $this->address);
-			$this->db->set('number', $this->number);		
-			$this->db->set('block', $this->block);
-			$this->db->set('rt', $this->rt);	
-			$this->db->set('rw', $this->rw);
-			$this->db->set('city', $this->city);	
-			$this->db->set('postal_code', $this->postal_code);
-			$this->db->set('area_id', $this->area_id);	
-			$this->db->set('npwp', $this->npwp);
-			$this->db->set('phone_number', $this->phone_number);	
-			$this->db->set('pic_name', $this->pic_name);
+			$this->db->set('name', $name);			
+			$this->db->set('address', $address);
+			$this->db->set('number', $number);		
+			$this->db->set('block', $block);
+			$this->db->set('rt', $rt);	
+			$this->db->set('rw', $rw);
+			$this->db->set('city', $city);	
+			$this->db->set('postal_code', $postal_code);
+			$this->db->set('npwp', $npwp);
+			$this->db->set('phone_number', $phone_number);	
+			$this->db->set('pic_name', $pic_name);
 			
 			$this->db->update($this->table_supplier);
 		}

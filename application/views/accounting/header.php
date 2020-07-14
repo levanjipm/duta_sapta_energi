@@ -31,7 +31,12 @@
 			<a href='<?= site_url('Invoice') ?>'><button><p style='font-family:museo'>Create</p></button></a>
 			<a href='<?= site_url('Invoice/archive') ?>'><button><p style='font-family:museo'>Archive</p></button></a>
 		</div>
-		<a href='<?= site_url('Debt') ?>'><button><p style='font-family:museo'>Debt document</p></button></a>
+		
+		<button class='container_button'>Debt Document</button>
+		<div class='container_bar'>
+			<a href='<?= site_url('Debt') ?>'><button><p style='font-family:museo'>Create</p></button></a>
+			<a href='<?= site_url('Debt/archive') ?>'><button><p style='font-family:museo'>Archive</p></button></a>
+		</div>
 		<a href='<?= site_url('Receivable') ?>'><button><p style='font-family:museo'>Receivable</p></button></a>
 		<a href='<?= site_url('Payable') ?>'><button><p style='font-family:museo'>Payable</p></button></a>
 		<a href='<?= site_url('Bank/assign') ?>'><button><p style='font-family:museo'>Assign bank</p></button></a>

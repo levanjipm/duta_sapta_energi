@@ -14,7 +14,7 @@ class Sales_return extends CI_Controller {
 	{
 		$user_id		= $this->session->userdata('user_id');
 		$this->load->model('User_model');
-		$data['user_login'] = $this->User_model->show_by_id($user_id);
+		$data['user_login'] = $this->User_model->getById($user_id);
 		
 		$this->load->model('Authorization_model');
 		$data['departments']	= $this->Authorization_model->show_by_user_id($user_id);
@@ -28,7 +28,7 @@ class Sales_return extends CI_Controller {
 	{
 		$user_id		= $this->session->userdata('user_id');
 		$this->load->model('User_model');
-		$data['user_login'] = $this->User_model->show_by_id($user_id);
+		$data['user_login'] = $this->User_model->getById($user_id);
 		
 		$this->load->model('Authorization_model');
 		$data['departments']	= $this->Authorization_model->show_by_user_id($user_id);
@@ -70,7 +70,7 @@ class Sales_return extends CI_Controller {
 	{
 		$user_id		= $this->session->userdata('user_id');
 		$this->load->model('User_model');
-		$data['user_login'] = $this->User_model->show_by_id($user_id);
+		$data['user_login'] = $this->User_model->getById($user_id);
 		
 		$this->load->model('Authorization_model');
 		$data['departments']	= $this->Authorization_model->show_by_user_id($user_id);

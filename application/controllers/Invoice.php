@@ -14,7 +14,7 @@ class Invoice extends CI_Controller {
 	{
 		$user_id		= $this->session->userdata('user_id');
 		$this->load->model('User_model');
-		$data['user_login'] = $this->User_model->show_by_id($user_id);
+		$data['user_login'] = $this->User_model->getById($user_id);
 		
 		$this->load->model('Authorization_model');
 		$data['departments']	= $this->Authorization_model->show_by_user_id($user_id);
@@ -51,7 +51,7 @@ class Invoice extends CI_Controller {
 		
 		$user_id		= $this->session->userdata('user_id');
 		$this->load->model('User_model');
-		$data['user_login'] = $this->User_model->show_by_id($user_id);
+		$data['user_login'] = $this->User_model->getById($user_id);
 		
 		$this->load->model('Authorization_model');
 		$data['departments']	= $this->Authorization_model->show_by_user_id($user_id);
@@ -72,7 +72,7 @@ class Invoice extends CI_Controller {
 		
 		$customer_id	= $result[0]->customer_id;
 		$this->load->model('Customer_model');
-		$data['customer'] = $this->Customer_model->show_by_id($customer_id);
+		$data['customer'] = $this->Customer_model->getById($customer_id);
 		
 		$this->load->model('Invoice_model');
 		$input_invoice = $this->Invoice_model->delivery_order_input($delivery_order_id, $result[0]);
@@ -101,7 +101,7 @@ class Invoice extends CI_Controller {
 	{
 		$user_id		= $this->session->userdata('user_id');
 		$this->load->model('User_model');
-		$data['user_login'] = $this->User_model->show_by_id($user_id);
+		$data['user_login'] = $this->User_model->getById($user_id);
 		
 		$this->load->model('Authorization_model');
 		$data['departments']	= $this->Authorization_model->show_by_user_id($user_id);

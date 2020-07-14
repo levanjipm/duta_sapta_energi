@@ -27,7 +27,7 @@
 	<div class='alert_box_slide'>
 		<h3 style='font-family:bebasneue'>Plafond change form</h3>
 		<hr>
-		<form action='<?= site_url('Customer/submit_plafond') ?>' method='POST' id='plafond_form'>
+		<form action='<?= site_url('Plafond/submitPlafond') ?>' method='POST' id='plafond_form'>
 			<input type='hidden' id='customer_id' name='id'>
 			
 			<label>Customer</label>
@@ -61,7 +61,7 @@
 	
 	function refresh_view(page = $('#page').val()){
 		$.ajax({
-			url:'<?= site_url('Customer/show_plafonded_customers') ?>',
+			url:'<?= site_url('Customer/showItems') ?>',
 			data:{
 				term:$('#search_bar').val(),
 				page:page
@@ -125,7 +125,7 @@
 	
 	function open_edit_form(n){
 		$.ajax({
-			url:'<?= site_url('Customer/show_by_id') ?>',
+			url:'<?= site_url('Customer/showById') ?>',
 			data:{
 				id:n
 			},

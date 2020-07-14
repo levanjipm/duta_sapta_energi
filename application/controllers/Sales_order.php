@@ -14,7 +14,7 @@ class Sales_order extends CI_Controller {
 	{
 		$user_id		= $this->session->userdata('user_id');
 		$this->load->model('User_model');
-		$data['user_login'] = $this->User_model->show_by_id($user_id);
+		$data['user_login'] = $this->User_model->getById($user_id);
 		
 		$this->load->model('Authorization_model');
 		$data['departments']	= $this->Authorization_model->show_by_user_id($user_id);
@@ -42,7 +42,7 @@ class Sales_order extends CI_Controller {
 	{
 		$user_id		= $this->session->userdata('user_id');
 		$this->load->model('User_model');
-		$data['user_login'] = $this->User_model->show_by_id($user_id);
+		$data['user_login'] = $this->User_model->getById($user_id);
 		
 		$this->load->model('Authorization_model');
 		$data['departments']	= $this->Authorization_model->show_by_user_id($user_id);
@@ -50,12 +50,11 @@ class Sales_order extends CI_Controller {
 		$this->load->view('head');
 		$this->load->view('sales/header', $data);
 		
+		$data = array();
+		
 		$this->load->model('Sales_order_model');
 		$guid = $this->Sales_order_model->create_guid();
 		$data['guid'] = $guid;
-		
-		$this->load->model('Customer_model');
-		$data['customers'] = $this->Customer_model->show_items();
 		
 		$this->load->model('User_model');
 		$data['users'] = $this->User_model->show_all();
@@ -63,7 +62,7 @@ class Sales_order extends CI_Controller {
 		$this->load->view('sales/sales_order_create_dashboard',$data);
 	}
 	
-	public function input_sales_order()
+	public function inputItem()
 	{	
 		$this->load->model('Sales_order_model');
 		$id = $this->Sales_order_model->insert_from_post();
@@ -73,13 +72,13 @@ class Sales_order extends CI_Controller {
 		};
 		
 		if($id == null){
-			redirect(site_url('Sales_order'));
+			redirect(site_url('Sales_order/failedSubmission'));
 		} else {
-			redirect(site_url('Sales_order/sales_order_check_out/') . $id);
+			redirect(site_url('Sales_order/successSubmission/') . $id);
 		}
 	}
 	
-	public function sales_order_check_out($id)
+	public function successSubmission($id)
 	{
 		$this->load->model('Sales_order_model');
 		$sales_order 	= $this->Sales_order_model->show_by_id($id);
@@ -89,14 +88,14 @@ class Sales_order extends CI_Controller {
 		
 		$customer_id = $data['general']->customer_id;
 		$this->load->model('Customer_model');
-		$data['customer'] = $this->Customer_model->show_by_id($customer_id);
+		$data['customer'] = $this->Customer_model->getById($customer_id);
 		
 		$this->load->model('Sales_order_detail_model');
 		$data['details'] = $this->Sales_order_detail_model->show_by_code_sales_order_id($id);
 		
 		$user_id		= $this->session->userdata('user_id');
 		$this->load->model('User_model');
-		$data['user_login'] = $this->User_model->show_by_id($user_id);
+		$data['user_login'] = $this->User_model->getById($user_id);
 		
 		$this->load->model('Authorization_model');
 		$data['departments']	= $this->Authorization_model->show_by_user_id($user_id);
@@ -106,11 +105,24 @@ class Sales_order extends CI_Controller {
 		$this->load->view('sales/sales_order_check_out', $data);
 	}
 	
-	public function view_sales_order()
+	public function failedSubmission()
+	{
+		$user_id		= $this->session->userdata('user_id');
+		$this->load->model('User_model');
+		$data['user_login'] = $this->User_model->getById($user_id);
+		
+		$this->load->model('Authorization_model');
+		$data['departments']	= $this->Authorization_model->show_by_user_id($user_id);
+		
+		$this->load->view('head');
+		$this->load->view('sales/header', $data);
+	}
+	
+	public function showById()
 	{
 		$user_id			= $this->session->userdata('user_id');
 		$this->load->model('User_model');
-		$data['user']		= $this->User_model->show_by_id($user_id);
+		$data['user']		= $this->User_model->getById($user_id);
 		
 		$sales_order_id		= $this->input->get('id');
 		$this->load->model('Sales_order_model');
@@ -120,13 +132,13 @@ class Sales_order extends CI_Controller {
 		$customer_id		= $result->customer_id;
 		
 		$this->load->model('Customer_model');
-		$data['customer']	= $this->Customer_model->show_by_id($customer_id);
+		$data['customer']	= $this->Customer_model->getById($customer_id);
 		
 		$this->load->model('Sales_order_detail_model');
-		$data['pending_value']	= $this->Sales_order_detail_model->show_pending_value($customer_id);
+		$data['pending_value']	= $this->Sales_order_detail_model->getPendingValueByCustomerId($customer_id);
 		
 		$this->load->model('Bank_model');
-		$data['pending_bank_data']	= $this->Bank_model->show_pending_value('customer', $customer_id);
+		$data['pending_bank_data']	= $this->Bank_model->getPendingValueByOpponentId('customer', $customer_id);
 		
 		$this->load->model('Invoice_model');
 		$data['receivable'] = $this->Invoice_model->view_maximum_by_customer($customer_id);
@@ -140,11 +152,38 @@ class Sales_order extends CI_Controller {
 	
 	public function confirm()
 	{
+		$user_id = $this->session->userdata['user_id'];
+		
 		$sales_order_id		= $this->input->post('id');
 		$this->load->model('Sales_order_model');
-		$this->Sales_order_model->confirm($sales_order_id);
+		$result 			= $this->Sales_order_model->show_by_id($sales_order_id);
+		$data['general']	= $result;
 		
-		redirect(site_url('Sales_order'));
+		$customer_id		= $result->customer_id;
+		
+		$this->load->model('Customer_model');
+		$data['customer']	= $this->Customer_model->getById($customer_id);
+		
+		$this->load->model('Sales_order_detail_model');
+		$data['pending_value']	= $this->Sales_order_detail_model->getPendingValueByCustomerId($customer_id);
+		
+		$this->load->model('Bank_model');
+		$data['pending_bank_data']	= $this->Bank_model->getPendingValueByOpponentId('customer', $customer_id);
+		
+		$this->load->model('Invoice_model');
+		$data['receivable'] = $this->Invoice_model->getReceivableByCustomerId($customer_id);
+		
+		$plafond = (float)$data['customer']->plafond;
+		$pendingOrderValue = (float)$data['pending_value']->value;
+		$pendingBankValue = (float)$data['pending_bank_data']->value;
+		
+		print_r($data['receivable']);
+		
+		
+		// $this->load->model('Sales_order_model');
+		// $this->Sales_order_model->confirm($sales_order_id);
+		
+		// redirect(site_url('Sales_order'));
 	}
 	
 	public function delete()
@@ -158,7 +197,7 @@ class Sales_order extends CI_Controller {
 	{
 		$user_id		= $this->session->userdata('user_id');
 		$this->load->model('User_model');
-		$data['user_login'] = $this->User_model->show_by_id($user_id);
+		$data['user_login'] = $this->User_model->getById($user_id);
 		
 		$this->load->model('Authorization_model');
 		$data['departments']	= $this->Authorization_model->show_by_user_id($user_id);
@@ -198,7 +237,7 @@ class Sales_order extends CI_Controller {
 	{
 		$user_id		= $this->session->userdata('user_id');
 		$this->load->model('User_model');
-		$data['user_login'] = $this->User_model->show_by_id($user_id);
+		$data['user_login'] = $this->User_model->getById($user_id);
 		
 		$this->load->model('Authorization_model');
 		$data['departments']	= $this->Authorization_model->show_by_user_id($user_id);
@@ -232,7 +271,7 @@ class Sales_order extends CI_Controller {
 	{
 		$user_id		= $this->session->userdata('user_id');
 		$this->load->model('User_model');
-		$data['user_login'] = $this->User_model->show_by_id($user_id);
+		$data['user_login'] = $this->User_model->getById($user_id);
 		
 		$this->load->model('Authorization_model');
 		$data['departments']	= $this->Authorization_model->show_by_user_id($user_id);
@@ -248,7 +287,7 @@ class Sales_order extends CI_Controller {
 			
 			$customer_id = $data['general']->customer_id;
 			$this->load->model('Customer_model');
-			$data['customer'] = $this->Customer_model->show_by_id($customer_id);
+			$data['customer'] = $this->Customer_model->getById($customer_id);
 			
 			$this->load->model('Sales_order_detail_model');
 			$data['details'] = $this->Sales_order_detail_model->show_by_code_sales_order_id($status);
@@ -264,7 +303,7 @@ class Sales_order extends CI_Controller {
 	{
 		$user_id		= $this->session->userdata('user_id');
 		$this->load->model('User_model');
-		$data['user_login'] = $this->User_model->show_by_id($user_id);
+		$data['user_login'] = $this->User_model->getById($user_id);
 		
 		$this->load->model('Authorization_model');
 		$data['departments']	= $this->Authorization_model->show_by_user_id($user_id);
@@ -311,7 +350,7 @@ class Sales_order extends CI_Controller {
 	{
 		$user_id		= $this->session->userdata('user_id');
 		$this->load->model('User_model');
-		$data['user_login'] = $this->User_model->show_by_id($user_id);
+		$data['user_login'] = $this->User_model->getById($user_id);
 		
 		if($data['user_login']->access_level <= 2){
 			redirect(site_url('Sales_order'));
@@ -359,7 +398,7 @@ class Sales_order extends CI_Controller {
 		$id = $this->input->post('id');
 		$user_id	= $this->session->userdata('user_id');
 		$this->load->model('User_model');
-		$data['user_login'] = $this->User_model->show_by_id($user_id);
+		$data['user_login'] = $this->User_model->getById($user_id);
 		if($data['user_login']->access_level > 2){
 			$this->load->model('Sales_order_close_request_model');
 			$data['general'] = $this->Sales_order_close_request_model->show_by_id($id);

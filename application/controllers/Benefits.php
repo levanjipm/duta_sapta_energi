@@ -14,7 +14,7 @@ class Benefits extends CI_Controller {
 	{
 		$user_id		= $this->session->userdata('user_id');
 		$this->load->model('User_model');
-		$data['user_login'] = $this->User_model->show_by_id($user_id);
+		$data['user_login'] = $this->User_model->getById($user_id);
 		
 		$this->load->model('Authorization_model');
 		$data['departments']	= $this->Authorization_model->show_by_user_id($user_id);
@@ -24,17 +24,54 @@ class Benefits extends CI_Controller {
 		$this->load->view('human_resource/benefit_dashboard');
 	}
 	
-	public function get_benefits()
+	public function getItems()
 	{
 		$page = $this->input->get('page');
 		$term = $this->input->get('term');
 		$offset = ($page - 1) * 10;
 		
 		$this->load->model('Benefit_model');
-		$data['benefits'] = $this->Benefit_model->get_benefits($offset, $term);
-		$data['pages'] = $this->Benefit_model->count_benefits($term);
+		$data['benefits'] = $this->Benefit_model->getItems($offset, $term);
+		$data['pages'] = $this->Benefit_model->countItems($term);
 		
 		header('Content-Type: application/json');
 		echo json_encode($data);
+	}
+	
+	public function insertItem()
+	{
+		$this->load->model('Benefit_model');
+		$result = $this->Benefit_model->insertItem();
+		
+		echo $result;
+	}
+	
+	public function deleteById()
+	{
+		$id = $this->input->post('id');
+		
+		$this->load->model('Benefit_model');
+		$result = $this->Benefit_model->deleteById($id);
+		
+		echo $result;
+	}
+	
+	public function getById()
+	{
+		$id = $this->input->get('id');
+		
+		$this->load->model('Benefit_model');
+		$data = $this->Benefit_model->getById($id);
+		
+		header('Content-Type: application/json');
+		echo json_encode($data);
+	}
+	
+	public function updateById()
+	{
+		$this->load->model('Benefit_model');
+		$result = $this->Benefit_model->updateById();
+		
+		echo $result;
 	}
 }

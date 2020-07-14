@@ -29,8 +29,8 @@
 		<button class='container_button'><p style='font-family:museo'>Customer <i class='fa fa-caret-down'></i></p></button>
 		<div class='container_bar'>
 			<a href='<?= site_url('Customer') ?>'><button><p>Manage</p></button></a>
-			<a href='<?= site_url('Customer/plafond') ?>'><button><p>Plafond</p></button></a>
-			<a href='<?= site_url('Customer/check_plafond_status') ?>'><button><p>Plafond Submission status</p></button></a>
+			<a href='<?= site_url('Plafond') ?>'><button><p>Plafond</p></button></a>
+			<a href='<?= site_url('Plafond/confirm') ?>'><button><p>Plafond Submission status</p></button></a>
 		</div>
 		<a href='<?= site_url('Area') ?>'><button><p>Area</p></button></a>
 		<a href='<?= site_url('Item') ?>'><button><p>Item</p></button></a>

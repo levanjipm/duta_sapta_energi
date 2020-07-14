@@ -78,7 +78,7 @@ class Plafond_model extends CI_Model {
 			return $result;
 		}
 		
-		public function check_unconfirmed_submission($customer_id)
+		public function checkSubmissionByCustomerId($customer_id)
 		{
 			$this->db->where('is_confirm', 0);
 			$this->db->where('is_delete', 0);
@@ -95,11 +95,11 @@ class Plafond_model extends CI_Model {
 			return $result;
 		}
 		
-		public function insert_from_post()
+		public function insertItem()
 		{
 			$customer_id		= $this->input->post('id');
 			$plafond			= $this->input->post('plafond');
-			$result				= $this->Plafond_model->check_unconfirmed_submission($customer_id);
+			$result				= $this->Plafond_model->checkSubmissionByCustomerId($customer_id);
 			
 			if($result){
 				$db_item		= array(
@@ -125,7 +125,7 @@ class Plafond_model extends CI_Model {
 			}
 		}
 		
-		public function show_by_id($id)
+		public function getById($id)
 		{
 			$this->db->select('plafond_submission.*, users.name as created_by');
 			$this->db->from('plafond_submission');
@@ -137,7 +137,7 @@ class Plafond_model extends CI_Model {
 			return $result;
 		}
 		
-		public function update_plafond($id, $is_confirm, $is_delete)
+		public function updatePlafond($id, $is_confirm, $is_delete)
 		{
 			$this->db->set('is_confirm', $is_confirm);
 			$this->db->set('is_delete', $is_delete);

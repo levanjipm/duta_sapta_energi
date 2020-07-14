@@ -16,7 +16,7 @@ class Purchase_order extends CI_Controller {
 		
 		$user_id		= $this->session->userdata('user_id');
 		$this->load->model('User_model');
-		$data['user_login'] = $this->User_model->show_by_id($user_id);
+		$data['user_login'] = $this->User_model->getById($user_id);
 		
 		$this->load->model('Authorization_model');
 		$data['departments']	= $this->Authorization_model->show_by_user_id($user_id);
@@ -38,7 +38,7 @@ class Purchase_order extends CI_Controller {
 		
 		$user_id		= $this->session->userdata('user_id');
 		$this->load->model('User_model');
-		$data['user_login'] = $this->User_model->show_by_id($user_id);
+		$data['user_login'] = $this->User_model->getById($user_id);
 		
 		$this->load->model('Authorization_model');
 		$data['departments']	= $this->Authorization_model->show_by_user_id($user_id);
@@ -57,21 +57,21 @@ class Purchase_order extends CI_Controller {
 		$this->load->view('Purchasing/purchase_order_create_dashboard', $data);
 	}
 	
-	public function add_item_to_cart()
+	public function addItemToCart()
 	{
 		$item_id	= $this->input->post('item_id');
 		$this->load->model('Item_model');
-		$item = $this->Item_model->select_by_id($item_id);
+		$item = $this->Item_model->showById($item_id);
 		
 		header('Content-Type: application/json');
 		echo json_encode($item);
 	}
 	
-	public function add_item_to_cart_as_bonus()
+	public function addBonusItemToCart()
 	{
 		$item_id	= $this->input->post('item_id');
 		$this->load->model('Item_model');
-		$item = $this->Item_model->select_by_id($item_id);
+		$item = $this->Item_model->showById($item_id);
 		
 		header('Content-Type: application/json');
 		echo json_encode($item);
@@ -158,7 +158,7 @@ class Purchase_order extends CI_Controller {
 		
 		$user_id		= $this->session->userdata('user_id');
 		$this->load->model('User_model');
-		$data['user_login'] = $this->User_model->show_by_id($user_id);
+		$data['user_login'] = $this->User_model->getById($user_id);
 		
 		$this->load->model('Authorization_model');
 		$data['departments']	= $this->Authorization_model->show_by_user_id($user_id);
@@ -205,7 +205,7 @@ class Purchase_order extends CI_Controller {
 	{		
 		$user_id		= $this->session->userdata('user_id');
 		$this->load->model('User_model');
-		$data['user_login'] = $this->User_model->show_by_id($user_id);
+		$data['user_login'] = $this->User_model->getById($user_id);
 		
 		$this->load->model('Authorization_model');
 		$data['departments']	= $this->Authorization_model->show_by_user_id($user_id);

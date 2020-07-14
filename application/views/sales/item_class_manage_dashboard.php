@@ -1,3 +1,6 @@
+<head>
+	<title>Manage item classes</title>
+</head>
 <div class='dashboard'>
 	<div class='dashboard_head'>
 		<p style='font-family:museo'><a href='<?= site_url('Sales') ?>' title='Sales'><i class='fa fa-briefcase'></i></a> /Item classes</p>
@@ -5,7 +8,7 @@
 	<br>
 	<div class='dashboard_in'>
 		<div class='input_group'>
-			<input type='text' class='form-control' id='search_bar'>
+			<input type='text' class='form-control input-lg' id='search_bar' placeholder="Search item class">
 			<div class='input_group_append'>
 				<button type='button' class='button button_default_dark' id='add_item_class_button'>Add item class</button>
 			</div>
@@ -99,7 +102,7 @@
 	
 	function refresh_view(page = $('#page').val()){
 		$.ajax({
-			url:'<?= site_url('Item_class/show_items') ?>',
+			url:'<?= site_url('Item_class/showItems') ?>',
 			data:{
 				term:$('#search_bar').val(),
 				page:page
@@ -155,7 +158,7 @@
 	
 	$('#add_item_button').click(function(){
 		$.ajax({
-			url:'<?= site_url('Item_class/insert_from_post') ?>',
+			url:'<?= site_url('Item_class/insertItem') ?>',
 			data:{
 				name: $('#item_class_name').val(),
 				description: $('#item_class_description').val()
@@ -180,7 +183,7 @@
 	
 	function open_edit_form(n){
 		$.ajax({
-			url:"<?= site_url('Item_class/get_by_id') ?>",
+			url:"<?= site_url('Item_class/showById') ?>",
 			data:{
 				id: n
 			},
@@ -201,7 +204,7 @@
 	
 	$('#edit_item_button').click(function(){
 		$.ajax({
-			url:'<?= site_url('Item_class/update_from_post') ?>',
+			url:'<?= site_url('Item_class/updateById') ?>',
 			data:{
 				id: $('#item_class_edit_id').val(),
 				name: $('#item_class_name_edit').val(),
@@ -230,7 +233,7 @@
 	function delete_class(){
 		if($('#delete_class_id').val() != ""){
 			$.ajax({
-				url:'<?= site_url('Item_class/delete_by_id') ?>',
+				url:'<?= site_url('Item_class/deleteById') ?>',
 				data:{
 					id:$('#delete_class_id').val()
 				},

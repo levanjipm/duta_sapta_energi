@@ -82,7 +82,7 @@ class Item_model extends CI_Model {
 			return $result;
 		}
 		
-		public function show_items($offset = 0, $filter = '', $limit = 25)
+		public function showItems($offset = 0, $filter = '', $limit = 25)
 		{
 			if($filter != ''){
 				$query = $this->db->query("
@@ -113,7 +113,7 @@ class Item_model extends CI_Model {
 			return $items;
 		}
 		
-		public function count_items($filter = '')
+		public function countItems($filter = '')
 		{
 			if($filter != ''){
 				$query = $this->db->query("
@@ -140,7 +140,7 @@ class Item_model extends CI_Model {
 			return $items;
 		}
 		
-		public function insert_from_post()
+		public function insertItem()
 		{
 			$this->db->select('*');
 			$this->db->from($this->table_item);
@@ -195,7 +195,7 @@ class Item_model extends CI_Model {
 			}
 		}
 		
-		public function get_item_by_id($item_id)
+		public function showById($item_id)
 		{
 			$query 				= $this->db->query("
 				SELECT price_list.price_list, item.*
@@ -275,10 +275,10 @@ class Item_model extends CI_Model {
 			}
 		}
 		
-		public function delete_by_id($id)
+		public function deleteById($id)
 		{
 			$this->db->db_debug = FALSE;
-			$this->db->where('id', $area_id);
+			$this->db->where('id', $id);
 			$this->db->delete($this->table_item);
 			
 			if($this->db->affected_rows() == 1){

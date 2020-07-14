@@ -14,7 +14,7 @@ class Item_class extends CI_Controller {
 	{
 		$user_id		= $this->session->userdata('user_id');
 		$this->load->model('User_model');
-		$data['user_login'] = $this->User_model->show_by_id($user_id);
+		$data['user_login'] = $this->User_model->getById($user_id);
 		
 		$this->load->model('Authorization_model');
 		$data['departments']	= $this->Authorization_model->show_by_user_id($user_id);
@@ -25,54 +25,55 @@ class Item_class extends CI_Controller {
 		$this->load->view('sales/item_class_manage_dashboard');
 	}
 	
-	public function insert_from_post()
+	public function insertItem()
 	{
 		$this->load->model('Item_class_model');
-		$result = $this->Item_class_model->insert_from_post();
+		$result = $this->Item_class_model->insertItem();
 		
 		echo $result;
 	}
 	
-	public function delete_item_class()
-	{
-		$this->load->model('Item_class_model');
-		$this->Item_class_model->delete_by_id();
-		
-		redirect(site_url('Item_class'));
-	}
-	
-	public function update_from_post()
+	public function updateById()
 	{		
 		$this->load->model('Item_class_model');
-		$result = $this->Item_class_model->update_from_post();
+		$result = $this->Item_class_model->updateById();
 		
 		echo $result;
 	}
 	
-	public function show_items()
+	public function showAllItems()
+	{
+		$this->load->model('Item_class_model');
+		$data = $this->Item_class_model->showAllItems();
+		
+		header('Content-Type: application/json');
+		echo json_encode($data);
+	}
+	
+	public function showItems()
 	{
 		$term			= $this->input->get('term');
 		$page			= $this->input->get('page');
 		$offset			= ($page - 1) * 25;
 		$this->load->model('Item_class_model');
-		$data['items']			= $this->Item_class_model->show_items($offset, $term);
-		$data['pages']			= max(0, ceil($this->Item_class_model->count_items($term)/25));
+		$data['items']			= $this->Item_class_model->showItems($offset, $term);
+		$data['pages']			= max(0, ceil($this->Item_class_model->countItems($term)/25));
 		
 		header('Content-Type: application/json');
 		echo json_encode($data);
 	}
 	
-	public function get_by_id()
+	public function showById()
 	{
 		$this->load->model('Item_class_model');
 		$id 	= $this->input->get('id');
-		$data	= $this->Item_class_model->get_by_id($id);
+		$data	= $this->Item_class_model->showById($id);
 		
 		header('Content-Type: application/json');
 		echo json_encode($data);
 	}
 	
-	public function delete_by_id()
+	public function deleteById()
 	{
 		$this->load->model('Item_class_model');
 		$result = $this->Item_class_model->delete_by_id();

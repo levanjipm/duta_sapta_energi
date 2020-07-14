@@ -14,7 +14,7 @@ class Item extends CI_Controller {
 	{
 		$user_id		= $this->session->userdata('user_id');
 		$this->load->model('User_model');
-		$data['user_login'] = $this->User_model->show_by_id($user_id);
+		$data['user_login'] = $this->User_model->getById($user_id);
 		
 		$this->load->model('Authorization_model');
 		$data['departments']	= $this->Authorization_model->show_by_user_id($user_id);
@@ -23,7 +23,7 @@ class Item extends CI_Controller {
 		$this->load->view('sales/header', $data);
 		
 		$this->load->model('Item_class_model');
-		$items = $this->Item_class_model->show_all();
+		$items = $this->Item_class_model->showAllItems();
 		$data['classes'] = $items;
 		
 		$this->load->view('sales/item_manage_dashboard',$data);
@@ -48,30 +48,21 @@ class Item extends CI_Controller {
 		$this->Item_model->update_from_post();
 	}
 	
-	public function shopping_cart_view()
-	{
-		$this->load->model('Item_model');
-		$items = $this->Item_model->show_items(25,0);
-		
-		header('Content-Type: application/json');
-		echo json_encode($items);
-	}
-	
 	public function shopping_cart_view_purchase()
 	{		
 		$this->load->view('purchasing/shopping_cart_item');
 	}
 	
-	public function search_item_cart()
+	public function showItems()
 	{
 		$term		= $this->input->get('term');
 		$page		= $this->input->get('page');
 		$offset		= ($page - 1) * 25;
 		$this->load->model('Item_model');
-		$items = $this->Item_model->show_items($offset, $term);
+		$items = $this->Item_model->showItems($offset, $term);
 		$data['items'] = $items;
 		
-		$items = $this->Item_model->count_items($term);
+		$items = $this->Item_model->countItems($term);
 		$data['pages'] = max(1, ceil($items / 25));
 		$data['page'] = $page;
 		
@@ -79,24 +70,12 @@ class Item extends CI_Controller {
 		echo json_encode($data);
 	}
 	
-	public function view_item_table()
-	{
-		$this->load->model('Item_model');
-		$items = $this->Item_model->show_search_result(25,0);
-		
-		$data['items'] = $items;
-		$this->load->view('sales/customer_table_view', $data);
-		
-		$this->load->model('Item_model');
-		$data['pages'] = ceil($this->Item_model->count_page() / 25);
-	}
-	
-	public function get_item_by_id()
+	public function showById()
 	{
 		$item_id		= $this->input->get('id');
 		$this->load->model('Item_model');
 		
-		$data	= $this->Item_model->get_item_by_id($item_id);
+		$data	= $this->Item_model->showById($item_id);
 		
 		header('Content-Type: application/json');
 		echo json_encode($data);
@@ -112,11 +91,11 @@ class Item extends CI_Controller {
 		echo json_encode($item);
 	}
 	
-	public function delete_by_id()
+	public function deleteById()
 	{
 		$id = $this->input->post('id');
 		$this->load->model('Item_model');
-		$result = $this->Item_model->delete_by_id($id);
+		$result = $this->Item_model->deleteById($id);
 		
 		echo $result;
 	}

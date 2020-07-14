@@ -27,8 +27,8 @@
 <div class='alert_wrapper' id='add_supplier_wrapper'>
 	<button class='slide_alert_close_button'>&times </button>
 	<div class='alert_box_slide'>
-		<form action='<?= site_url('Supplier/insert_new_supplier/') ?>' method='POST'>
-			<h2 style='font-family:bebasneue'>Add supplier form</h2>
+		<form action='<?= site_url('Supplier/insertItem') ?>' method='POST'>
+			<h3 style='font-family:bebasneue'>Add supplier</h3>
 			<hr>
 			
 			<label>Supplier name</label>
@@ -72,24 +72,11 @@
 	</div>
 </div>
 
-<div class='alert_wrapper' id='delete_confirmation_wrapper'>
-	<div class='alert_box_confirm'>
-		<img src='<?= base_url('assets/exclamation.png') ?>' style='width:40%'></img>
-		<br><br>
-		<h4 style='font-family:museo'>Are you sure?</h4>
-		<br><br>
-		<button class='button button_danger_dark' onclick='close_alert("delete_confirmation_wrapper")'>Not sure</button>
-		<button class='button button_success_dark' onclick='confirm_delete()'>Yes</button>
-		
-		<input type='hidden' id='supplier_delete_id'>
-	</div>
-</div>
-
 <div class='alert_wrapper' id='edit_supplier_wrapper'>
 	<button class='slide_alert_close_button'>&times </button>
 	<div class='alert_box_slide'>
-		<form action='<?= site_url('Supplier/update_supplier/') ?>' method='POST'>
-			<h2 style='font-family:bebasneue'>Add supplier form</h2>
+		<form action='<?= site_url('Supplier/updateById') ?>' method='POST'>
+			<h3 style='font-family:bebasneue'>Edit supplier</h3>
 			<hr>
 			<input type='hidden' id='edit_supplier_id' name='id'>
 			
@@ -134,8 +121,37 @@
 	</div>
 </div>
 
+<div class='alert_wrapper' id='delete_supplier_wrapper'>
+	<div class='alert_box_confirm_wrapper'>
+		<div class='alert_box_confirm_icon'><i class='fa fa-trash'></i></div>
+		<div class='alert_box_confirm'>
+			<input type='hidden' id='delete_supplier_id'>
+			<h3>Delete confirmation</h3>
+			
+			<p>You are about to delete this data.</p>
+			<p>Are you sure?</p>
+			<button class='button button_default_dark' onclick="$('#delete_supplier_wrapper').fadeOut()">Cancel</button>
+			<button class='button button_danger_dark' onclick='delete_supplier()'>Delete</button>
+			
+			<br><br>
+			
+			<p style='font-family:museo;background-color:#f63e21;width:100%;padding:5px;color:white;position:relative;bottom:0;left:0;opacity:0' id='error_delete_supplier'>Deletation failed.</p>
+		</div>
+	</div>
+</div>
+
 <script>
-	refresh_view();
+	$(document).ready(function(){
+		refresh_view();
+	});
+	
+	$('#search_bar').change(function(){
+		refresh_view(1);
+	});
+	
+	$('#page').change(function(){
+		refresh_view();
+	});
 	
 	$('#add_supplier_button').click(function(){
 		$('#add_supplier_wrapper').fadeIn(300, function(){
@@ -143,34 +159,47 @@
 		});
 	});
 	
-	function open_delete_confirmation(n){
-		$('#delete_confirmation_wrapper').fadeIn();
-		$('#supplier_delete_id').val(n);
+	function confirm_delete(n){
+		$('#delete_supplier_id').val(n);
+		$('#delete_supplier_wrapper').fadeIn();
 	};
 	
-	function confirm_delete(){
+	function delete_supplier(){
 		$.ajax({
-			url:'<?= site_url('supplier/delete_supplier') ?>',
+			url:'<?= site_url('supplier/deleteById') ?>',
 			type:'POST',
 			data:{
-				supplier_id: $('#supplier_delete_id').val()
+				id: $('#delete_supplier_id').val()
 			},
 			beforeSend:function(){
 				$('button').attr('disabled',true);
 			},
-			success:function(){
-				window.location.reload();
+			success:function(response){
+				$('button').attr('disabled', false);
+				if(response == 1){
+					refresh_view();
+					$('#delete_supplier_wrapper').fadeOut();
+				} else {
+					$('#error_delete_supplier').fadeTo(250, 1);
+					setTimeout(function(){
+						$('#error_delete_supplier').fadeTo(250, 0);
+					}, 1000);
+				}		
 			}
 		})
-	};
+	}
 	
 	function open_edit_form(n){
 		$.ajax({
-			url:'<?= site_url('supplier/select_by_id') ?>',
+			url:'<?= site_url('supplier/getById') ?>',
 			data:{
 				id: n
 			},
+			beforeSend:function(){
+				$('button').attr('disabled', true);
+			},
 			success:function(response){
+				$('button').attr('disabled', false);
 				var id				= response.id;
 				var name			= response.name;
 				var rt				= response.rt;
@@ -213,7 +242,7 @@
 	function refresh_view(page = $('#page').val())
 	{
 		$.ajax({		
-			url:'<?= site_url('Supplier/view_items') ?>',
+			url:'<?= site_url('Supplier/getItems') ?>',
 			data:{
 				page: page,
 				term: $('#search_bar').val()
@@ -228,6 +257,8 @@
 						$('#page').append("<option value='" + i + "'>" + i + "</option>");
 					}
 				}
+				
+				$('#supplier_table').html('');
 				
 				var items		= response.suppliers;
 				$.each(items, function(index, item){
@@ -262,7 +293,7 @@
 						complete_address	+= ', ' + supplier_postal;
 					}
 					
-					$('#supplier_table').append("<tr><td>" + supplier_name + "</td><td><p>" + complete_address + "</p><p>" + supplier_city + "</p></td><td><button type='button' class='button button_success_dark' onclick='open_edit_form(" + supplier_id + ")'><i class='fa fa-pencil'></i></button> <button type='button' class='button button_danger_dark' onclick='open_delete_confirmation(" + supplier_id + ")'><i class='fa fa-trash'></i></button> <button type='button' class='button button_default_dark'><i class='fa fa-eye'></i></button></td></tr>");
+					$('#supplier_table').append("<tr><td>" + supplier_name + "</td><td><p>" + complete_address + "</p><p>" + supplier_city + "</p></td><td><button type='button' class='button button_success_dark' onclick='open_edit_form(" + supplier_id + ")'><i class='fa fa-pencil'></i></button> <button type='button' class='button button_danger_dark' onclick='confirm_delete(" + supplier_id + ")'><i class='fa fa-trash'></i></button> <button type='button' class='button button_default_dark'><i class='fa fa-eye'></i></button></td></tr>");
 				});
 			}
 		});

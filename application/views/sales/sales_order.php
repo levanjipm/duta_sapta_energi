@@ -85,7 +85,7 @@
 			<button type='button' class='button button_danger_dark' title='Delete sales order' onclick='delete_sales_order()'><i class='fa fa-trash'></i></button>
 			
 			<br><br>
-			<p style='font-family:museo' id='warning_text'>This customer has a pending invoice payment, please contact your supervisor</p>
+			<p style='font-family:museo' id='warning_text'>This customer has a pending invoice payment, please contact your supervisor.</p>
 		</form>
 	</div>
 </div>
@@ -177,7 +177,7 @@
 	
 	function view_sales_order(n){
 		$.ajax({
-			url:'<?= site_url('Sales_order/view_sales_order') ?>',
+			url:'<?= site_url('Sales_order/showById') ?>',
 			data:{
 				id:n
 			},

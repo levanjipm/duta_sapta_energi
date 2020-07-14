@@ -20,14 +20,8 @@
 			<tbody id='customer_table'></tbody>
 		</table>
 		
-		<select class='form-control' id='page' onchange='update_view()' style='width:100px'>
-<?php
-	for($i = 1; $i <= $pages; $i++){
-?>
-			<option value='<?= $i ?>'><?= $i ?></option>
-<?php
-	}
-?>
+		<select class='form-control' id='page' style='width:100px'>
+			<option value='1'>1</option>
 		</select>
 	</div>
 </div>
@@ -255,7 +249,7 @@
 	
 	function delete_customer(){
 		$.ajax({
-			url:'<?= site_url('Customer/delete_customer') ?>',
+			url:'<?= site_url('Customer/deleteById') ?>',
 			type:'POST',
 			data:{
 				id: $('#delete_customer_id').val()
@@ -280,7 +274,7 @@
 	
 	function open_edit_form(n){
 		$.ajax({
-			url:'<?= site_url('Customer/get_customer_by_id') ?>',
+			url:'<?= site_url('Customer/getItemById') ?>',
 			type:'GET',
 			data:{
 				id: n
@@ -333,7 +327,7 @@
 	
 	$('#submit_edit_customer_button').click(function(){
 		$.ajax({
-			url:'<?= site_url('Customer/update_customer') ?>',
+			url:'<?= site_url('Customer/updateItemById') ?>',
 			data:{
 				name 			: $('#name_edit').val(),
 				id 				: $('#customer_id_edit').val(),		
@@ -372,7 +366,7 @@
 	
 	function refresh_view(page = $('#page').val()){
 		$.ajax({
-			url:'<?= site_url('Customer/show_items') ?>',
+			url:'<?= site_url('Customer/showItems') ?>',
 			data:{
 				term:$('#search_bar').val(),
 				page:page

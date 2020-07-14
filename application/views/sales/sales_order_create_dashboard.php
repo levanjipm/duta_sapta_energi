@@ -1,10 +1,13 @@
+<head>
+	<title>Create sales order</title>
+</head>
 <div class='dashboard'>
 	<div class='dashboard_head'>
 		<p style='font-family:museo'><a href='<?= site_url('Sales') ?>' title='Sales'><i class='fa fa-briefcase'></i></a> /<a href='<?= site_url('Sales_order') ?>'>Sales order </a> /Create</p>
 	</div>
 	<br>
 	<div class='dashboard_in'>
-		<form action='<?= site_url('Sales_order/input_sales_order') ?>' method='POST' id='sales_order_form'>
+		<form action='<?= site_url('Sales_order/inputItem') ?>' method='POST' id='sales_order_form'>
 			<label>Date</label>
 			<input type='date' class='form-control' name='sales_order_date' id='sales_order_date' value='<?= date('Y-m-d') ?>'>
 			
@@ -164,6 +167,7 @@
 			</tr>
 			<tbody id='table_item_confirm'></tbody>
 		</table>
+		<div style='padding:2px 10px;background-color:#ffc107;width:100%;display:none;' id='warning_text'><p style='font-family:museo'><i class='fa fa-exclamation-triangle'></i> Warning! Insufficient stock detected.</p></div><br>
 		
 		<button class='button button_default_dark' onclick='submit_form()'>Submit</button>
 	</div>
@@ -186,7 +190,7 @@
 	
 	function refresh_view(){
 		$.ajax({
-			url:'<?= site_url('Item/search_item_cart') ?>',
+			url:'<?= site_url('Item/showItems') ?>',
 			data:{
 				term:$('#search_bar').val(),
 				page:$('#page').val()
@@ -205,7 +209,7 @@
 						var id				= item.id;
 						var name			= item.name;
 						
-						$('#shopping_item_list_tbody').append("<tr><td>" + reference + "</td><td>" + name + "</td><td><button type='button' class='button button_success_dark' onclick='add_to_cart(" + id + ")' title='Add " + reference + " to cart'><i class='fa fa-cart-plus'></i></button> <button type='button' class='button button_danger_dark' onclick='add_to_cart_as_bonus(" + id + ")' title='Add " + reference + " to cart as bonus'><i class='fa fa-gift'></i></button></td></tr>");
+						$('#shopping_item_list_tbody').append("<tr><td>" + reference + "</td><td>" + name + "</td><td><button type='button' class='button button_success_dark' onclick='addItem(" + id + ")' title='Add " + reference + " to cart'><i class='fa fa-cart-plus'></i></button> <button type='button' class='button button_danger_dark' onclick='addBonusItem(" + id + ")' title='Add " + reference + " to cart as bonus'><i class='fa fa-gift'></i></button></td></tr>");
 					});
 				} else {
 					$('#shopping_item_list_table').hide();
@@ -331,7 +335,7 @@
 	
 	function refresh_customer_view(page = $('#customer_page').val()){
 		$.ajax({
-			url:'<?= site_url('Customer/show_items') ?>',
+			url:'<?= site_url('Customer/showItems') ?>',
 			data:{
 				page:page,
 				term:$('#search_customer').val(),
@@ -393,7 +397,7 @@
 	$('#select_customer_button').click(function(){
 		$('#select_customer_wrapper').slideToggle(300);
 		$.ajax({
-			url:'<?= site_url('Customer/show_items') ?>',
+			url:'<?= site_url('Customer/showItems') ?>',
 			data:{
 				page:1,
 				term:'',
@@ -449,7 +453,7 @@
 	
 	function select_customer(n){
 		$.ajax({
-			url:'<?= site_url('Customer/select_customer_sales_order') ?>',
+			url:'<?= site_url('Customer/getCustomerAccount') ?>',
 			data:{
 				id:n
 			},
@@ -504,7 +508,7 @@
 		}
 	}
 	
-	function add_to_cart(n){
+	function addItem(n){
 		$.ajax({
 			url:'<?= site_url('Item/add_item_to_cart') ?>',
 			data:{
@@ -540,7 +544,7 @@
 		})
 	}
 	
-	function add_to_cart_as_bonus(n){
+	function addBonusItem(n){
 		if($('#cart_products tr').length > 0){
 			$.ajax({
 				url:'<?= site_url('Item/add_item_to_cart') ?>',

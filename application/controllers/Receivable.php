@@ -14,7 +14,7 @@ class Receivable extends CI_Controller {
 	{
 		$user_id		= $this->session->userdata('user_id');
 		$this->load->model('User_model');
-		$data['user_login'] = $this->User_model->show_by_id($user_id);
+		$data['user_login'] = $this->User_model->getById($user_id);
 		
 		$this->load->model('Authorization_model');
 		$data['departments']	= $this->Authorization_model->show_by_user_id($user_id);
@@ -44,7 +44,7 @@ class Receivable extends CI_Controller {
 		$data['receivable'] = $this->Invoice_model->view_receivable_by_customer_id($customer_id);
 		
 		$this->load->model('Customer_model');
-		$data['customer'] = $this->Customer_model->show_by_id($customer_id);
+		$data['customer'] = $this->Customer_model->getById($customer_id);
 		
 		header('Content-Type: application/json');
 		echo json_encode($data);

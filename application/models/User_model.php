@@ -109,7 +109,7 @@ class User_model extends CI_Model {
 			return $items;
 		}
 		
-		public function show_by_id($id)
+		public function getById($id)
 		{
 			$this->db->where('id',$id);
 			$query = $this->db->get($this->table_user);

@@ -203,9 +203,28 @@ class Invoice_model extends CI_Model {
 			return $chart_array;
 		}
 		
+		public function getReceivableByCustomerId($customer_id)
+		{
+			$query = $this->db->query(
+				"SELECT COALESCE(a.value),0) as value, COALESCE(b.value,0) as receivable FROM (
+					SELECT invoice.* FROM invoice 
+						JOIN code_delivery_order ON code_delivery_order.invoice_id = invoice.id
+						LEFT JOIN delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order.id
+						JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
+						JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
+						WHERE code_sales_order.customer_id = '$customer_id' AND invoice.is_done = '0'
+					) AS a
+				LEFT JOIN (
+					SELECT SUM(value) as value, invoice_id FROM receivable GROUP by invoice_id
+				) AS b
+				ON b.invoice_id = a.id");
+			$result = $query->row();
+			return $result;
+		}
+		
 		public function view_maximum_by_customer($customer_id)
 		{
-			$this->db->select('invoice.id, invoice.date, invoice.value, coalesce(sum(receivable.value),0) as paid, customer.term_of_payment');
+			$this->db->select('invoice.id, invoice.date, coalesce(invoice.value,0), coalesce(sum(receivable.value),0) as paid, customer.term_of_payment');
 			$this->db->from('invoice');
 			$this->db->join('receivable', 'invoice.id = receivable.invoice_id', 'left');
 			$this->db->join('code_delivery_order', 'code_delivery_order.invoice_id = invoice.id');

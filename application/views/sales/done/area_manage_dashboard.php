@@ -43,7 +43,7 @@
 <div class='alert_wrapper' id='edit_area_wrapper'>
 	<button class='slide_alert_close_button'>&times;</button>
 	<div class='alert_box_slide'>
-		<h2 style='font-family:bebasneue'>Edit area</h2>
+		<h3 style='font-family:bebasneue'>Edit area</h2>
 		<hr>
 		<form id='edit_area_form'>
 			<input type='hidden' id='area_id'>
@@ -90,7 +90,7 @@
 	
 	function refresh_view(page = $('#page').val()){
 		$.ajax({
-			url:'<?= site_url('Area/get_areas') ?>',
+			url:'<?= site_url('Area/getItems') ?>',
 			data:{
 				page: page,
 				term: $('#search_bar').val()
@@ -132,7 +132,7 @@
 	$('#insert_area_button').click(function(){
 		if($('#insert_area_form').valid()){
 			$.ajax({
-				url:'<?= site_url('Area/insert_new_area') ?>',
+				url:'<?= site_url('Area/insertItem') ?>',
 				data:{
 					name: $('#area').val()
 				},
@@ -159,7 +159,7 @@
 	
 	function delete_area(){
 		$.ajax({
-			url:'<?= site_url('Area/delete_area') ?>',
+			url:'<?= site_url('Area/deleteById') ?>',
 			data:{
 				id:$('#delete_area_id').val()
 			},
@@ -180,7 +180,7 @@
 	
 	function open_edit_view(n){
 		$.ajax({
-			url:'<?= site_url('Area/get_area_by_id') ?>',
+			url:'<?= site_url('Area/getItemById') ?>',
 			data:{
 				id: n
 			},
@@ -197,7 +197,7 @@
 	
 	$('#edit_area_button').click(function(){
 		$.ajax({
-			url:'<?= site_url('Area/update_area') ?>',
+			url:'<?= site_url('Area/updateById') ?>',
 			data:{
 				id: $('#area_id').val(),
 				name: $('#area_name').val()
