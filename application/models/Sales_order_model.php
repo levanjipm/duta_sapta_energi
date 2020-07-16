@@ -139,7 +139,7 @@ class Sales_order_model extends CI_Model {
 			return $result;
 		}
 		
-		public function show_by_id($id)
+		public function getById($id)
 		{
 			$this->db->select('DISTINCT(sales_order.code_sales_order_id) as id, code_sales_order.*, customer.name as customer_name, customer.name as customer_name, customer.address as address, customer.city as city, users.name as seller, customer.rt, customer.rw, customer.block, customer.postal_code, customer.number');
 			$this->db->from('sales_order');
@@ -321,20 +321,18 @@ class Sales_order_model extends CI_Model {
 			return $items;
 		}
 		
-		public function confirm($sales_order_id)
+		public function updateById($status, $sales_order_id)
 		{
-			$this->db->set('is_confirm', 1);
-			$this->db->set('confirmed_by', $this->session->userdata('user_id'));
-			$this->db->where('is_confirm', 0);
-			$this->db->where('is_delete', 0);
-			$this->db->where('id', $sales_order_id);
-			$this->db->update($this->table_sales_order);
-		}
-		
-		public function delete($sales_order_id)
-		{
-			$this->db->set('is_delete', 1);
-			$this->db->where('is_confirm', 0);
+			if($status == 1){
+				$this->db->set('is_confirm', 1);
+				$this->db->set('confirmed_by', $this->session->userdata('user_id'));
+				$this->db->where('is_confirm', 0);
+				$this->db->where('is_delete', 0);
+			} else if($status == 0){
+				$this->db->set('is_delete', 1);
+				$this->db->where('is_confirm', 0);
+			}
+			
 			$this->db->where('id', $sales_order_id);
 			$this->db->update($this->table_sales_order);
 		}

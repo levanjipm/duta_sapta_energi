@@ -224,4 +224,15 @@ class Stock_in_model extends CI_Model {
 			
 			return $result;
 		}
+
+		public function getStockByItemId($itemId)
+		{
+			$this->db->select("COALESCE(SUM(residue), 0) as quantity");
+			$this->db->where('item_id', $itemId);
+			
+			$query = $this->db->get($this->table_stock_in);
+
+			$result = $query->row();
+			return $result;
+		}
 }

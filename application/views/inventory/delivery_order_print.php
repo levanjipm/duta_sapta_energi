@@ -116,6 +116,7 @@
 <br>
 <div class='row' style='margin:0'>
 	<div class='col-xs-12' style='text-align:center'>
-		<button type='button' class='button button_default_light' onclick='window.print()'><i class='fa fa-print'></i></button>
+		<button type='button' class='button button_default_light' onclick='window.print(); $(this).remove();$("#buttonBack").show();'><i class='fa fa-print'></i></button>
+		<a type='button' class='button button_success_dark' href='<?= site_url('Delivery_order') ?>' style='display:none' id='buttonBack'><i class='fa fa-long-arrow-left'></i></a>
 	</div>
 </div>

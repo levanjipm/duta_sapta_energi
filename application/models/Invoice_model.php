@@ -206,18 +206,20 @@ class Invoice_model extends CI_Model {
 		public function getReceivableByCustomerId($customer_id)
 		{
 			$query = $this->db->query(
-				"SELECT COALESCE(a.value),0) as value, COALESCE(b.value,0) as receivable FROM (
+				"SELECT COALESCE(SUM(a.value),0) as value, COALESCE(SUM(b.value),0) as paid FROM (
 					SELECT invoice.* FROM invoice 
-						JOIN code_delivery_order ON code_delivery_order.invoice_id = invoice.id
-						LEFT JOIN delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order.id
-						JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
-						JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
-						WHERE code_sales_order.customer_id = '$customer_id' AND invoice.is_done = '0'
-					) AS a
+						JOIN code_delivery_order ON code_delivery_order.invoice_id = invoice.id 
+						LEFT JOIN delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order.id 
+						JOIN sales_order ON delivery_order.sales_order_id = sales_order.id 
+						JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id 
+						WHERE  invoice.is_done = '0' AND code_sales_order.customer_id = '$customer_id'
+					) as a
 				LEFT JOIN (
-					SELECT SUM(value) as value, invoice_id FROM receivable GROUP by invoice_id
-				) AS b
-				ON b.invoice_id = a.id");
+					SELECT SUM(receivable.value) as value, receivable.invoice_id 
+					FROM receivable 
+					GROUP BY receivable.invoice_id
+				) as b
+			ON a.id = b.invoice_id");
 			$result = $query->row();
 			return $result;
 		}

@@ -4,7 +4,7 @@
 	</div>
 	<br>
 	<div class='dashboard_in'>
-		<form action='<?= site_url('Debt/create_debt_document') ?>' method='POST' id='debt_document_form'>
+		<form action='<?= site_url('Debt/createDebtDocument') ?>' method='POST' id='debt_document_form'>
 			<label>Date</label>
 			<input type='date' class='form-control' name='date' required>
 			

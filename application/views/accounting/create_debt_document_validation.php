@@ -4,7 +4,7 @@
 	</div>
 	<br>
 	<div class='dashboard_in'>
-		<form action='<?= site_url('Debt/input') ?>' method='POST' id='debt_document_form'>
+		<form action='<?= site_url('Debt/insertItem') ?>' method='POST' id='debt_document_form'>
 			<label>Date</label>
 			<p style='font-family:museo' id='document_date'><?= date('d M Y',strtotime($date)) ?></p>
 			<input type='hidden' class='form-control' name='date' value='<?= $date ?>' required>

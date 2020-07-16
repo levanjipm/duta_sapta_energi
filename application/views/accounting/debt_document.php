@@ -7,8 +7,8 @@
 		<div class='input_group'>
 			<input type='text' class='form-control input-lg' id='search_bar'>
 			<div class='input-group-append'>
-				<a href='<?= site_url('Debt/create_dashboard') ?>' role='button' class='button button_default_dark'>Create</a>
-				<a href='<?= site_url('Debt/create_blank_dashboard') ?>' role='button' class='button button_default_dark'>Create blank </a>
+				<a href='<?= site_url('Debt/create') ?>' role='button' class='button button_default_dark'>Create</a>
+				<a href='<?= site_url('Debt/createBlank') ?>' role='button' class='button button_default_dark'>Create blank </a>
 			</div>
 		</div>
 		<br>
@@ -113,7 +113,7 @@
 	function view_debt_document(n){
 		var code_purchase_invoice_id	= n;
 		$.ajax({
-			url:'<?= site_url('Debt/view_by_id') ?>',
+			url:'<?= site_url('Debt/getById') ?>',
 			data:{
 				id:n
 			},

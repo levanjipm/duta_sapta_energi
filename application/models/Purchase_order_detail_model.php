@@ -245,4 +245,28 @@ class Purchase_order_detail_model extends CI_Model {
 			
 			return $result;
 		}
+
+		public function getPendingItems()
+		{
+			$query = $this->db->query(
+				"SELECT SUM(quantity - received) as quantity, item_id FROM purchase_order
+				WHERE status = '0'
+				GROUP BY item_id"
+			);
+
+			$result = $query->result();
+			return $result;
+		}
+
+		public function getPendingItemsById($item_id)
+		{
+			$query = $this->db->query(
+				"SELECT COALESCE(SUM(quantity - received),0) as quantity FROM purchase_order
+				WHERE status = '0'
+				AND item_id = '$item_id'"
+			);
+
+			$result = $query->row();
+			return $result;
+		}
 }

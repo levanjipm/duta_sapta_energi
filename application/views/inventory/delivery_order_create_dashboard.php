@@ -23,7 +23,7 @@
 					<p style='font-family:museo'><?= $sales_order->customer_city ?></p>
 				</td>
 				<td>
-					<button type='button' class='button button_success_dark' onclick='view_sales_order(<?= $sales_order->id ?>)'><i class='fa fa-long-arrow-right'></i></button>
+					<button type='button' class='button button_success_dark' onclick='viewSalesOrder(<?= $sales_order->id ?>)'><i class='fa fa-long-arrow-right'></i></button>
 				</td>
 			</tr>
 <?php
@@ -43,7 +43,7 @@
 		<input type='hidden' id='customer_plafond'>
 		<input type='hidden' id='invoice_status' value='1'>
 	
-		<form action='<?= site_url('Delivery_order/input_delivery_order') ?>' method='POST' id='delivery_order_form'>
+		<form action='<?= site_url('Delivery_order/insertItem') ?>' method='POST' id='delivery_order_form'>
 			<label>Date</label>
 			<input type='date' class='form-control' name='date' required min='2020-01-01'>
 			<input type='hidden' value='<?= $guid ?>' name='guid' id='guid' required minlength='36' maxlength='36'><br>
@@ -78,7 +78,7 @@
 			<div style='padding:2px 10px;background-color:#ffc107;width:100%;display:none' id='warning_text'>
 				<p ><i class='fa fa-exclamation-triangle'></i> Customer's plafond exceeded</p>
 			</div>
-			
+			<input type='hidden' id='salesOrderId' name='salesOrderId' required>
 			<input type='hidden' value='0' id='total' name='total' min='1'><br>
 			
 			<button type='submit' class='button button_default_dark' id='submit_button'><i class='fa fa-long-arrow-right'></i></button>
@@ -87,16 +87,23 @@
 </div>
 
 <script>
-	function view_sales_order(n){
+	var pendingBankData;
+	var pendingValue;
+	var receivable;
+	var customerPlafond;
+	var accessLevel;
+
+	function viewSalesOrder(n){
 		$.ajax({
-			url:'<?= site_url('Delivery_order/view_sales_order') ?>',
+			url:'<?= site_url('Delivery_order/viewSalesOrderbyId') ?>',
 			data:{
 				sales_order_id:n
 			},
 			type:'GET',
 			success:function(response){
+				$('#salesOrderId').val(n);
 				var user					= response.user;
-				var access_level			= user.access_level;
+				accessLevel			= user.access_level;
 				
 				var sales_order_array		= response.general;
 				var sales_order_name		= sales_order_array.name;
@@ -161,33 +168,17 @@
 				var guid				= response.guid;
 				
 				$('#guid').val(guid);
-				
 				$('#sales_order_table').html('');
-				
-				var pending_value_array		= response.pending_value;
-				var pending_value			= parseFloat(pending_value_array.value);
-				
-				var pending_invoice			= response.pending_invoice;	
-				var debt					= 0;
-				$.each(pending_invoice, function(index, invoice){
-					var invoice_value	= parseFloat(Math.max(0, invoice.value));
-					var paid_value		= parseFloat(invoice.paid);
-					
-					var total_value		= invoice_value - paid_value;
-					debt				+= total_value;
-				});
-				
-				var pending_bank_value_array		= response.pending_bank_data;
-				if(pending_bank_value_array.value == null){
-					var pending_bank_value				= 0;
+
+				if(response.pending_bank_data.value == null){
+					pendingBankData = 0;
 				} else {
-					var pending_bank_value				= parseFloat(pending_bank_value_array.value);
+					pendingBankData = parseFloat(response.pending_bank_data.value);
 				}
-				
-				$('#pending_bank_value').val(pending_bank_value);
-				$('#pending_invoice').val(debt);
-				$('#access_level').val(access_level);
-				$('#customer_plafond').val(customer_plafond);
+
+				pendingValue = parseFloat(response.pending_value.value);
+				receivable = parseFloat(response.receivable.value - response.receivable.paid);
+				customerPlafond	= customer_plafond;
 				
 				var sales_order_value	= 0;
 				var details				= response.details;
@@ -231,8 +222,6 @@
 					$('#invoice_status').val(0);
 				}
 				
-				$('#pending_value').val(pending_value);
-				
 				$('#view_sales_order_wrapper').fadeIn(300, function(){
 					$('#view_sales_order_wrapper .alert_box_slide').show("slide", { direction: "right" }, 250);
 				});
@@ -253,12 +242,13 @@
 	
 	function change_total(){
 		var total_delivery_order = 0;
-		var pending_bank_value 	= parseFloat($('#pending_bank_value').val());
-		var debt				= parseFloat($('#pending_invoice').val());
-		var pending_value		= parseFloat($('#pending_value').val());
-		var plafond				= parseFloat($('#customer_plafond').val());
+		var pending_bank_value 	= pendingBankData;
+		console.log(pendingBankData);
+		var debt				= receivable;
+		var pending_value		= pendingValue;
+		var plafond				= customerPlafond
 		var send_value			= 0;
-		var access_level		= $('#access_level').val();
+		var access_level		= accessLevel
 		
 		$('input[id^="quantity-"]').each(function(){
 			var quantity			= parseInt($(this).val());
@@ -286,8 +276,6 @@
 			$('#warning_text').hide();
 			$('#submit_button').attr('disabled', false);
 		}
-			
-		
 		$('#total').val(total_delivery_order);
 	};
 </script>

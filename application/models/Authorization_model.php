@@ -54,7 +54,7 @@ class Authorization_model extends CI_Model {
 			return $result;
 		}
 		
-		public function show_by_user_id($user_id)
+		public function getByUserId($user_id)
 		{
 			$this->db->select('user_authorization.*, department.name, department.index_url, department.icon');
 			$this->db->from('user_authorization');

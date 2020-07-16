@@ -83,30 +83,7 @@ class Debt_model extends CI_Model {
 			return $result;
 		}
 		
-		public function show_items($offset = 0, $filter = '', $limit = 25)
-		{			
-			$query 		= $this->db->get($this->table_item, $limit, $offset);
-			$items	 	= $query->result();
-			
-			$result 	= $this->map_list($items);
-			
-			return $result;
-		}
-		
-		public function count_items($filter = '')
-		{
-			if($filter != ''){
-				$this->db->like('name', $filter, 'both');
-				$this->db->or_like('reference', $filter, 'both');
-			}
-			
-			$query		= $this->db->get($this->table_item);
-			$result		= $query->num_rows();
-			
-			return $result;
-		}
-		
-		public function insert_from_post()
+		public function insertItem()
 		{
 			$created_by			= $this->session->userdata('user_id');
 			$date				= $this->input->post('date');
@@ -139,7 +116,7 @@ class Debt_model extends CI_Model {
 			}
 		}
 		
-		public function view_unconfirmed_documents($offset = 0, $term = '', $limit = 25)
+		public function showUnconfirmedDocuments($offset = 0, $term = '', $limit = 25)
 		{
 			$this->db->select('DISTINCT(purchase_invoice.id) as id, purchase_invoice.date, purchase_invoice.tax_document, purchase_invoice.invoice_document, supplier.name, supplier.address, supplier.city');
 			$this->db->from('purchase_invoice');
@@ -166,7 +143,7 @@ class Debt_model extends CI_Model {
 			return $result;
 		}
 		
-		public function count_unconfirmed_documents($term = '')
+		public function countUnconfirmedDocuments($term = '')
 		{
 			$this->db->like('purchase_invoice.tax_document', $term, 'both');
 			$this->db->or_like('purchase_invoice.invoice_document', $term, 'both');
@@ -179,7 +156,7 @@ class Debt_model extends CI_Model {
 			return $result;
 		}
 		
-		public function select_by_id($invoice_id)
+		public function getById($invoice_id)
 		{
 			$this->db->select('purchase_invoice.*, supplier.name, supplier.address, supplier.city');
 			$this->db->from('purchase_invoice');
@@ -199,27 +176,18 @@ class Debt_model extends CI_Model {
 			return $result;
 		}
 		
-		public function confirm($invoice_id, $confirmed_by)
+		public function updateById($status, $invoice_id, $confirmed_by)
 		{
-			$this->db->set('is_confirm', 1);
-			$this->db->set('confirmed_by', $confirmed_by);
-			$this->db->where('is_delete', 0);
-			$this->db->where('id', $invoice_id);
-			$this->db->update($this->table_purchase_invoice);
-		}
-		
-		public function delete($invoice_id)
-		{
-			$this->db->set('is_delete', 1);
-			$this->db->where('is_confirm', 0);
-			$this->db->where('id', $invoice_id);
-			$this->db->update($this->table_purchase_invoice);
-			
-			if ($this->db->affected_rows() > 0){
-				return TRUE;
-			} else {
-				return FALSE;
+			if($status == 1){
+				$this->db->set('is_confirm', 1);
+				$this->db->set('confirmed_by', $confirmed_by);
+				$this->db->where('is_delete', 0);
+			} else if($status == 0){
+				$this->db->set('is_delete', 1);
+				$this->db->where('is_confirm', 0);
 			}
+			$this->db->where('id', $invoice_id);
+			$this->db->update($this->table_purchase_invoice);
 		}
 		
 		public function view_payable_chart()

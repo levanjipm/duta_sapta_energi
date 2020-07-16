@@ -6,19 +6,26 @@
 	<div  class='dashboard_in'>
 		<input type='text' class='form-control' id='search_bar'>
 		<br>
-		<table class='table table-bordered'>
-			<tr>
-				<th>Customer</th>
-				<th>Address</th>
-				<th>Submitted by</th>
-				<th>Action</th>
-			</tr>
-			<tbody id='plafond_table'></tbody>
-		</table>
-		
-		<select class='form-control' id='page' style='width:100px'>
-			<option value='1'>1</option>
-		</select>
+		<div  id='plafondSubmissionTable'>
+			<table class='table table-bordered'>
+				<tr>
+					<th>Customer</th>
+					<th>Address</th>
+					<th>Submitted by</th>
+					<th>Action</th>
+				</tr>
+				<tbody id='plafond_table'></tbody>
+			</table>
+			
+			<select class='form-control' id='page' style='width:100px'>
+				<option value='1'>1</option>
+			</select>
+		</div>
+
+		<div id='plafondSubmissionText'>
+			<p>There is no plafond submission to be confirmed.</p>
+			<p><a href="<?= site_url("Plafond") ?>">Create a new one</a></p>
+		</div>
 	</div>
 </div>
 
@@ -35,7 +42,7 @@
 		<label>Plafond</label>
 		<p style='font-family:museo' id='plafond_change_p'></p><br>
 		
-		<form action='<?= site_url('Plafond/confirm') ?>' method='POST'>
+		<form action='<?= site_url('Plafond/confirmSubmission') ?>' method='POST'>
 			<input type='hidden' id='submission_id' name='id'>
 			<button class='button button_default_dark'><i class='fa fa-long-arrow-right'></i></button>
 			<button type='button' class='button button_danger_dark' onclick='delete_plafond_submission()'><i class='fa fa-trash'></i></button>
@@ -72,7 +79,9 @@
 		refresh_view();
 	});
 	
-	refresh_view();
+	$(document).ready(function(){
+		refresh_view();
+	})
 	
 	function open_edit_form(n){
 		$.ajax({
@@ -140,7 +149,7 @@
 	
 	function refresh_view(page = $('#page').val()){
 		$.ajax({
-			url:'<?= site_url('Customer/showUnconfirmed') ?>',
+			url:'<?= site_url('Plafond/showUnconfirmed') ?>',
 			data:{
 				page:page,
 				term:$('#search_bar').val(),
@@ -155,11 +164,12 @@
 				
 				$('#plafond_table').html('');
 				var customers = response.customers;
+				var customerCount = customers.length;
 				$.each(customers, function(index, customer){
-					var customer_name		= customer.name;
+					var customer_name			= customer.name;
 					var complete_address		= '';
 					var customer_name			= customer.name;
-					complete_address		+= customer.address;
+					complete_address			+= customer.address;
 					var customer_city			= customer.city;
 					var customer_number			= customer.number;
 					var customer_rt				= customer.rt;
@@ -202,6 +212,14 @@
 	}
 ?>
 				});
+
+				if(customerCount > 0){
+					$('#plafondSubmissionTable').show();
+					$('#plafondSubmissionText').hide();
+				} else {
+					$('#plafondSubmissionTable').hide();
+					$('#plafondSubmissionText').show();
+				}
 			}
 		});
 	}

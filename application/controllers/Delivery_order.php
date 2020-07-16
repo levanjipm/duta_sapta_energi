@@ -16,7 +16,7 @@ class Delivery_order extends CI_Controller {
 		$data['user_login'] = $this->User_model->getById($user_id);
 		
 		$this->load->model('Authorization_model');
-		$data['departments']	= $this->Authorization_model->show_by_user_id($user_id);
+		$data['departments']	= $this->Authorization_model->getByUserId($user_id);
 		
 		$this->load->view('head');
 		$this->load->view('inventory/header', $data);
@@ -31,14 +31,14 @@ class Delivery_order extends CI_Controller {
 		$this->load->view('inventory/delivery_order', $data);
 	}
 	
-	public function create_dashboard()
+	public function create()
 	{
 		$user_id		= $this->session->userdata('user_id');
 		$this->load->model('User_model');
 		$data['user_login'] = $this->User_model->getById($user_id);
 		
 		$this->load->model('Authorization_model');
-		$data['departments']	= $this->Authorization_model->show_by_user_id($user_id);
+		$data['departments']	= $this->Authorization_model->getByUserId($user_id);
 		
 		$this->load->view('head');
 		$this->load->view('inventory/header', $data);
@@ -59,7 +59,7 @@ class Delivery_order extends CI_Controller {
 		$this->load->view('inventory/delivery_order_create_dashboard', $data);
 	}
 	
-	public function view_sales_order()
+	public function viewSalesOrderbyId()
 	{
 		$id		= $this->input->get('sales_order_id');
 		
@@ -75,7 +75,7 @@ class Delivery_order extends CI_Controller {
 		$data['user']		= $this->User_model->getById($user_id);
 
 		$this->load->model('Sales_order_model');
-		$result 			= $this->Sales_order_model->show_by_id($id);
+		$result 			= $this->Sales_order_model->getById($id);
 		$data['general']	= $result;
 		
 		$customer_id		= $result->customer_id;
@@ -84,23 +84,25 @@ class Delivery_order extends CI_Controller {
 		$data['customer']	= $this->Customer_model->getById($customer_id);
 		
 		$this->load->model('Sales_order_detail_model');
-		$data['pending_value']	= $this->Sales_order_detail_model->show_pending_value($customer_id);
+		$data['pending_value']	= $this->Sales_order_detail_model->getPendingValueByCustomerId($customer_id);
 		
 		$this->load->model('Bank_model');
 		$data['pending_bank_data']	= $this->Bank_model->getPendingValueByOpponentId('customer', $customer_id);
 		
 		$this->load->model('Invoice_model');
-		$data['receivable'] = $this->Invoice_model->view_maximum_by_customer($customer_id);
+		$data['receivable'] = $this->Invoice_model->getReceivableByCustomerId($customer_id);
 		
 		header('Content-Type: application/json');
 		echo json_encode($data);
 	}
 	
-	public function input_delivery_order()
+	public function insertItem()
 	{
-		$guid	= $this->input->post('guid');
+		$salesOrderId 	= $this->input->post('salesOrderId');
+		$guid			= $this->input->post('guid');
+
 		$this->load->model('Delivery_order_model');
-		$result = $this->Delivery_order_model->check_guid($guid);
+		$result 		= $this->Delivery_order_model->check_guid($guid);
 		
 		if($result){
 			$sales_order_array	= array_keys($this->input->post('quantity'));
@@ -110,18 +112,30 @@ class Delivery_order extends CI_Controller {
 			$result = $this->Sales_order_detail_model->check_sales_order($sales_order_array, $quantity_array);
 			
 			if($result){
-				$delivery_order_id = $this->Delivery_order_model->insert_from_post();
+				$deliveryOrderId = $this->Delivery_order_model->insertItem();
 				
 				$this->load->model('Delivery_order_detail_model');
-				$result = $this->Delivery_order_detail_model->insert_from_post($delivery_order_id);
+				$result = $this->Delivery_order_detail_model->insert_from_post($deliveryOrderId);
 				
 				if($result){
 					$this->Sales_order_detail_model->update_sales_order_sent($sales_order_array, $quantity_array);
 				}
 			};
+			
+			$this->load->model('Sales_order_model');
+			$salesOrder = $this->Sales_order_model->getById($salesOrderId);
+			print_r($salesOrder);
+			$invoicingMethod = $salesOrder->invoicing_method;
+
+			if($invoicingMethod == 1){
+				redirect(site_url('Delivery_order'));
+			} else if($invoicingMethod == 2){
+				redirect(site_url('Delivery_order/print/' . $deliveryOrderId));
+			}
+
+		} else {
+			redirect(site_url('Delivery_order'));
 		}
-		
-		redirect(site_url('Delivery_order'));
 	}
 	
 	public function show_by_code_delivery_order_id($id)
@@ -198,12 +212,12 @@ class Delivery_order extends CI_Controller {
 		redirect(site_url('Delivery_order'));
 	}
 	
-	public function show_by_sales_order()
+	public function getBySalesOrderId()
 	{
 		$sales_order_id		= $this->input->get('sales_order_id');
 		
 		$this->load->model('Delivery_order_detail_model');
-		$data 				= $this->Delivery_order_detail_model->show_by_code_sales_order_id($sales_order_id);
+		$data 				= $this->Delivery_order_detail_model->getByCodeSalesOrderId($sales_order_id);
 		
 		header('Content-Type: application/json');
 		echo json_encode($data);
@@ -216,7 +230,7 @@ class Delivery_order extends CI_Controller {
 		$data['user_login'] = $this->User_model->getById($user_id);
 		
 		$this->load->model('Authorization_model');
-		$data['departments']	= $this->Authorization_model->show_by_user_id($user_id);
+		$data['departments']	= $this->Authorization_model->getByUserId($user_id);
 		
 		$this->load->view('head');
 		$this->load->view('inventory/header', $data);
@@ -256,11 +270,11 @@ class Delivery_order extends CI_Controller {
 		echo json_encode($data);
 	}
 	
-	public function cancel()
+	public function deleteById()
 	{
 		$id				= $this->input->post('id');
 		$this->load->model('Delivery_order_detail_model');
-		$sales_order_array		= $this->Delivery_order_detail_model->select_by_code_delivery_order_id($id);
+		$sales_order_array		= $this->Delivery_order_detail_model->getByCodeDeliveryOrderId($id);
 
 		if(count($sales_order_array) > 0){
 			$this->load->model('Sales_order_detail_model');

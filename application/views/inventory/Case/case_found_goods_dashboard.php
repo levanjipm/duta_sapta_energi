@@ -1,31 +1,23 @@
-<div class='dashboard'>
-	<div class='dashboard_head'>
-		<p style='font-family:museo'><a href='<?= site_url('Inventory') ?>' title='Inventory'><i class='fa fa-briefcase'></i></a> / <a href='<?= site_url('Inventory_case') ?>'
-		>Cases</a> / Found goods</p>
-	</div>
-	<br>
-	<div class='dashboard_in'>
-		<form action='<?= site_url('Inventory_case/case_found_goods_input') ?>' method='POST' id='lost_goods_form'>
-			<label>Date</label>
-			<input type='date' class='form-control' name='date' id='case_date' required><br>
-			
-			<button type='button' class='button button_default_dark' id='add_item_button'>Add item</button><br><br>
-			
-			<table class='table table-bordered' id='cart_products_table' style='display:none'>
-				<tr>
-					<th>Reference</th>
-					<th>Name</th>
-					<th>Quantity</th>
-					<th>Unit price</th>
-					<th>Action</th>
-				</tr>
-				<tbody id='cart_products'></tbody>
-			</table>
-			
-			<button type='button' class='button button_default_dark' id='shopping_item_list_button' style='display:none'><i class='fa fa-long-arrow-right'></i></button>
-		</form>
-	</div>
-</div>
+<h4><strong>Found</strong></h4>
+<form action='<?= site_url('Inventory_case/case_found_goods_input') ?>' method='POST' id='lost_goods_form'>
+	<label>Date</label>
+	<input type='date' class='form-control' name='date' id='case_date' required><br>
+	
+	<button type='button' class='button button_default_dark' id='add_item_button'>Add item</button><br><br>
+	
+	<table class='table table-bordered' id='cart_products_table' style='display:none'>
+		<tr>
+			<th>Reference</th>
+			<th>Name</th>
+			<th>Quantity</th>
+			<th>Unit price</th>
+			<th>Action</th>
+		</tr>
+		<tbody id='cart_products'></tbody>
+	</table>
+	
+	<button type='button' class='button button_default_dark' id='shopping_item_list_button' style='display:none'><i class='fa fa-long-arrow-right'></i></button>
+</form>
 
 <div class='alert_wrapper' id='add_item_wrapper'>
 	<div class='alert_box_full'>
@@ -88,12 +80,12 @@
 <script>
 	$('#add_item_button').click(function(){
 		$('#search_bar').val('');
-		refresh_view();
+		refresh_view(1);
 	});
 	
 	function refresh_view(page = $('#page').val()){
 		$.ajax({
-			url:'<?= site_url('Item/search_item_cart') ?>',
+			url:'<?= site_url('Item/showItems') ?>',
 			data:{
 				term:$('#search_bar').val(),
 				page: page,
@@ -108,10 +100,10 @@
 					$('#shopping_item_list_table').show();
 					$.each(item_array, function(index, item){
 						var reference		= item.reference;
-						var id				= item.id;
+						var id				= item.item_id;
 						var name			= item.name;
 						
-						$('#shopping_item_list_tbody').append("<tr><td>" + reference + "</td><td>" + name + "</td><td><button type='button' class='button button_default_dark' onclick='add_to_cart(" + id + ")' title='Add " + reference + " to list'><i class='fa fa-cart-plus'></i></button></td></tr>");
+						$('#shopping_item_list_tbody').append("<tr><td>" + reference + "</td><td>" + name + "</td><td><button type='button' class='button button_default_dark' onclick='addToCart(" + id + ")' title='Add " + reference + " to list'><i class='fa fa-cart-plus'></i></button></td></tr>");
 					});
 				} else {
 					$('#shopping_item_list_table').hide();
@@ -143,17 +135,17 @@
 		$(this).parents().find('.alert_wrapper').fadeOut();
 	});
 	
-	function add_to_cart(n){
+	function addToCart(n){
 		$.ajax({
-			url:'<?= site_url('Item/add_item_to_cart') ?>',
+			url:'<?= site_url('Item/showById') ?>',
 			data:{
-				price_list_id:n
+				id:n
 			},
-			type:'POST',
 			beforeSend:function(){
 				$('button').attr('disabled',true);
 			},
 			success:function(response){
+				console.log(response);
 				var item_id		= response.id;
 				var reference	= response.reference;
 				var name		= response.name;

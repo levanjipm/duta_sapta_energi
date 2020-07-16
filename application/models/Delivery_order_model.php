@@ -207,7 +207,7 @@ class Delivery_order_model extends CI_Model {
 			}
 		}
 		
-		public function insert_from_post()
+		public function insertItem()
 		{
 			$this->load->model('Delivery_order_model');
 			$delivery_order_name = $this->Delivery_order_model->name_generator($this->input->post('date'), $this->input->post('taxing'));

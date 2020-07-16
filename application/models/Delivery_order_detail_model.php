@@ -192,7 +192,7 @@ class Delivery_order_detail_model extends CI_Model {
 			return $batch;
 		}
 		
-		public function show_by_code_sales_order_id($sales_order_id)
+		public function getByCodeSalesOrderId($sales_order_id)
 		{
 			$this->db->select('DISTINCT(code_delivery_order.id) as id, code_delivery_order.date, code_delivery_order.name, code_delivery_order.is_confirm, code_delivery_order.is_sent, code_delivery_order.invoice_id');
 			$this->db->from('delivery_order');
@@ -206,7 +206,7 @@ class Delivery_order_detail_model extends CI_Model {
 			return $items;
 		}
 		
-		public function select_by_code_delivery_order_id($delivery_order_id)
+		public function getByCodeDeliveryOrderId($delivery_order_id)
 		{
 			$this->db->select('delivery_order.*, sales_order.quantity as ordered, sales_order.sent');
 			$this->db->from('delivery_order');
@@ -215,11 +215,11 @@ class Delivery_order_detail_model extends CI_Model {
 			$query		= $this->db->get();
 			$result		= $query->result();
 			
-			$sales_order_array		= $this->Delivery_order_detail_model->create_sales_order_batch($result);
+			$sales_order_array		= $this->Delivery_order_detail_model->createSalesOrderBatch($result);
 			return $sales_order_array;
 		}
 		
-		public function create_sales_order_batch($delivery_order_array)
+		public function createSalesOrderBatch($delivery_order_array)
 		{
 			$batch		= array();
 			foreach($delivery_order_array as $delivery_order)

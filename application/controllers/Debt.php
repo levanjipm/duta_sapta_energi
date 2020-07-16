@@ -17,7 +17,7 @@ class Debt extends CI_Controller {
 		$data['user_login'] = $this->User_model->getById($user_id);
 		
 		$this->load->model('Authorization_model');
-		$data['departments']	= $this->Authorization_model->show_by_user_id($user_id);
+		$data['departments']	= $this->Authorization_model->getByUserId($user_id);
 		
 		$this->load->view('head');
 		$this->load->view('accounting/header', $data);
@@ -25,19 +25,18 @@ class Debt extends CI_Controller {
 		$this->load->view('accounting/debt_document');
 	}
 	
-	public function view_unconfirmed_documents()
+	public function showUnconfirmedDocuments()
 	{
 		$page		= $this->input->get('page');
 		$term		= $this->input->get('term');
 		$offset		= ($page - 1) * 25;
 		
 		$this->load->model('Debt_model');
-		$data['invoices']	= $this->Debt_model->view_unconfirmed_documents($offset, $term);
-		$data['pages']		= max(ceil($this->Debt_model->count_unconfirmed_documents($term)/25), 1);
+		$data['invoices']	= $this->Debt_model->showUnconfirmedDocuments($offset, $term);
+		$data['pages']		= max(ceil($this->Debt_model->countUnconfirmedDocuments($term)/25), 1);
 		
 		header('Content-Type: application/json');
-		echo json_encode($data);
-		
+		echo json_encode($data);	
 	}
 	
 	public function view_uninvoiced_documents()
@@ -53,14 +52,14 @@ class Debt extends CI_Controller {
 		echo json_encode($data);
 	}
 	
-	public function create_dashboard()
+	public function create()
 	{
 		$user_id		= $this->session->userdata('user_id');
 		$this->load->model('User_model');
 		$data['user_login'] = $this->User_model->getById($user_id);
 		
 		$this->load->model('Authorization_model');
-		$data['departments']	= $this->Authorization_model->show_by_user_id($user_id);
+		$data['departments']	= $this->Authorization_model->getByUserId($user_id);
 		
 		$this->load->view('head');
 		$this->load->view('accounting/header', $data);
@@ -72,14 +71,14 @@ class Debt extends CI_Controller {
 		$this->load->view('accounting/create_debt_document_dashboard', $data);
 	}
 	
-	public function create_blank_dashboard()
+	public function createBlank()
 	{
 		$user_id		= $this->session->userdata('user_id');
 		$this->load->model('User_model');
 		$data['user_login'] = $this->User_model->getById($user_id);
 		
 		$this->load->model('Authorization_model');
-		$data['departments']	= $this->Authorization_model->show_by_user_id($user_id);
+		$data['departments']	= $this->Authorization_model->getByUserId($user_id);
 		
 		$this->load->view('head');
 		$this->load->view('accounting/header', $data);
@@ -105,14 +104,14 @@ class Debt extends CI_Controller {
 		echo json_encode($data);
 	}
 	
-	public function create_debt_document()
+	public function createDebtDocument()
 	{
 		$user_id		= $this->session->userdata('user_id');
 		$this->load->model('User_model');
 		$data['user_login'] = $this->User_model->getById($user_id);
 		
 		$this->load->model('Authorization_model');
-		$data['departments']	= $this->Authorization_model->show_by_user_id($user_id);
+		$data['departments']	= $this->Authorization_model->getByUserId($user_id);
 		
 		$this->load->view('head');
 		$this->load->view('accounting/header', $data);
@@ -137,7 +136,7 @@ class Debt extends CI_Controller {
 		$this->load->view('accounting/create_debt_document_validation', $data);
 	}
 	
-	public function input()
+	public function insertItem()
 	{
 		$document_array		= $this->input->post('document');
 		foreach($document_array as $document){
@@ -148,7 +147,7 @@ class Debt extends CI_Controller {
 		
 		$price_array	= $this->input->post('price');
 		$this->load->model('Debt_model');
-		$invoice_id		= $this->Debt_model->insert_from_post();
+		$invoice_id		= $this->Debt_model->insertItem();
 		
 		if($invoice_id != null){
 			$this->load->model('Good_receipt_model');
@@ -164,11 +163,11 @@ class Debt extends CI_Controller {
 		redirect(site_url('Debt'));
 	}
 	
-	public function view_by_id()
+	public function getById()
 	{
 		$purchase_invoice_id		= $this->input->get('id');
 		$this->load->model('Debt_model');
-		$data['debt'] = $this->Debt_model->select_by_id($purchase_invoice_id);
+		$data['debt'] = $this->Debt_model->getById($purchase_invoice_id);
 		
 		$this->load->model('Good_receipt_model');
 		$data['documents'] = $this->Good_receipt_model->select_by_invoice_id($purchase_invoice_id);
@@ -185,7 +184,7 @@ class Debt extends CI_Controller {
 		$purchase_invoice_id		= $this->input->post('id');
 		$confirmed_by				= $this->session->userdata('user_id');
 		$this->load->model('Debt_model');
-		$data['debt'] = $this->Debt_model->confirm($purchase_invoice_id, $confirmed_by);
+		$data['debt'] = $this->Debt_model->updateById(1, $purchase_invoice_id, $confirmed_by);
 		
 		redirect(site_url('Debt'));
 	}
@@ -195,7 +194,7 @@ class Debt extends CI_Controller {
 		$purchase_invoice_id		= $this->input->post('id');
 		if($this->session->has_userdata('user_id') == TRUE){
 			$this->load->model('Debt_model');
-			$result = $this->Debt_model->delete($purchase_invoice_id);
+			$result = $this->Debt_model->updateById(0, $purchase_invoice_id);
 			
 			if($result){
 				$this->load->model('Good_receipt_model');

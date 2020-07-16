@@ -17,18 +17,52 @@ class Purchasing extends CI_Controller {
 		$data['user_login'] = $this->User_model->getById($user_id);
 		
 		$this->load->model('Authorization_model');
-		$data['departments']	= $this->Authorization_model->show_by_user_id($user_id);
+		$data['departments']	= $this->Authorization_model->getByUserId($user_id);
 		
 		$this->load->view('head');
 		$this->load->view('purchasing/header', $data);
 		$this->load->view('purchasing/index_page');
 	}
 	
-	public function calculate_needs()
+	public function calculateNeeds()
 	{
 		$this->load->model('Sales_order_detail_model');
-		$data		= $this->Sales_order_detail_model->calculate_incomplete();
-		
-		print_r($data);
+		$items		= $this->Sales_order_detail_model->getItemNeeded();
+
+		$this->load->model('Purchase_order_detail_model');
+		$this->load->model('Stock_in_model');
+
+		$orderArray = array();
+
+		foreach($items as $item)
+		{
+			$itemId = $item->item_id;
+
+			$orderQuantity = $item->quantity;
+
+			$pendingQuantity = $this->Purchase_order_detail_model->getPendingItemsById($itemId);
+			$stockQuantity	= $this->Stock_in_model->getStockByItemId($itemId);
+
+			$pending = $pendingQuantity->quantity;
+			$stock	= $stockQuantity->quantity;
+
+			if($pending + $stock < $orderQuantity)
+			{
+				$reference = $item->reference;
+				$name = $item->name;
+
+				$order = array(
+					'id' => $itemId,
+					'reference' => $reference,
+					'name' => $name,
+					'quantity' => (int) ($orderQuantity - $stock - $pending)
+				);
+
+				array_push($orderArray, $order);
+			}
+		}
+
+		header('Content-Type: application/json');
+		echo json_encode($orderArray);
 	}
 }

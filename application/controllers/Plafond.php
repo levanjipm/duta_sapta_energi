@@ -9,32 +9,26 @@ class Plafond extends CI_Controller {
 		$data['user_login'] = $this->User_model->getById($user_id);
 		
 		$this->load->model('Authorization_model');
-		$data['departments']	= $this->Authorization_model->show_by_user_id($user_id);
+		$data['departments']	= $this->Authorization_model->getByUserId($user_id);
 		
 		$this->load->view('head');
 		$this->load->view('sales/header', $data);
 		
 		$this->load->view('sales/plafond_dashboard');
 	}
-	
+
 	public function confirm()
 	{
 		$user_id		= $this->session->userdata('user_id');
 		$this->load->model('User_model');
 		$data['user_login'] = $this->User_model->getById($user_id);
 		
-		if($data['user_login']->access_level > 2)
-		{
-			$this->load->model('Authorization_model');
-			$data['departments']	= $this->Authorization_model->show_by_user_id($user_id);
-			
-			$this->load->view('head');
-			$this->load->view('sales/header', $data);
-			
-			$this->load->view('sales/plafond_status_dashboard');
-		} else {
-			redirect(site_url('Plafond'));
-		}
+		$this->load->model('Authorization_model');
+		$data['departments']	= $this->Authorization_model->getByUserId($user_id);
+		
+		$this->load->view('head');
+		$this->load->view('sales/header', $data);
+		$this->load->view('sales/plafond_status_dashboard');
 	}
 	
 	public function submitPlafond()
@@ -43,9 +37,9 @@ class Plafond extends CI_Controller {
 		$result		= $this->Plafond_model->insertItem();
 		if($result != NULL){
 			$id			= $result;
-			redirect('Plafond/successSubmission/' . $id);
+			redirect('Plafond/successConfirm/' . $id);
 		} else {
-			redirect('Plafond/failedSubmission');
+			redirect('Plafond/failedConfirm');
 		}
 	}
 	
@@ -65,30 +59,94 @@ class Plafond extends CI_Controller {
 	
 	public function deleteById()
 	{
-		$id		= $this->input->post('id');
-		$this->load->model('Plafond_model');
-		$result		= $this->Plafond_model->updatePlafond($id, 0, 1);
+		$user_id		= $this->session->userdata('user_id');
+		$this->load->model('User_model');
+		$data['user_login'] = $this->User_model->getById($user_id);
+		
+		if($data['user_login']->access_level > 2){
+			$id		= $this->input->post('id');
+			$this->load->model('Plafond_model');
+			$result		= $this->Plafond_model->updatePlafond($id, 0, 1);
+		}
 	}
 	
 	public function confirmSubmission()
 	{
-		$id		= $this->input->post('id');
-		$this->load->model('Plafond_model');
-		$result		= $this->Plafond_model->updatePlafond($id, 1, 0);
+		$user_id		= $this->session->userdata('user_id');
+		$this->load->model('User_model');
+		$data['user_login'] = $this->User_model->getById($user_id);
 		
-		if($result != 0){			
+		if($data['user_login']->access_level > 2){
+			$id		= $this->input->post('id');
 			$this->load->model('Plafond_model');
-			$data				= $this->Plafond_model->getById($id);
-			$customer_id		= $data->customer_id;
-			$submitted_plafond	= $data->submitted_plafond;
+			$result		= $this->Plafond_model->updatePlafond($id, 1, 0);
 			
-			$this->load->model('Customer_model');
-			$this->Customer_model->update_plafond($customer_id, $submitted_plafond);
+			if($result != 0){			
+				$this->load->model('Plafond_model');
+				$data				= $this->Plafond_model->getById($id);
+				$customer_id		= $data->customer_id;
+				$submitted_plafond	= $data->submitted_plafond;
+				
+				$this->load->model('Customer_model');
+				$this->Customer_model->update_plafond($customer_id, $submitted_plafond);
+
+				redirect(site_url("/Plafond/successConfirm/" . $id));
+			} else {
+				redirect(site_url("/Plafond/failedConfirm"));
+			}
 		}
-		
-		redirect(site_url('Customer/check_plafond_status'));
 	}
 	
+	public function successConfirm($submission_id)
+	{
+		$user_id		= $this->session->userdata('user_id');
+		$this->load->model('User_model');
+		$data['user_login'] = $this->User_model->getById($user_id);
+		
+		$this->load->model('Authorization_model');
+		$data['departments']	= $this->Authorization_model->getByUserId($user_id);
+		
+		$this->load->view('head');
+		$this->load->view('sales/header', $data);
+		
+		$this->load->model('Plafond_model');
+		$result		= $this->Plafond_model->getById($submission_id);
+		$data['submission']		= $result;
+		
+		$customer_id		= $result->customer_id;
+		$this->load->model('Customer_model');
+		$data['customer']		= $this->Customer_model->getById($customer_id);
+		
+		$data['status']			= 'success';
+		
+		$this->load->view('sales/plafond_confirm_result', $data);
+	}
+
+	public function failedConfirm()
+	{
+		$user_id		= $this->session->userdata('user_id');
+		$this->load->model('User_model');
+		$data['user_login'] = $this->User_model->getById($user_id);
+		
+		$this->load->model('Authorization_model');
+		$data['departments']	= $this->Authorization_model->getByUserId($user_id);
+		
+		$this->load->view('head');
+		$this->load->view('sales/header', $data);
+		
+		$this->load->model('Plafond_model');
+		$result		= $this->Plafond_model->getById($submission_id);
+		$data['submission']		= $result;
+		
+		$customer_id		= $result->customer_id;
+		$this->load->model('Customer_model');
+		$data['customer']		= $this->Customer_model->getById($customer_id);
+		
+		$data['status']			= 'failed';
+		
+		$this->load->view('sales/plafond_confirm_result', $data);
+	}
+
 	public function successSubmission($submission_id)
 	{		
 		$user_id		= $this->session->userdata('user_id');
@@ -96,7 +154,7 @@ class Plafond extends CI_Controller {
 		$data['user_login'] = $this->User_model->getById($user_id);
 		
 		$this->load->model('Authorization_model');
-		$data['departments']	= $this->Authorization_model->show_by_user_id($user_id);
+		$data['departments']	= $this->Authorization_model->getByUserId($user_id);
 		
 		$this->load->view('head');
 		$this->load->view('sales/header', $data);
@@ -121,7 +179,7 @@ class Plafond extends CI_Controller {
 		$data['user_login'] = $this->User_model->getById($user_id);
 		
 		$this->load->model('Authorization_model');
-		$data['departments']	= $this->Authorization_model->show_by_user_id($user_id);
+		$data['departments']	= $this->Authorization_model->getByUserId($user_id);
 		
 		$this->load->view('head');
 		$this->load->view('sales/header', $data);

@@ -227,7 +227,7 @@ class Sales_order_detail_model extends CI_Model {
 			$this->db->update_batch($this->table_sales_order,$batch, 'id'); 
 		}
 		
-		public function calculate_incomplete()
+		public function getItemNeeded()
 		{
 			$this->db->select('SUM(sales_order.quantity - sales_order.sent) as quantity, price_list.item_id, item.reference, item.name');
 			$this->db->from('sales_order');

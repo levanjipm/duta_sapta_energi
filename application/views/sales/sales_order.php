@@ -79,7 +79,7 @@
 			<tbody id='sales_order_item_table'></tbody>
 		</table>
 		
-		<form action='<?= site_url('Sales_order/confirm') ?>' method='POST'>
+		<form action='<?= site_url('Sales_order/confirmSalesOrder') ?>' method='POST'>
 			<input type='hidden' id='sales_order_id' name='id'>
 			<button class='button button_default_dark' title='Confirm sales order' id='confirm_button'><i class='fa fa-long-arrow-right'></i></button>
 			<button type='button' class='button button_danger_dark' title='Delete sales order' onclick='delete_sales_order()'><i class='fa fa-trash'></i></button>
@@ -346,7 +346,7 @@
 	
 	function delete_sales_order(){
 		$.ajax({
-			url:'<?= site_url('Sales_order/delete') ?>',
+			url:'<?= site_url('Sales_order/deleteSalesOrder') ?>',
 			data:{
 				id:$('#sales_order_id').val()
 			},

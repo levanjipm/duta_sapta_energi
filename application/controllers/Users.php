@@ -17,7 +17,7 @@ class Users extends CI_Controller {
 		$data['user_login'] = $this->User_model->getById($user_id);
 		
 		$this->load->model('Authorization_model');
-		$data['departments']	= $this->Authorization_model->show_by_user_id($user_id);
+		$data['departments']	= $this->Authorization_model->getByUserId($user_id);
 		
 		$this->load->view('head');
 		$this->load->view('human_resource/header', $data);
@@ -55,7 +55,7 @@ class Users extends CI_Controller {
 		$data['user_login'] = $this->User_model->getById($user_id);
 		
 		$this->load->model('Authorization_model');
-		$data['departments']	= $this->Authorization_model->show_by_user_id($user_id);
+		$data['departments']	= $this->Authorization_model->getByUserId($user_id);
 		
 		$this->load->view('head');
 		$this->load->view('human_resource/header', $data);

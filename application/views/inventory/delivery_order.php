@@ -4,7 +4,7 @@
 	</div>
 	<br>
 	<div class='dashboard_in'>
-		<a href='<?= site_url('Delivery_order/create_dashboard'); ?>'><button type='button' class='button button_default_dark'>Create delivery order</button></a>
+		<a href='<?= site_url('Delivery_order/create'); ?>'><button type='button' class='button button_default_dark'>Create delivery order</button></a>
 		<br><br>
 <?php
 	if(!empty($delivery_orders)){
@@ -29,7 +29,7 @@
 				<p><?= $delivery_order->city ?></p>
 			</td>
 			<td>
-				<button type='button' class='button button_success_dark' onclick='view_delivery_order_detail(<?= $delivery_order->id ?>)'><i class='fa fa-long-arrow-right'></i></button>
+				<button type='button' class='button button_success_dark' onclick='viewDeliveryOrder(<?= $delivery_order->id ?>)'><i class='fa fa-long-arrow-right'></i></button>
 			</td>
 		</tr>
 <?php
@@ -113,7 +113,7 @@
 <script>
 	$('#cancel_delivery_order_button').click(function(){
 		$.ajax({
-			url:'<?= site_url('Delivery_order/cancel') ?>',
+			url:'<?= site_url('Delivery_order/deleteById') ?>',
 			data:{
 				id:$('#delivery_order_id').val()
 			},
@@ -128,7 +128,7 @@
 		});
 	});
 	
-	function view_delivery_order_detail(n){
+	function viewDeliveryOrder(n){
 		$('#delivery_order_table').html('');
 		$.ajax({
 			url:"<?= site_url('Delivery_order/show_by_code_delivery_order_id/') ?>" + n,
@@ -149,8 +149,10 @@
 				var info		= response.info;
 				if(info == 'Stock'){
 					$('#warning_text').show();
+					$('#send_delivery_order_button').attr('disabled', true);
 				} else {
 					$('#warning_text').hide();
+					$('#send_delivery_order_button').attr('disabled', false);
 				}
 				
 				$('#view_delivery_order_wrapper').fadeIn(300, function(){

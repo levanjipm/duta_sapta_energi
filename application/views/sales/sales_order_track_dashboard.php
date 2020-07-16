@@ -1,3 +1,6 @@
+<head>
+	<title>Sales order - Track</title>
+</head>
 <div class='dashboard'>
 	<div class='dashboard_head'>
 		<p style='font-family:museo'><a href='<?= site_url('Sales') ?>' title='Sales'><i class='fa fa-briefcase'></i></a> /<a href='<?= site_url('Sales_order') ?>'>Sales order</a>/ Track</p>
@@ -94,7 +97,7 @@
 		});
 		
 		$.ajax({
-			url:'<?= site_url('Delivery_order/show_by_sales_order') ?>',
+			url:'<?= site_url('Delivery_order/getBySalesOrderId') ?>',
 			data:{
 				sales_order_id:n
 			},

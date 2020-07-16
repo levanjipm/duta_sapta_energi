@@ -16,29 +16,34 @@ class Inventory_case extends CI_Controller {
 		$data['user_login'] = $this->User_model->getById($user_id);
 		
 		$this->load->model('Authorization_model');
-		$data['departments']	= $this->Authorization_model->show_by_user_id($user_id);
+		$data['departments']	= $this->Authorization_model->getByUserId($user_id);
 		
 		$this->load->view('head');
 		$this->load->view('inventory/header', $data);
 		
-		$this->load->view('inventory/case_dashboard');
+		$this->load->view('inventory/case/case_dashboard');
 	}
-	
-	public function lost_goods()
+
+	public function create($event)
 	{
-		$user_id		= $this->session->userdata('user_id');
-		$this->load->model('User_model');
-		$data['user_login'] = $this->User_model->getById($user_id);
-		
-		$this->load->model('Authorization_model');
-		$data['departments']	= $this->Authorization_model->show_by_user_id($user_id);
-		
-		$this->load->view('head');
-		$this->load->view('inventory/header', $data);
-		
-		$this->load->view('inventory/case_lost_goods_dashboard');
+		switch($event){
+			case 'lost':
+				$this->load->view('inventory/case/case_lost_goods_dashboard');
+				break;
+			case 'found':
+				$this->load->view('inventory/case/case_found_goods_dashboard');
+				break;
+			case 'dematerialized':
+				$this->load->view('inventory/case/case_dematerialized_goods_dashboard');
+				break;
+			case 'materialized':
+				$this->load->view('inventory/case/case_materialized_goods_dashboard');
+				break;
+			default:
+				redirect(site_url("Inventory_case"));
+		}
 	}
-	
+
 	public function case_lost_goods_input()
 	{
 		$user_id		= $this->session->userdata('user_id');
@@ -56,21 +61,6 @@ class Inventory_case extends CI_Controller {
 		}
 		
 		redirect(site_url('Inventory_case'));
-	}
-	
-	public function found_goods()
-	{
-		$user_id		= $this->session->userdata('user_id');
-		$this->load->model('User_model');
-		$data['user_login'] = $this->User_model->getById($user_id);
-		
-		$this->load->model('Authorization_model');
-		$data['departments']	= $this->Authorization_model->show_by_user_id($user_id);
-		
-		$this->load->view('head');
-		$this->load->view('inventory/header', $data);
-		
-		$this->load->view('inventory/case_found_goods_dashboard');
 	}
 	
 	public function case_found_goods_input()
@@ -100,11 +90,11 @@ class Inventory_case extends CI_Controller {
 		$data['user_login'] = $this->User_model->getById($user_id);
 		
 		$this->load->model('Authorization_model');
-		$data['departments']	= $this->Authorization_model->show_by_user_id($user_id);
+		$data['departments']	= $this->Authorization_model->getByUserId($user_id);
 		
 		$this->load->view('head');
 		$this->load->view('inventory/header', $data);
-		$this->load->view('inventory/case_confirm_dashboard');
+		$this->load->view('inventory/case/case_confirm_dashboard');
 	}
 	
 	public function view_unconfirmed_case()
