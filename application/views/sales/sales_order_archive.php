@@ -99,7 +99,7 @@
 	
 	function refresh_view(page = $('#page').val()){
 		$.ajax({
-			url:'<?= site_url('Sales_order/view_archive') ?>',
+			url:'<?= site_url('Sales_order/archiveView') ?>',
 			data:{
 				year: $('#year').val(),
 				month: $('#month').val(),
@@ -182,7 +182,7 @@
 	
 	function open_view(n){
 		$.ajax({
-			url:'<?= site_url('Sales_order/view_by_id') ?>',
+			url:'<?= site_url('Sales_order/getById') ?>',
 			data:{
 				id:n
 			},

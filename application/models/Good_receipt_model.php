@@ -277,7 +277,7 @@ class Good_receipt_model extends CI_Model {
 			return $item;
 		}
 		
-		public function show_by_id($code_good_receipt_id)
+		public function showById($code_good_receipt_id)
 		{
 			$this->db->select('code_good_receipt.*, supplier.name as supplier_name, supplier.address, supplier.city, supplier.number, supplier.rt, supplier.rw, supplier.postal_code, code_purchase_order.name as purchase_order_name, code_purchase_order.date as purchase_order_date');
 			$this->db->from('code_good_receipt');

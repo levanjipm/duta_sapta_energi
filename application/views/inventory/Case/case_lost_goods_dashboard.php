@@ -1,5 +1,5 @@
 <h4><strong>Lost</strong></h4>
-<form action='<?= site_url('Inventory_case/case_lost_goods_input') ?>' method='POST' id='lost_goods_form'>
+<form action='<?= site_url('Inventory_case/input/lost') ?>' method='POST' id='lostGoodsForm'>
 	<label>Date</label>
 	<input type='date' class='form-control' name='date' id='case_date' required><br>
 	
@@ -15,7 +15,7 @@
 		<tbody id='cart_products'></tbody>
 	</table>
 	
-	<button type='button' class='button button_default_dark' id='shopping_item_list_button' style='display:none'><i class='fa fa-long-arrow-right'></i></button>
+	<button type='button' class='button button_default_dark' id='validationButton' style='display:none'><i class='fa fa-long-arrow-right'></i></button>
 </form>
 
 <div class='alert_wrapper' id='add_item_wrapper'>
@@ -32,13 +32,13 @@
 				<label>Search</label>
 				<input type='text' class='form-control' id='search_bar'>
 				<br>
-				<table class='table table-bordered' id='shopping_item_list_table'>
+				<table class='table table-bordered' id='itemListTable'>
 					<tr>
 						<th>Reference</th>
 						<th>Name</th>
 						<th>Action</th>
 					</tr>
-					<tbody id='shopping_item_list_tbody'>
+					<tbody id='itemListTableContent'>
 					</tbody>
 				</table>
 				
@@ -50,7 +50,7 @@
 	</div>
 </div>
 
-<div class='alert_wrapper' id='lost_goods_form_validation'>
+<div class='alert_wrapper' id='lostGoodsFormValidation'>
 	<button type='button' class='slide_alert_close_button'>&times;</button>
 	<div class='alert_box_slide'>
 		<h3 style='font-family:bebasneue'>Add lost goods case</h3>
@@ -75,6 +75,8 @@
 </div>
 
 <script>
+	$('#lostGoodsForm').validate();
+
 	$('#add_item_button').click(function(){
 		$('#search_bar').val('');
 		refresh_view();
@@ -96,22 +98,22 @@
 				page:page
 			},
 			success:function(response){
-				$('#shopping_item_list_tbody').html('');
+				$('#itemListTableContent').html('');
 				var item_array	= response.items;
 				var pages		= response.pages;
 				var page		= response.page;
 				
 				if(item_array.length > 0){
-					$('#shopping_item_list_table').show();
+					$('#itemListTable').show();
 					$.each(item_array, function(index, item){
 						var reference		= item.reference;
-						var id				= item.item_id;
+						var id				= item.id;
 						var name			= item.name;
 						
-						$('#shopping_item_list_tbody').append("<tr><td>" + reference + "</td><td>" + name + "</td><td><button type='button' class='button button_default_dark' onclick='add_to_cart(" + id + ")' title='Add " + reference + " to list'><i class='fa fa-cart-plus'></i></button></td></tr>");
+						$('#itemListTableContent').append("<tr><td>" + reference + "</td><td>" + name + "</td><td><button type='button' class='button button_default_dark' onclick='addToCart(" + id + ")' title='Add " + reference + " to list'><i class='fa fa-cart-plus'></i></button></td></tr>");
 					});
 				} else {
-					$('#shopping_item_list_table').hide();
+					$('#itemListTable').hide();
 				}
 				
 				$('#page').html('');
@@ -128,13 +130,7 @@
 		});
 	}
 	
-	$('.slide_alert_close_button').click(function(){
-		$('#view_delivery_order_wrapper .alert_box_slide').hide("slide", { direction: "right" }, 250, function(){
-			$('#view_delivery_order_wrapper').fadeOut();
-		});
-	});
-	
-	function add_to_cart(n){
+	function addToCart(n){
 		$.ajax({
 			url:'<?= site_url('Item/showById') ?>',
 			data:{
@@ -145,7 +141,7 @@
 			},
 			success:function(response){
 				$('button').attr('disabled',false);
-				var item_id		= response.item_id;
+				var item_id		= response.id;
 				var reference	= response.reference;
 				var name		= response.name;
 				
@@ -159,8 +155,8 @@
 				
 				if($('#cart_products tr').length > 0){
 					$('#cart_products_table').show();
-					$('#shopping_item_list_button').attr('disabled', false);
-					$('#shopping_item_list_button').show();
+					$('#validationButton').attr('disabled', false);
+					$('#validationButton').show();
 				}
 			}
 		})
@@ -170,19 +166,17 @@
 		$('#item_row-' + n).remove();
 		if($('#cart_products tr').length > 0){
 			$('#cart_products_table').show();
-			$('#shopping_item_list_button').attr('disabled', false);
-			$('#shopping_item_list_button').show();
+			$('#validationButton').attr('disabled', false);
+			$('#validationButton').show();
 		} else {
 			$('#cart_products_table').hide();
-			$('#shopping_item_list_button').attr('disabled', true);
-			$('#shopping_item_list_button').hide();
+			$('#validationButton').attr('disabled', true);
+			$('#validationButton').hide();
 		}
 	};
 	
-	$('#shopping_item_list_button').click(function(){
-		$('#lost_goods_form').validate();
-		
-		if($('#lost_goods_form').valid()){
+	$('#validationButton').click(function(){	
+		if($('#lostGoodsForm').valid()){
 			$('#validate_cart_products').html('');
 			$("td[id^='reference-']").each(function(){
 				var id				= $(this).attr('id');
@@ -196,8 +190,8 @@
 			
 			var date		= $('#case_date').val();
 			$('#date_p').html(my_date_format(date));
-			$('#lost_goods_form_validation').fadeIn(300, function(){
-				$('#lost_goods_form_validation .alert_box_slide').show("slide", { direction: "right" }, 250);
+			$('#lostGoodsFormValidation').fadeIn(300, function(){
+				$('#lostGoodsFormValidation .alert_box_slide').show("slide", { direction: "right" }, 250);
 			});
 		};
 	});
@@ -206,14 +200,12 @@
 		$(this).parent().parent().parent().parent().fadeOut();
 	});
 	
-	$('#confirm_button').click(function(){
-		$('#lost_goods_form').validate();
-		
-		if($('#lost_goods_form').valid()){
-			$('#lost_goods_form').submit();
+	$('#confirm_button').click(function(){	
+		if($('#lostGoodsForm').valid()){
+			$('#lostGoodsForm').submit();
 		};
 	});
-	
+
 	$('.slide_alert_close_button').click(function(){
 		$(this).siblings('.alert_box_slide').hide("slide", { direction: "right" }, 250, function(){
 			$(this).parent().fadeOut();

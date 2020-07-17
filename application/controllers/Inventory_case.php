@@ -44,56 +44,54 @@ class Inventory_case extends CI_Controller {
 		}
 	}
 
-	public function case_lost_goods_input()
+	public function input($event)
 	{
 		$user_id		= $this->session->userdata('user_id');
-		
-		$date			= $this->input->post('date');
-		$quantity_array	= $this->input->post('quantity');
-		$type			= 1;
-		
-		$this->load->model('Inventory_case_model');
-		$result = $this->Inventory_case_model->insert_from_post($user_id, $date, $type);
-		
-		if($result != NULL){
-			$this->load->model('Inventory_case_detail_model');
-			$this->Inventory_case_detail_model->insert_from_post($result, $quantity_array, $type);
+
+		switch($event){
+			case 'lost':
+				$date			= $this->input->post('date');
+				$quantity_array	= $this->input->post('quantity');
+				$type			= 1;
+				
+				$this->load->model('Inventory_case_model');
+				$result = $this->Inventory_case_model->insertItem($user_id, $date, $type);
+				
+				if($result != NULL){
+					$this->load->model('Inventory_case_detail_model');
+					$this->Inventory_case_detail_model->insertItem($result, $quantity_array, $type);
+				}
+
+				break;
+			case 'found':
+				$date			= $this->input->post('date');
+				$quantity_array	= $this->input->post('quantity');
+				$price_array	= $this->input->post('price');
+				$type			= 2;
+				
+				$this->load->model('Inventory_case_model');
+				$result = $this->Inventory_case_model->insertItem($user_id, $date, $type);
+				
+				if($result != NULL){
+					$this->load->model('Inventory_case_detail_model');
+					$this->Inventory_case_detail_model->insertItem($result, $quantity_array, $type, $price_array);
+				}
+				break;
+			case 'dematerialized':
+				$this->load->view('inventory/case/case_dematerialized_goods_dashboard');
+				break;
+			case 'materialized':
+				$this->load->view('inventory/case/case_materialized_goods_dashboard');
+				break;
+			default:
+				
 		}
-		
-		redirect(site_url('Inventory_case'));
+
+		redirect(site_url("Inventory_case"));
 	}
 	
-	public function case_found_goods_input()
+	public function confirmDashboard()
 	{
-		$user_id		= $this->session->userdata('user_id');
-		
-		$date			= $this->input->post('date');
-		$quantity_array	= $this->input->post('quantity');
-		$price_array	= $this->input->post('price');
-		$type			= 2;
-		
-		$this->load->model('Inventory_case_model');
-		$result = $this->Inventory_case_model->insert_from_post($user_id, $date, $type);
-		
-		if($result != NULL){
-			$this->load->model('Inventory_case_detail_model');
-			$this->Inventory_case_detail_model->insert_from_post($result, $quantity_array, $type, $price_array);
-		}
-		
-		redirect(site_url('Inventory_case'));
-	}
-	
-	public function confirm_dashboard()
-	{
-		$user_id		= $this->session->userdata('user_id');
-		$this->load->model('User_model');
-		$data['user_login'] = $this->User_model->getById($user_id);
-		
-		$this->load->model('Authorization_model');
-		$data['departments']	= $this->Authorization_model->getByUserId($user_id);
-		
-		$this->load->view('head');
-		$this->load->view('inventory/header', $data);
 		$this->load->view('inventory/case/case_confirm_dashboard');
 	}
 	
@@ -113,15 +111,15 @@ class Inventory_case extends CI_Controller {
 		echo json_encode($data);
 	}
 	
-	public function view_by_id()
+	public function showById()
 	{
 		$id = $this->input->get('id');
 		$this->load->model('Inventory_case_model');
-		$result		= $this->Inventory_case_model->view_by_id($id);
+		$result		= $this->Inventory_case_model->showById($id);
 		$data['general']	= $result;
 		
 		$this->load->model('Inventory_case_detail_model');
-		$result		= $this->Inventory_case_detail_model->view_by_code_id($id);
+		$result		= $this->Inventory_case_detail_model->showByCodeId($id);
 		$data['details']	= $result;
 		
 		$stock_array 	= $this->Inventory_case_detail_model->get_batch_by_code_event_id($id);
@@ -139,6 +137,7 @@ class Inventory_case extends CI_Controller {
 		$user_id		= $this->session->userdata('user_id');
 		$id				= $this->input->post('id');
 		$status			= $this->input->post('status');
+
 		if($status == 'true'){
 			$this->load->model('Inventory_case_detail_model');
 			$stock_array 	= $this->Inventory_case_detail_model->get_batch_by_code_event_id($id);
@@ -164,6 +163,6 @@ class Inventory_case extends CI_Controller {
 			}
 		}
 		
-		redirect(site_url('Inventory_case/confirm_dashboard'));
+		redirect(site_url('Inventory_case'));
 	}
 }

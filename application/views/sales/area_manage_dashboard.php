@@ -5,7 +5,7 @@
 	<br>
 	<div class='dashboard_in'>
 		<div class='input_group'>
-			<input type='text' class='form-control input-lg' id='search_bar'>
+			<input type='text' class='form-control input-lg' id='search_bar' placeholder="Search Area">
 			<div class='input_group_append'>
 				<button class='button button_default_dark' id='add_area_button'>Add area</button>
 			</div>

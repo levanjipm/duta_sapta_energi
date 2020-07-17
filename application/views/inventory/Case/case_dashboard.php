@@ -12,7 +12,7 @@
 				<button class='createTabButton button button_mini_tab' id='lostTab' onclick='loadTab("lost")'>Lost goods</button>
 				<button class='createTabButton button button_mini_tab' id='foundTab' onclick='loadTab("found")'>Found goods</button>
 				<button class='createTabButton button button_mini_tab' id='dematerializedTab' onclick='loadTab("dematerialized")'>Dematerialized goods</button>
-				<button class='createTabButton button button_mini_tab' id='materalizedTab' onclick='loadTab("materialized")'>Materialized goods</button>
+				<button class='createTabButton button button_mini_tab' id='materializedTab' onclick='loadTab("materialized")'>Materialized goods</button>
 			</div>
 			<br><br>
 			<div class='col-xs-12' id='viewCreatePane'>
@@ -48,6 +48,13 @@
 		} else if(functionName == "confirm"){
 			$('#createHeaderTab').attr('disabled', false);
 			$('#confirmHeaderTab').addClass('active');
+
+			$.ajax({
+				url:'<?= site_url('Inventory_case/confirmDashboard') ?>',
+				success:function(response){
+					$('#viewConfirmPane').html(response);
+				}
+			})
 
 			$('#createTab').fadeOut(250);
 			setTimeout(function(){

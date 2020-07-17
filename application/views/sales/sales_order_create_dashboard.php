@@ -259,7 +259,7 @@
 			$('td[id^="reference-"]').each(function(){
 				var id 			= $(this).attr('id');
 				var uid 		= parseInt(id.substring(10,50));
-				var quantity 	= $('#quantity-' + uid).val();
+				var quantity 	= parseInt($('#quantity-' + uid).val());
 				var discount 	= $('#discount-' + uid).val();
 				var price_list 	= $('#price_list-' + uid).val();
 				var name	 	= $('#name-' + uid).html();
@@ -284,7 +284,7 @@
 			$('td[id^="bonus_reference-"]').each(function(){
 				var id 			= $(this).attr('id');
 				var uid 		= parseInt(id.substring(16,50));
-				var quantity 	= $('#bonus_quantity-' + uid).val();
+				var quantity 	= parseInt($('#bonus_quantity-' + uid).val());
 				var name	 	= $('#bonus_name-' + uid).html();
 				var reference	= $('#bonus_reference-' + uid).html();
 				$('#table_item_confirm').append(

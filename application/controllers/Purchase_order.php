@@ -47,7 +47,7 @@ class Purchase_order extends CI_Controller {
 		$this->load->view('purchasing/header', $data);
 		
 		$this->load->model('Supplier_model');
-		$result = $this->Supplier_model->show_items();
+		$result = $this->Supplier_model->showItems();
 		$data['suppliers'] = $result;
 		
 		$this->load->model('Purchase_order_model');
@@ -77,10 +77,10 @@ class Purchase_order extends CI_Controller {
 		echo json_encode($item);
 	}
 	
-	public function input_purchase_order()
+	public function inputItem()
 	{
 		$this->load->model('Purchase_order_model');
-		$purchase_order_id = $this->Purchase_order_model->input_from_post();
+		$purchase_order_id = $this->Purchase_order_model->inputItem();
 		
 		if($purchase_order_id != null){
 			$this->load->model('Purchase_order_detail_model');
@@ -110,13 +110,13 @@ class Purchase_order extends CI_Controller {
 		echo json_encode($data);
 	}
 	
-	public function get_purchase_order_detail_by_id($id)
+	public function getDetailById($id)
 	{
 		$this->load->model('Purchase_order_model');
-		$data['general']	= $this->Purchase_order_model->show_by_id($id);
+		$data['general']	= $this->Purchase_order_model->showById($id);
 		
 		$this->load->model('Purchase_order_detail_model');
-		$data['detail']		= $this->Purchase_order_detail_model->show_by_purchase_order_id($id);
+		$data['detail']		= $this->Purchase_order_detail_model->getByCodeId($id);
 		header('Content-Type: application/json');
 		echo json_encode($data);
 	}
@@ -142,10 +142,10 @@ class Purchase_order extends CI_Controller {
 	public function print($purchase_order_id)
 	{
 		$this->load->model('Purchase_order_model');
-		$data['general']	= $this->Purchase_order_model->show_by_id($purchase_order_id);
+		$data['general']	= $this->Purchase_order_model->showById($purchase_order_id);
 		
 		$this->load->model('Purchase_order_detail_model');
-		$data['detail']		= $this->Purchase_order_detail_model->show_by_purchase_order_id($purchase_order_id);
+		$data['detail']		= $this->Purchase_order_detail_model->getByCodeId($purchase_order_id);
 		
 		$this->load->view('head');
 		$this->load->view('purchasing/purchase_order_print', $data);
@@ -172,7 +172,7 @@ class Purchase_order extends CI_Controller {
 		$this->load->view('purchasing/purchase_order_archive', $data);
 	}
 	
-	public function view_archive()
+	public function showArchive()
 	{
 		$page			= $this->input->get('page');
 		$term			= $this->input->get('term');
@@ -217,5 +217,30 @@ class Purchase_order extends CI_Controller {
 		$data['suppliers']	= $this->Purchase_order_detail_model->show_supplier_for_incomplete_purchase_orders();
 		
 		$this->load->view('purchasing/pending_purchase_order', $data);
+	}
+
+	public function getPendingPurchaseOrder()
+	{
+		$supplier_id = $this->input->get('supplier_id');
+		$page = $this->input->get('page');
+
+		$offset = ($page - 1) * 10;
+		$this->load->model('Purchase_order_model');
+		$data['items'] = $this->Purchase_order_model->getIncompletePurchaseOrder($offset, $supplier_id);
+
+		$data['pages'] = max(1, ceil($this->Purchase_order_model->countIncompletePurchaseOrder($supplier_id)/10));
+		
+		header('Content-Type: application/json');
+		echo json_encode($data);
+	}
+
+	public function getAllPendingPurchaseOrder()
+	{
+		$supplier_id = $this->input->get('supplier_id');
+		$this->load->model('Purchase_order_model');
+		$data = $this->Purchase_order_model->getAllIncompletePurchaseOrder($supplier_id);
+
+		header('Content-Type: application/json');
+		echo json_encode($data);
 	}
 }

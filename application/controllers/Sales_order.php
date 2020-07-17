@@ -325,7 +325,7 @@ class Sales_order extends CI_Controller {
 		$this->load->view('sales/sales_order_archive', $data);
 	}
 
-	public function view_archive()
+	public function archiveView()
 	{
 		$page			= $this->input->get('page');
 		$term			= $this->input->get('term');
@@ -334,14 +334,14 @@ class Sales_order extends CI_Controller {
 		$month			= $this->input->get('month');
 
 		$this->load->model('Sales_order_model');
-		$data['sales_orders']		= $this->Sales_order_model->show_items($year, $month, $offset, $term);
-		$data['pages']				= max(1, ceil($this->Sales_order_model->count_items($year, $month, $term)/25));
+		$data['sales_orders']		= $this->Sales_order_model->showItems($year, $month, $offset, $term);
+		$data['pages']				= max(1, ceil($this->Sales_order_model->countItems($year, $month, $term)/25));
 
 		header('Content-Type: application/json');
 		echo json_encode($data);
 	}
 
-	public function view_by_id()
+	public function getById()
 	{
 		$id			= $this->input->get('id');
 		$this->load->model('Sales_order_model');

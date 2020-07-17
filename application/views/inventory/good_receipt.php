@@ -89,7 +89,7 @@
 					var document 		= general_data.name;
 					var received_date 	= general_data.received_date;
 					
-					$('#good_receipt_date').html(date);
+					$('#good_receipt_date').html(my_date_format(date));
 					$('#good_receipt_document').html(document);
 					$('#good_receipt_received_date').html(received_date);
 					

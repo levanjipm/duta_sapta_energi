@@ -37,7 +37,6 @@
 		<div class='container_bar'>
 			<a href='<?= site_url('Petty_cash/transaction') ?>'><button><p style='font-family:museo'>Transaction</p></button></a>
 			<a href='<?= site_url('Petty_cash/mutation') ?>'><button><p style='font-family:museo'>Mutation</p></button></a>
-			<a href='<?= site_url('Petty_cash/balance') ?>'><button><p style='font-family:museo'>Balance</p></button></a>
 		</div>
 		<button class='container_button'><p style='font-family:museo'>Expense</p></button>
 		<div class='container_bar'>

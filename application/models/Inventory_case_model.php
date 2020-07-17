@@ -66,7 +66,7 @@ class Inventory_case_model extends CI_Model {
 			return $result;
 		}
 				
-		public function insert_from_post($created_by, $date, $type)
+		public function insertItem($created_by, $date, $type)
 		{
 			if($type == 1){
 				//Lost goods//
@@ -118,7 +118,7 @@ class Inventory_case_model extends CI_Model {
 			return $items;
 		}
 		
-		public function view_by_id($id)
+		public function showById($id)
 		{
 			$this->db->select('code_event.id, code_event.type, code_event.date, code_event.is_confirm, code_event.confirmed_by, users.name as created_by');
 			$this->db->from('code_event');

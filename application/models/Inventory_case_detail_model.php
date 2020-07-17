@@ -66,7 +66,7 @@ class Inventory_case_detail_model extends CI_Model {
 			return $result;
 		}
 				
-		public function insert_from_post($code_event_id, $quantity_array, $type, $price_array = array())
+		public function insertItem($code_event_id, $quantity_array, $type, $price_array = array())
 		{
 			if($type == 1){
 				//Lost goods//
@@ -99,7 +99,7 @@ class Inventory_case_detail_model extends CI_Model {
 			$this->db->insert_batch($this->table_event, $batch);
 		}
 		
-		public function view_by_code_id($id)
+		public function showByCodeId($id)
 		{
 			$this->db->select('event.*, item.name, item.reference');
 			$this->db->from('event');

@@ -118,7 +118,7 @@ class Debt extends CI_Controller {
 		
 		$supplier_id		= $this->input->post('supplier');
 		$this->load->model('Supplier_model');
-		$item				= $this->Supplier_model->show_by_id($supplier_id);
+		$item				= $this->Supplier_model->getById($supplier_id);
 		$data['supplier']	= $item;
 		
 		$date				= $this->input->post('date');

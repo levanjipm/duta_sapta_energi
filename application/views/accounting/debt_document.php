@@ -76,7 +76,7 @@
 	function refresh_view(page = $('#page').val())
 	{
 		$.ajax({
-			url:'<?= site_url('Debt/view_unconfirmed_documents') ?>',
+			url:'<?= site_url('Debt/showUnconfirmedDocuments') ?>',
 			data:{
 				page:page,
 				term:$('#search_bar').val()

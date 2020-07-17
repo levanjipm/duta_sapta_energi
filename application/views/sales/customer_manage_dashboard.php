@@ -210,7 +210,7 @@
 	$('#submit_add_customer_button').click(function(){
 		if($('#submit_add_customer_button').valid()){
 			$.ajax({
-				url:'<?= site_url('Customer/insert_customer') ?>',
+				url:'<?= site_url('Customer/insertItem') ?>',
 				data:{
 					customer_name: $('#customer_name').val(),
 					customer_address: $('#customer_address').val(),

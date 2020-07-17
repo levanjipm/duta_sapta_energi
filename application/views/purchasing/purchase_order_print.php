@@ -15,7 +15,7 @@
 	}
 	
 	@page {
-	  size: 21.59cm 13.97cm;
+	  size: 29.7cm, 21cm;
 	}
 }
 </style>
@@ -70,6 +70,9 @@
 		$request				= '';
 	}
 ?>
+<head>
+	<title><?= $purchase_order_name . ' ' . $general->supplier_name ?></title>
+</head>
 <div class='row' style='margin:0'>	
 	<div class='col-sm-10 col-sm-offset-1' style='background-color:white;padding:20px' id='printable'>
 		<div class='row'>

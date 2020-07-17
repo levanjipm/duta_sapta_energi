@@ -67,8 +67,9 @@ class Purchase_order_model extends CI_Model {
 			$this->date_send_request        = $db_item->date_send_request;       
 			$this->guid                     = $db_item->guid;                    
 			$this->supplier_id              = $db_item->supplier_id;              
-			$this->is_delete	              = $db_item->is_delete;              
-			$this->status	              = $db_item->status;              
+			$this->is_delete	            = $db_item->is_delete;              
+			$this->status	              	= $db_item->status; 
+			$this->note						= $db_item->note;             
 			
 			return $this;
 		}
@@ -94,6 +95,7 @@ class Purchase_order_model extends CI_Model {
 			$db_item->supplier_id               = $this->supplier_id;
 			$db_item->is_delete	               = $this->is_delete;
 			$db_item->status	               = $this->status;
+			$db_item->note						= $this->note;
 			
 			return $db_item;
 		}
@@ -118,7 +120,8 @@ class Purchase_order_model extends CI_Model {
 			$stub->guid                     = $db_item->guid;                    
 			$stub->supplier_id              = $db_item->supplier_id;     
 			$stub->is_delete	              = $db_item->is_delete;     
-			$stub->status		              = $db_item->status;     
+			$stub->status		              = $db_item->status;
+			$stub->note						= $db_item->note;
 			
 			return $stub;
 		}
@@ -146,7 +149,8 @@ class Purchase_order_model extends CI_Model {
 			$stub->supplier_address         = $db_item->supplier_address;    
 			$stub->supplier_city	        = $db_item->supplier_city;    
 			$stub->is_delete	       		 = $db_item->is_delete;    
-			$stub->status		       		 = $db_item->status;    
+			$stub->status		       		 = $db_item->status;
+			$stub->note						= $db_item->note;    
 			
 			return $stub;
 		}
@@ -213,7 +217,7 @@ class Purchase_order_model extends CI_Model {
 			return $name;
 		}
 		
-		public function input_from_post()
+		public function inputItem()
 		{
 			$guid			= $this->input->post('guid');
 			$date			= $this->input->post('date');
@@ -258,22 +262,56 @@ class Purchase_order_model extends CI_Model {
 			}
 		}
 		
-		public function get_incompleted_purchase_order($supplier_id)
+		public function getIncompletePurchaseOrder($offset = 0, $supplier_id, $limit = 10)
 		{
-			$this->db->select('DISTINCT(purchase_order.code_purchase_order_id) as id, code_purchase_order.*');
-			$this->db->from('purchase_order');
-			$this->db->join('code_purchase_order', 'purchase_order.code_purchase_order_id = code_purchase_order.id', 'inner');
-			$this->db->where('purchase_order.status =', 0);
-			$this->db->where('code_purchase_order.supplier_id =', $supplier_id);
+			$query = $this->db->query("
+				SELECT code_purchase_order.* FROM code_purchase_order
+				JOIN (
+					SELECT DISTINCT(purchase_order.code_purchase_order_id) as id FROM purchase_order
+					WHERE purchase_order.status= '0'
+				) as a
+				ON a.id = code_purchase_order.id
+				WHERE code_purchase_order.supplier_id = '$supplier_id'
+				LIMIT $limit OFFSET $offset
+			");
+			$result	 	= $query->result();
 			
-			$query 		= $this->db->get();
-			$items	 	= $query->result();
+			return $result;
+		}
+
+		public function countIncompletePurchaseOrder($supplier_id)
+		{
+			$query = $this->db->query("
+				SELECT code_purchase_order.* FROM code_purchase_order
+				JOIN (
+					SELECT DISTINCT(purchase_order.code_purchase_order_id) as id FROM purchase_order
+					WHERE purchase_order.status= '0'
+				) as a
+				ON a.id = code_purchase_order.id
+				WHERE code_purchase_order.supplier_id = '$supplier_id'
+			");
+			$result	 	= $query->num_rows();
 			
-			return $items;
+			return $result;
+		}
+
+		public function getAllIncompletePurchaseOrder($supplier_id)
+		{
+			$query = $this->db->query("
+				SELECT code_purchase_order.* FROM code_purchase_order
+				INNER JOIN (
+					SELECT DISTINCT(purchase_order.code_purchase_order_id) as id FROM purchase_order
+					WHERE purchase_order.status= '0'
+				) as a
+				ON a.id = code_purchase_order.id
+				WHERE code_purchase_order.supplier_id = '$supplier_id'
+			");
+			$result	 	= $query->result();
 			
+			return $result;
 		}
 		
-		public function show_by_id($id)
+		public function showById($id)
 		{
 			$this->db->select('code_purchase_order.*, supplier.name as supplier_name, supplier.address as supplier_address, supplier.city as supplier_city, supplier.number, supplier.rt, supplier.rw, supplier.postal_code, supplier.npwp, supplier.phone_number, supplier.block, x.name as created_by, y.name as confirmed_by');
 			$this->db->from('code_purchase_order');

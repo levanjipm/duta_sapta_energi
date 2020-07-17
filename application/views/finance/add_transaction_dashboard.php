@@ -126,7 +126,7 @@
 	
 	function refresh_view(page = $('#page').val()){	
 		$.ajax({
-			url:'<?= site_url('Bank/show_opponent') ?>',
+			url:'<?= site_url('Bank/showOpponent') ?>',
 			data:{
 				type:$('#opponent_type').val(),
 				page:page,

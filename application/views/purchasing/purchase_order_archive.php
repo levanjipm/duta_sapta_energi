@@ -92,7 +92,7 @@
 	
 	function refresh_view(page = $('#page').val()){
 		$.ajax({
-			url:'<?= site_url('Purchase_order/view_archive') ?>',
+			url:'<?= site_url('Purchase_order/showArchive') ?>',
 			data:{
 				year: $('#year').val(),
 				month: $('#month').val(),
@@ -163,12 +163,8 @@
 	
 	function open_view(n){
 		$.ajax({
-			url:'<?= site_url('Purchase_order/view_by_id') ?>',
-			data:{
-				id:n
-			},
+			url:'<?= site_url('Purchase_order/getDetailById/') ?>' + n,
 			success:function(response){
-				console.log(response);
 				var general					= response.general;
 				var good_receipt_date		= general.date;
 				var good_receipt_name		= general.name;
@@ -213,7 +209,7 @@
 				
 				$('#good_receipt_table').html('');
 				
-				var items		= response.items;
+				var items		= response.detail;
 				var purchase_order_value		= 0;
 				$.each(items, function(index, item){
 					var reference		= item.reference;

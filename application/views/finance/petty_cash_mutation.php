@@ -37,20 +37,23 @@
 		
 		<button type='button' class='button button_default_dark' id='refresh_button'><i class='fa fa-search'></i></button><br><br>
 		
-		<table class='table table-bordered'>
-			<tr>
-				<th>Date</th>
-				<th>Debit</th>
-				<th>Credit</th>
-				<th>Information</th>
-				<th>Balance</th>
-			</tr>
-			<tbody id='petty_table'></tbody>
-		</table>
-		
-		<select class='form-control' id='page' style='width:100px'>
-			<option value='1'>1</option>
-		</select>
+		<div  id='pettyCashTable'>
+			<table class='table table-bordered'>
+				<tr>
+					<th>Date</th>
+					<th>Debit</th>
+					<th>Credit</th>
+					<th>Information</th>
+					<th>Balance</th>
+				</tr>
+				<tbody id='pettyCashTableContent'></tbody>
+			</table>
+			
+			<select class='form-control' id='page' style='width:100px'>
+				<option value='1'>1</option>
+			</select>
+		</div>
+		<p id='pettyCashText'>No transaction found.</p>
 	</div>
 </div>
 <script>
@@ -78,10 +81,19 @@
 				page:page
 			},
 			success:function(response){
-				$('#petty_table').html('');
+				$('#pettyCashTableContent').html('');
 				var balance			= parseFloat(response.balance);
 				var transactions 	= response.transactions;
 				var pages			= response.pages;
+
+				if(transactions.length == 0){
+					$('#pettyCashTable').hide();
+					$('#pettyCashText').show();
+				} else {
+					$('#pettyCashTable').show();
+					$('#pettyCashText').hide();
+				}
+
 				$.each(transactions, function(index, transaction){
 					var date		= transaction.date;
 					var value		= parseFloat(transaction.value);
@@ -91,10 +103,10 @@
 					
 					if(type == 1){
 						balance		-= value;
-						$('#petty_table').append("<tr><td>" + my_date_format(date) + "</td><td>Rp. " + numeral(value).format('0,0.00') + "</td><td>Rp. " + numeral(0).format('0,0.00') + "</td><td>" + information + "</td><td>Rp. " + numeral(balance).format('0,0.00') + "</td></tr>");
+						$('#pettyCashTableContent').append("<tr><td>" + my_date_format(date) + "</td><td>Rp. " + numeral(value).format('0,0.00') + "</td><td>Rp. " + numeral(0).format('0,0.00') + "</td><td>" + information + "</td><td>Rp. " + numeral(balance).format('0,0.00') + "</td></tr>");
 					} else if(type == 2){
 						balance		+= value;
-						$('#petty_table').append("<tr><td>" + my_date_format(date) + "</td><td>Rp. " + numeral(0).format('0,0.00') + "</td><td>Rp. " + numeral(value).format('0,0.00') + "</td><td>Income</td><td>Rp. " + numeral(balance).format('0,0.00') + "</td></tr>");
+						$('#pettyCashTableContent').append("<tr><td>" + my_date_format(date) + "</td><td>Rp. " + numeral(0).format('0,0.00') + "</td><td>Rp. " + numeral(value).format('0,0.00') + "</td><td>Income</td><td>Rp. " + numeral(balance).format('0,0.00') + "</td></tr>");
 					}
 				});
 				

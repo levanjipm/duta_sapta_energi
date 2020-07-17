@@ -126,7 +126,7 @@
 	
 	$(document).ready(function(){
 		$.ajax({
-			url:'<?= site_url('Good_receipt/get_incompleted_purchase_order') ?>',
+			url:'<?= site_url('Purchase_order/getAllPendingPurchaseOrder') ?>',
 			data:{
 				supplier_id:$('#supplier').val()
 			},

@@ -93,10 +93,6 @@ class Invoice extends CI_Controller {
 		echo ucwords(Number_to_words($value));
 	}
 	
-	public function create()
-	{
-	}
-	
 	public function archive()
 	{
 		$user_id		= $this->session->userdata('user_id');
@@ -108,6 +104,12 @@ class Invoice extends CI_Controller {
 		
 		$this->load->view('head');
 		$this->load->view('accounting/header', $data);
+
+		$data = array();
+		$this->load->model('Invoice_model');
+		$data['years'] = $this->Invoice_model->getYears();
+
+		print_r($data['years']);
 		
 		$this->load->view('accounting/invoice_archive');
 	}

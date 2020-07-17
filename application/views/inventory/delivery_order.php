@@ -195,10 +195,7 @@
 				var invoice = response.invoice;
 				var invoice_id = invoice.invoice_id;
 				var invoice_method = invoice.invoicing_method;
-				
-				console.log(invoice_id);
-				console.log(invoice_method);
-				
+
 				if(invoice_id == null && invoice_method == 1){
 					$('#warning_text_2').show();
 					$('#send_delivery_order_button').attr('disabled', true);

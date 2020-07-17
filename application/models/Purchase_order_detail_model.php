@@ -203,7 +203,7 @@ class Purchase_order_detail_model extends CI_Model {
 			$this->db->update_batch($this->table_purchase_order,$batch, 'id'); 
 		}
 		
-		public function show_by_purchase_order_id($id)
+		public function getByCodeId($id)
 		{
 			$this->db->select('purchase_order.*, item.name, item.reference');
 			$this->db->from('purchase_order');

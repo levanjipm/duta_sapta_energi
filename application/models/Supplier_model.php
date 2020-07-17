@@ -104,7 +104,7 @@ class Supplier_model extends CI_Model {
 			return $result;
 		}
 		
-		public function show_items($offset = 0, $filter = '', $limit = 25)
+		public function showItems($offset = 0, $filter = '', $limit = 25)
 		{
 			if($filter != ''){
 				$this->db->like('name', $filter, 'both');
@@ -118,7 +118,7 @@ class Supplier_model extends CI_Model {
 			return $items;
 		}
 
-		public function count_items($filter = '')
+		public function countItems($filter = '')
 		{
 			if($filter != ''){
 				$this->db->like('name', $filter, 'both');

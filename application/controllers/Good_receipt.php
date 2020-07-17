@@ -19,13 +19,13 @@ class Good_receipt extends CI_Controller {
 		$data['departments']	= $this->Authorization_model->getByUserId($user_id);
 		
 		$this->load->view('head');
-		$this->load->view('inventory/header', $data);
+		$this->load->view('Inventory/header', $data);
 		
 		$this->load->model('Good_receipt_model');
 		$result	= $this->Good_receipt_model->show_unconfirmed_good_receipt();
 		$data['good_receipts'] = $result;
 		
-		$this->load->view('inventory/good_receipt', $data);
+		$this->load->view('Inventory/good_receipt', $data);
 	}
 	
 	public function create_dashboard()
@@ -38,19 +38,19 @@ class Good_receipt extends CI_Controller {
 		$data['departments']	= $this->Authorization_model->getByUserId($user_id);
 		
 		$this->load->view('head');
-		$this->load->view('inventory/header', $data);
+		$this->load->view('Inventory/header', $data);
 		
 		$this->load->model('Supplier_model');
-		$result = $this->Supplier_model->show_items();
+		$result = $this->Supplier_model->showItems();
 		$data['suppliers'] = $result;
-		$this->load->view('inventory/good_receipt_create_dashboard', $data);
+		$this->load->view('Inventory/good_receipt_create_dashboard', $data);
 	}
 	
-	public function get_incompleted_purchase_order()
+	public function getIncompletePurchaseOrder()
 	{
 		$supplier_id = $this->input->get('supplier_id');
 		$this->load->model('Purchase_order_model');
-		$data = $this->Purchase_order_model->get_incompleted_purchase_order($supplier_id);
+		$data = $this->Purchase_order_model->getIncompletePurchaseOrder($supplier_id);
 		
 		header('Content-Type: application/json');
 		echo json_encode($data);
@@ -79,7 +79,7 @@ class Good_receipt extends CI_Controller {
 	{
 		$good_receipt_id		= $this->input->get('id');
 		$this->load->model('Good_receipt_model');
-		$data['general'] = $this->Good_receipt_model->show_by_id($good_receipt_id);
+		$data['general'] = $this->Good_receipt_model->showById($good_receipt_id);
 		
 		$this->load->model('Good_receipt_detail_model');
 		$data['detail'] = $this->Good_receipt_detail_model->show_by_code_good_receipt_id($good_receipt_id);
@@ -129,12 +129,12 @@ class Good_receipt extends CI_Controller {
 		$data['departments']	= $this->Authorization_model->getByUserId($user_id);
 		
 		$this->load->view('head');
-		$this->load->view('inventory/header', $data);
+		$this->load->view('Inventory/header', $data);
 		
 		$this->load->model('Good_receipt_model');
 		$data['years']	= $this->Good_receipt_model->show_years();
 		
-		$this->load->view('inventory/good_receipt_archive', $data);
+		$this->load->view('Inventory/good_receipt_archive', $data);
 	}
 	
 	public function view_archive()
@@ -153,11 +153,11 @@ class Good_receipt extends CI_Controller {
 		echo json_encode($data);
 	}
 	
-	public function view_by_id()
+	public function showById()
 	{
 		$id			= $this->input->get('id');
 		$this->load->model('Good_receipt_model');
-		$data['general']	= $this->Good_receipt_model->show_by_id($id);
+		$data['general']	= $this->Good_receipt_model->showById($id);
 		
 		$this->load->model('Good_receipt_detail_model');
 		$data['items']		= $this->Good_receipt_detail_model->show_by_code_good_receipt_id($id);

@@ -32,8 +32,8 @@ class Supplier extends CI_Controller {
 		$offset		= ($page - 1) * 25;
 		
 		$this->load->model('Supplier_model');
-		$data['suppliers']	= $this->Supplier_model->show_items($offset, $term);
-		$data['pages']		= $this->Supplier_model->count_items($term);
+		$data['suppliers']	= $this->Supplier_model->showItems($offset, $term);
+		$data['pages']		= $this->Supplier_model->countItems($term);
 		
 		header('Content-Type: application/json');
 		echo json_encode($data);

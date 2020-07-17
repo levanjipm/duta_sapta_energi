@@ -347,11 +347,10 @@ class Sales_order_model extends CI_Model {
 			return $result;
 		}
 		
-		public function show_items($year, $month, $offset = 0, $term = '', $limit = 25)
+		public function showItems($year, $month, $offset = 0, $term = '', $limit = 25)
 		{
-			$this->db->select('code_sales_order.*, customer.name as customer_name, customer.address, customer.city, customer.number, customer.rt, customer.rw, customer.block, customer.pic_name, users.name as seller, COALESCE(code_sales_order_close_request.is_approved) as is_approved, code_sales_order_close_request.approved_date');
+			$this->db->select('code_sales_order.*, customer.name as customer_name, customer.address, customer.city, customer.number, customer.rt, customer.rw, customer.block, customer.pic_name, users.name as seller, COALESCE(code_sales_order_close_request.is_approved, 0) as is_approved, code_sales_order_close_request.approved_date');
 			$this->db->from('code_sales_order');
-			$this->db->join('sales_order', 'sales_order.code_sales_order_id = code_sales_order.id', 'inner');
 			$this->db->join('customer', 'code_sales_order.customer_id = customer.id');
 			$this->db->join('users', 'code_sales_order.seller = users.id', 'left');
 			$this->db->join('code_sales_order_close_request', 'code_sales_order_close_request.code_sales_order_id = code_sales_order.id', 'left');
@@ -375,11 +374,10 @@ class Sales_order_model extends CI_Model {
 			return $result;
 		}
 		
-		public function count_items($year, $month, $term = '')
+		public function countItems($year, $month, $term = '')
 		{
 			$this->db->select('code_sales_order.id');
 			$this->db->from('code_sales_order');
-			$this->db->join('sales_order', 'sales_order.code_sales_order_id = code_sales_order.id', 'inner');
 			$this->db->join('customer', 'code_sales_order.customer_id = customer.id');
 			$this->db->where('MONTH(code_sales_order.date)',$month);
 			$this->db->where('YEAR(code_sales_order.date)',$year);

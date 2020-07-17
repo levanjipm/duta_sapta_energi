@@ -35,6 +35,7 @@
 	}
 </style>
 <div class='topnav_bar' style='padding-left:8px!important;text-align:center;color:white'>
+	<img src='<?= base_url('assets/Logo_dark.png') ?>' style='width:100px'>
 	<h4>Hello, <?= $user_login->name ?></h4>
 </div>
 <div class='row' style='padding:20px; padding-top:90px; margin:0;'>

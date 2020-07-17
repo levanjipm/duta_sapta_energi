@@ -1,24 +1,17 @@
-<div class='dashboard'>
-	<div class='dashboard_head'>
-		<p style='font-family:museo'><a href='<?= site_url('Inventory') ?>' title='Inventory'><i class='fa fa-briefcase'></i></a> / <a href='<?= site_url('Inventory_case') ?>'>Cases</a> / Confirm</p>
-	</div>
-	<br>
-	<div class='dashboard_in'>
-		<table class='table table-bordered'>	
-			<tr>
-				<th>Date</th>
-				<th>Type</th>
-				<th>Created by</th>
-				<th>Action</th>
-			</tr>
-			<tbody id='case_tbody'></tbody>
-		</table>
-		
-		<select class='form-control' id='page' style='width:100px'>
-			<option value='1'>1</option>
-		</select>
-	</div>
-</div>
+<h4><strong>Confirm case(s)</strong></h4>
+<table class='table table-bordered'>	
+	<tr>
+		<th>Date</th>
+		<th>Type</th>
+		<th>Created by</th>
+		<th>Action</th>
+	</tr>
+	<tbody id='case_tbody'></tbody>
+</table>
+
+<select class='form-control' id='page' style='width:100px'>
+	<option value='1'>1</option>
+</select>
 
 <div class='alert_wrapper' id='view_inventory_case_wrapper'>
 	<button type='button' class='slide_alert_close_button'>&times </button>
@@ -56,7 +49,7 @@
 	
 	function view_case(n){
 		$.ajax({
-			url:'<?= site_url('Inventory_case/view_by_id') ?>',
+			url:'<?= site_url('Inventory_case/showById') ?>',
 			data:{
 				id:n
 			},

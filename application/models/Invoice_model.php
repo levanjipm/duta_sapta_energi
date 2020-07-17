@@ -281,4 +281,14 @@ class Invoice_model extends CI_Model {
 			
 			return $result;
 		}
+
+		public function getYears()
+		{
+			$this->db->select("DISTINCT(YEAR(date)) as years");
+			$this->db->order_by('date');
+			$query = $this->db->get($this->table_invoice);
+			$result = $query->result();
+
+			return $result;
+		}
 }

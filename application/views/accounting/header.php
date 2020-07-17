@@ -26,13 +26,13 @@
 ?>
 	</div>
 	<div class='sidenav_bar_functions'>
-		<button class='container_button'>Invoice</button>
+		<button class='container_button'><p>Invoice</p></button>
 		<div class='container_bar'>
 			<a href='<?= site_url('Invoice') ?>'><button><p style='font-family:museo'>Create</p></button></a>
 			<a href='<?= site_url('Invoice/archive') ?>'><button><p style='font-family:museo'>Archive</p></button></a>
 		</div>
 		
-		<button class='container_button'>Debt Document</button>
+		<button class='container_button'><p>Debt Document</p></button>
 		<div class='container_bar'>
 			<a href='<?= site_url('Debt') ?>'><button><p style='font-family:museo'>Create</p></button></a>
 			<a href='<?= site_url('Debt/archive') ?>'><button><p style='font-family:museo'>Archive</p></button></a>

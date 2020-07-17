@@ -43,12 +43,15 @@
 			</div>
 		</div>
 		<br><br>
-		<div id='archive_table'>
-		</div><br>
-		
-		<select class='form-control' id='page' style='width:100px'>
-			<option value='1'>1</option>
-		</select>
+		<div id='archiveTableWrapper'>
+			<div id='archiveTable'></div>
+			<br>
+			
+			<select class='form-control' id='page' style='width:100px'>
+				<option value='1'>1</option>
+			</select>
+		</div>
+		<p id='archiveTableText'>There is no good receipt found.</p>
 	</div>
 </div>
 
@@ -59,11 +62,11 @@
 		<p style='font-family:museo' id='good_receipt_name_p'></p>
 		<p style='font-family:museo' id='good_receipt_date_p'></p>
 		
-		<label>Purchase_order order</label>
+		<label>Purchase order</label>
 		<p style='font-family:museo' id='purchase_order_name_p'></p>
 		<p style='font-family:museo' id='purchase_order_date_p'></p>
 		
-		<label>Customer</label>
+		<label>Supplier</label>
 		<p style='font-family:museo' id='supplier_name_p'></p>
 		<p style='font-family:museo' id='supplier_address_p'></p>
 		<p style='font-family:museo' id='supplier_city_p'></p>
@@ -76,6 +79,9 @@
 			</tr>
 			<tbody id='good_receipt_table'></tbody>
 		</table>
+
+		<p id='invoice_status_done'>This good receipt has been invoiced.</p>
+		<p id='invoice_status_not_done'>This good receipt has <strong>not</strong> been invoiced.</p>
 	</div>
 </div>
 
@@ -88,7 +94,9 @@
 		refresh_view();
 	});
 	
-	refresh_view();
+	$(document).ready(function(){
+		refresh_view(1);
+	})
 	
 	function refresh_view(page = $('#page').val()){
 		$.ajax({
@@ -110,9 +118,16 @@
 					}
 				}
 				
-				$('#archive_table').html('');
+				$('#archiveTable').html('');
 				
 				var good_receipts		= response.good_receipts;
+				if(good_receipts.length == 0){
+					$('#archiveTableWrapper').hide();
+					$('#archiveTableText').show();
+				} else {
+					$('#archiveTableWrapper').show();
+					$('#archiveTableText').hide();
+				}
 				
 				$.each(good_receipts, function(index, good_receipt){
 					var purchase_order_name		= good_receipt.purchase_order_name;
@@ -150,9 +165,9 @@
 					}
 					var is_confirm		= good_receipt.is_confirm;
 					if(is_confirm == 0){
-						$('#archive_table').append("<div class='row archive_row'><div class='col-md-3 col-sm-3 col-xs-4'><p><strong>" + good_receipt_name + "</strong></p><p>" + purchase_order_name + "</p></div><div class='col-md-3 col-sm-3 col-xs-3'><p><strong>" + supplier_name + "</strong></p><p>" + complete_address + "</p><p>" + supplier_city + "</p></div><div class='col-md-4 col-sm-5 col-xs-5 col-md-offset-2 col-sm-offset-1 col-xs-offset-2'><p style='display:inline-block'>" + my_date_format(good_receipt_date) + " <strong>|</strong> </p> <button type='button' class='button button_transparent' onclick='open_view(" + good_receipt_id + ")' title='View " + good_receipt_name + "'><i class='fa fa-eye'></i></button></div>");
+						$('#archiveTable').append("<div class='row archive_row'><div class='col-md-3 col-sm-3 col-xs-4'><p><strong>" + good_receipt_name + "</strong></p><p>" + purchase_order_name + "</p></div><div class='col-md-3 col-sm-3 col-xs-3'><p><strong>" + supplier_name + "</strong></p><p>" + complete_address + "</p><p>" + supplier_city + "</p></div><div class='col-md-4 col-sm-5 col-xs-5 col-md-offset-2 col-sm-offset-1 col-xs-offset-2'><p style='display:inline-block'>" + my_date_format(good_receipt_date) + " <strong>|</strong> </p> <button type='button' class='button button_transparent' onclick='open_view(" + good_receipt_id + ")' title='View " + good_receipt_name + "'><i class='fa fa-eye'></i></button></div>");
 					} else {
-						$('#archive_table').append("<div class='row archive_row'><div class='col-md-3 col-sm-3 col-xs-4'><p><strong>" + good_receipt_name + "</strong></p><p>" + purchase_order_name + "</p></div><div class='col-md-3 col-sm-3 col-xs-3'><p><strong>" + supplier_name + "</strong></p><p>" + complete_address + "</p><p>" + supplier_city + "</p></div><div class='col-md-4 col-sm-5 col-xs-5 col-md-offset-2 col-sm-offset-1 col-xs-offset-2'><p style='display:inline-block'>" + my_date_format(good_receipt_date) + " <strong>|</strong> </p> <button type='button' class='button button_transparent' onclick='open_view(" + good_receipt_id + ")' title='View " + good_receipt_name + "'><i class='fa fa-eye'></i></button> <button type='button' class='button button_verified' title='Confirmed'><i class='fa fa-check'></i></button></div>");
+						$('#archiveTable').append("<div class='row archive_row'><div class='col-md-3 col-sm-3 col-xs-4'><p><strong>" + good_receipt_name + "</strong></p><p>" + purchase_order_name + "</p></div><div class='col-md-3 col-sm-3 col-xs-3'><p><strong>" + supplier_name + "</strong></p><p>" + complete_address + "</p><p>" + supplier_city + "</p></div><div class='col-md-4 col-sm-5 col-xs-5 col-md-offset-2 col-sm-offset-1 col-xs-offset-2'><p style='display:inline-block'>" + my_date_format(good_receipt_date) + " <strong>|</strong> </p> <button type='button' class='button button_transparent' onclick='open_view(" + good_receipt_id + ")' title='View " + good_receipt_name + "'><i class='fa fa-eye'></i></button> <button type='button' class='button button_verified' title='Confirmed'><i class='fa fa-check'></i></button></div>");
 					}
 				});
 				
@@ -164,12 +179,11 @@
 	
 	function open_view(n){
 		$.ajax({
-			url:'<?= site_url('Good_receipt/view_by_id') ?>',
+			url:'<?= site_url('Good_receipt/showById') ?>',
 			data:{
 				id:n
 			},
 			success:function(response){
-				console.log(response);
 				var general					= response.general;
 				var good_receipt_date		= general.date;
 				var good_receipt_name		= general.name;
@@ -184,6 +198,16 @@
 				var supplier_rw				= general.rw;
 				var supplier_postal			= general.postal_code;
 				var supplier_block			= general.block;
+
+				var is_invoiced				= general.invoice_id;
+
+				if(is_invoiced == null){
+					$('#invoice_status_done').hide();
+					$('#invoice_status_not_done').show();
+				} else {
+					$('#invoice_status_done').show();
+					$('#invoice_status_not_done').hide();
+				}
 	
 				if(supplier_number != null){
 					complete_address	+= ' No. ' + supplier_number;

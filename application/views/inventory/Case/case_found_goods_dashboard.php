@@ -1,5 +1,5 @@
 <h4><strong>Found</strong></h4>
-<form action='<?= site_url('Inventory_case/case_found_goods_input') ?>' method='POST' id='lost_goods_form'>
+<form action='<?= site_url('Inventory_case/input/found') ?>' method='POST' id='foundGoodsForm'>
 	<label>Date</label>
 	<input type='date' class='form-control' name='date' id='case_date' required><br>
 	
@@ -51,9 +51,9 @@
 	</div>
 </div>
 
-<div class='alert_wrapper' id='lost_goods_form_validation'>
-	<button type='button' class='alert_close_button'>&times </button>
-	<div class='alert_box_default'>
+<div class='alert_wrapper' id='foundGoodsFormValidation'>
+	<button type='button' class='slide_alert_close_button'>&times;</button>
+	<div class='alert_box_slide'>
 		<h3 style='font-family:bebasneue'>Add found goods case</h3>
 		<hr>
 		
@@ -203,7 +203,9 @@
 			$('#date_p').html(my_date_format(date));
 			$('#validate_cart_products').append("<tr><td colspan='3'></td><td>Total</td><td>Rp." + numeral(total_price).format('0,0') + "</td></tr>");
 			
-			$('#lost_goods_form_validation').fadeIn();
+			$('#foundGoodsFormValidation').fadeIn(300, function(){
+				$('#foundGoodsFormValidation .alert_box_slide').show("slide", { direction: "right" }, 250);
+			});
 		};
 	});
 	
@@ -212,10 +214,16 @@
 	});
 	
 	$('#confirm_button').click(function(){
-		$('#lost_goods_form').validate();
+		$('#foundGoodsForm').validate();
 		
-		if($('#lost_goods_form').valid()){
-			$('#lost_goods_form').submit();
+		if($('#foundGoodsForm').valid()){
+			$('#foundGoodsForm').submit();
 		};
+	});
+
+	$('.slide_alert_close_button').click(function(){
+		$(this).siblings('.alert_box_slide').hide("slide", { direction: "right" }, 250, function(){
+			$(this).parent().fadeOut();
+		});
 	});
 </script>

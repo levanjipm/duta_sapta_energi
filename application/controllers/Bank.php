@@ -178,22 +178,22 @@ class Bank extends CI_Controller {
 		$this->load->view('finance/opponent_dashboard');
 	}
 	
-	public function view_opponent()
+	public function showOpponent()
 	{
 		$page		= $this->input->get('page');
 		$term		= $this->input->get('term');
 		$offset		= ($page - 1) * 25;
 		
 		$type		= $this->input->get('type');
-		if($type == 1){ //customer
+		if($type == 'customer'){ //customer
 			$this->load->model('Customer_model');
-			$data['opponents']			= $this->Customer_model->show_items($offset, $term);
-			$data['pages']				= max(1, ceil($this->Customer_model->count_items($term)/25));
-		} else if($type == 2){
+			$data['opponents']			= $this->Customer_model->showItems($offset, $term);
+			$data['pages']				= max(1, ceil($this->Customer_model->countItems($term)/25));
+		} else if($type == 'supplier'){
 			$this->load->model('Supplier_model');
 			$data['opponents']			= $this->Supplier_model->show_items($offset, $term);
 			$data['pages']				= max(1, ceil($this->Supplier_model->count_items($term)/25));
-		} else if($type == 3){
+		} else if($type == 'other'){
 			$this->load->model('Other_bank_account_model');
 			$data['opponents']			= $this->Other_bank_account_model->show_items($offset, $term);
 			$data['pages']				= max(1, ceil($this->Other_bank_account_model->count_items($term)/25));

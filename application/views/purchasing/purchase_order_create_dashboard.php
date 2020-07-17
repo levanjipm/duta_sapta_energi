@@ -4,7 +4,7 @@
 	</div>
 	<br>
 	<div class='dashboard_in'>
-		<form action='<?= site_url('Purchase_order/input_purchase_order') ?>' method='POST' id='purchase_order_form'>
+		<form action='<?= site_url('Purchase_order/inputItem') ?>' method='POST' id='purchase_order_form'>
 			<input type='hidden' value='<?= $guid ?>'name='guid'>
 	
 			<label>Date</label>
@@ -173,7 +173,7 @@
 	
 	function refresh_view(page = $('#page').val()){
 		$.ajax({
-			url:'<?= site_url('Item/search_item_cart') ?>',
+			url:'<?= site_url('Item/showItems') ?>',
 			data:{
 				term:$('#search_bar').val(),
 				page:page
@@ -235,6 +235,7 @@
 			$('#purchase_order_tbody').html('');
 			$('input').attr('readonly',true);
 			$('select').attr('readonly',true);
+			$('textarea').attr('readonly', true);
 			
 			var taxing 		= $("#taxing").val();
 			
@@ -249,11 +250,10 @@
 			var note		= $('#note').val();
 			
 			$.ajax({
-				url:'<?= site_url('Supplier/select_by_id') ?>',
+				url:'<?= site_url('Supplier/getById') ?>',
 				data:{
 					id:supplier
 				},
-				type:'GET',
 				success:function(response){
 					var complete_address		= '';
 					var supplier_name			= response.name;
@@ -370,6 +370,9 @@
 	$('.slide_alert_close_button').click(function(){
 		$('#validate_purchase_order_wrapper .alert_box_slide').hide("slide", { direction: "right" }, 250, function(){
 			$('#validate_purchase_order_wrapper').fadeOut();
+			$('input').attr('readonly',false);
+			$('select').attr('readonly',false);
+			$('textarea').attr('readonly', false);
 		});
 	});
 	
@@ -379,23 +382,21 @@
 	
 	function add_to_cart(n){
 		$.ajax({
-			url:'<?= site_url('Purchase_order/addItemToCart') ?>',
+			url:'<?= site_url('Item/showById') ?>',
 			data:{
-				item_id:n
+				id:n
 			},
-			type:'POST',
 			beforeSend:function(){
 				$('button').attr('disabled',true);
 			},
 			success:function(response){
-				var item_id		= response.id;
 				var reference	= response.reference;
 				var name		= response.name;
 				var price_list	= response.price_list;
 				
-				if($('#item_row-' + item_id).length == 0){
+				if($('#item_row-' + n).length == 0){
 					$('#cart_products').append("<tr id='item_row-" + n + "'><td id='reference-" + n + "'>" + reference + "</td><td id='name-" + n + "'>" + name + "</td>" + 
-						"<td><input type='number' class='form-control' min='1' required name='price_list[" + n + "]' id='price_list-" + n + "'><br><label>" + numeral(price_list).format('0,0.00') + "</label> <button type='button' class='button button_default_dark' onclick='copy_price_list(" + item_id + "," + price_list + ")'><i class='fa fa-copy'></i></button></td>" +
+						"<td><input type='number' class='form-control' min='1' required name='price_list[" + n + "]' id='price_list-" + n + "'><br><label>" + numeral(price_list).format('0,0.00') + "</label> <button type='button' class='button button_default_dark' onclick='copy_price_list(" + n + "," + price_list + ")'><i class='fa fa-copy'></i></button></td>" +
 						"<td><input type='number' class='form-control' min='0' max='100' required name='discount[" + n + "]' id='discount-" + n + "'></td>" +
 						"<td><input type='number' class='form-control' min='1' required name='quantity[" + n + "]' id='quantity-" + n + "'></td>" + 
 						"<td><button type='button' class='button button_danger_dark' onclick='remove_item(" + n + ")'><i class='fa fa-trash'></i></button></td>");
@@ -413,16 +414,15 @@
 	
 	function add_to_cart_as_bonus(n){
 		$.ajax({
-			url:'<?= site_url('Purchase_order/addBonusItemToCart') ?>',
+			url:'<?= site_url('Item/showById') ?>',
 			data:{
-				item_id:n
+				id:n
 			},
-			type:'POST',
 			beforeSend:function(){
 				$('button').attr('disabled',true);
 			},
 			success:function(response){
-				var item_id	= response.id;
+				var item_id		= response.id;
 				var reference	= response.reference;
 				var name		= response.name;
 				

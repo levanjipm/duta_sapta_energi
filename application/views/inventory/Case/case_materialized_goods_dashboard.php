@@ -1,5 +1,5 @@
-<h4><strong>Dematerialized</strong></h4>
-<form action='<?= site_url('Inventory_case/input/dematerialized') ?>' method="POST" id='dematerializedForm'>
+<h4><strong>Materialized</strong></h4>
+<form action='<?= site_url('Inventory_case/input/materialized') ?>' method="POST" id='materializedForm'>
     <div class='row'>
         <div class='col-sm-12 col-xs-12'>
             <label>Date</label>
@@ -7,20 +7,20 @@
             <br>
         </div>
         <div class='col-sm-4 col-xs-12'>
-            <label>Dematerialized item</label> 
+            <label>Materialized item</label> 
             <input type='hidden' id='itemDemId'>
-            <button type='button' class='button button_default_dark' id='addDemItemButton'>Add item</button>
+            <button type='button' class='button button_default_dark' id='addMatItemButton'>Add item</button>
 
-            <div id='itemDemDetail' style='display:none'>
+            <div id='itemMatDetail' style='display:none'>
                 <hr>
-                <p><strong><span id='itemDemRef'></span></strong></p>
+                <p><strong><span id='itemMatRef'></span></strong></p>
                 <p id='itemDemName'></p>
                 <label>Quantity</label>
                 <input type='number' class='form-control' id='quantityDem' min='1' required value='0'>
             </div>
         </div>
         <div class='col-sm-8 col-xs-12'>
-            <label>Product item</label>
+            <label>Source item</label>
             <button type='button' class='button button_default_dark' id='addProductItemButton'>Add Item</button>
             <hr>
             <table class='table table-bordered' id='productItemTable' style='display:none'>
@@ -74,12 +74,12 @@
 </div>
 
 <script>
-    $('#dematerializedForm').validate({
+    $('#materializedForm').validate({
         ignore: ''
     });
 
     var method = 1;
-    $('#addDemItemButton').click(function(){
+    $('#addMatItemButton').click(function(){
         method = 1;
 		$('#search_bar').val('');
         refresh_view(1, method);
@@ -161,11 +161,11 @@
                     var id = response.id;
                     var name = response.name;
 
-                    $('#itemDemRef').html(reference);
+                    $('#itemMatRef').html(reference);
                     $('#itemDemName').html(name);
                     $('#itemDemId').val(id);
 
-                    $('#itemDemDetail').show();
+                    $('#itemMatDetail').show();
                     $('#add_item_wrapper .alert_full_close_button').click();
                 }
             }
