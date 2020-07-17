@@ -262,7 +262,11 @@ class Delivery_order extends CI_Controller {
 		$data['customer'] = $this->Customer_model->getById($customerId);
 
 		$this->load->model('Delivery_order_detail_model');
-		$data['items']		= $this->Delivery_order_detail_model->getByCodeDeliveryOrderId($id);
+		$items		= $this->Delivery_order_detail_model->getByCodeDeliveryOrderId($id);
+		$data['items'] = $items;
+		foreach($items as $item){
+			
+		}
 
 		$data['status']		= $this->Delivery_order_detail_model->getStatusByCodeDeliveryOrderId($id);
 		
