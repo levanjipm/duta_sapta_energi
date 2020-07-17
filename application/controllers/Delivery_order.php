@@ -8,30 +8,8 @@ class Delivery_order extends CI_Controller {
 			redirect(site_url('login'));
 		}
 	}
-	
-	public function index()
-	{
-		$user_id		= $this->session->userdata('user_id');
-		$this->load->model('User_model');
-		$data['user_login'] = $this->User_model->getById($user_id);
-		
-		$this->load->model('Authorization_model');
-		$data['departments']	= $this->Authorization_model->getByUserId($user_id);
-		
-		$this->load->view('head');
-		$this->load->view('inventory/header', $data);
-		
-		$this->load->model('Delivery_order_model');
-		$result	= $this->Delivery_order_model->show_unconfirmed_delivery_order();
-		$data['delivery_orders'] = $result;
-		
-		$result	= $this->Delivery_order_model->show_unsent_delivery_order();
-		$data['unsent_delivery_orders'] = $result;
-		
-		$this->load->view('inventory/delivery_order', $data);
-	}
-	
-	public function create()
+
+	public function createDashboard()
 	{
 		$user_id		= $this->session->userdata('user_id');
 		$this->load->model('User_model');
@@ -56,7 +34,22 @@ class Delivery_order extends CI_Controller {
 			$data['customers'] = $this->Customer_model->show_all_by_id($customer_ids);
 		}
 		
-		$this->load->view('inventory/delivery_order_create_dashboard', $data);
+		$this->load->view('inventory/DeliveryOrder/deliveryOrderCreate', $data);
+	}
+	
+	public function confirmDashboard()
+	{
+		$user_id		= $this->session->userdata('user_id');
+		$this->load->model('User_model');
+		$data['user_login'] = $this->User_model->getById($user_id);
+		
+		$this->load->model('Authorization_model');
+		$data['departments']	= $this->Authorization_model->getByUserId($user_id);
+		
+		$this->load->view('head');
+		$this->load->view('inventory/header', $data);
+		
+		$this->load->view('inventory/DeliveryOrder/deliveryOrderConfirmDashboard');
 	}
 	
 	public function viewSalesOrderbyId()
@@ -159,6 +152,37 @@ class Delivery_order extends CI_Controller {
 		header('Content-Type: application/json');
 		echo json_encode($data);
 	}
+
+	public function archive()
+	{
+		$user_id		= $this->session->userdata('user_id');
+		$this->load->model('User_model');
+		$data['user_login'] = $this->User_model->getById($user_id);
+		
+		$this->load->model('Authorization_model');
+		$data['departments']	= $this->Authorization_model->getByUserId($user_id);
+		
+		$this->load->view('head');
+		$this->load->view('inventory/header', $data);
+		
+		$this->load->model('Delivery_order_model');
+		$data['years']	= $this->Delivery_order_model->show_years();
+		
+		$this->load->view('inventory/DeliveryOrder/deliveryOrderArchive', $data);
+	}
+
+	public function print($delivery_order_id)
+	{
+		$this->load->model('Delivery_order_model');
+		$result = $this->Delivery_order_model->show_by_id($delivery_order_id);
+		$data['general']	= $result;
+		
+		$this->load->model('Delivery_order_detail_model');
+		$data['items'] = $this->Delivery_order_detail_model->show_by_code_delivery_order_id($delivery_order_id);
+		
+		$this->load->view('head');
+		$this->load->view('inventory/DeliveryOrder/deliveryOrderPrint', $data);
+	}
 	
 	public function confirm()
 	{
@@ -172,22 +196,9 @@ class Delivery_order extends CI_Controller {
 			if($sales_order[0]->invoicing_method == 2){
 				redirect(site_url('Delivery_order/print/') . $delivery_order_id);
 			} else {
-				redirect(site_url('Delivery_order'));
+				redirect(site_url('Delivery_order/createDashboard'));
 			}
 		}
-	}
-	
-	public function print($delivery_order_id)
-	{
-		$this->load->model('Delivery_order_model');
-		$result = $this->Delivery_order_model->show_by_id($delivery_order_id);
-		$data['general']	= $result;
-		
-		$this->load->model('Delivery_order_detail_model');
-		$data['items'] = $this->Delivery_order_detail_model->show_by_code_delivery_order_id($delivery_order_id);
-		
-		$this->load->view('head');
-		$this->load->view('Inventory/delivery_order_print', $data);
 	}
 	
 	public function send()
@@ -223,24 +234,6 @@ class Delivery_order extends CI_Controller {
 		echo json_encode($data);
 	}
 	
-	public function archive()
-	{
-		$user_id		= $this->session->userdata('user_id');
-		$this->load->model('User_model');
-		$data['user_login'] = $this->User_model->getById($user_id);
-		
-		$this->load->model('Authorization_model');
-		$data['departments']	= $this->Authorization_model->getByUserId($user_id);
-		
-		$this->load->view('head');
-		$this->load->view('inventory/header', $data);
-		
-		$this->load->model('Delivery_order_model');
-		$data['years']	= $this->Delivery_order_model->show_years();
-		
-		$this->load->view('inventory/delivery_order_archive', $data);
-	}
-	
 	public function view_archive()
 	{
 		$page			= $this->input->get('page');
@@ -257,14 +250,21 @@ class Delivery_order extends CI_Controller {
 		echo json_encode($data);
 	}
 	
-	public function view_by_id()
+	public function getById()
 	{
 		$id				= $this->input->get('id');
 		$this->load->model('Delivery_order_model');
-		$data['general']	= $this->Delivery_order_model->show_by_id($id);
-		
+		$deliveryOrder	= $this->Delivery_order_model->getById($id);
+		$data['general'] = $deliveryOrder;
+
+		$customerId = $deliveryOrder->customer_id;
+		$this->load->model('Customer_model');
+		$data['customer'] = $this->Customer_model->getById($customerId);
+
 		$this->load->model('Delivery_order_detail_model');
-		$data['items']		= $this->Delivery_order_detail_model->show_by_code_delivery_order_id($id);
+		$data['items']		= $this->Delivery_order_detail_model->getByCodeDeliveryOrderId($id);
+
+		$data['status']		= $this->Delivery_order_detail_model->getStatusByCodeDeliveryOrderId($id);
 		
 		header('Content-Type: application/json');
 		echo json_encode($data);
@@ -291,6 +291,44 @@ class Delivery_order extends CI_Controller {
 		$this->load->model('Delivery_order_model');
 		$data	= $this->Delivery_order_model->select_by_name($name);
 		
+		header('Content-Type: application/json');
+		echo json_encode($data);
+	}
+
+	public function getUnconfirmedDeliveryOrder()
+	{
+		$page = $this->input->get('page');
+		$offset = ($page - 1)* 10;
+
+		$this->load->model('Delivery_order_model');
+		$items = $this->Delivery_order_model->showUnconfirmedDeliveryOrder($offset);
+
+		$this->load->model('Customer_model');
+		$itemsArray = [];
+		foreach($items as $item){
+			$itemArray = (array) $item;
+			$customerId = $item->customer_id;
+			$customerArray = $this->Customer_model->getById($customerId);
+			$customer = array(
+				'id' => $customerArray->id,
+				'name' => $customerArray->name,
+				'address' => $customerArray->address,
+				'rt' => $customerArray->rt,
+				'rw' => $customerArray->rw,
+				'block' => $customerArray->block,
+				'city' => $customerArray->city,
+				'pic' => $customerArray->pic_name,
+				'postal_code' => $customerArray->postal_code,
+				'number' => $customerArray->number
+			);
+			
+			$itemArray['customer'] = $customer;
+			array_push($itemsArray, $itemArray);
+		}
+
+		$data['items'] = (object) $itemsArray;
+		$data['pages'] = max(1, ceil($this->Delivery_order_model->countUnconfirmedDeliveryOrder()/10));
+
 		header('Content-Type: application/json');
 		echo json_encode($data);
 	}

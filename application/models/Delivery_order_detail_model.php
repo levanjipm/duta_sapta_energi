@@ -138,25 +138,6 @@ class Delivery_order_detail_model extends CI_Model {
 			return ($item !== null) ? $this->get_stub_from_db($item) : null;
 		}
 		
-		public function show_by_code_delivery_order_id($id)
-		{
-			$this->db->select('code_delivery_order.name as do_name, DATE_FORMAT(code_delivery_order.date, "%e %b %Y") as date, code_sales_order.name as so_name, customer.name as customer_name, customer.address, customer.city, item.reference, item.name, delivery_order.quantity, code_delivery_order.id, users.name as seller, sales_order.discount, price_list.price_list, customer.id as customer_id');
-			$this->db->from('delivery_order');
-			$this->db->join('code_delivery_order', 'code_delivery_order.id = delivery_order.code_delivery_order_id', 'inner');
-			$this->db->join('sales_order', 'delivery_order.sales_order_id = sales_order.id');
-			$this->db->join('code_sales_order', 'code_sales_order.id = sales_order.code_sales_order_id', 'inner');
-			$this->db->join('price_list', 'sales_order.price_list_id = price_list.id');
-			$this->db->join('item', 'item.id = price_list.item_id');
-			$this->db->join('customer', 'code_sales_order.customer_id = customer.id');
-			$this->db->join('users', 'code_sales_order.seller = users.id', 'left');
-			$this->db->where('delivery_order.code_delivery_order_id', $id);
-			
-			$query = $this->db->get();
-			$items	= $query->result();
-			
-			return $items;
-		}
-		
 		public function get_batch_by_code_delivery_order_id($id)
 		{
 			$this->db->select('price_list.item_id, code_sales_order.customer_id, delivery_order.quantity, delivery_order.code_delivery_order_id');
@@ -205,13 +186,27 @@ class Delivery_order_detail_model extends CI_Model {
 			
 			return $items;
 		}
+
+		public function getByCodeDeliveryOrderId($id)
+		{
+			$this->db->select('delivery_order.*, item.name, item.reference');
+			$this->db->from('delivery_order');
+			$this->db->join('sales_order', 'delivery_order.sales_order_id = sales_order.id');
+			$this->db->join('price_list', 'price_list.id = sales_order.price_list_id');
+			$this->db->join('item', 'price_list.item_id = item.id');
+			$this->db->where('delivery_order.code_delivery_order_id', $id);
+			$query		= $this->db->get();
+			$result		= $query->result();
+
+			return $result;
+		}
 		
-		public function getByCodeDeliveryOrderId($delivery_order_id)
+		public function getStatusByCodeDeliveryOrderId($id)
 		{
 			$this->db->select('delivery_order.*, sales_order.quantity as ordered, sales_order.sent');
 			$this->db->from('delivery_order');
 			$this->db->join('sales_order', 'delivery_order.sales_order_id = sales_order.id');
-			$this->db->where('delivery_order.code_delivery_order_id', $delivery_order_id);
+			$this->db->where('delivery_order.code_delivery_order_id', $id);
 			$query		= $this->db->get();
 			$result		= $query->result();
 			

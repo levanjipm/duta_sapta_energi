@@ -28,7 +28,8 @@
 	<div class='sidenav_bar_functions'>
 		<button class='container_button'><p>Delivery order</p></button>
 		<div class='container_bar'>
-			<a href='<?= site_url('Delivery_order') ?>'><p>Create</p></a>	
+			<a href='<?= site_url('Delivery_order/createDashboard') ?>'><p>Create</p></a>
+			<a href='<?= site_url('Delivery_order/confirmDashboard') ?>'><p>Confirm</p></a>
 			<a href='<?= site_url('Delivery_order/archive') ?>'><p>Archive</p></a>	
 		</div>
 		<button class='container_button'><p style='font-family:museo'>Good receipt</p></button>

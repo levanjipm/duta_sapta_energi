@@ -39,3 +39,7 @@
 	border:none;
 	font: Light 12px/16px Avenir;
 }
+
+label.error{
+	color:#f63e21!important;
+}

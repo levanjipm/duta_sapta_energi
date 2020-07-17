@@ -108,9 +108,9 @@ class Delivery_order_model extends CI_Model {
 			return $result;
 		}
 		
-		public function show_unconfirmed_delivery_order($offset = 0, $filter = '', $limit = 25)
+		public function showUnconfirmedDeliveryOrder($offset = 0, $limit = 10)
 		{
-			$this->db->select('DISTINCT(code_delivery_order.id) as id, code_delivery_order.date, code_delivery_order.name, code_delivery_order.is_confirm, code_delivery_order.is_sent, code_delivery_order.guid, code_delivery_order.invoice_id, customer.name as customer_name, customer.address, customer.city');
+			$this->db->select('code_delivery_order.*, code_sales_order.customer_id');
 			$this->db->from('code_delivery_order');
 			$this->db->join('delivery_order', 'delivery_order.code_delivery_order_id = code_delivery_order.id', 'left');
 			$this->db->join('sales_order', 'delivery_order.sales_order_id = sales_order.id');
@@ -122,9 +122,25 @@ class Delivery_order_model extends CI_Model {
 			$this->db->limit($limit, $offset);
 			
 			$query 		= $this->db->get();
-			$items	 	= $query->result();
+			$result	 	= $query->result();
 			
-			$result 	= $this->map_list_with_customer($items);
+			return $result;
+		}
+
+		public function countUnconfirmedDeliveryOrder()
+		{
+			$this->db->select('DISTINCT(code_delivery_order.id) as id, code_delivery_order.date, code_delivery_order.name, code_delivery_order.is_confirm, code_delivery_order.is_sent, code_delivery_order.guid, code_delivery_order.invoice_id, customer.name as customer_name, customer.address, customer.city');
+			$this->db->from('code_delivery_order');
+			$this->db->join('delivery_order', 'delivery_order.code_delivery_order_id = code_delivery_order.id', 'left');
+			$this->db->join('sales_order', 'delivery_order.sales_order_id = sales_order.id');
+			$this->db->join('code_sales_order', 'code_sales_order.id = sales_order.code_sales_order_id', 'inner');
+			$this->db->join('customer', 'code_sales_order.customer_id = customer.id');
+			$this->db->where('code_delivery_order.is_confirm',0);
+			$this->db->where('code_delivery_order.is_delete',0);
+			$this->db->where('code_delivery_order.is_sent',0);
+
+			$query 		= $this->db->get();
+			$result	 	= $query->num_rows();
 			
 			return $result;
 		}
@@ -151,7 +167,7 @@ class Delivery_order_model extends CI_Model {
 			return $result;
 		}
 		
-		public function name_generator($date, $taxing)
+		public function generateName($date, $taxing)
 		{
 			$this->db->where('month(date)',date('m',strtotime($date)));
 			$this->db->where('year(date)',date('Y',strtotime($date)));
@@ -164,9 +180,9 @@ class Delivery_order_model extends CI_Model {
 			return $name;
 		}
 		
-		public function show_by_id($id)
+		public function getById($id)
 		{
-			$this->db->select('code_delivery_order.*, customer.name as customer_name, customer.address, customer.city, code_sales_order.name as sales_order_name, customer.number, customer.rt, customer.rw, customer.block, customer.pic_name, customer.postal_code, code_sales_order.taxing, users.name as seller, code_sales_order.invoicing_method, code_sales_order.date as sales_order_date');
+			$this->db->select('code_delivery_order.*, code_sales_order.name as sales_order_name, code_sales_order.taxing, users.name as seller, code_sales_order.invoicing_method, code_sales_order.date as sales_order_date, code_sales_order.customer_id');
 			$this->db->from('code_delivery_order');
 			$this->db->join('delivery_order', 'delivery_order.code_delivery_order_id = code_delivery_order.id', 'inner');
 			$this->db->join('sales_order', 'delivery_order.sales_order_id = sales_order.id', 'inner');
@@ -175,9 +191,9 @@ class Delivery_order_model extends CI_Model {
 			$this->db->join('customer', 'code_sales_order.customer_id = customer.id');
 			$this->db->where('code_delivery_order.id',$id);
 			$query 		= $this->db->get();
-			$items 		= $query->row();
+			$result 		= $query->row();
 			
-			return $items;
+			return $result;
 		}
 		
 		public function check_guid($guid)
@@ -210,7 +226,7 @@ class Delivery_order_model extends CI_Model {
 		public function insertItem()
 		{
 			$this->load->model('Delivery_order_model');
-			$delivery_order_name = $this->Delivery_order_model->name_generator($this->input->post('date'), $this->input->post('taxing'));
+			$delivery_order_name = $this->Delivery_order_model->generateName($this->input->post('date'), $this->input->post('taxing'));
 			
 			$this->date				= $this->input->post('date');
 			$this->name				= $delivery_order_name;

@@ -186,7 +186,7 @@
 					var id			= detail.id;
 					var name		= detail.name;
 					var reference	= detail.reference;
-					var quantity	= parseFloat(detail.quantity);
+					var quantity	= parseInt(detail.quantity);
 					var sent		= detail.sent;
 					var stock		= detail.stock;
 					
@@ -197,7 +197,7 @@
 					var net_price	= price_list * (100 - discount) / 100;
 					
 					
-					$('#sales_order_table').append("<tr><td>" + reference + "</td><td>" + name + "</td><td>" + numeral(quantity).format('0,0') + "</td><td>" + numeral(sent).format('0,0') + "</td><td>" + numeral(stock).format('0,0') + "</td><td><input type='number' class='form-control' name='quantity[" + id + "]' min='0' max='" + maximum + "' onkeyup='change_total()' value='0' id='quantity-" + id + "'><input type='hidden' id='net_price-" + id + "' value='" + net_price + "'></tr>")
+					$('#sales_order_table').append("<tr><td>" + reference + "</td><td>" + name + "</td><td>" + numeral(quantity).format('0,0') + "</td><td>" + numeral(sent).format('0,0') + "</td><td>" + numeral(stock).format('0,0') + "</td><td><input type='number' class='form-control' name='quantity[" + id + "]' min='0' max='" + maximum + "' onchange='changeTotalValue()' value='0' id='quantity-" + id + "'><input type='hidden' id='net_price-" + id + "' value='" + net_price + "'></tr>")
 				});
 				
 				var receivable_status		= 0;
@@ -240,13 +240,11 @@
 		rules: {"hidden_field": {min:1}}
 	});
 	
-	function change_total(){
+	function changeTotalValue(){
 		var total_delivery_order = 0;
 		var pending_bank_value 	= pendingBankData;
-		console.log(pendingBankData);
 		var debt				= receivable;
-		var pending_value		= pendingValue;
-		var plafond				= customerPlafond
+		var plafond				= customerPlafond;
 		var send_value			= 0;
 		var access_level		= accessLevel
 		
@@ -263,7 +261,7 @@
 		});
 		
 		var total_credit	= plafond + pending_bank_value;
-		var total_debit		= debt + pending_value + send_value;
+		var total_debit		= debt + send_value;
 		
 		if(total_credit < total_debit){
 			$('#warning_text').show();

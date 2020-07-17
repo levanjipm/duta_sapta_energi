@@ -51,11 +51,7 @@
 </div>
 <div class='alert_wrapper' id='opponent_alert_wrapper'>
 	<div class='alert_box_full'>
-		<div class='row' style='text-align:center'>
-			<div class='col-lg-2 col-md-2 col-sm-4 col-xs-4 col-lg-offset-5 col-md-offset-5 col-sm-offset-4 col-sm-offset-4'>
-				<button type='button' class='button alert_full_close_button' title='Close add item session' onclick="$('#opponent_alert_wrapper').fadeOut()"></button>
-			</div>
-		</div>
+	<button type='button' class='button alert_full_close_button' title='Close select opponent session'>&times;</button>
 		<br>
 		<div class='row'>
 			<div class='col-xs-12'>
