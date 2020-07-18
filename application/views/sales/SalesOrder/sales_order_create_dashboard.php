@@ -161,7 +161,8 @@
 			</tr>
 			<tbody id='table_item_confirm'></tbody>
 		</table>
-		<div style='padding:2px 10px;background-color:#ffc107;width:100%;display:none;' id='warning_text'><p style='font-family:museo'><i class='fa fa-exclamation-triangle'></i> Warning! Insufficient stock detected.</p></div><br>
+
+		<div class='notificationText warning' id='warningDebtText'><i class='fa fa-exclamation-triangle'></i> Warning! We found a problem while checking customer's account.</p></div><br>
 		
 		<button class='button button_default_dark' onclick='submit_form()'>Submit</button>
 	</div>
@@ -368,7 +369,7 @@
 					
 					complete_address += ', ' + customer_city;
 					
-					$('#customer_table').append("<tr><td id='customer_name-" + customer_id + "'>" + customer_name + "</td><td id='customer_address-" + customer_id + "'>" + complete_address + "</td><td><button type='button' class='button button_success_dark' onclick='select_customer(" + customer_id + ")'><i class='fa fa-check'></i></button></td>");
+					$('#customer_table').append("<tr><td id='customer_name-" + customer_id + "'>" + customer_name + "</td><td id='customer_address-" + customer_id + "'>" + complete_address + "</td><td><button type='button' class='button button_success_dark' onclick='selectCustomer(" + customer_id + ")'><i class='fa fa-check'></i></button></td>");
 					
 					var page		= $('#customer_page').val();
 					$('#customer_page').html('');
@@ -429,7 +430,7 @@
 					
 					complete_address += ', ' + customer_city;
 					
-					$('#customer_table').append("<tr><td id='customer_name-" + customer_id + "'>" + customer_name + "</td><td id='customer_address-" + customer_id + "'>" + complete_address + "</td><td><button type='button' class='button button_success_dark' onclick='select_customer(" + customer_id + ")'><i class='fa fa-check'></i></button></td>");
+					$('#customer_table').append("<tr><td id='customer_name-" + customer_id + "'>" + customer_name + "</td><td id='customer_address-" + customer_id + "'>" + complete_address + "</td><td><button type='button' class='button button_success_dark' onclick='selectCustomer(" + customer_id + ")'><i class='fa fa-check'></i></button></td>");
 					
 					var page		= $('#customer_page').val();
 					$('#customer_page').html('');
@@ -445,7 +446,7 @@
 		});
 	});
 	
-	function select_customer(n){
+	function selectCustomer(n){
 		$.ajax({
 			url:'<?= site_url('Customer/getCustomerAccount') ?>',
 			data:{
@@ -456,36 +457,37 @@
 				var plafond			= parseFloat(customer.plafond);
 				var pending_value	= response.pending_value;
 				var value			= parseFloat(pending_value.value);
+				var termOfPayment	= parseInt(customer.term_of_payment);
 				
-				var pending_invoice	= response.pending_invoice;	
-				var debt			= 0;
-				$.each(pending_invoice, function(index, invoice){
-					var invoice_value	= parseFloat(Math.max(0, invoice.value));
-					var paid_value		= parseFloat(invoice.paid);
-					
-					var total_value		= invoice_value - paid_value;
-					debt				+= total_value;
-					
-				});
+				var invoice			= response.pending_invoice;	
+
+				var invoiceValue	= parseFloat(invoice.debt);
+				var paidValue		= parseFloat(invoice.paid);
+				var minimumDate		= new Date(invoice.date);
+				var todayDate		= new Date();
+
+				var difference		= Math.floor(Math.abs((todayDate - minimumDate) / (60 * 60 * 24 * 1000)));
+				var customerDebt = invoiceValue - paidValue; //Total hutang saat ini//
+				var pendingBank = response.pendingBank; //Apabila ada data bank yang belum di assign//
 				
 				var customer_name		= $('#customer_name-' + n).html();
 				var customer_address	= $('#customer_address-' + n).html();
 				$('#select_customer_button').html(customer_name);
-				
-				if(Math.max(0, debt) + Math.max(0, value) > plafond){
-					$('#warning_text').show();
+
+				if(customerDebt > plafond || (invoice.date != null && difference > termOfPayment)){
+					$('#warningDebtText').show();
 				} else {
-					$('#warning_text').hide();
-				}					
+					$('#warningDebtText').hide();
+				}
 				
-				$('#customer_address_select').html('<p>' + customer_address + '</p><label>Plafond</label><p>Rp. ' + numeral(plafond).format('0,0.00') + '</p><label>Pending sales order value</label><p>Rp. ' + numeral(value).format('0,0.00') + '</p><label>Receivable</label><p>Rp. ' + numeral(debt).format('0,0.00') + '</p>');
+				$('#customer_address_select').html('<p>' + customer_address + '</p><label>Plafond</label><p>Rp. ' + numeral(plafond).format('0,0.00') + '</p><label>Pending sales order value</label><p>Rp. ' + numeral(value).format('0,0.00') + '</p><label>Receivable</label><p>Rp. ' + numeral(customerDebt).format('0,0.00') + '</p>');
 				$('#select_customer_wrapper').fadeOut();
 				$('#customer_id').val(n);
 			}
 		});
 	};
 	
-	function remove_item(n){
+	function removeItem(n){
 		$('#item_row-' + n).remove();
 		
 		if($('#cart_products tr').length == 0){
@@ -494,7 +496,7 @@
 		}
 	}
 	
-	function remove_bonus_item(n){
+	function removeBonusItem(n){
 		$('#bonus_item_row-' + n).remove();
 		
 		if($('#bonus_cart_products tr').length == 0){
@@ -524,7 +526,7 @@
 						"<td>Rp. " + numeral(price_list).format('0,0.00') + "</td><input type='hidden' id='price_list-" + n + "' value='" + price_list+ "'>" +
 						"<td><input type='number' class='form-control' min='0' max='100' required name='discount[" + n + "]' id='discount-" + n + "'></td>" +
 						"<td><input type='number' class='form-control' min='0' max='100' required name='quantity[" + n + "]' id='quantity-" + n + "'></td>" + 
-						"<td><button type='button' class='button button_danger_dark' onclick='remove_item(" + n + ")'><i class='fa fa-trash'></i></button></td></tr>");
+						"<td><button type='button' class='button button_danger_dark' onclick='removeItem(" + n + ")'><i class='fa fa-trash'></i></button></td></tr>");
 				}
 				
 				$('button').attr('disabled',false);
@@ -557,7 +559,7 @@
 					if($('#bonus_item_row-' + item_id).length == 0){
 						$('#bonus_cart_products').append("<tr id='bonus_item_row-" + n + "'><td id='bonus_reference-" + n + "'>" + reference + "</td><td id='bonus_name-" + n + "'>" + name + "</td>" + 
 							"<td><input type='number' class='form-control' min='1' required name='bonus_quantity[" + n + "]' id='bonus_quantity-" + n + "'></td>" +
-							"<td><button type='button' class='button button_danger_dark' onclick='remove_bonus_item(" + n + ")'><i class='fa fa-trash'></i></button></td>");
+							"<td><button type='button' class='button button_danger_dark' onclick='removeBonusItem(" + n + ")'><i class='fa fa-trash'></i></button></td>");
 					}
 					$('button').attr('disabled',false);
 					$('.alert_full_close_button').click();

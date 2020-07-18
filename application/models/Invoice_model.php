@@ -224,22 +224,18 @@ class Invoice_model extends CI_Model {
 			return $result;
 		}
 		
-		public function view_maximum_by_customer($customer_id)
+		public function getCustomerStatusById($customer_id)
 		{
-			$this->db->select('invoice.id, invoice.date, coalesce(invoice.value,0), coalesce(sum(receivable.value),0) as paid, customer.term_of_payment');
-			$this->db->from('invoice');
-			$this->db->join('receivable', 'invoice.id = receivable.invoice_id', 'left');
-			$this->db->join('code_delivery_order', 'code_delivery_order.invoice_id = invoice.id');
-			$this->db->join('delivery_order', 'delivery_order.code_delivery_order_id = code_delivery_order.id', 'left');
-			$this->db->join('sales_order', 'delivery_order.sales_order_id = sales_order.id');
-			$this->db->join('code_sales_order', 'code_sales_order.id = sales_order.code_sales_order_id');
-			$this->db->join('customer', 'code_sales_order.customer_id = customer.id');
-			$this->db->where('code_sales_order.customer_id', $customer_id);
-			$this->db->where('invoice.is_done', 0);
-			$this->db->order_by('date', 'asc');
-			
-			$query		= $this->db->get();
-			$result		= $query->result();
+			$query = $this->db->query("
+				SELECT COALESCE(SUM(invoice.value),0) AS debt, COALESCE(a.value, 0) AS paid, MIN(invoice.date) as date FROM invoice
+				LEFT JOIN (
+					SELECT SUM(value) as value, invoice_id FROM receivable GROUP BY invoice_id
+				) as a
+				ON invoice.id = a.invoice_id
+				WHERE invoice.customer_id = '$customer_id'
+				AND invoice.is_done = '0'
+			");
+			$result		= $query->row();
 			
 			return $result;
 		}

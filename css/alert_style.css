@@ -118,6 +118,7 @@
 
 .notificationText{
 	padding:2px 10px;width:100%;display:none;
+	margin-bottom:20px;
 }
 
 .notificationText.warning{
@@ -126,6 +127,6 @@
 }
 
 .notificationText.danger{
-	background-color:#ff4507;
+	background-color:#f63e21;
 	color:white;
 }

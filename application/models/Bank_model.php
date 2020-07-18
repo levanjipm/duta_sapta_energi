@@ -453,7 +453,7 @@ class Bank_model extends CI_Model {
 		public function getPendingValueByOpponentId($type, $id)
 		{
 			if($type == 'customer'){
-				$this->db->select('coalesce(sum(value)) as value');
+				$this->db->select('coalesce(sum(value), 0) as value');
 				$this->db->where('customer_id', $id);
 				$this->db->where('is_done', 0);
 				$this->db->where('is_delete', 0);
@@ -463,6 +463,6 @@ class Bank_model extends CI_Model {
 			$query		= $this->db->get($this->table_bank);
 			$result		= $query->row();
 			
-			return $result;
+			return $result->value;
 		}
 }

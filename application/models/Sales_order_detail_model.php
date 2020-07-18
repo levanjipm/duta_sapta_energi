@@ -156,7 +156,7 @@ class Sales_order_detail_model extends CI_Model {
 			return $items;
 		}
 		
-		public function show_by_id($id)
+		public function getById($id)
 		{
 			$this->db->where('id', $id);
 			$query = $this->db->get($this->table_sales_order);
@@ -252,7 +252,7 @@ class Sales_order_detail_model extends CI_Model {
 			
 			$result		= $query->row();
 			
-			return $result;
+			return $result->value;
 		}
 		
 		public function update_from_delivery_order_cancelation($sales_order_array)

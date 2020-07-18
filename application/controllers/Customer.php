@@ -90,16 +90,20 @@ class Customer extends CI_Controller {
 	
 	public function getCustomerAccount()
 	{
-		$customer_id		= $this->input->get('id');
+		$customerId		= $this->input->get('id');
 		
 		$this->load->model('Customer_model');
-		$data['customer']	= $this->Customer_model->getById($customer_id);
+		$data['customer']	= $this->Customer_model->getById($customerId);
 		
 		$this->load->model('Sales_order_detail_model');
-		$data['pending_value']	= $this->Sales_order_detail_model->getPendingValueByCustomerId($customer_id);
+		$data['pending_value']	= $this->Sales_order_detail_model->getPendingValueByCustomerId($customerId);
 		
 		$this->load->model('Invoice_model');
-		$data['pending_invoice']	= $this->Invoice_model->view_maximum_by_customer($customer_id);
+		$data['pending_invoice']	= $this->Invoice_model->getCustomerStatusById($customerId);
+
+		$this->load->model('Bank_model');
+		$data['pendingBank'] = $this->Bank_model->getPendingvalueByOpponentId('customer', $customerId);
+
 		
 		header('Content-Type: application/json');
 		echo json_encode($data);

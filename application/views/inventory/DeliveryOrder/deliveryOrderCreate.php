@@ -4,32 +4,22 @@
 	</div>
 	<br>
 	<div class='dashboard_in'>
-		<table class='table table-bordered'>
-			<tr>
-				<th>Date</th>
-				<th>Name</th>
-				<th>Customer</th>
-				<th>Action</th>
-			</tr>
-<?php
-	foreach($sales_orders as $sales_order){
-?>
-			<tr>
-				<td><?= date('d M Y',strtotime($sales_order->date)) ?></td>
-				<td><?= $sales_order->name ?></td>
-				<td>
-					<p style='font-family:museo'><?= $sales_order->customer_name ?></p> 
-					<p style='font-family:museo'><?= $sales_order->customer_address ?></p> 
-					<p style='font-family:museo'><?= $sales_order->customer_city ?></p>
-				</td>
-				<td>
-					<button type='button' class='button button_success_dark' onclick='viewSalesOrder(<?= $sales_order->id ?>)'><i class='fa fa-long-arrow-right'></i></button>
-				</td>
-			</tr>
-<?php
-	}
-?>
-		</table>
+		<div id='salesOrderTable'>
+			<table class='table table-bordered'>
+				<tr>
+					<th>Date</th>
+					<th>Name</th>
+					<th>Customer</th>
+					<th>Action</th>
+				</tr>
+				<tbody id='salesOrderTableContent'></tbody>
+			</table>
+
+			<select class='form-control' id='page' style='width:100px'>
+				<option value='1'>1</option>
+			</select>
+		</div>
+		<p id='salesOrderTableText'>There is no sales order found.</p>
 	</div>
 </div>
 
@@ -92,6 +82,14 @@
 	var receivable;
 	var customerPlafond;
 	var accessLevel;
+
+	$(document).ready(function(){
+		refresh_view(1);
+	})
+
+	$('#page').change(function(){
+		refresh_view();
+	})
 
 	function viewSalesOrder(n){
 		$.ajax({
@@ -276,4 +274,75 @@
 		}
 		$('#total').val(total_delivery_order);
 	};
+
+	function refresh_view(page = $('#page').val()){
+		$.ajax({
+			url:'<?= site_url('Sales_order/getIncompleteSalesOrder') ?>',
+			data:{
+				page: page
+			},
+			success:function(response){
+				var sales_orders = response.items;
+				$('#salesOrderTableContent').html('');
+				var salesOrderCount = 0;
+				$.each(sales_orders, function(index, sales_order){
+					var customer = sales_order.customer;
+					var customer_name			= customer.name;
+					var complete_address		= customer.address;
+					var customer_city			= customer.city;
+					var customer_number			= customer.number;
+					var customer_rt				= customer.rt;
+					var customer_rw				= customer.rw;
+					var customer_postal			= customer.postal_code;
+					var customer_block			= customer.block;
+		
+					if(customer_number != ''){
+						complete_address	+= ' No. ' + customer_number;
+					}
+					
+					if(customer_block != ''){
+						complete_address	+= ' Blok ' + customer_block;
+					}
+				
+					if(customer_rt != '000'){
+						complete_address	+= ' RT ' + customer_rt;
+					}
+					
+					if(customer_rw != '000' && customer_rt != '000'){
+						complete_address	+= ' /RW ' + customer_rw;
+					}
+					
+					if(customer_postal != null){
+						complete_address	+= ', ' + customer_postal;
+					}
+
+					var name = sales_order.name;
+					var date = sales_order.date;
+					var taxing = sales_order.taxing;
+					var id = sales_order.id;
+
+					$('#salesOrderTableContent').append("<tr><td>" + my_date_format(date) + "</td><td>" + name + "</td><td><p>" + customer_name + "</p><p>" + complete_address + "</p><p>" + customer_city + "</p></td><td><button class='button button_default_dark' onclick='viewSalesOrder(" + id + ")'><i class='fa fa-eye'></i></button></tr>");
+					salesOrderCount++;
+				})
+
+				var pages = response.pages;
+				$('#page').html('');
+				for(i = 1; i <= pages; i++){
+					if(i == page){
+						$('#page').append("<option value='" + i + "' selected>" + i + "</option>");
+					} else {
+						$('#page').append("<option value='" + i + "'>" + i + "</option>");
+					}
+				}
+
+				if(salesOrderCount > 0){
+					$('#salesOrderTable').show();
+					$('#salesOrderTableText').hide();
+				} else {
+					$('#salesOrderTable').hide();
+					$('#salesOrderTableText').show();
+				}
+			}
+		})
+	}
 </script>

@@ -34,11 +34,11 @@
 		background-color:#2B2F38;
 	}
 </style>
-<div class='topnav_bar' style='padding-left:8px!important;text-align:center;color:white'>
+<div class='topnav_bar' style='padding-left:8px!important;text-align:center;color:white;height:100px'>
 	<img src='<?= base_url('assets/Logo_dark.png') ?>' style='width:100px'>
 	<h4>Hello, <?= $user_login->name ?></h4>
 </div>
-<div class='row' style='padding:20px; padding-top:90px; margin:0;'>
+<div class='row' style='padding:20px; padding-top:120px; margin:0;'>
 <?php
 	foreach($departments as $department){
 ?>
@@ -61,7 +61,8 @@
 			if($(this).height() < min_size && $(this).height() > 0){
 				min_size	= $(this).height();
 			}
-		});		
+		});
+
 		$('.department_image').height(min_size);
 	}
 	

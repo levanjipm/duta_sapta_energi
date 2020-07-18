@@ -73,4 +73,13 @@ class Price_list_model extends CI_Model {
 			$db_item 					= $this->get_db_from_stub();
 			$db_result 					= $this->db->insert($this->table_price_list, $db_item);
 		}
+
+		public function getById($id)
+		{
+			$this->db->where('id', $id);
+			$query = $this->db->get($this->table_price_list);
+			$result = $query->row();
+
+			return $result;
+		}
 }

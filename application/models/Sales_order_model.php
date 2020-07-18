@@ -115,7 +115,7 @@ class Sales_order_model extends CI_Model {
 			return $result;
 		}
 		
-		public function name_generator($date)
+		public function generateName($date)
 		{
 			$name = date('Ym', strtotime($date)) . '.' . rand(0,9) . rand(0,9) . rand(0,9) . rand(0,9) . rand(0,9) . rand(0,9) . rand(0,9) . rand(0,9);
 			$this->db->where('name =',$name);
@@ -123,10 +123,40 @@ class Sales_order_model extends CI_Model {
 			$item = $query->num_rows();
 			
 			if($item != 0){
-				$this->Sales_order_model->name_generator($date);
+				$this->Sales_order_model->generateName($date);
 			};
 			
 			return $name;
+		}
+
+		public function getIncompleteSalesOrder()
+		{
+			$query = $this->db->query("
+				SELECT code_sales_order.* FROM code_sales_order 
+				JOIN (
+					SELECT DISTINCT(sales_order.code_sales_order_id) as id FROM sales_order
+					WHERE status = '0' 	
+				) as a
+				ON a.id = code_sales_order.id
+			");
+
+			$result = $query->result();
+			return $result;
+		}
+
+		public function countIncompleteSalesOrder()
+		{
+			$query = $this->db->query("
+				SELECT code_sales_order.* FROM code_sales_order 
+				JOIN (
+					SELECT DISTINCT(sales_order.code_sales_order_id) as id FROM sales_order
+					WHERE status = '0' 	
+				) as a
+				ON a.id = code_sales_order.id
+			");
+
+			$result = $query->num_rows();
+			return $result;
 		}
 		
 		public function show_all()
@@ -141,7 +171,7 @@ class Sales_order_model extends CI_Model {
 		
 		public function getById($id)
 		{
-			$this->db->select('DISTINCT(sales_order.code_sales_order_id) as id, code_sales_order.*, customer.name as customer_name, customer.name as customer_name, customer.address as address, customer.city as city, users.name as seller, customer.rt, customer.rw, customer.block, customer.postal_code, customer.number');
+			$this->db->select('DISTINCT(sales_order.code_sales_order_id) as id, code_sales_order.*, users.name as seller');
 			$this->db->from('sales_order');
 			$this->db->join('code_sales_order', 'code_sales_order.id = sales_order.code_sales_order_id');
 			$this->db->join('customer', 'code_sales_order.customer_id = customer.id');
@@ -191,7 +221,7 @@ class Sales_order_model extends CI_Model {
 			
 			if($check_guid){
 				$sales_order_date		= $this->input->post('sales_order_date');
-				$sales_order_name 		= $this->Sales_order_model->name_generator($sales_order_date);
+				$sales_order_name 		= $this->Sales_order_model->generateName($sales_order_date);
 				if($this->input->post('sales_order_seller') === ''){
 					$sales_order_seller	= NULL;
 				} else {
@@ -273,7 +303,7 @@ class Sales_order_model extends CI_Model {
 			return $items;
 		}
 		
-		public function show_unconfirmed_sales_order($offset = 0, $filter = '', $limit = 25)
+		public function getUnconfirmedSalesOrder($offset = 0, $filter = '', $limit = 25)
 		{
 			$this->db->select('DISTINCT(sales_order.code_sales_order_id) as id, code_sales_order.*, customer.name as customer_name, customer.address as customer_address, customer.city as customer_city, customer.city as customer_city, customer.rt as customer_rt, customer.rw as customer_rw, customer.block as customer_block, customer.postal_code as customer_postal_code, users.name as seller');
 			$this->db->from('sales_order');
@@ -298,7 +328,7 @@ class Sales_order_model extends CI_Model {
 			return $items;
 		}
 		
-		public function count_unconfirmed_sales_order($filter = '')
+		public function countUnconfirmedSalesOrder($filter = '')
 		{
 			$this->db->select('DISTINCT(sales_order.code_sales_order_id) as id');
 			$this->db->from('sales_order');
@@ -335,6 +365,8 @@ class Sales_order_model extends CI_Model {
 			
 			$this->db->where('id', $sales_order_id);
 			$this->db->update($this->table_sales_order);
+
+			return $this->db->affected_rows();
 		}
 		
 		public function show_years()

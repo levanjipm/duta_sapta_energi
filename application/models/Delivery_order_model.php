@@ -405,4 +405,20 @@ class Delivery_order_model extends CI_Model {
 			$result = $query->row();
 			return ($result == null)? null: $result;
 		}
+
+		public function getItemBySalesOrderId($salesOrderId)
+		{
+			$this->db->select('code_delivery_order.*');
+			$this->db->from('code_delivery_order');
+			$this->db->join('delivery_order', 'delivery_order.code_delivery_order_id = code_delivery_order.id', 'left');
+			$this->db->join('sales_order', 'delivery_order.sales_order_id = sales_order.id');
+			$this->db->join('code_sales_order', 'sales_order.code_sales_order_id = code_sales_order.id');
+			$this->db->where('code_sales_order.id', $salesOrderId);
+			$this->db->where('code_delivery_order.is_delete', 0);
+
+			$query = $this->db->get();
+			$result = $query->result();
+
+			return $result;
+		}
 }

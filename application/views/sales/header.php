@@ -37,10 +37,11 @@
 		<a href='<?= site_url('Item_class') ?>'><button><p>Item class</p></button></a>
 		<button class='container_button'><p style='font-family:museo'>Sales order  <i class='fa fa-caret-down'></i></p></button>
 		<div class='container_bar'>
-			<a href='<?= site_url('Sales_order') ?>'><p>Create</p></a>
-			<a href='<?= site_url('Sales_order/track') ?>'><p>Track</p></a>
+			<a href='<?= site_url('Sales_order/createDashboard') ?>'><p>Create</p></a>
+			<a href='<?= site_url('Sales_order/trackDashboard') ?>'><p>Track</p></a>
+			<a href='<?= site_url('Sales_order/closeSalesOrderDashboard') ?>'>Close</p></a>
 		<?php if($user_login->access_level > 2) { ?>
-			<a href='<?= site_url('Sales_order/close_confirmation') ?>'>Close</p></a>
+			<a href='<?= site_url('Sales_order/confirmCloseSalesOrderDashboard') ?>'><p>Confirm close</p></a>
 		<?php } ?>
 			<a href='<?= site_url('Sales_order/archive') ?>'>Archive</a>
 		</div>

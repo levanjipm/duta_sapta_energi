@@ -91,44 +91,87 @@ class Delivery_order extends CI_Controller {
 	
 	public function insertItem()
 	{
-		$salesOrderId 	= $this->input->post('salesOrderId');
+		$codeSalesOrderId 	= $this->input->post('salesOrderId');
 		$guid			= $this->input->post('guid');
 
-		$this->load->model('Delivery_order_model');
-		$result 		= $this->Delivery_order_model->check_guid($guid);
+		$user_id		= $this->session->userdata('user_id');
+
+		$this->load->model('User_model');
+		$userObject = $this->User_model->getById($user_id);
+		$accessLevel = $userObject->access_level;
+
+		//Back-end validation//
+		$this->load->model('Sales_order_model');
+		$this->load->model('Sales_order_detail_model');
+		$this->load->model('Price_list_model');
+		$this->load->model('Customer_model');
+
+		$result 			= $this->Sales_order_model->getById($codeSalesOrderId);
 		
-		if($result){
-			$sales_order_array	= array_keys($this->input->post('quantity'));
-			$quantity_array		= array_values($this->input->post('quantity'));
-			
-			$this->load->model('Sales_order_detail_model');
-			$result = $this->Sales_order_detail_model->check_sales_order($sales_order_array, $quantity_array);
-			
-			if($result){
-				$deliveryOrderId = $this->Delivery_order_model->insertItem();
-				
-				$this->load->model('Delivery_order_detail_model');
-				$result = $this->Delivery_order_detail_model->insert_from_post($deliveryOrderId);
-				
-				if($result){
-					$this->Sales_order_detail_model->update_sales_order_sent($sales_order_array, $quantity_array);
-				}
-			};
-			
-			$this->load->model('Sales_order_model');
-			$salesOrder = $this->Sales_order_model->getById($salesOrderId);
-			print_r($salesOrder);
+		$customerId		= $result->customer_id;
+		$invoic
+		$customerObject = $this->Customer_model->getById($customerId);
+		$plafond		= $customerObject->plafond;
+
+		$this->load->model('Bank_model');
+		$pending_bank_data	= $this->Bank_model->getPendingValueByOpponentId('customer', $customerId)->value;
+		
+		$this->load->model('Invoice_model');
+		$receivable = $this->Invoice_model->getReceivableByCustomerId($customerId)->value;
+
+		$deliveryOrderValue = 0;
+
+		$quantityArray = $this->input->post('quantity');
+		foreach($quantityArray as $quantity){
+			$salesOrderId = key($quantityArray);
+			$salesOrder = $this->Sales_order_detail_model->getById($salesOrderId);
+
+			$priceListId = $salesOrder->price_list_id;
+			$discount =  $salesOrder->discount;
 			$invoicingMethod = $salesOrder->invoicing_method;
 
-			if($invoicingMethod == 1){
-				redirect(site_url('Delivery_order'));
-			} else if($invoicingMethod == 2){
-				redirect(site_url('Delivery_order/print/' . $deliveryOrderId));
-			}
+			$priceListObject = $this->Price_list_model->getById($priceListId);
+			$priceList = $priceListObject->price_list;
 
-		} else {
-			redirect(site_url('Delivery_order'));
+			$price = (float) $priceList * (100 - $discount) / 100;
+			$totalPrice = $price * $quantity;
+
+			$deliveryOrderValue += $totalPrice;
+			next($quantityArray);
 		}
+
+		if($receivable - $bankValue < $plafond || $accessLevel > 2){
+			$this->load->model('Delivery_order_model');
+			$result 		= $this->Delivery_order_model->check_guid($guid);
+			if($result){
+				$sales_order_array	= array_keys($this->input->post('quantity'));
+				$quantity_array		= array_values($this->input->post('quantity'));
+
+				$result = $this->Sales_order_detail_model->check_sales_order($sales_order_array, $quantity_array);
+				
+				if($result){
+					$deliveryOrderId = $this->Delivery_order_model->insertItem();
+					
+					$this->load->model('Delivery_order_detail_model');
+					$result = $this->Delivery_order_detail_model->insert_from_post($deliveryOrderId);
+					
+					if($result){
+						$this->Sales_order_detail_model->update_sales_order_sent($sales_order_array, $quantity_array);
+					}
+				};
+
+				if($invoicingMethod == 1){
+					redirect(site_url('Delivery_order'));
+				} else if($invoicingMethod == 2){
+					redirect(site_url('Delivery_order/print/' . $deliveryOrderId));
+				}
+
+			}
+		}
+
+		
+		
+		
 	}
 	
 	public function show_by_code_delivery_order_id($id)
