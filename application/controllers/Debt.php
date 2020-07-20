@@ -68,7 +68,7 @@ class Debt extends CI_Controller {
 		$supplier = $this->Good_receipt_model->select_supplier_from_uninvoiced_document();
 		$data['suppliers'] = $supplier;
 		
-		$this->load->view('accounting/create_debt_document_dashboard', $data);
+		$this->load->view('accounting/debt_document_create_dashboard', $data);
 	}
 	
 	public function createBlank()
@@ -151,7 +151,7 @@ class Debt extends CI_Controller {
 		
 		if($invoice_id != null){
 			$this->load->model('Good_receipt_model');
-			$this->Good_receipt_model->update_set_invoice_id($invoice_id, $good_receipt_array);
+			$this->Good_receipt_model->updateInvoiceStatusById(1, $invoice_id, $good_receipt_array);
 			
 			$this->load->model('Stock_in_model');
 			$this->Stock_in_model->update_price($price_array);
@@ -182,11 +182,10 @@ class Debt extends CI_Controller {
 	public function confirm()
 	{
 		$purchase_invoice_id		= $this->input->post('id');
-		$confirmed_by				= $this->session->userdata('user_id');
 		$this->load->model('Debt_model');
-		$data['debt'] = $this->Debt_model->updateById(1, $purchase_invoice_id, $confirmed_by);
+		$data['debt'] = $this->Debt_model->updateById(1, $purchase_invoice_id);
 		
-		redirect(site_url('Debt'));
+		// redirect(site_url('Debt'));
 	}
 	
 	public function delete()
@@ -198,7 +197,7 @@ class Debt extends CI_Controller {
 			
 			if($result){
 				$this->load->model('Good_receipt_model');
-				$this->Good_receipt_model->update_unset_invoice_id($purchase_invoice_id);
+				$this->Good_receipt_model->updateInvoiceStatusById(0, $purchase_invoice_id);
 			}
 		};
 	}

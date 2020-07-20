@@ -69,10 +69,9 @@ class Inventory_case_model extends CI_Model {
 		public function insertItem($created_by, $date, $type)
 		{
 			if($type == 1){
-				//Lost goods//
 				$db_item = array(
 					'id' => '',
-					'type' => 1,
+					'type' => $type,
 					'created_by' => $created_by,
 					'date' => $date,
 					'is_confirm' => 0,
@@ -81,7 +80,16 @@ class Inventory_case_model extends CI_Model {
 			} else if($type == 2){
 				$db_item = array(
 					'id' => '',
-					'type' => 2,
+					'type' => $type,
+					'created_by' => $created_by,
+					'date' => $date,
+					'is_confirm' => 0,
+					'confirmed_by' => null
+				);
+			} else if($type == 3){
+				$db_item = array(
+					'id' => '',
+					'type' => $type,
 					'created_by' => $created_by,
 					'date' => $date,
 					'is_confirm' => 0,
@@ -92,6 +100,12 @@ class Inventory_case_model extends CI_Model {
 			$this->db->insert($this->table_event, $db_item);
 				
 			return $this->db->insert_id();
+		}
+
+		public function deleteById($id)
+		{
+			$this->db->where('id', $id);
+			$this->db->delete($this->table_event);
 		}
 		
 		public function show_unconfirmed_cases($offset = 0, $limit = 25)

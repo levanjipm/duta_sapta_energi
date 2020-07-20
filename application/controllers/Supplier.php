@@ -25,7 +25,7 @@ class Supplier extends CI_Controller {
 		$this->load->view('purchasing/supplier_manage_dashboard');
 	}
 	
-	public function getItems()
+	public function showItems()
 	{
 		$page		= $this->input->get('page');
 		$term		= $this->input->get('term');

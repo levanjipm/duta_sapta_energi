@@ -66,8 +66,9 @@ class Inventory_case_detail_model extends CI_Model {
 			return $result;
 		}
 				
-		public function insertItem($code_event_id, $quantity_array, $type, $price_array = array())
+		public function insertBatchItem($code_event_id, $quantity_array, $type, $price_array = array())
 		{
+			$this->db->db_debug = false;
 			if($type == 1){
 				//Lost goods//
 				foreach($quantity_array as $quantity){
@@ -80,8 +81,10 @@ class Inventory_case_detail_model extends CI_Model {
 						'code_event_id' => $code_event_id,
 						'price' => 0
 					);
+					next($quantity_array);
 				}
 			} else if($type == 2){
+				//Found goods//
 				foreach($quantity_array as $quantity){
 					$item_id		= key($quantity_array);
 					$price			= $price_array[$item_id];
@@ -93,10 +96,56 @@ class Inventory_case_detail_model extends CI_Model {
 						'code_event_id' => $code_event_id,
 						'price' => $price
 					);
+					next($quantity_array);
+				}
+			} else if($type == 3){
+				$priceDem		= $this->input->post('priceDem');
+				$this->load->model('Item_model');
+
+				$quantityPriceArray = $quantity_array;
+				$totalPriceList = 0;
+				$totalQuantity	= 0;
+				foreach($quantityPriceArray as $quantityPrice){
+					$itemId			= key($quantityPriceArray);
+					$pricelist		= $this->Item_model->showById($itemId)->price_list;
+					$totalPriceList	+= $quantityPrice * $pricelist;
+					next($quantityPriceArray);
+				}
+
+				foreach($quantity_array as $quantity){
+					$itemId			= key($quantity_array);
+					$pricelist		= $this->Item_model->showById($itemId)->price_list;
+					$price			= ($pricelist * $priceDem) / $totalPriceList;
+					$batch[] = array(
+						'id' => '',
+						'item_id' => $itemId,
+						'quantity' => $quantity,
+						'transaction' => 'IN',
+						'code_event_id' => $code_event_id,
+						'price' => $price
+					);
+					next($quantity_array);
 				}
 			}
 			
 			$this->db->insert_batch($this->table_event, $batch);
+			return $this->db->affected_rows();
+		}
+
+		public function insertItem($codeEventId, $itemId, $itemQuantity, $transaction, $itemPrice = 0)
+		{
+			$this->db->db_debug = false;
+			$db_item = array(
+				'id' => '',
+				'item_id' => $itemId,
+				'quantity' => $itemQuantity,
+				'transaction' => $transaction,
+				'code_event_id' => $codeEventId,
+				'price' => $itemPrice
+			);
+
+			$this->db->insert($this->table_event, $db_item);
+			return $this->db->affected_rows();
 		}
 		
 		public function showByCodeId($id)
@@ -109,6 +158,12 @@ class Inventory_case_detail_model extends CI_Model {
 			$result	= $query->result();
 			
 			return $result;
+		}
+
+		public function deleteByCodeId($id)
+		{
+			$this->db->where('code_event_id', $id);
+			$this->db->delete($this->table_event);
 		}
 		
 		public function get_batch_by_code_event_id($id)

@@ -3,12 +3,12 @@
     <div class='row'>
         <div class='col-sm-12 col-xs-12'>
             <label>Date</label>
-            <input type='date' class='form-control' required>
+            <input type='date' class='form-control' name='date' required>
             <br>
         </div>
         <div class='col-sm-4 col-xs-12'>
             <label>Dematerialized item</label> 
-            <input type='hidden' id='itemDemId'>
+            <input type='hidden' id='itemDemId' name='itemIdDem'>
             <button type='button' class='button button_default_dark' id='addDemItemButton'>Add item</button>
 
             <div id='itemDemDetail' style='display:none'>
@@ -16,7 +16,10 @@
                 <p><strong><span id='itemDemRef'></span></strong></p>
                 <p id='itemDemName'></p>
                 <label>Quantity</label>
-                <input type='number' class='form-control' id='quantityDem' min='1' required value='0'>
+                <input type='number' class='form-control' id='quantityDem' min='1' required value='0' name='quantityDem'>
+
+                <label>Price</label>
+                <input type='number' class='form-control' id='priceDem' min='0' required value='0' name='priceDem'>
             </div>
         </div>
         <div class='col-sm-8 col-xs-12'>

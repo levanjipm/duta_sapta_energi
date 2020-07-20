@@ -12,19 +12,22 @@
 			</div>
 		</div>
 		<br>
-		<table class='table table-bordered' id='debt_document_table'>
-			<tr>
-				<th>Date</th>
-				<th>Document</th>
-				<th>Supplier</th>
-				<th>Action</th>
-			</tr>
-			<tbody id='debt_document_tbody'></tbody>
-		</table>
-	
-		<select class='form-control' id='page' style='width:100px'>
-			<option value='1'>1</option>
-		</select>
+		<div id='debtTable'>
+			<table class='table table-bordered' id='debt_document_table'>
+				<tr>
+					<th>Date</th>
+					<th>Document</th>
+					<th>Supplier</th>
+					<th>Action</th>
+				</tr>
+				<tbody id='debtTableContent'></tbody>
+			</table>
+		
+			<select class='form-control' id='page' style='width:100px'>
+				<option value='1'>1</option>
+			</select>
+		</div>
+		<div id='debtTableText'>There is no debt document to be confirmed.</p>
 </div>
 
 <div class='alert_wrapper' id='view_debt_wrapper'>
@@ -84,6 +87,7 @@
 			success:function(response){
 				var page	= $('#page').val();
 				array	= response.invoices;
+				var debtCount = 0;
 				$('#debt_document_tbody').html('');
 				$.each(array, function(index, value){
 					var id					= value.id;
@@ -93,9 +97,17 @@
 					var supplier_name		= value.name;
 					var supplier_address	= value.address;
 					var supplier_city		= value.city;
-					
-					$('#debt_document_tbody').append("<tr><td>" + my_date_format(date) + "</td><td><p>" + supplier_name + "</p><p>" + supplier_address + "</p><p>" + supplier_city + "</p></td><td><p>" + invoice_document + "</p><p>" + tax_document + "</p></td><td><button type='button' class='button button_default_dark' onclick='view_debt_document(" + id + ")' title='View " + invoice_document + "'><i class='fa fa-eye'></i></button></td></tr>");
+					debtCount++;
+					$('#debtTableContent').append("<tr><td>" + my_date_format(date) + "</td><td><p>" + supplier_name + "</p><p>" + supplier_address + "</p><p>" + supplier_city + "</p></td><td><p>" + invoice_document + "</p><p>" + tax_document + "</p></td><td><button type='button' class='button button_default_dark' onclick='view_debt_document(" + id + ")' title='View " + invoice_document + "'><i class='fa fa-eye'></i></button></td></tr>");
 				});
+
+				if(debtCount > 0){
+					$('#debtTable').show();
+					$('#debtTableText').hide();
+				} else {
+					$('#debtTable').hide();
+					$('#debtTableText').show();
+				}
 				
 				$('#page').html('');
 				var pages		= response.pages;
@@ -184,7 +196,7 @@
 			beforeSend:function(){
 				$('button').attr('disabled', true);
 			}, success:function(){
-				location.reload();
+				// location.reload();
 			}
 		});
 	});

@@ -39,7 +39,7 @@
 		<form action='<?= site_url('Inventory_case/confirm') ?>' method='POST'>
 			<input type='hidden' name='id' id='event_id'>
 			<input type='hidden' name='status' id='status'>
-			<button type='button' class='button button_danger_dark'><i class='fa fa-trash'></i></button>
+			<button type='button' class='button button_danger_dark' onclick='deleteEvent()'><i class='fa fa-trash'></i></button>
 			<button class='button button_default_dark' id='confirm_button'><i class='fa fa-long-arrow-right'></i></button>
 		</form>
 	</div>
@@ -130,6 +130,8 @@
 						var text = 'Lost goods';
 					} else if(type == 2){
 						var text = 'Found goods';
+					} else if(type == 3){
+						var text = 'Dematerialized goods';
 					}
 					
 					$('#case_tbody').append("<tr><td>" + my_date_format(date) + "</td><td>" + text + "</td><td>" + created_by + "</td><td><button type='button' class='button button_default_dark' onclick='view_case(" + id + ")'><i class='fa fa-long-arrow-right'></i></button></td></tr>");
@@ -146,5 +148,10 @@
 				}
 			}
 		});
+	}
+
+	function deleteEvent(){
+		var eventId = $('#event_id').val();
+		alert(eventId);
 	}
 </script>

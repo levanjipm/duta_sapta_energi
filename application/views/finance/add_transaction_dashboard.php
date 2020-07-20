@@ -51,6 +51,7 @@
 </div>
 <div class='alert_wrapper' id='opponent_alert_wrapper'>
 	<div class='alert_box_full'>
+	<h3 style='font-family:bebasneue'>Choose an opponent</h3>
 	<button type='button' class='button alert_full_close_button' title='Close select opponent session'>&times;</button>
 		<br>
 		<div class='row'>
@@ -74,7 +75,7 @@
 </div>
 
 <div class='alert_wrapper' id='transaction_wrapper'>
-	<button type='button' class='alert_close_button' onclick="$(this).parent().fadeOut()">&times </button>
+	<button type='button' class='alert_close_button' onclick="$(this).parent().fadeOut()">&times;</button>
 	<div class='alert_box_default'>
 		<h2 style='font-family:bebasneue'>Add transaction</h2>
 		<hr>
@@ -189,4 +190,8 @@
 			$('#transaction_wrapper').fadeIn();
 		}
 	});
+
+	$('.alert_full_close_button').click(function(){
+		$(this).parent().parent().fadeOut();
+	})
 </script>

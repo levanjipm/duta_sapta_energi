@@ -43,3 +43,7 @@
 label.error{
 	color:#f63e21!important;
 }
+
+.form-control.error{
+	background-color:rgba(242, 62, 33, 0.2);
+}

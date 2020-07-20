@@ -21,18 +21,22 @@
 ?>
 		</select>
 		<br>
-		<table class='table table-bordered'>
-			<tr>
-				<th>Date</th>
-				<th>Value</th>
-				<th>Opponent</th>
-				<th>Action</th>
-			</tr>
-			<tbody id='bank_table'></tbody>
-		</table>
-		<select class='form-control' id='page' style='width:100px'>
-			<option value='1'>1</option>
-		</select>
+		<div id='transactionTable'>
+			<table class='table table-bordered'>
+				<tr>
+					<th>Date</th>
+					<th>Value</th>
+					<th>Opponent</th>
+					<th>Action</th>
+				</tr>
+				<tbody id='transactionTableContent'></tbody>
+			</table>
+			<select class='form-control' id='page' style='width:100px'>
+				<option value='1'>1</option>
+			</select>
+		</div>
+
+		<p id='transactionTableText'>There is no unassigned bank data.</p>
 	</div>
 </div>
 <form action='<?= site_url('Bank/assign_do') ?>' method='POST' id='assign_bank_form'>
@@ -65,15 +69,26 @@
 			success:function(response){
 				var pages 			= response.pages;
 				var bank_data		= response.banks;
-				$('#bank_table').html('');
+
+				var transactionCount = 0;
+				$('#transactionTableContent').html('');
 				$('#page').html('');
 				$.each(bank_data, function(index, data){
 					var id		= data.id;
 					var date	= data.date;
 					var value	= data.value;
 					var name	= data.name;
-					$('#bank_table').append("<tr><td>" + my_date_format(date) + "</td><td>Rp. " + numeral(value).format('0,0.00') + "</td><td>" + name + "</td><td><button type='button' class='button button_default_dark' onclick='assign_bank_data(" + id + ")'><i class='fa fa-long-arrow-right'></i></button></td></tr>");
+					$('#transactionTableContent').append("<tr><td>" + my_date_format(date) + "</td><td>Rp. " + numeral(value).format('0,0.00') + "</td><td>" + name + "</td><td><button type='button' class='button button_default_dark' onclick='assign_bank_data(" + id + ")'><i class='fa fa-long-arrow-right'></i></button></td></tr>");
+					transactionCount++;
 				});
+
+				if(transactionCount > 0){
+					$('#transactionTable').show();
+					$('#transactionTableContent').hide();
+				} else {
+					$('#transactionTable').hide();
+					$('#transactionTableContent').show();
+				}
 				
 				for(i = 1; i <= pages; i++){
 					if(i == page){

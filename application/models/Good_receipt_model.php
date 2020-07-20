@@ -293,26 +293,24 @@ class Good_receipt_model extends CI_Model {
 			return $item;
 		}
 		
-		public function update_set_invoice_id($invoice_id, $code_good_receipt_array)
+		public function updateInvoiceStatusById($status, $invoice_id, $goodReceiptArray = array())
 		{
-			foreach($code_good_receipt_array as $code_good_receipt)
-			{
-				$batch[] = array(
-					'id' => $code_good_receipt,
-					'invoice_id' => $invoice_id
-				);
-				
-				next($code_good_receipt_array);
-			}
-			
-			$this->db->update_batch($this->table_good_receipt,$batch, 'id'); 
-		}
-		
-		public function update_unset_invoice_id($invoice_id)
-		{
-			$this->db->set('invoice_id', null);
-			$this->db->where('invoice_id', $invoice_id);
-			$this->db->update($this->table_good_receipt);
+			if($status == 0){
+				$this->db->set('invoice_id', null);
+				$this->db->where('invoice_id', $invoice_id);
+				$this->db->update($this->table_good_receipt);
+			} else if($status == 1) {
+				foreach($goodReceiptArray as $goodReceipt)
+				{
+					$batch[] = array(
+						'id' => $goodReceipt,
+						'invoice_id' => $invoice_id
+					);
+					
+					next($goodReceiptArray);
+				}
+				$this->db->update_batch($this->table_good_receipt,$batch, 'id'); 
+			}			
 		}
 		
 		public function select_by_invoice_id($invoice_id)

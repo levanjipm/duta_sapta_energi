@@ -144,15 +144,18 @@
 				if($('#item_row-' + item_id).length == 0){
 					$('#cart_products').append("<tr id='item_row-" + item_id + "'><td id='reference-" + item_id + "'>" + reference + "</td>" + 
 						"<td id='name-" + item_id + "'>" + name + "</td><td><input type='number' class='form-control' min='1' required name='quantity[" + item_id + "]' id='quantity-" + item_id + "'></td><td><button type='button' class='button button_danger_dark' onclick='remove_item(" + item_id + ")'><i class='fa fa-trash'></i></button></tr>");
+						$('#cart_products_table').show();
+						$('#validationButton').attr('disabled', false);
+						$('#validationButton').show();
 				}
 				
 				$('button').attr('disabled',false);
 				$('.alert_full_close_button').click();
 				
-				if($('#cart_products tr').length > 0){
-					$('#cart_products_table').show();
-					$('#validationButton').attr('disabled', false);
-					$('#validationButton').show();
+				if($('#cart_products tr').length == 0){
+					$('#cart_products_table').hide();
+					$('#validationButton').attr('disabled', true);
+					$('#validationButton').hide();
 				}
 			}
 		})
@@ -193,7 +196,7 @@
 	});
 	
 	$('.alert_full_close_button').click(function(){
-		$(this).parent().parent().parent().parent().fadeOut();
+		$(this).parent().parent().fadeOut();
 	});
 	
 	$('#confirm_button').click(function(){	

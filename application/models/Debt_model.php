@@ -127,19 +127,12 @@ class Debt_model extends CI_Model {
 			$this->db->join('supplier', 'code_purchase_order.supplier_id = supplier.id');
 			$this->db->where('purchase_invoice.is_confirm', 0);
 			$this->db->where('purchase_invoice.is_delete', 0);
-			
-			// $this->db->or_like('purchase_invoice.tax_document', $term, 'both');
-			// $this->db->or_like('purchase_invoice.invoice_document', $term, 'both');
-			// $this->db->or_like('supplier.name', $term, 'both');
-			// $this->db->or_like('supplier.address', $term, 'both');
-			// $this->db->or_like('supplier.city', $term, 'both');
-			
 			$this->db->limit($limit, $offset);
 			
 			$query = $this->db->get();
-			
 			$result	= $query->result();
 			
+			print_r($this->db->last_query());
 			return $result;
 		}
 		
@@ -176,18 +169,23 @@ class Debt_model extends CI_Model {
 			return $result;
 		}
 		
-		public function updateById($status, $invoice_id, $confirmed_by)
+		public function updateById($status, $invoice_id)
 		{
+			$confirmed_by = $this->session->userdata('user_id');
 			if($status == 1){
 				$this->db->set('is_confirm', 1);
 				$this->db->set('confirmed_by', $confirmed_by);
 				$this->db->where('is_delete', 0);
+				$this->db->where('id', $invoice_id);
 			} else if($status == 0){
 				$this->db->set('is_delete', 1);
 				$this->db->where('is_confirm', 0);
+				$this->db->where('id', $invoice_id);
 			}
-			$this->db->where('id', $invoice_id);
+
 			$this->db->update($this->table_purchase_invoice);
+
+			print_r($this->db->last_query());
 		}
 		
 		public function view_payable_chart()

@@ -141,7 +141,6 @@
 				$('button').attr('disabled',true);
 			},
 			success:function(response){
-				console.log(response);
 				var item_id		= response.id;
 				var reference	= response.reference;
 				var name		= response.name;
@@ -175,11 +174,10 @@
 			$('#shopping_item_list_button').hide();
 		}
 	};
+	$('#foundGoodsForm').validate();
 	
 	$('#shopping_item_list_button').click(function(){
-		$('#lost_goods_form').validate();
-		
-		if($('#lost_goods_form').valid()){
+		if($('#foundGoodsForm').valid()){
 			$('#validate_cart_products').html('');
 			var total_price			= 0;
 			$("td[id^='reference-']").each(function(){
