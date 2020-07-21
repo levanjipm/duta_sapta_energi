@@ -280,7 +280,7 @@ class Sales_order_model extends CI_Model {
 			return $items;
 		}
 		
-		public function count_uncompleted_sales_order($filter = '')
+		public function countIncompletedSalesOrder($filter = '')
 		{
 			$this->db->select('DISTINCT(sales_order.code_sales_order_id) as id');
 			$this->db->from('sales_order');

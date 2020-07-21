@@ -9,7 +9,7 @@ class Good_receipt extends CI_Controller {
 		}
 	}
 	
-	public function index()
+	public function createDashboard()
 	{
 		$user_id		= $this->session->userdata('user_id');
 		$this->load->model('User_model');
@@ -21,14 +21,10 @@ class Good_receipt extends CI_Controller {
 		$this->load->view('head');
 		$this->load->view('Inventory/header', $data);
 		
-		$this->load->model('Good_receipt_model');
-		$result	= $this->Good_receipt_model->show_unconfirmed_good_receipt();
-		$data['good_receipts'] = $result;
-		
-		$this->load->view('Inventory/good_receipt', $data);
+		$this->load->view('Inventory/goodReceipt/goodReceiptCreate');
 	}
-	
-	public function create_dashboard()
+
+	public function confirmDashboard()
 	{
 		$user_id		= $this->session->userdata('user_id');
 		$this->load->model('User_model');
@@ -39,11 +35,8 @@ class Good_receipt extends CI_Controller {
 		
 		$this->load->view('head');
 		$this->load->view('Inventory/header', $data);
-		
-		$this->load->model('Supplier_model');
-		$result = $this->Supplier_model->showItems();
-		$data['suppliers'] = $result;
-		$this->load->view('Inventory/good_receipt_create_dashboard', $data);
+
+		$this->load->view('Inventory/goodReceipt/goodReceiptConfirm');
 	}
 	
 	public function getIncompletePurchaseOrder()
@@ -55,9 +48,38 @@ class Good_receipt extends CI_Controller {
 		header('Content-Type: application/json');
 		echo json_encode($data);
 	}
+
+	public function getAllIncompletePurchaseOrderSupplier()
+	{
+		$this->load->model('Purchase_order_model');
+		$data = $this->Purchase_order_model->getAllIncompletePurchaseOrderSupplier();
+
+		header('Content-Type: application/json');
+		echo json_encode($data);
+	}
+
+	public function getPurchaseOrderDetailById()
+	{
+		$id					= $this->input->get('purchase_order');
+		$date				= $this->input->get('date');
+
+		$this->load->model('Purchase_order_model');
+		$result 			= $this->Purchase_order_model->showById($id);
+		
+		$data['general'] = $result;
+		$result				= $this->Purchase_order_model->create_guid();
+		$data['guid']		= $result;
+		
+		$this->load->model('Purchase_order_detail_model');
+		$result = $this->Purchase_order_detail_model->getByCodeId($id);
+		
+		$data['purchase_orders'] = $result;
+		
+		header('Content-Type: application/json');
+		echo json_encode($data);
+	}
 	
-	
-	public function input()
+	public function insertItem()
 	{
 		$this->load->model('Good_receipt_model');
 		$id		= $this->Good_receipt_model->input_from_post();
@@ -72,7 +94,7 @@ class Good_receipt extends CI_Controller {
 			$this->Purchase_order_detail_model->update_purchase_order_received($quantity_array);
 		}
 		
-		redirect(site_url('Good_receipt'));
+		redirect(site_url('Good_receipt/createDashboard'));
 	}
 	
 	public function view_complete_good_receipt()
@@ -119,7 +141,7 @@ class Good_receipt extends CI_Controller {
 		}
 	}
 	
-	public function archive()
+	public function archiveDashboard()
 	{
 		$user_id		= $this->session->userdata('user_id');
 		$this->load->model('User_model');
@@ -134,7 +156,7 @@ class Good_receipt extends CI_Controller {
 		$this->load->model('Good_receipt_model');
 		$data['years']	= $this->Good_receipt_model->show_years();
 		
-		$this->load->view('Inventory/good_receipt_archive', $data);
+		$this->load->view('Inventory/goodReceipt/goodReceiptArchive', $data);
 	}
 	
 	public function view_archive()
@@ -166,11 +188,23 @@ class Good_receipt extends CI_Controller {
 		echo json_encode($data);
 	}
 	
-	public function select_by_invoice_id($invoice_id)
+	public function getByInvoiceId($invoice_id)
 	{
-		$this->where('invoice_id', $invoice_id);
-		$query = $this->db->get($this->table_good_receipt);
-		$item	= $query->result();
-		return $item;
+		// $this->where('invoice_id', $invoice_id);
+		// $query = $this->db->get($this->table_good_receipt);
+		// $item	= $query->result();
+		// return $item;
+	}
+
+	public function showUnconfirmedItems()
+	{
+		$page = $this->input->get('page');
+		$offset = ($page - 1) * 10;
+		$this->load->model('Good_receipt_model');
+		$data['items'] = $this->Good_receipt_model->showUnconfirmedGoodReceipts($offset);
+		$data['pages'] = max(1, ceil($this->Good_receipt_model->countUnconfirmedGoodReceipts()/10));
+
+		header('Content-Type: application/json');
+		echo json_encode($data);
 	}
 }

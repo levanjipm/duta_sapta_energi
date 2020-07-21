@@ -456,7 +456,6 @@
 				var customer		= response.customer;
 				var plafond			= parseFloat(customer.plafond);
 				var pending_value	= response.pending_value;
-				var value			= parseFloat(pending_value.value);
 				var termOfPayment	= parseInt(customer.term_of_payment);
 				
 				var invoice			= response.pending_invoice;	
@@ -467,8 +466,8 @@
 				var todayDate		= new Date();
 
 				var difference		= Math.floor(Math.abs((todayDate - minimumDate) / (60 * 60 * 24 * 1000)));
-				var customerDebt = invoiceValue - paidValue; //Total hutang saat ini//
-				var pendingBank = response.pendingBank; //Apabila ada data bank yang belum di assign//
+				var customerDebt 	= invoiceValue - paidValue; //Total hutang saat ini//
+				var pendingBank 	= response.pendingBank; //Apabila ada data bank yang belum di assign//
 				
 				var customer_name		= $('#customer_name-' + n).html();
 				var customer_address	= $('#customer_address-' + n).html();
@@ -480,7 +479,7 @@
 					$('#warningDebtText').hide();
 				}
 				
-				$('#customer_address_select').html('<p>' + customer_address + '</p><label>Plafond</label><p>Rp. ' + numeral(plafond).format('0,0.00') + '</p><label>Pending sales order value</label><p>Rp. ' + numeral(value).format('0,0.00') + '</p><label>Receivable</label><p>Rp. ' + numeral(customerDebt).format('0,0.00') + '</p>');
+				$('#customer_address_select').html('<p>' + customer_address + '</p><label>Plafond</label><p>Rp. ' + numeral(plafond).format('0,0.00') + '</p><label>Pending sales order value</label><p>Rp. ' + numeral(pending_value).format('0,0.00') + '</p><label>Receivable</label><p>Rp. ' + numeral(customerDebt).format('0,0.00') + '</p>');
 				$('#select_customer_wrapper').fadeOut();
 				$('#customer_id').val(n);
 			}

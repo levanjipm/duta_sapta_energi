@@ -90,26 +90,6 @@ class Purchase_order extends CI_Controller {
 		redirect(site_url('Purchase_order'));
 	}
 	
-	public function get_incomplete_purchase_order_detail()
-	{
-		$purchase_order_id	= $this->input->get('purchase_order');
-		$date				= $this->input->get('date');
-		$this->load->model('Purchase_order_model');
-		$result 			= $this->Purchase_order_model->show_by_id($purchase_order_id);
-		
-		$data['general'] = $result;
-		$result				= $this->Purchase_order_model->create_guid();
-		$data['guid']		= $result;
-		
-		$this->load->model('Purchase_order_detail_model');
-		$result = $this->Purchase_order_detail_model->show_by_purchase_order_id($purchase_order_id);
-		
-		$data['purchase_orders'] = $result;
-		
-		header('Content-Type: application/json');
-		echo json_encode($data);
-	}
-	
 	public function getDetailById($id)
 	{
 		$this->load->model('Purchase_order_model');
@@ -239,6 +219,15 @@ class Purchase_order extends CI_Controller {
 		$supplier_id = $this->input->get('supplier_id');
 		$this->load->model('Purchase_order_model');
 		$data = $this->Purchase_order_model->getAllIncompletePurchaseOrder($supplier_id);
+
+		header('Content-Type: application/json');
+		echo json_encode($data);
+	}
+
+	public function getAllPendingSupplier()
+	{
+		$this->load->model('Purchase_order_model');
+		$data = $this->Purchase_order_model->getAllIncompletePurchaseOrderSupplier();
 
 		header('Content-Type: application/json');
 		echo json_encode($data);

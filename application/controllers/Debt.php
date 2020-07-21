@@ -170,7 +170,7 @@ class Debt extends CI_Controller {
 		$data['debt'] = $this->Debt_model->getById($purchase_invoice_id);
 		
 		$this->load->model('Good_receipt_model');
-		$data['documents'] = $this->Good_receipt_model->select_by_invoice_id($purchase_invoice_id);
+		$data['documents'] = $this->Good_receipt_model->getByInvoiceId($purchase_invoice_id);
 		
 		$this->load->model('Good_receipt_detail_model');
 		$data['details'] = $this->Good_receipt_detail_model->select_by_code_good_receipt_id_invoice_id($purchase_invoice_id);

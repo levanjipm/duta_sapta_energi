@@ -174,7 +174,7 @@ class Sales_order_detail_model extends CI_Model {
 			foreach($sales_order_array as $sales_order){
 				$key						= key($sales_order_array);
 				$quantity_delivery_order 	= $quantity[$key];
-				$items 						= $this->Sales_order_detail_model->show_by_id($sales_order);
+				$items 						= $this->Sales_order_detail_model->getById($sales_order);
 				$sales_order_id 			= $items->code_sales_order_id;
 				$quantity_ordered			= $items->quantity;
 				$quantity_sent				= $items->sent;
@@ -198,11 +198,11 @@ class Sales_order_detail_model extends CI_Model {
 			}
 		}
 		
-		public function update_sales_order_sent($sales_order_array, $quantity)
+		public function updateSalesOrderSent($sales_order_array, $quantity)
 		{
 			$batch = array();
 			foreach($sales_order_array as $sales_order){
-				$items 						= $this->Sales_order_detail_model->show_by_id($sales_order);
+				$items 						= $this->Sales_order_detail_model->getById($sales_order);
 				$key						= key($sales_order_array);
 				$quantity_delivery_order	= $quantity[$key];
 				$quantity_ordered			= $items->quantity;

@@ -310,6 +310,24 @@ class Purchase_order_model extends CI_Model {
 			
 			return $result;
 		}
+
+		public function getAllIncompletePurchaseOrderSupplier()
+		{
+			$query = $this->db->query("
+				SELECT supplier.* FROM (
+					SELECT DISTINCT(code_purchase_order.supplier_id) as id FROM code_purchase_order
+					JOIN (
+						SELECT DISTINCT(purchase_order.code_purchase_order_id) as id  FROM purchase_order
+						WHERE purchase_order.status = '0'
+					) as a
+					ON code_purchase_order.id = a.id
+				) as c
+				JOIN supplier ON c.id = supplier.id
+			");
+			$result	 	= $query->result();
+			
+			return $result;
+		}
 		
 		public function showById($id)
 		{

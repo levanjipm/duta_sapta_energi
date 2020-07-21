@@ -34,8 +34,9 @@
 		</div>
 		<button class='container_button'><p style='font-family:museo'>Good receipt</p></button>
 		<div class='container_bar'>
-			<a href='<?= site_url('Good_receipt') ?>'><p>Create</p></a>	
-			<a href='<?= site_url('Good_receipt/archive') ?>'><p>Archive</p></a>	
+			<a href='<?= site_url('Good_receipt/createDashboard') ?>'><p>Create</p></a>
+			<a href='<?= site_url('Good_receipt/confirmDashboard') ?>'><p>Confirm</p></a>
+			<a href='<?= site_url('Good_receipt/archiveDashboard') ?>'><p>Archive</p></a>	
 		</div>
 		<a href='<?= site_url('Stock/view/Inventory') ?>'><button><p>Check stock</p></button></a>
 		<a href='<?= site_url('Inventory_case') ?>'><button><p>Cases</p></button></a>

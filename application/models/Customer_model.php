@@ -240,6 +240,19 @@ class Customer_model extends CI_Model {
 			
 			return $this->db->affected_rows();
 		}
+
+		public function countActiveCustomer($month, $year){
+			$this->db->select('customer.id');
+			$this->db->from('customer');
+			$this->db->join('invoice', 'invoice.customer_id = customer.id', 'left');
+			$this->db->where('MONTH(invoice.date)', $month);
+			$this->db->where('YEAR(invoice.date)', $year);
+
+			$query = $this->db->get();
+			$result = $query->num_rows();
+
+			return $result;
+		}
 		
 		public function show_search_result($limit, $offset)
 		{

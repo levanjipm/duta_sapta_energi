@@ -313,7 +313,7 @@ class Good_receipt_model extends CI_Model {
 			}			
 		}
 		
-		public function select_by_invoice_id($invoice_id)
+		public function getByInvoiceId($invoice_id)
 		{
 			$this->db->where('invoice_id', $invoice_id);
 			$this->db->where('is_confirm', 1);
@@ -387,6 +387,26 @@ class Good_receipt_model extends CI_Model {
 			$query		= $this->db->get();
 			$result		= $query->num_rows();
 			
+			return $result;
+		}
+
+		public function showUnconfirmedGoodReceipts($offset = 0, $limit = 10)
+		{
+			$this->db->where('is_confirm', 0);
+			$this->db->where('is_delete', 0);
+			$this->db->order_by('date', 'asc');
+			$this->db->limit($limit, $offset);
+			$query = $this->db->get($this->table_good_receipt);
+			$result = $query->result();
+
+			return $result;
+		}
+
+		public function countUnconfirmedGoodReceipts()
+		{
+			$query = $this->db->get($this->table_good_receipt);
+			$result = $query->num_rows();
+
 			return $result;
 		}
 		

@@ -109,12 +109,13 @@ class Delivery_order extends CI_Controller {
 		$result 			= $this->Sales_order_model->getById($codeSalesOrderId);
 		
 		$customerId		= $result->customer_id;
-		$invoic
+		$invoicingMethod = $result->invoicing_method;
+		
 		$customerObject = $this->Customer_model->getById($customerId);
 		$plafond		= $customerObject->plafond;
 
 		$this->load->model('Bank_model');
-		$pending_bank_data	= $this->Bank_model->getPendingValueByOpponentId('customer', $customerId)->value;
+		$pending_bank_data	= $this->Bank_model->getPendingValueByOpponentId('customer', $customerId);
 		
 		$this->load->model('Invoice_model');
 		$receivable = $this->Invoice_model->getReceivableByCustomerId($customerId)->value;
@@ -128,8 +129,6 @@ class Delivery_order extends CI_Controller {
 
 			$priceListId = $salesOrder->price_list_id;
 			$discount =  $salesOrder->discount;
-			$invoicingMethod = $salesOrder->invoicing_method;
-
 			$priceListObject = $this->Price_list_model->getById($priceListId);
 			$priceList = $priceListObject->price_list;
 
@@ -140,7 +139,7 @@ class Delivery_order extends CI_Controller {
 			next($quantityArray);
 		}
 
-		if($receivable - $bankValue < $plafond || $accessLevel > 2){
+		if($receivable - $pending_bank_data < $plafond || $accessLevel > 2){
 			$this->load->model('Delivery_order_model');
 			$result 		= $this->Delivery_order_model->check_guid($guid);
 			if($result){
@@ -156,16 +155,18 @@ class Delivery_order extends CI_Controller {
 					$result = $this->Delivery_order_detail_model->insert_from_post($deliveryOrderId);
 					
 					if($result){
-						$this->Sales_order_detail_model->update_sales_order_sent($sales_order_array, $quantity_array);
+						$this->Sales_order_detail_model->updateSalesOrderSent($sales_order_array, $quantity_array);
 					}
 				};
 
 				if($invoicingMethod == 1){
-					redirect(site_url('Delivery_order'));
+					redirect(site_url('Delivery_order/createDashboard'));
 				} else if($invoicingMethod == 2){
 					redirect(site_url('Delivery_order/print/' . $deliveryOrderId));
 				}
 
+			} else {
+				redirect(site_url('Delivery_order/createDashboard'));
 			}
 		}
 
@@ -239,7 +240,7 @@ class Delivery_order extends CI_Controller {
 			if($sales_order[0]->invoicing_method == 2){
 				redirect(site_url('Delivery_order/print/') . $delivery_order_id);
 			} else {
-				redirect(site_url('Delivery_order/createDashboard'));
+				redirect(site_url('Delivery_order/confirmDashboard'));
 			}
 		}
 	}
@@ -375,6 +376,44 @@ class Delivery_order extends CI_Controller {
 
 		$data['items'] = (object) $itemsArray;
 		$data['pages'] = max(1, ceil($this->Delivery_order_model->countUnconfirmedDeliveryOrder()/10));
+
+		header('Content-Type: application/json');
+		echo json_encode($data);
+	}
+
+	public function getUnsentDeliveryOrder()
+	{
+		$page		= $this->input->get('page');
+		$offset		= ($page - 1) * 10;
+
+		$this->load->model('Delivery_order_model');
+		$items = $this->Delivery_order_model->showUnsentDeliveryOrder($offset);
+
+		$this->load->model('Customer_model');
+		$itemsArray = [];
+		foreach($items as $item){
+			$itemArray = (array) $item;
+			$customerId = $item->customer_id;
+			$customerArray = $this->Customer_model->getById($customerId);
+			$customer = array(
+				'id' => $customerArray->id,
+				'name' => $customerArray->name,
+				'address' => $customerArray->address,
+				'rt' => $customerArray->rt,
+				'rw' => $customerArray->rw,
+				'block' => $customerArray->block,
+				'city' => $customerArray->city,
+				'pic' => $customerArray->pic_name,
+				'postal_code' => $customerArray->postal_code,
+				'number' => $customerArray->number
+			);
+			
+			$itemArray['customer'] = $customer;
+			array_push($itemsArray, $itemArray);
+		}
+
+		$data['items'] = (object) $itemsArray;
+		$data['pages'] = max(1, ceil($this->Delivery_order_model->countUnsentDeliveryOrder()/10));
 
 		header('Content-Type: application/json');
 		echo json_encode($data);

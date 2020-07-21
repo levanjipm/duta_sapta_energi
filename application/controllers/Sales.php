@@ -20,5 +20,17 @@ class Sales extends CI_Controller {
 		
 		$this->load->view('head');
 		$this->load->view('sales/header', $data);
+
+		$data = array();
+
+		$this->load->model('Sales_order_model');
+		$data['incompleteSalesOrder'] = $this->Sales_order_model->countIncompletedSalesOrder();
+
+		$this->load->model('Customer_model');
+		$data['activeCustomer'] = $this->Customer_model->countActiveCustomer(date('m'), date('Y'));
+
+		$data['customer'] = $this->Customer_model->countItems();
+
+		$this->load->view('sales/dashboard', $data);
 	}
 }

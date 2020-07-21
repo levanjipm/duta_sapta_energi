@@ -152,6 +152,64 @@
 					}
 				}
 			})
+		} else if(event == "sent"){
+			$.ajax({
+				url:'<?= site_url('Delivery_order/getUnsentDeliveryOrder') ?>',
+				data:{
+					page: page
+				},
+				success:function(response){
+					var items = response.items;
+					var itemCount = 0;
+					$('#sentDeliveryOrderTableContent').html('');
+					$.each(items, function(index, item){
+						var id = item.id;
+						var date = item.date;
+						var name = item.name;
+
+						var customer = item.customer;
+						var customer_name			= customer.name;
+						var complete_address		= customer.address;
+						var customer_city			= customer.city;
+						var customer_number			= customer.number;
+						var customer_rt				= customer.rt;
+						var customer_rw				= customer.rw;
+						var customer_postal			= customer.postal_code;
+						var customer_block			= customer.block;
+			
+						if(customer_number != ''){
+							complete_address	+= ' No. ' + customer_number;
+						}
+						
+						if(customer_block != ''){
+							complete_address	+= ' Blok ' + customer_block;
+						}
+					
+						if(customer_rt != '000'){
+							complete_address	+= ' RT ' + customer_rt;
+						}
+						
+						if(customer_rw != '000' && customer_rt != '000'){
+							complete_address	+= ' /RW ' + customer_rw;
+						}
+						
+						if(customer_postal != null){
+							complete_address	+= ', ' + customer_postal;
+						}
+
+						$('#sentDeliveryOrderTableContent').append("<tr><td>" + my_date_format(date) + "</td><td>" + name + "</td><td><p>" + customer_name + "</p><p>" + complete_address + "</p><p>" + customer_city + "</p></td><td><button class='button button_default_dark' onclick='viewDeliveryOrder(" + id + ")'><i class='fa fa-eye'></i></button></tr>");
+						itemCount++;
+					});
+
+					if(itemCount > 0){
+						$('#sentDeliveryOrderTableText').hide();
+						$('#sentDeliveryOrderTable').show();
+					} else {
+						$('#sentDeliveryOrderTableText').show();
+						$('#sentDeliveryOrderTable').hide();
+					}
+				}
+			})
 		}
 	}
 
@@ -273,55 +331,6 @@
 				
 				$('#viewDeliveryOrderWrapper').fadeIn(300, function(){
 					$('#viewDeliveryOrderWrapper .alert_box_slide').show("slide", { direction: "right" }, 250);
-				});
-			}
-		});
-	}
-	
-	function send_delivery_order_detail(n){
-		$('#delivery_order_table').html('');
-		$.ajax({
-			url:"<?= site_url('Delivery_order/show_by_code_delivery_order_id/') ?>" + n,
-			success:function(response){
-				var general		= response.general;
-				$.each(general, function(index, value){
-					var reference	= value.reference;
-					var name		= value.name;
-					var quantity	= value.quantity;
-					
-					$('#delivery_order_table').append("<tr><td>" + reference + "</td><td>" + name + "</td><td>" + numeral(quantity).format('0,0') + "</td></tr>");
-				});
-				
-				$('#delivery_order_name').html(general[0].do_name);
-				$('#delivery_order_date').html(general[0].date);
-				$('#customer_name').html(general[0].customer_name);
-				$('#customer_address').html(general[0].address);
-				$('#customer_city').html(general[0].city);
-				$('#delivery_order_id').val(general[0].id);
-				$('#delivery_order_form').attr('action', '<?= site_url('Delivery_order/send') ?>');
-				
-				var info		= response.info;
-				if(info == 'Stock'){
-					$('#warning_text').show();
-					$('#send_delivery_order_button').attr('disabled', true);
-				} else {
-					$('#warning_text').hide();
-					$('#send_delivery_order_button').attr('disabled', false);
-				}
-				var invoice = response.invoice;
-				var invoice_id = invoice.invoice_id;
-				var invoice_method = invoice.invoicing_method;
-
-				if(invoice_id == null && invoice_method == 1){
-					$('#warning_text_2').show();
-					$('#send_delivery_order_button').attr('disabled', true);
-				} else {
-					$('#warning_text_2').hide();
-					$('#send_delivery_order_button').attr('disabled', false);
-				}				
-				
-				$('#view_delivery_order_wrapper').fadeIn(300, function(){
-					$('#view_delivery_order_wrapper .alert_box_slide').show("slide", { direction: "right" }, 250);
 				});
 			}
 		});

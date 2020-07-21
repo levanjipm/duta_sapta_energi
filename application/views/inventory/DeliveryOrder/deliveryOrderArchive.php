@@ -43,18 +43,23 @@
 			</div>
 		</div>
 		<br><br>
-		<div id='archive_table'>
-		</div><br>
-		
-		<select class='form-control' id='page' style='width:100px'>
-			<option value='1'>1</option>
-		</select>
+		<div id='archiveTable'>
+			<div id='archiveTableContent'>
+			</div><br>
+			
+			<select class='form-control' id='page' style='width:100px'>
+				<option value='1'>1</option>
+			</select>
+		</div>
+		<p id='archiveTableText'>There is no archive found.</p>
 	</div>
 </div>
 
 <div class='alert_wrapper' id='view_delivery_order_wrapper'>
 	<button type='button' class='slide_alert_close_button'>&times </button>
 	<div class='alert_box_slide'>
+		<h3 style='font-family:bebasneue'>Delivery order archive</h3>
+		<hr>
 		<label>Delivery order</label>
 		<p style='font-family:museo' id='delivery_order_name_p'></p>
 		<p style='font-family:museo' id='delivery_order_date_p'></p>
@@ -121,9 +126,10 @@
 					}
 				}
 				
-				$('#archive_table').html('');
+				$('#archiveTableContent').html('');
 				
 				var delivery_orders		= response.delivery_orders;
+				var deliveryOrderCount	= 0;
 				
 				$.each(delivery_orders, function(index, delivery_order){
 					var sales_order_name		= delivery_order.sales_order_name;
@@ -162,22 +168,34 @@
 					}
 					var is_confirm		= delivery_order.is_confirm;
 					if(is_confirm == 0){
-						$('#archive_table').append("<div class='row archive_row'><div class='col-md-3 col-sm-3 col-xs-4'><p><strong>" + delivery_order_name + "</strong></p><p>" + sales_order_name + "</p></div><div class='col-md-3 col-sm-3 col-xs-3'><p><strong>" + customer_name + "</strong></p><p>" + complete_address + "</p><p>" + customer_city + "</p></div><div class='col-md-4 col-sm-5 col-xs-5 col-md-offset-2 col-sm-offset-1 col-xs-offset-2'><p style='display:inline-block'>" + my_date_format(delivery_order_date) + " <strong>|</strong> </p> <button type='button' class='button button_transparent' onclick='open_view(" + delivery_order_id + ")' title='View " + delivery_order_name + "'><i class='fa fa-eye'></i></button></div>");
+						$('#archiveTableContent').append("<div class='row archive_row'><div class='col-md-3 col-sm-3 col-xs-4'><p><strong>" + delivery_order_name + "</strong></p><p>" + sales_order_name + "</p></div><div class='col-md-3 col-sm-3 col-xs-3'><p><strong>" + customer_name + "</strong></p><p>" + complete_address + "</p><p>" + customer_city + "</p></div><div class='col-md-4 col-sm-5 col-xs-5 col-md-offset-2 col-sm-offset-1 col-xs-offset-2'><p style='display:inline-block'>" + my_date_format(delivery_order_date) + " <strong>|</strong> </p> <button type='button' class='button button_transparent' onclick='open_view(" + delivery_order_id + ")' title='View " + delivery_order_name + "'><i class='fa fa-eye'></i></button></div>");
 					} else {
-						$('#archive_table').append("<div class='row archive_row'><div class='col-md-3 col-sm-3 col-xs-4'><p><strong>" + delivery_order_name + "</strong></p><p>" + sales_order_name + "</p></div><div class='col-md-3 col-sm-3 col-xs-3'><p><strong>" + customer_name + "</strong></p><p>" + complete_address + "</p><p>" + customer_city + "</p></div><div class='col-md-4 col-sm-5 col-xs-5 col-md-offset-2 col-sm-offset-1 col-xs-offset-2'><p style='display:inline-block'>" + my_date_format(delivery_order_date) + " <strong>|</strong> </p> <button type='button' class='button button_transparent' onclick='open_view(" + delivery_order_id + ")' title='View " + delivery_order_name + "'><i class='fa fa-eye'></i></button> <button type='button' class='button button_verified' title='Confirmed'><i class='fa fa-check'></i></button></div>");
+						$('#archiveTableContent').append("<div class='row archive_row'><div class='col-md-3 col-sm-3 col-xs-4'><p><strong>" + delivery_order_name + "</strong></p><p>" + sales_order_name + "</p></div><div class='col-md-3 col-sm-3 col-xs-3'><p><strong>" + customer_name + "</strong></p><p>" + complete_address + "</p><p>" + customer_city + "</p></div><div class='col-md-4 col-sm-5 col-xs-5 col-md-offset-2 col-sm-offset-1 col-xs-offset-2'><p style='display:inline-block'>" + my_date_format(delivery_order_date) + " <strong>|</strong> </p> <button type='button' class='button button_transparent' onclick='open_view(" + delivery_order_id + ")' title='View " + delivery_order_name + "'><i class='fa fa-eye'></i></button> <button type='button' class='button button_verified' title='Confirmed'><i class='fa fa-check'></i></button></div>");
 					}
+
+					deliveryOrderCount++;
 					
 				});
 				
 				var button_width		= $('.button_verified').height();
-				$('.button_verified').width(button_width);
+				if(button_width > 0){
+					$('.button_verified').width(button_width);
+				}				
+
+				if(deliveryOrderCount > 0){
+					$('#archiveTable').show();
+					$('#archiveTableText').hide();
+				} else {
+					$('#archiveTable').hide();
+					$('#archiveTableText').show();
+				}
 			}
 		});
 	}
 	
 	function open_view(n){
 		$.ajax({
-			url:'<?= site_url('Delivery_order/view_by_id') ?>',
+			url:'<?= site_url('Delivery_order/getById') ?>',
 			data:{
 				id:n
 			},
