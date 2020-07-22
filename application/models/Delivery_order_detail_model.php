@@ -138,7 +138,7 @@ class Delivery_order_detail_model extends CI_Model {
 			return ($item !== null) ? $this->get_stub_from_db($item) : null;
 		}
 		
-		public function get_batch_by_code_delivery_order_id($id)
+		public function getDeliveryOrderBatch($id)
 		{
 			$this->db->select('price_list.item_id, code_sales_order.customer_id, delivery_order.quantity, delivery_order.code_delivery_order_id');
 			$this->db->from('delivery_order');
@@ -189,7 +189,7 @@ class Delivery_order_detail_model extends CI_Model {
 
 		public function getByCodeDeliveryOrderId($id)
 		{
-			$this->db->select('delivery_order.*, item.name, item.reference');
+			$this->db->select('delivery_order.*, item.name, item.reference, item.id as item_id');
 			$this->db->from('delivery_order');
 			$this->db->join('sales_order', 'delivery_order.sales_order_id = sales_order.id');
 			$this->db->join('price_list', 'price_list.id = sales_order.price_list_id');

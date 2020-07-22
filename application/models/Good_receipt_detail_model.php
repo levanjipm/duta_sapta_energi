@@ -151,7 +151,7 @@ class Good_receipt_detail_model extends CI_Model {
 			return $item;
 		}
 		
-		public function show_by_code_good_receipt_id($code_good_receipt_id)
+		public function showByCodeGoodReceiptId($code_good_receipt_id)
 		{
 			$this->db->select('good_receipt.id, good_receipt.quantity, item.name, item.reference, good_receipt.purchase_order_id, purchase_order.received as received');
 			$this->db->from('good_receipt');
@@ -190,5 +190,14 @@ class Good_receipt_detail_model extends CI_Model {
 			$query		= $this->db->get();
 			$item		= $query->result();
 			return $item;
+		}
+
+		public function getGoodReceiptIdByCode($goodReceiptId)
+		{
+			$this->db->where('code_good_receipt_id', $goodReceiptId);
+			$query = $this->db->get($this->table_good_receipt);
+			$result = $query->result();
+
+			return $result;
 		}
 }

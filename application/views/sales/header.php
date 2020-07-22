@@ -1,5 +1,5 @@
 <div class='topnav_bar'>
-	<div style='width:50%;display:inline-block'><h3>Sales</h3></div><div style='width:50%;display:inline-block;text-align:right;color:white'><?php if(!empty($user_login)){ ?><h4>Hello, <a href='<?= site_url('Profile') ?>'><?= $user_login->name ?></a></h4><?php } else { ?><button type='button' class='button button_default_dark'>Login</button> <?php } ?></div>
+	<div style='width:50%;display:inline-block'><h3>Sales</h3></div><div style='width:50%;display:inline-block;text-align:right;color:white'><?php if(!empty($user_login)){ ?><h4>Hello, <a href='<?= site_url('Profile') ?>' style='text-decoration:none;color:#fff'><?= $user_login->name ?></a></h4><?php } else { ?><button type='button' class='button button_default_dark'>Login</button> <?php } ?></div>
 </div>
 <div class='sidenav_bar'>
 	<button class='button_close_sidenav'>
@@ -38,9 +38,12 @@
 		<button class='container_button'><p style='font-family:museo'>Sales order  <i class='fa fa-caret-down'></i></p></button>
 		<div class='container_bar'>
 			<a href='<?= site_url('Sales_order/createDashboard') ?>'><p>Create</p></a>
+			<?php if($user_login->access_level > 1){ ?>
+			<a href='<?= site_url('Sales_order/confirmDashboard') ?>'><p>Confirm</p></a>
+			<?php } ?>
 			<a href='<?= site_url('Sales_order/trackDashboard') ?>'><p>Track</p></a>
 			<a href='<?= site_url('Sales_order/closeSalesOrderDashboard') ?>'>Close</p></a>
-		<?php if($user_login->access_level > 2) { ?>
+		<?php if($user_login->access_level > 1) { ?>
 			<a href='<?= site_url('Sales_order/confirmCloseSalesOrderDashboard') ?>'><p>Confirm close</p></a>
 		<?php } ?>
 			<a href='<?= site_url('Sales_order/archive') ?>'>Archive</a>

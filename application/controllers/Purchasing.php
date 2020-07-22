@@ -21,7 +21,7 @@ class Purchasing extends CI_Controller {
 		
 		$this->load->view('head');
 		$this->load->view('purchasing/header', $data);
-		$this->load->view('purchasing/index_page');
+		$this->load->view('purchasing/dashboard');
 	}
 	
 	public function calculateNeeds()

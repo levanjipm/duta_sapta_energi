@@ -46,15 +46,15 @@
 				<th>Name</th>
 				<th>Quantity</th>
 			</tr>
-			<tbody id='good_receipt_table'></tbody>
+			<tbody id='goodReceiptItemsTableContent'></tbody>
 		</table>
 		
-		<form action='<?= site_url('Good_receipt/confirm') ?>' method='POST'>
-			<input type='hidden' id='good_receipt_id' name='id'>
-			<button class='button button_default_dark' title='Submit good receipt'><i class='fa fa-long-arrow-right'></i></button>
-			
-			<button type='button' class='button button_danger_dark' onclick='delete_good_receipt()' title='Delete good receipt'><i class='fa fa-trash'></i></button>
-		</form>
+		<input type='hidden' id='good_receipt_id' name='id'>
+		<button type='button' class='button button_default_dark' onclick='confirmGoodReceipt()' title='Submit good receipt'><i class='fa fa-long-arrow-right'></i></button>
+		<button type='button' class='button button_danger_dark' onclick='deleteGoodReceipt()' title='Delete good receipt'><i class='fa fa-trash'></i></button>
+
+		<div class='notificationText danger' id='failedDeleteNotification'><p>Failed to delete good receipt.</p></div>
+		<div class='notificationText danger' id='failedConfirmNotification'><p>Failed to confirm good receipt.</p></div>
 	</div>
 </div>
 <script>
@@ -113,13 +113,94 @@
 				$('button').attr('disabled', true);
 			}, success:function(response){
 				$('button').attr('disabled', false);
-				var general = response.general;
 
-				console.log(general);
+				var general = response.general;
+				$('#good_receipt_id').val(n);
+
+				var receivedDate = general.received_date;
+
+				$('#good_receipt_received_date').html(my_date_format(receivedDate));
+
+				var purchaseOrderName = general.purchase_order_name;
+				var purchaseOrderDate = general.purchase_order_date;
+
+				$('#purchase_order_name').html(purchaseOrderName);
+				$('#purchase_order_date').html(my_date_format(purchaseOrderDate));
+
+				var supplierName = general.supplier_name;
+				var complete_address = general.address;
+
+				var supplier_city			= general.city;
+				var supplier_number			= general.number;
+				var supplier_rt				= general.rt;
+				var supplier_rw				= general.rw;
+				var supplier_postal			= general.postal_code;
+				var supplier_block			= general.block;
+				var supplier_id				= general.id;
+
+				if(supplier_number != null){
+					complete_address	+= ' No. ' + supplier_number;
+				}
+				
+				if(supplier_block != null){
+					complete_address	+= ' Blok ' + supplier_block;
+				}
+				
+				if(supplier_rt != '000'){
+					complete_address	+= ' RT ' + supplier_rt;
+				}
+				
+				if(supplier_rw != '000' && supplier_rt != '000'){
+					complete_address	+= ' /RW ' + supplier_rw;
+				}
+				
+				if(supplier_postal != ''){
+					complete_address	+= ', ' + supplier_postal;
+				}
+
+				$('#supplier_name_p').html(supplierName);
+				$('#supplier_address_p').html(complete_address);
+				$('#supplier_city_p').html(supplier_city);
+
+				var items = response.items;
+				$('#goodReceiptItemsTableContent').html('');
+				$.each(items, function(index, item){
+					var reference = item.reference;
+					var name = item.name;
+					var quantity = item.quantity;
+					$('#goodReceiptItemsTableContent').append("<tr><td>" + reference + "</td><td>" + name + "</td><td>" + numeral(quantity).format('0,0') + "</td></tr>");
+				})
+
 
 				$('#good_receipt_validation_wrapper').fadeIn(300, function(){
 					$('#good_receipt_validation_wrapper .alert_box_slide').show("slide", { direction: "right" }, 250);
 				});
+			}
+		})
+	}
+
+	function confirmGoodReceipt()
+	{
+		$.ajax({
+			url:'<?= site_url("Good_receipt/confirmById") ?>',
+			data:{
+				id: $('#good_receipt_id').val()
+			},
+			type:'POST',
+			beforeSend:function(){
+				$('button').attr('disabled', true);
+			},
+			success:function(response){
+				$('button').attr('disabled', false);
+				if(response == 1){
+					refresh_view();
+					$('#good_receipt_validation_wrapper .slide_alert_close_button').click();
+				} else {
+					$('#failedConfirmNotification').fadeTo(250, 1);
+					setTimeout(function(){
+						$('#failedConfirmNotification').fadeTo(250, 0)
+					}, 1000);
+				}
 			}
 		})
 	}

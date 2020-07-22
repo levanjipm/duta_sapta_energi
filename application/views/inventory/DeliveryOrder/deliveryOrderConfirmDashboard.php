@@ -1,3 +1,6 @@
+<head>
+	<title>Delivery order - Confirm</title>
+</head>
 <div class='dashboard'>
 	<div class='dashboard_head'>
 		<p style='font-family:museo'><a href='<?= site_url('Inventory') ?>' title='Inventory'><i class='fa fa-briefcase'></i></a> /Delivery order / Confirm</p>
@@ -70,19 +73,59 @@
 				<th>Name</th>
 				<th>Quantity</th>
 			</tr>
-			<tbody id='delivery_order_table'>
+			<tbody id='deliveryOrderConfirmTableContent'>
 			</tbody>
 		</table>
 		
 		<div class='notificationText warning' id='warning_text'><p style='font-family:museo'><i class='fa fa-exclamation-triangle'></i> Warning! Insufficient stock detected.</p></div><br>
+
+		<div class='notificationText danger' id='failedConfirmDeliveryOrder'><i class='fa fa-exclamation-triangle'></i> Failed to confirm delivery order.</p></div><br>
+
+		<div class='notificationText danger' id='failedDeleteDeliveryOrder'><i class='fa fa-exclamation-triangle'></i> Failed to delete delivery order.</p></div><br>
+
+		<input type='hidden' id='delivery_order_id' name='id'>
+		<button type='button' class='button button_default_dark' id='confirmDeliveryOrderButton'><i class='fa fa-long-arrow-right'></i></button>
+		<button type='button' class='button button_danger_dark' id='cancelDeliveryOrderButton'><i class='fa fa-trash'></i></button>
+
+	</div>
+</div>
+
+<div class='alert_wrapper' id='viewSentDeliveryOrderWrapper'>
+	<button type='button' class='slide_alert_close_button'>&times;</button>
+	<div class='alert_box_slide'>
+		<h3 style='font-family:bebasneue'>Confirm sent delivery order</h3>
+		<hr>
+		<label>Customer</label>
+		<p id='customer_name_sent'></p>
+		<p id='customer_address_sent'></p>
+		<p id='customer_city_sent'></p>
 		
-		<div class='notificationText danger' id='warning_text_2'><p style='font-family:museo'><i class='fa fa-exclamation-triangle'></i> Delivery order cannot be proceed. Please ask accounting department to create invoice first.</p></div><br>
+		<label>Delivery order</label>
+		<p id='delivery_order_name_sent'></p>
+		<p id='delivery_order_date_sent'></p>
 		
-		<form action='<?= site_url('Delivery_order/confirm') ?>' method='POST' id='delivery_order_form'>
-			<input type='hidden' id='delivery_order_id' name='id'>
-			<button class='button button_default_dark' id='send_delivery_order_button'><i class='fa fa-long-arrow-right'></i></button>
-			<button type='button' class='button button_danger_dark' id='cancel_delivery_order_button'><i class='fa fa-trash'></i></button>
-		</form>
+		
+		<table class='table table-bordered' style='margin-bottom:0'>
+			<tr>
+				<th>Reference</th>
+				<th>Name</th>
+				<th>Quantity</th>
+			</tr>
+			<tbody id='deliveryOrderTableSentContent'>
+			</tbody>
+		</table>
+		
+		<div class='notificationText warning' id='StockWarningTextSent'><p style='font-family:museo'><i class='fa fa-exclamation-triangle'></i> Warning! Insufficient stock detected.</p></div><br>
+		
+		<div class='notificationText danger' id='InvoiceWarningTextSent'><p style='font-family:museo'><i class='fa fa-exclamation-triangle'></i> Delivery order cannot be proceed. Please ask accounting department to create invoice first.</p></div><br>
+
+		<input type='hidden' id='sentDeliveryOrderId' name='id'>
+		<button class='button button_default_dark' id='sentConfirmDeliveryOrderButton'><i class='fa fa-long-arrow-right'></i></button>
+		<button type='button' class='button button_danger_dark' id='sentDeleteDeliveryOrderButton'><i class='fa fa-trash'></i></button>
+
+		<div class='notificationText danger' id='sentConfirmDeliveryOrderNotification'><i class='fa fa-exclamation-triangle'></i> Failed to send delivery order.</p></div>
+
+		<div class='notificationText danger' id='sentCancelDeliveryOrderNotification'><i class='fa fa-exclamation-triangle'></i> Failed to send delivery order.</p></div>
 	</div>
 </div>
 
@@ -197,7 +240,7 @@
 							complete_address	+= ', ' + customer_postal;
 						}
 
-						$('#sentDeliveryOrderTableContent').append("<tr><td>" + my_date_format(date) + "</td><td>" + name + "</td><td><p>" + customer_name + "</p><p>" + complete_address + "</p><p>" + customer_city + "</p></td><td><button class='button button_default_dark' onclick='viewDeliveryOrder(" + id + ")'><i class='fa fa-eye'></i></button></tr>");
+						$('#sentDeliveryOrderTableContent').append("<tr><td>" + my_date_format(date) + "</td><td>" + name + "</td><td><p>" + customer_name + "</p><p>" + complete_address + "</p><p>" + customer_city + "</p></td><td><button class='button button_default_dark' onclick='viewSentDeliveryOrder(" + id + ")'><i class='fa fa-eye'></i></button></tr>");
 						itemCount++;
 					});
 
@@ -241,7 +284,7 @@
 		}
 	}
 
-	$('#cancel_delivery_order_button').click(function(){
+	$('#cancelDeliveryOrderButton').click(function(){
 		$.ajax({
 			url:'<?= site_url('Delivery_order/deleteById') ?>',
 			data:{
@@ -253,13 +296,186 @@
 			},
 			success:function(){
 				$('button').attr('disabled', false);
-				window.location.reload();
+				refresh_view();
+				$('#viewDeliveryOrderWrapper .slide_alert_close_button').click();
 			}
 		});
 	});
+
+	$('#confirmDeliveryOrderButton').click(function(){
+		$.ajax({
+			url:'<?= site_url('Delivery_order/confirmById') ?>',
+			data:{
+				id:$('#delivery_order_id').val()
+			},
+			type:'POST',
+			beforeSend:function(){
+				$('button').attr('disabled', true);
+			},
+			success:function(response){
+				$('button').attr('disabled', false);
+				var result = response.result;
+				var invoicingMethod = response.invoicingMethod;
+				if(result == "success"){
+					if(invoicingMethod == 1){
+						refresh_view();
+						$('#viewDeliveryOrderWrapper .slide_alert_close_button').click();
+					} else if(invoicingMethod == 2){
+						window.location.href='<?= site_url("Delivery_order/printDeliveryOrder/") ?>' + $('#delivery_order_id').val();
+					}
+				} else if(result == "failed") {
+					$('#failedConfirmDeliveryOrder').fadeTo(250, 1);
+					setTimeout(function(){
+						$('#failedDeleteDeliveryOrder').fadeTo(250, 0);
+					}, 1000)
+				}
+				
+				$('#viewDeliveryOrderWrapper .slide_alert_close_button').click();
+			}
+		});
+	});
+
+	$('#sentConfirmDeliveryOrderButton').click(function(){
+		$.ajax({
+			url:"<?= site_url('Delivery_order/sendById') ?>",
+			data:{
+				id: $('#sentDeliveryOrderId').val()
+			},
+			type:'POST',
+			beforeSend:function(){
+				$("button").attr('disabled', true);
+			},
+			success:function(response){
+				$("button").attr('disabled', false);
+
+				if(response == 1){
+					refresh_view();
+					$('#viewSentDeliveryOrderWrapper .slide_alert_close_button').click();
+				} else {
+					$('#sentConfirmDeliveryOrderNotification').fadeTo(250, 1);
+					setTimeout(function(){
+						$('#sentConfirmDeliveryOrderNotification').fadeTo(250, 0);
+					}, 1000)
+				}
+			}
+		})
+	})
+
+	$('#sentDeleteDeliveryOrderButton').click(function(){
+		$.ajax({
+			url:"<?= site_url('Delivery_order/cancelSendById') ?>",
+			data:{
+				id: $('#sentDeliveryOrderId').val()
+			},
+			type:'POST',
+			beforeSend:function(){
+				$("button").attr('disabled', true);
+			},
+			success:function(response){
+				$("button").attr('disabled', false);
+
+				if(response == 1){
+					refresh_view();
+					$('#viewSentDeliveryOrderWrapper .slide_alert_close_button').click();
+				} else {
+					$('#sentCancelDeliveryOrderNotification').fadeTo(250, 1);
+					setTimeout(function(){
+						$('#sentCancelDeliveryOrderNotification').fadeTo(250, 0);
+					}, 1000)
+				}
+			}
+		})
+	})
+
+	function viewSentDeliveryOrder(n){
+		$('#deliveryOrderTableSentContent').html('');
+		$.ajax({
+			url:"<?= site_url('Delivery_order/getById') ?>",
+			data:{
+				id: n
+			},
+			success:function(response){
+				var general		= response.general;
+				var id 			= general.id;
+				var date 		= general.date;
+				var name 		= general.name;
+				$('#sentDeliveryOrderId').val(id);
+
+				$('#delivery_order_name_sent').html(name);
+				$('#delivery_order_date_sent').html(my_date_format(date));
+
+				var items = response.items;
+				$.each(items, function(index, item){
+					var name = item.name;
+					var quantity = item.quantity;
+					var reference = item.reference;
+
+					$('#deliveryOrderTableSentContent').append("<tr><td>" + reference + "</td><td>" + name + "</td><td>" + numeral(quantity).format('0,0') + "</td></tr>");
+				});
+				
+				var customer = response.customer;
+				var customer_name			= customer.name;
+				var complete_address		= customer.address;
+				var customer_city			= customer.city;
+				var customer_number			= customer.number;
+				var customer_rt				= customer.rt;
+				var customer_rw				= customer.rw;
+				var customer_postal			= customer.postal_code;
+				var customer_block			= customer.block;
+	
+				if(customer_number != ''){
+					complete_address	+= ' No. ' + customer_number;
+				}
+				
+				if(customer_block != ''){
+					complete_address	+= ' Blok ' + customer_block;
+				}
+			
+				if(customer_rt != '000'){
+					complete_address	+= ' RT ' + customer_rt;
+				}
+				
+				if(customer_rw != '000' && customer_rt != '000'){
+					complete_address	+= ' /RW ' + customer_rw;
+				}
+				
+				if(customer_postal != null){
+					complete_address	+= ', ' + customer_postal;
+				}
+				
+				$('#customer_name_sent').html(customer_name);
+				$('#customer_address_sent').html(complete_address);
+				$('#customer_city_sent').html(customer_city);
+				
+				var status		= response.status;
+				var invoicingMethod = general.invoicing_method;
+				var invoice_id = general.invoice_id;
+
+				if(status == false){
+					$('#StockWarningTextSent').show();
+					$('#sentConfirmDeliveryOrderButton').attr('disabled', true);
+				} else {
+					$('#StockWarningTextSent').hide();
+					$('#sentConfirmDeliveryOrderButton').attr('disabled', false);
+				}
+
+				if(invoicingMethod == 1 && invoice_id == null){
+					$('#InvoiceWarningTextSent').show();
+					$('#sentConfirmDeliveryOrderButton').attr('disabled', true);
+				} else {
+					$('#InvoiceWarningTextSent').hide();
+					$('#sentConfirmDeliveryOrderButton').attr('disabled', false);
+				}
+				
+				$('#viewSentDeliveryOrderWrapper').fadeIn(300, function(){
+					$('#viewSentDeliveryOrderWrapper .alert_box_slide').show("slide", { direction: "right" }, 250);
+				});
+			}
+		});
+	}
 	
 	function viewDeliveryOrder(n){
-		$('#delivery_order_table').html('');
+		$('#deliveryOrderConfirmTableContent').html('');
 		$.ajax({
 			url:"<?= site_url('Delivery_order/getById') ?>",
 			data:{
@@ -281,7 +497,7 @@
 					var quantity = item.quantity;
 					var reference = item.reference;
 
-					$('#delivery_order_table').append("<tr><td>" + reference + "</td><td>" + name + "</td><td>" + numeral(quantity).format('0,0') + "</td></tr>");
+					$('#deliveryOrderConfirmTableContent').append("<tr><td>" + reference + "</td><td>" + name + "</td><td>" + numeral(quantity).format('0,0') + "</td></tr>");
 				});
 				
 				var customer = response.customer;
@@ -320,13 +536,11 @@
 				
 				$('#delivery_order_form').attr('action', '<?= site_url('Delivery_order/confirm') ?>');
 				
-				var info		= response.info;
-				if(info == 'Stock'){
+				var status		= response.status;
+				if(status == false){
 					$('#warning_text').show();
-					$('#send_delivery_order_button').attr('disabled', true);
 				} else {
 					$('#warning_text').hide();
-					$('#send_delivery_order_button').attr('disabled', false);
 				}
 				
 				$('#viewDeliveryOrderWrapper').fadeIn(300, function(){

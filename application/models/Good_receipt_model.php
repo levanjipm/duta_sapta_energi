@@ -142,36 +142,25 @@ class Good_receipt_model extends CI_Model {
 			}
 		}
 		
-		public function confirm($id)
+		public function updateStatusById($status, $id)
 		{
-			$this->db->trans_start();
-			$this->db->set('is_confirm', 1);
-			$this->db->set('confirmed_by', $this->session->userdata('user_id'));
-			$this->db->where('id =', $id);
-			$this->db->update($this->table_good_receipt);
-			$this->db->trans_complete();
-			
-			if($this->db->trans_status() === FALSE)
-			{
-				return false;
+			if($status == 1){
+				$this->db->set('is_confirm', 1);
+				$this->db->set('confirmed_by', $this->session->userdata('user_id'));
+				$this->db->where('id', $id);
+				$this->db->where('is_confirm', 0);
+				$this->db->update($this->table_good_receipt);
+			} else if($status == 0) {
+				$this->db->set('is_delete', 1);
+				$this->db->where('id', $id);
+				$this->db->where('is_delete', 0);
+				$this->db->where('is_confirm', 0);
+			} else if($status == -1){
+				$this->db->set('is_confirm', 0);
+				$this->db->where('id', $id);
 			}
-			else
-			{
-				return true;
-			}
-		}
-		
-		public function delete($id)
-		{
-			$this->db->set('is_delete', 1);
-			$this->db->where('id', $id);
-			$this->db->update($this->table_good_receipt);
-			
-			if($this->db->affected_rows() > 0){
-				return TRUE;
-			} else {
-				return FALSE;
-			}
+
+			return $this->db->affected_rows();
 		}
 		
 		public function view_uninvoiced_documents($offset = 0, $limit = 25)
@@ -279,7 +268,7 @@ class Good_receipt_model extends CI_Model {
 		
 		public function showById($code_good_receipt_id)
 		{
-			$this->db->select('code_good_receipt.*, supplier.name as supplier_name, supplier.address, supplier.city, supplier.number, supplier.rt, supplier.rw, supplier.postal_code, code_purchase_order.name as purchase_order_name, code_purchase_order.date as purchase_order_date');
+			$this->db->select('code_good_receipt.*, supplier.name as supplier_name, supplier.address, supplier.city, supplier.number, supplier.rt, supplier.rw, supplier.postal_code, supplier.block, code_purchase_order.name as purchase_order_name, code_purchase_order.date as purchase_order_date');
 			$this->db->from('code_good_receipt');
 			$this->db->join('good_receipt', 'good_receipt.code_good_receipt_id = code_good_receipt.id');
 			$this->db->join('purchase_order', 'good_receipt.purchase_order_id = purchase_order.id');

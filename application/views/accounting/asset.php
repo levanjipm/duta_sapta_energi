@@ -4,6 +4,51 @@
 	</div>
 	<br>
 	<div class='dashboard_in'>
-		<a href='<?= site_url('Asset/fixed') ?>'><button type='button' class='button button_default_dark'>Fixed</button></a>
+		<button class='button button_mini_tab' id='inventoryTab' onclick='loadTab(1)'>Operational</button>
+		<button class='button button_mini_tab' id='nonInventoryTab' onclick='loadTab(2)'>Non-operational</button>
+		<hr>
+		<div class='row'>
+			<div class='col-xs-12' id='inventoryView' style='display:none'>
+				<label>Date</label>
+				<input type='date' class='form-control' id='date'>
+				<br>
+				<label>Value</label>
+				<p id='operationalValue'></p>
+			</div>
+			<div class='col-xs-12' id='nonInventoryView' style='display:none'>
+				<label>Date</label>
+				<input type='date' class='form-control' id='date'>
+				<br>
+				<label>Value</label>
+				<p id='nonOperationalValue'></p>
+			</div>
+		</div>
 	</div>
 </div>
+<script>
+	$('document').ready(function(){
+		loadTab(1);
+	})
+	var method = 1;
+
+	function loadTab(event){
+		$('.button_mini_tab').removeClass('active');
+		$('.button_mini_tab').attr('disabled', false);
+
+		if(event == 1){
+			$('#inventoryTab').attr('disabled', true);
+			$('#inventoryTab').addClass('active');
+			$('#nonInventoryView').fadeOut(250);
+			setTimeout(function(){
+				$('#inventoryView').fadeIn(250);
+			}, 250);
+		} else {
+			$('#nonInventoryTab').attr('disabled', true);
+			$('#nonInventoryTab').addClass('active');
+			$('#inventoryView').fadeOut(250);
+			setTimeout(function(){
+				$('#nonInventoryView').fadeIn(250);
+			}, 250);
+		}
+	}
+</script>

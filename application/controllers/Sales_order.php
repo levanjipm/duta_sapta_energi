@@ -10,22 +10,26 @@ class Sales_order extends CI_Controller {
 		}
 	}
 
-	public function index()
+	public function confirmDashboard()
 	{
 		$user_id		= $this->session->userdata('user_id');
 		$this->load->model('User_model');
 		$data['user_login'] = $this->User_model->getById($user_id);
 
-		$this->load->model('Authorization_model');
+		if($data['user_login']->access_level > 1){
+			$this->load->model('Authorization_model');
 		$data['departments']	= $this->Authorization_model->getByUserId($user_id);
 
 		$this->load->view('head');
 		$this->load->view('sales/header', $data);
 
 		$this->load->view('sales/SalesOrder/sales_order');
+		} else {
+			redirect(site_url("Sales"));
+		}		
 	}
 
-	public function view_unconfirmed_sales_order()
+	public function showUnconfirmedSalesOrders()
 	{
 		$page		= $this->input->get('page');
 		$term		= $this->input->get('term');

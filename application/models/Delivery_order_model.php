@@ -98,18 +98,16 @@ class Delivery_order_model extends CI_Model {
 			return $result;
 		}
 		
-		public function map_list_with_customer($delivery_orders)
-		{
-			$result = array();
-			foreach ($delivery_orders as $delivery_order)
-			{
-				$result[] = $this->get_new_stub_from_db_with_customer($delivery_order);
-			}
-			return $result;
-		}
-		
 		public function showUnconfirmedDeliveryOrder($offset = 0, $limit = 10)
 		{
+			//Jadiin query biasa, pastikan tidak ada double output, thank you
+			$query = $this->db->query("
+				SELECT code_delivery_order.*, code_sales_order.customer_id FROM code_delivery_order
+				FROM (
+					SELECT 
+				)
+
+			")
 			$this->db->select('code_delivery_order.*, code_sales_order.customer_id');
 			$this->db->from('code_delivery_order');
 			$this->db->join('delivery_order', 'delivery_order.code_delivery_order_id = code_delivery_order.id', 'left');
@@ -223,20 +221,6 @@ class Delivery_order_model extends CI_Model {
 			}
 		}
 		
-		public function check_confirm($id)
-		{
-			$this->db->where('id =',$id);
-			$this->db->where('is_confirm =', 0);
-			$query = $this->db->get($this->table_delivery_order);
-			$item = $query-> num_rows();
-			
-			if($item == 1){
-				return TRUE;
-			} else {
-				return FALSE;
-			}
-		}
-		
 		public function insertItem()
 		{
 			$this->load->model('Delivery_order_model');
@@ -253,22 +237,6 @@ class Delivery_order_model extends CI_Model {
 			$insert_id				= $this->db->insert_id();
 			
 			return $insert_id;
-		}
-		
-		public function confirm($id)
-		{
-			$this->load->model('Delivery_order_model');
-			$check	= $this->Delivery_order_model->check_confirm($id);
-			
-			if($check){
-				$this->db->set('is_confirm', '1');
-				$this->db->where('id',$id);
-				$this->db->update($this->table_delivery_order);
-				return TRUE;
-			} else {
-				return FALSE;
-				
-			}
 		}
 		
 		public function show_uninvoiced_delivery_order($type, $offset = 0, $filter = '', $limit = 25)
@@ -310,14 +278,14 @@ class Delivery_order_model extends CI_Model {
 			return $result;
 		}
 		
-		public function send($delivery_order_id)
+		public function sendById($delivery_order_id)
 		{
 			$this->db->set('is_sent', 1);
 			$this->db->where('id', $delivery_order_id);
 			$this->db->where('is_sent', 0);
 			$this->db->update($this->table_delivery_order);
 			
-			if($this->db->affected_rows() > 0){
+			if($this->db->affected_rows() == 1){
 				return TRUE;
 			} else {
 				return FALSE;
@@ -395,12 +363,24 @@ class Delivery_order_model extends CI_Model {
 			
 			return $result;
 		}
-		
-		public function delete_by_id($id)
+
+		public function updateById($status, $id)
 		{
-			$this->db->set('is_delete', 1);
+			if($status == 0){
+				$this->db->set('is_delete', 1);
+				$this->db->where('is_delete', 0);
+			} else if($status == 1){
+				$this->db->set('is_confirm', 1);
+				$this->db->where('is_confirm', 0);
+			} else if($status == -1){
+				$this->db->set('is_confirm', 0);
+				$this->db->where('is_delete', 0);
+			}
+
 			$this->db->where('id', $id);
-			$query		= $this->db->update($this->table_delivery_order);
+			$this->db->update($this->table_delivery_order);
+
+			return ($this->db->affected_rows() == 1) ? true: false;
 		}
 		
 		public function create_guid()

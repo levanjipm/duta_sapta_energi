@@ -1,3 +1,6 @@
+<head>
+	<title>Sales order - Confirm</title>
+</head>
 <div class='dashboard'>
 	<div class='dashboard_head'>
 		<p style='font-family:museo'><a href='<?= site_url('Sales') ?>' title='Sales'><i class='fa fa-briefcase'></i></a> /Sales order </p>
@@ -14,7 +17,7 @@
 		
 		<div id='empty_text'>
 			<p>There is no sales order to be confirmed</p>
-			<a href='<?= site_url('Sales_order/create') ?>'>Create a new one</a>
+			<a href='<?= site_url('Sales_order/createDashboard') ?>'>Create a new one</a>
 		</div>
 		
 		<div id='sales_order_text'>
@@ -100,7 +103,7 @@
 	
 	function refresh_sales_order(page = $('#page').val()){
 		$.ajax({
-			url:'<?= site_url('Sales_order/view_unconfirmed_sales_order') ?>',
+			url:'<?= site_url('Sales_order/showUnconfirmedSalesOrders') ?>',
 			data:{
 				page:page,
 				term:$('#search_bar').val()

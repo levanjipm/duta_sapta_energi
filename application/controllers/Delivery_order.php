@@ -215,7 +215,7 @@ class Delivery_order extends CI_Controller {
 		$this->load->view('inventory/DeliveryOrder/deliveryOrderArchive', $data);
 	}
 
-	public function print($delivery_order_id)
+	public function printDeliveryOrder($delivery_order_id)
 	{
 		$this->load->model('Delivery_order_model');
 		$result = $this->Delivery_order_model->show_by_id($delivery_order_id);
@@ -228,43 +228,74 @@ class Delivery_order extends CI_Controller {
 		$this->load->view('inventory/DeliveryOrder/deliveryOrderPrint', $data);
 	}
 	
-	public function confirm()
+	public function confirmById()
 	{
 		$delivery_order_id			= $this->input->post('id');
 		$this->load->model('Delivery_order_model');
-		$result = $this->Delivery_order_model->confirm($delivery_order_id);
+		$result = $this->Delivery_order_model->updateById(1, $delivery_order_id);
 		if($result){
 			$this->load->model('Sales_order_model');
 			$sales_order = $this->Sales_order_model->show_invoicing_method_by_id($delivery_order_id);
 			
 			if($sales_order[0]->invoicing_method == 2){
-				redirect(site_url('Delivery_order/print/') . $delivery_order_id);
+				$resultArray = array(
+					'result' => 'success',
+					'invoicingMethod' => 2,
+				);
 			} else {
-				redirect(site_url('Delivery_order/confirmDashboard'));
+				$resultArray = array(
+					'result' => 'success',
+					'invoicingMethod' => 1,
+				);
 			}
+		} else {
+			$resultArray = array(
+				'result' => 'failed',
+				'invoicingMethod' => null,
+			);
 		}
+
+		$data =  json_encode($resultArray);
+
+		header('Content-Type: application/json');
+		echo json_encode($data);
 	}
 	
-	public function send()
+	public function sendById()
 	{
-		$delivery_order_id		= $this->input->post('id');
+		$deliveryOrderId		= $this->input->post('id');
 		
 		$this->load->model('Delivery_order_detail_model');
-		$delivery_order_array 	= $this->Delivery_order_detail_model->get_batch_by_code_delivery_order_id($delivery_order_id);
+		$deliveryOrderArray 	= $this->Delivery_order_detail_model->getDeliveryOrderBatch($deliveryOrderId);
 		
 		$this->load->model('Stock_in_model');
-		$result					= $this->Stock_in_model->check_stock($delivery_order_array);
+		$result					= $this->Stock_in_model->checkStock($deliveryOrderArray);
 		
 		if($result){
 			$this->load->model('Delivery_order_model');
-			$check 				= $this->Delivery_order_model->send($delivery_order_id);
+			$check 				= $this->Delivery_order_model->sendById($deliveryOrderId);
 			if($check){			
 				$this->load->model('Stock_out_model');
-				$this->Stock_out_model->send_delivery_order($delivery_order_array);
+				$this->Stock_out_model->sendDeliveryOrder($deliveryOrderArray);
+				echo 1;
+			} else {
+				echo 0;
 			}
+		} else {
+			echo 0;
 		}
-		
-		redirect(site_url('Delivery_order'));
+	}
+
+	public function cancelSendById()
+	{
+		$deliveryOrderId		= $this->input->post('id');
+		$this->load->model('Delivery_order_model');
+		$result = $this->Delivery_order_model->updateById(-1, $deliveryOrderId);
+		if($result){
+			echo 1;
+		} else {
+			echo 0;
+		}
 	}
 	
 	public function getBySalesOrderId()
@@ -307,13 +338,24 @@ class Delivery_order extends CI_Controller {
 
 		$this->load->model('Delivery_order_detail_model');
 		$items		= $this->Delivery_order_detail_model->getByCodeDeliveryOrderId($id);
+
 		$data['items'] = $items;
+
+		$stockArray = array();
 		foreach($items as $item){
-			
+			$stock = array(
+				'item_id'=> $item->item_id,
+				'quantity' => $item->quantity
+			);
+
+			array_push($stockArray, $stock);
 		}
 
-		$data['status']		= $this->Delivery_order_detail_model->getStatusByCodeDeliveryOrderId($id);
+		$this->load->model('Stock_in_model');
+		$stockStatus = $this->Stock_in_model->checkStock($stockArray);
 		
+		$data['status'] = $stockStatus;
+
 		header('Content-Type: application/json');
 		echo json_encode($data);
 	}
@@ -329,7 +371,7 @@ class Delivery_order extends CI_Controller {
 			$this->Sales_order_detail_model->update_from_delivery_order_cancelation($sales_order_array);
 			
 			$this->load->model('Delivery_order_model');
-			$this->Delivery_order_model->delete_by_id($id);
+			$this->Delivery_order_model->updateById(0, $id);
 		}
 	}
 	

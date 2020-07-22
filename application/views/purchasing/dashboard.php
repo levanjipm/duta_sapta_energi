@@ -41,34 +41,35 @@
     </style>
 </head>
 <div class='dashboard'>
-    <br>
-    <div class='dashboard_in'>
-        <div class='row'>
+	<br>
+	<div class='dashboard_in'>
+		<div class='row'>
             <div class='col-md-4 col-sm-12 col-xs-12'>
                 <div class='dashboardBox'>
                     <div class='leftSide'>
                         <h4><b>Pending</b></h4>
-                        <p>Sales order</p>
+                        <p>Items</p>
                     </div>
                     <div class='rightSide'>
-                        <h3><?= number_format($incompleteSalesOrder) ?></h3>
+                        <h3 id='needs'></h3>
                         <p>&nbsp;</p>
                     </div>
                 </div>
             </div>
-            <div class='col-md-4 col-sm-12 col-xs-12'>
-            <div class='dashboardBox'>
-                <div class='leftSide'>
-                    <h4><b>Active</b></h4>
-                    <p>Customer</p>
-                </div>
-                <div class='rightSide'>
-                    <h3><?= number_format($activeCustomer) ?> / <?= number_format($customer) ?></h3>
-                    <p class='subtitleText'><?= date('d M Y') ?></p>
-                </div>
-            </div>
-            <div class='col-md-4 col-sm-12 col-xs-12'>
-            </div>
-        </div>
-    </div>
+		</div>
+	</div>
 </div>
+
+<script>
+	calculate_needs();
+	
+	function calculate_needs(){
+		$.ajax({
+			url:'<?= site_url('Purchasing/calculateNeeds') ?>',
+			success:function(response){
+				var needs		= response.length;
+				$('#needs').text(needs);
+			}
+		});
+	};
+</script>

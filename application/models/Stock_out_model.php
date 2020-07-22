@@ -83,7 +83,7 @@ class Stock_out_model extends CI_Model {
 			return $result;
 		}
 		
-		public function send_delivery_order($delivery_order_array)
+		public function sendDeliveryOrder($delivery_order_array)
 		{
 			$this->load->model('Stock_in_model');
 			foreach($delivery_order_array as $delivery_order){
@@ -98,12 +98,12 @@ class Stock_out_model extends CI_Model {
 					if($residue		> $quantity){
 						$current_residue	= $residue - $quantity;
 						$this->Stock_in_model->update_stock_in($in_id, $current_residue);
-						$this->Stock_out_model->insert_stock_out_delivery_order($in_id, $quantity, $code_delivery_order_id, $customer_id); 
+						$this->Stock_out_model->insertStockDeliveryOrder($in_id, $quantity, $code_delivery_order_id, $customer_id); 
 						break;
 					} else {
 						$current_residue		= $quantity - $residue;
 						$this->Stock_in_model->update_stock_in($in_id, 0);
-						$this->Stock_out_model->insert_stock_out_delivery_order($in_id, $current_residue, $code_delivery_order_id, $customer_id);
+						$this->Stock_out_model->insertStockDeliveryOrder($in_id, $current_residue, $code_delivery_order_id, $customer_id);
 						
 						$quantity = $quantity - $residue;
 					}
@@ -111,7 +111,7 @@ class Stock_out_model extends CI_Model {
 			}
 		}
 		
-		public function insert_stock_out_delivery_order($in_id, $quantity, $code_delivery_order_id, $customer_id)
+		public function insertStockDeliveryOrder($in_id, $quantity, $code_delivery_order_id, $customer_id)
 		{
 			$db_item		= array(
 				'in_id' => $in_id,

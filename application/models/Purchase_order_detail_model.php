@@ -174,16 +174,15 @@ class Purchase_order_detail_model extends CI_Model {
 			return ($item !== null) ? $this->get_stub_from_db($item) : null;
 		}
 
-		public function update_purchase_order_received($quantity_array)
+		public function updatePurchaseOrderReceivedArray($quantity_array)
 		{
-			$this->load->model('Purchase_order_detail_model');
 			$batch = array();
 			foreach($quantity_array as $quantity){
 				$purchase_order_id			= key($quantity_array);
 				$items						= $this->Purchase_order_detail_model->show_by_id($purchase_order_id);
 				$received					= $items->received;
 				$ordered					= $items->quantity;
-				$final_quantity				= $received - $quantity;
+				$final_quantity				= $received + $quantity;
 				if($final_quantity			== $ordered){
 					$status					= 1;
 				} else {

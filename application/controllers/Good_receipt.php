@@ -87,10 +87,12 @@ class Good_receipt extends CI_Controller {
 		if($id != null){
 			$quantity_array		= $this->input->post('quantity');
 			$price_array		= $this->input->post('net_price');
+			
 			$this->load->model('Good_receipt_detail_model');
 			$this->Good_receipt_detail_model->insert_from_post($id, $quantity_array, $price_array);
 			
 			$this->load->model('Purchase_order_detail_model');
+			// $this->Purchase_order_detail_model->update_purchase_order_received($quantity_array);
 			$this->Purchase_order_detail_model->update_purchase_order_received($quantity_array);
 		}
 		
@@ -110,20 +112,30 @@ class Good_receipt extends CI_Controller {
 		echo json_encode($data);
 	}
 	
-	public function confirm()
+	public function confirmById()
 	{
 		$id		= $this->input->post('id');
 		$this->load->model('Good_receipt_model');
-		if ($this->Good_receipt_model->confirm($id))
+		if ($this->Good_receipt_model->updateStatusById(1, $id) == 1)
 		{
 			$this->load->model('Good_receipt_detail_model');
 			$batch = $this->Good_receipt_detail_model->get_batch_by_code_good_receipt_id($id);
+			$expectedInput = count($batch);
 
 			$this->load->model('Stock_in_model');
-			$this->Stock_in_model->input_from_code_good_receipt($batch);
+			$result = $this->Stock_in_model->insertItemFromGoodReceipt($batch);
+
+			if($result == $expectedInput){
+				return 1;
+			} else {
+				$this->Stock_in_model->deleteItemFromGoodReceipt($id);
+				$this->Good_receipt_model->updateStatusById(-1, $id);
+
+				return 0;
+			}
+		} else {
+			return 0;
 		}
-		
-		redirect(site_url('Good_receipt'));
 	}
 	
 	public function delete()
@@ -182,7 +194,7 @@ class Good_receipt extends CI_Controller {
 		$data['general']	= $this->Good_receipt_model->showById($id);
 		
 		$this->load->model('Good_receipt_detail_model');
-		$data['items']		= $this->Good_receipt_detail_model->show_by_code_good_receipt_id($id);
+		$data['items']		= $this->Good_receipt_detail_model->showByCodeGoodReceiptId($id);
 		
 		header('Content-Type: application/json');
 		echo json_encode($data);

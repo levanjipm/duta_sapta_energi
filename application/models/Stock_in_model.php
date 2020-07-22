@@ -93,7 +93,7 @@ class Stock_in_model extends CI_Model {
 			return $result;
 		}
 		
-		public function input_from_code_good_receipt($good_receipt_array)
+		public function insertItemFromGoodReceipt($good_receipt_array)
 		{
 			$this->db->insert_batch($this->table_stock_in, $good_receipt_array);
 		}
@@ -137,7 +137,7 @@ class Stock_in_model extends CI_Model {
 			$this->db->update($this->table_stock_in);
 		}
 		
-		public function check_stock($stock_array)
+		public function checkStock($stock_array)
 		{
 			$final_stock_array		= array();
 			if(!empty($stock_array)){
@@ -211,14 +211,14 @@ class Stock_in_model extends CI_Model {
 		{
 			$this->db->select('stock_in.*, COALESCE(code_good_receipt.name, code_sales_return.name, code_event.name) as name, COALESCE(customer.name, supplier.name) as opponent_name');
 			$this->db->from('stock_in');
-			$this->db->where('item_id', $item_id);
 			$this->db->join('good_receipt', 'stock_in.good_receipt_id = good_receipt.id', 'left');
 			$this->db->join('code_good_receipt', 'good_receipt.code_good_receipt_id = code_good_receipt.id');
 			$this->db->join('event', 'stock_in.event_id = event.id', 'left');
 			$this->db->join('code_event', 'event.code_event_id = code_event.id');
 			$this->db->join('sales_return', 'stock_in.sales_return_id = sales_return.id', 'left');
 			$this->db->join('code_sales_return', 'sales_return.code_sales_return.id = code_sales_return.id');
-			
+			$this->db->where('item_id', $item_id);
+
 			$query		= $this->db->get();
 			$result		= $query->result();
 			
@@ -233,6 +233,17 @@ class Stock_in_model extends CI_Model {
 			$query = $this->db->get($this->table_stock_in);
 
 			$result = $query->row();
+			return $result;
+		}
+
+		public function deleteItemFromGoodReceipt($codeGoodReceiptId)
+		{
+			$query = $this->db->query("
+				DELETE stock_in, good_receipt, FROM stock_in FROM stock_in
+					JOIN good_receipt ON stock_in.good_receipt_id = good_receipt.id
+					WHERE good_receipt.code_good_receipt_id = '$codeGoodReceiptId'
+			");
+			$result = $query->affected_rows();
 			return $result;
 		}
 }
