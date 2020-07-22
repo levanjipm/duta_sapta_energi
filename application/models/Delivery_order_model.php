@@ -100,26 +100,21 @@ class Delivery_order_model extends CI_Model {
 		
 		public function showUnconfirmedDeliveryOrder($offset = 0, $limit = 10)
 		{
-			//Jadiin query biasa, pastikan tidak ada double output, thank you
 			$query = $this->db->query("
-				SELECT code_delivery_order.*, code_sales_order.customer_id FROM code_delivery_order
-				FROM (
-					SELECT 
-				)
+				SELECT code_delivery_order.*, a.customer_id FROM code_delivery_order
+				JOIN (
+					SELECT DISTINCT(code_delivery_order.id) AS id, code_sales_order.customer_id FROM code_delivery_order
+					JOIN delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order.id
+					JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
+					JOIN code_sales_order ON code_sales_order.id = sales_order.code_sales_order_id
+				) AS a
+				ON a.id = code_delivery_order.id
+				WHERE code_delivery_order.is_confirm = '0'
+				AND code_delivery_order.is_delete = '0'
+				AND code_delivery_order.is_sent = '0'
 
-			")
-			$this->db->select('code_delivery_order.*, code_sales_order.customer_id');
-			$this->db->from('code_delivery_order');
-			$this->db->join('delivery_order', 'delivery_order.code_delivery_order_id = code_delivery_order.id', 'left');
-			$this->db->join('sales_order', 'delivery_order.sales_order_id = sales_order.id');
-			$this->db->join('code_sales_order', 'code_sales_order.id = sales_order.code_sales_order_id', 'inner');
-			$this->db->join('customer', 'code_sales_order.customer_id = customer.id');
-			$this->db->where('code_delivery_order.is_confirm',0);
-			$this->db->where('code_delivery_order.is_delete',0);
-			$this->db->where('code_delivery_order.is_sent',0);
-			$this->db->limit($limit, $offset);
-			
-			$query 		= $this->db->get();
+			");
+
 			$result	 	= $query->result();
 			
 			return $result;
@@ -127,17 +122,21 @@ class Delivery_order_model extends CI_Model {
 
 		public function countUnconfirmedDeliveryOrder()
 		{
-			$this->db->select('code_delivery_order.*, code_sales_order.customer_id');
-			$this->db->from('code_delivery_order');
-			$this->db->join('delivery_order', 'delivery_order.code_delivery_order_id = code_delivery_order.id', 'left');
-			$this->db->join('sales_order', 'delivery_order.sales_order_id = sales_order.id');
-			$this->db->join('code_sales_order', 'code_sales_order.id = sales_order.code_sales_order_id', 'inner');
-			$this->db->join('customer', 'code_sales_order.customer_id = customer.id');
-			$this->db->where('code_delivery_order.is_confirm',0);
-			$this->db->where('code_delivery_order.is_delete',0);
-			$this->db->where('code_delivery_order.is_sent',0);
+			$query = $this->db->query("
+				SELECT code_delivery_order.id FROM code_delivery_order
+				JOIN (
+					SELECT DISTINCT(code_delivery_order.id) AS id, code_sales_order.customer_id FROM code_delivery_order
+					JOIN delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order.id
+					JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
+					JOIN code_sales_order ON code_sales_order.id = sales_order.code_sales_order_id
+				) AS a
+				ON a.id = code_delivery_order.id
+				WHERE code_delivery_order.is_confirm = '0'
+				AND code_delivery_order.is_delete = '0'
+				AND code_delivery_order.is_sent = '0'
 
-			$query 		= $this->db->get();
+			");
+
 			$result	 	= $query->num_rows();
 			
 			return $result;
@@ -145,19 +144,21 @@ class Delivery_order_model extends CI_Model {
 		
 		public function showUnsentDeliveryOrder($offset = 0, $limit = 10)
 		{
-			$this->db->select('code_delivery_order.*, code_sales_order.customer_id');
-			$this->db->from('code_delivery_order');
-			$this->db->join('delivery_order', 'delivery_order.code_delivery_order_id = code_delivery_order.id', 'left');
-			$this->db->join('sales_order', 'delivery_order.sales_order_id = sales_order.id');
-			$this->db->join('code_sales_order', 'code_sales_order.id = sales_order.code_sales_order_id', 'inner');
-			$this->db->join('customer', 'code_sales_order.customer_id = customer.id');
-			$this->db->where('code_delivery_order.is_confirm =',1);
-			$this->db->where('code_delivery_order.is_delete =',0);
-			$this->db->where('code_delivery_order.is_sent =',0);
-			$this->db->order_by('id', 'ASC');
-			$this->db->limit($limit, $offset);
-			
-			$query 		= $this->db->get();
+			$query = $this->db->query("
+				SELECT code_delivery_order.*, a.customer_id FROM code_delivery_order
+				JOIN (
+					SELECT DISTINCT(code_delivery_order.id) AS id, code_sales_order.customer_id FROM code_delivery_order
+					JOIN delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order.id
+					JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
+					JOIN code_sales_order ON code_sales_order.id = sales_order.code_sales_order_id
+				) AS a
+				ON a.id = code_delivery_order.id
+				WHERE code_delivery_order.is_confirm = '1'
+				AND code_delivery_order.is_delete = '0'
+				AND code_delivery_order.is_sent = '0'
+
+			");
+
 			$result	 	= $query->result();
 			
 			return $result;
@@ -165,17 +166,21 @@ class Delivery_order_model extends CI_Model {
 
 		public function countUnsentDeliveryOrder()
 		{
-			$this->db->select('code_delivery_order.*, code_sales_order.customer_id');
-			$this->db->from('code_delivery_order');
-			$this->db->join('delivery_order', 'delivery_order.code_delivery_order_id = code_delivery_order.id', 'left');
-			$this->db->join('sales_order', 'delivery_order.sales_order_id = sales_order.id');
-			$this->db->join('code_sales_order', 'code_sales_order.id = sales_order.code_sales_order_id', 'inner');
-			$this->db->join('customer', 'code_sales_order.customer_id = customer.id');
-			$this->db->where('code_delivery_order.is_confirm =',1);
-			$this->db->where('code_delivery_order.is_delete =',0);
-			$this->db->where('code_delivery_order.is_sent =',0);
-			
-			$query 		= $this->db->get();
+			$query = $this->db->query("
+				SELECT code_delivery_order.* FROM code_delivery_order
+				JOIN (
+					SELECT DISTINCT(code_delivery_order.id) AS id, code_sales_order.customer_id FROM code_delivery_order
+					JOIN delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order.id
+					JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
+					JOIN code_sales_order ON code_sales_order.id = sales_order.code_sales_order_id
+				) AS a
+				ON a.id = code_delivery_order.id
+				WHERE code_delivery_order.is_confirm = '1'
+				AND code_delivery_order.is_delete = '0'
+				AND code_delivery_order.is_sent = '0'
+
+			");
+
 			$result	 	= $query->num_rows();
 		}
 		
