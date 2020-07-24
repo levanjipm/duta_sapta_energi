@@ -42,13 +42,8 @@ class Invoice extends CI_Controller {
 		echo json_encode($data);
 	}
 	
-	public function create_retail()
+	public function createRetailInvoice()
 	{
-		$delivery_order_id		= $this->input->post('id');
-		$this->load->model('Delivery_order_detail_model');
-		$result = $this->Delivery_order_detail_model->show_by_code_delivery_order_id($delivery_order_id);
-		$data['details'] = $result;
-		
 		$user_id		= $this->session->userdata('user_id');
 		$this->load->model('User_model');
 		$data['user_login'] = $this->User_model->getById($user_id);
@@ -58,42 +53,64 @@ class Invoice extends CI_Controller {
 		
 		$this->load->view('head');
 		$this->load->view('accounting/header', $data);
-		
-		$this->load->view('accounting/create_invoice', $data);
-	}
-	
-	public function print_retail()
-	{		
-		$delivery_order_id		= $this->input->post('id');
-		$this->load->view('head');		
+
+		$deliveryOrderId		= $this->input->post('id');
+
+		$this->load->model('Delivery_order_model');
+		$deliveryOrderObject =  $this->Delivery_order_model->getById($deliveryOrderId);
+		$data['deliveryOrder'] = $deliveryOrderObject;
+
+		$customerId = $deliveryOrderObject->customer_id;
+		$this->load->model('Customer_model');
+		$data['customer'] = $this->Customer_model->getById($customerId);
+
 		$this->load->model('Delivery_order_detail_model');
-		$result = $this->Delivery_order_detail_model->show_by_code_delivery_order_id($delivery_order_id);
+		$result = $this->Delivery_order_detail_model->getByCodeDeliveryOrderId($deliveryOrderId);
 		$data['details'] = $result;
 		
-		$customer_id	= $result[0]->customer_id;
-		$this->load->model('Customer_model');
-		$data['customer'] = $this->Customer_model->getById($customer_id);
-		
-		$this->load->model('Invoice_model');
-		$input_invoice = $this->Invoice_model->delivery_order_input($delivery_order_id, $result[0]);
-		if($input_invoice != NULL){
-			$this->load->model('Delivery_order_model');
-			$this->Delivery_order_model->set_invoice_id($delivery_order_id, $input_invoice);
-			
-			$this->load->view('accounting/print_retail_invoice', $data);
-		} else {
+		$this->load->view('accounting/invoice/createRetailInvoice', $data);
+	}
+	
+	public function printRetailInvoice()
+	{		
+		$deliveryOrderId		= $this->input->post('id');	
+
+		$this->load->model('Delivery_order_model');
+		$result = $this->Delivery_order_model->getById($deliveryOrderId);
+		if($result->invoice_id != null){
 			redirect(site_url('Invoice'));
+		} else {
+			$data['deliveryOrder'] = $result;
+
+			$customer_id	= $result->customer_id;
+			$this->load->model('Customer_model');
+			$data['customer'] = $this->Customer_model->getById($customer_id);
+	
+			$this->load->model('Delivery_order_detail_model');
+			$data['details'] = $this->Delivery_order_detail_model->getByCodeDeliveryOrderId($deliveryOrderId);
+			
+			$this->load->model('Delivery_order_model');
+	
+			$this->load->model('Invoice_model');
+			$resultInsertInvoice = $this->Invoice_model->insertFromDeliveryOrder($result);
+			if($resultInsertInvoice){
+				$this->Delivery_order_model->updateInvoiceId($deliveryOrderId, $resultInsertInvoice);
+				$this->load->view('head');
+				$this->load->view('accounting/invoice/printRetailInvoice', $data);
+			} else {
+				redirect(site_url('Invoice'));
+			}
 		}
 	}
 	
-	public function convert_number()
+	public function convertNumberToWords()
 	{
 		$value		= $this->input->get('value');
 		$this->load->helper('Number_to_words');
 		echo ucwords(Number_to_words($value));
 	}
 	
-	public function archive()
+	public function archiveDashboard()
 	{
 		$user_id		= $this->session->userdata('user_id');
 		$this->load->model('User_model');

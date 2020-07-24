@@ -164,9 +164,9 @@ class Purchase_order_detail_model extends CI_Model {
 			$this->db->insert_batch($this->table_purchase_order, $batch);
 		}
 		
-		public function show_by_id($id)
+		public function getById($id)
 		{
-			$this->db->where('id =', $id);
+			$this->db->where('id', $id);
 			$query = $this->db->get($this->table_purchase_order, 1);
 			
 			$item = $query->row();
@@ -176,30 +176,31 @@ class Purchase_order_detail_model extends CI_Model {
 
 		public function updatePurchaseOrderReceivedArray($quantity_array)
 		{
+			print_r($quantity_array);
 			$batch = array();
-			foreach($quantity_array as $quantity){
-				$purchase_order_id			= key($quantity_array);
-				$items						= $this->Purchase_order_detail_model->show_by_id($purchase_order_id);
-				$received					= $items->received;
-				$ordered					= $items->quantity;
-				$final_quantity				= $received + $quantity;
-				if($final_quantity			== $ordered){
-					$status					= 1;
-				} else {
-					$status 				= 0;
-				}
+			// foreach($quantity_array as $quantity){
+			// 	$purchase_order_id			= key($quantity_array);
+			// 	$items						= $this->Purchase_order_detail_model->getById($purchase_order_id);
+			// 	$received					= $items->received;
+			// 	$ordered					= $items->quantity;
+			// 	$final_quantity				= $received + $quantity;
+			// 	if($final_quantity			== $ordered){
+			// 		$status					= 1;
+			// 	} else {
+			// 		$status 				= 0;
+			// 	}
 				
-				$batch[] = array(
-					'id' => $purchase_order_id,
-					'received' => $final_quantity,
-					'status' => $status
-				);
+			// 	$batch[] = array(
+			// 		'id' => $purchase_order_id,
+			// 		'received' => $final_quantity,
+			// 		'status' => $status
+			// 	);
 				
-				next($quantity_array);
+			// 	next($quantity_array);
 					
-			}
+			// }
 			
-			$this->db->update_batch($this->table_purchase_order,$batch, 'id'); 
+			// $this->db->update_batch($this->table_purchase_order,$batch, 'id'); 
 		}
 		
 		public function getByCodeId($id)

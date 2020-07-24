@@ -297,7 +297,7 @@ class Delivery_order_model extends CI_Model {
 			}
 		}
 		
-		public function set_invoice_id($delivery_order_id, $invoice_id)
+		public function updateInvoiceId($delivery_order_id, $invoice_id)
 		{
 			$this->db->set('invoice_id', $invoice_id);
 			$this->db->where('invoice_id', NULL);

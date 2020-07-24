@@ -83,29 +83,23 @@ class Good_receipt_detail_model extends CI_Model {
 			return $batch;
 		}
 		
-		public function insert_from_post($code_good_receipt_id, $quantity_array, $price_array)
+		public function insertItem($code_good_receipt_id, $quantity_array, $price_array)
 		{
 			$batch 		= $this->Good_receipt_detail_model->create_batch($code_good_receipt_id, $quantity_array, $price_array);
 			$this->db->insert_batch($this->table_good_receipt, $batch);
 		}
 		
-		public function get_batch_by_code_good_receipt_id($id)
+		public function getStockBatchByCodeGoodReceiptId($id)
 		{
-			$this->db->select('good_receipt.*, purchase_order.item_id, code_purchase_order.supplier_id, purchase_order.net_price');
+			$this->db->select('good_receipt.*, purchase_order.item_id, code_purchase_order.supplier_id, purchase_order.net_price, purchase_order.received');
 			$this->db->from('good_receipt');
 			$this->db->join('purchase_order', 'good_receipt.purchase_order_id = purchase_order.id');
 			$this->db->join('code_purchase_order', 'purchase_order.code_purchase_order_id = code_purchase_order.id');
 			$this->db->where('good_receipt.code_good_receipt_id =', $id);
 			
 			$query	= $this->db->get();
-			$result	= $query->result();
-			$batch = $this->Good_receipt_detail_model->create_stock_batch($result);
+			$items 	= $query->result();
 			
-			return $batch;
-		}
-		
-		public function create_stock_batch($results)
-		{
 			foreach($results as $result){
 				$quantity					= $result->quantity;
 				$item_id					= $result->item_id;
@@ -125,8 +119,19 @@ class Good_receipt_detail_model extends CI_Model {
 					);
 				}
 			}
-			
+
 			return $batch;
+		}
+
+		public function getBatchByCodeGoodReceiptId($id)
+		{
+			$this->db->where('code_good_receipt_id', $id);
+			$query = $this->db->get($this->table_good_receipt);
+			$items = $query->result();
+
+			foreach($items as $item){
+				print_r($item);
+			}
 		}
 		
 		public function select_by_code_good_receipt_id_array($documents)
@@ -199,5 +204,11 @@ class Good_receipt_detail_model extends CI_Model {
 			$result = $query->result();
 
 			return $result;
+		}
+
+		public function deleteByCodeGoodReceiptId($id)
+		{
+			$this->db->where('code_good_receipt_id', $id);
+			$this->db->delete($this->table_good_receipt);
 		}
 }

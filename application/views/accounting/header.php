@@ -29,7 +29,7 @@
 		<button class='container_button'><p>Invoice</p></button>
 		<div class='container_bar'>
 			<a href='<?= site_url('Invoice') ?>'><button><p style='font-family:museo'>Create</p></button></a>
-			<a href='<?= site_url('Invoice/archive') ?>'><button><p style='font-family:museo'>Archive</p></button></a>
+			<a href='<?= site_url('Invoice/archiveDashboard') ?>'><button><p style='font-family:museo'>Archive</p></button></a>
 		</div>
 		
 		<button class='container_button'><p>Debt Document</p></button>

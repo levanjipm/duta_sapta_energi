@@ -29,6 +29,11 @@
 	width:100%;
 }
 
+.form-control:focus{
+	border:2px solid #E19B3C;
+	box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset, 0 0 8px rgba(80, 80, 80, 0.6);
+}
+
 .form-control-select-custom{
 	border:2px solid #E19B3C!important;
 	background-color:#E19B3C!important;
@@ -45,5 +50,6 @@ label.error{
 }
 
 .form-control.error{
+	border:2px solid #E19B3C;
 	background-color:rgba(242, 62, 33, 0.2);
 }

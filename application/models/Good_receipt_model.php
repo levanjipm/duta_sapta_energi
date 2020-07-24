@@ -107,7 +107,7 @@ class Good_receipt_model extends CI_Model {
 			return $result;
 		}
 		
-		public function input_from_post()
+		public function insertItem()
 		{
 			$guid			= $this->input->post('guid');
 			
@@ -155,9 +155,10 @@ class Good_receipt_model extends CI_Model {
 				$this->db->where('id', $id);
 				$this->db->where('is_delete', 0);
 				$this->db->where('is_confirm', 0);
+				$this->db->update($this->table_good_receipt);
 			} else if($status == -1){
-				$this->db->set('is_confirm', 0);
 				$this->db->where('id', $id);
+				$this->db->delete($this->table_good_receipt);
 			}
 
 			return $this->db->affected_rows();

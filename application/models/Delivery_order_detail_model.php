@@ -189,7 +189,7 @@ class Delivery_order_detail_model extends CI_Model {
 
 		public function getByCodeDeliveryOrderId($id)
 		{
-			$this->db->select('delivery_order.*, item.name, item.reference, item.id as item_id');
+			$this->db->select('delivery_order.*, item.name, item.reference, item.id as item_id, price_list.price_list, sales_order.discount');
 			$this->db->from('delivery_order');
 			$this->db->join('sales_order', 'delivery_order.sales_order_id = sales_order.id');
 			$this->db->join('price_list', 'price_list.id = sales_order.price_list_id');

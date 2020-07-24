@@ -131,8 +131,6 @@ class Debt_model extends CI_Model {
 			
 			$query = $this->db->get();
 			$result	= $query->result();
-			
-			print_r($this->db->last_query());
 			return $result;
 		}
 		

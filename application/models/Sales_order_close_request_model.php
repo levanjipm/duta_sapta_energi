@@ -98,7 +98,7 @@ class Sales_order_close_request_model extends CI_Model {
 			}			
 		}
 		
-		public function show_by_id($id)
+		public function getById($id)
 		{
 			$this->db->where('id', $id);
 			$query	= $this->db->get($this->table_close_sales_order);
@@ -123,10 +123,10 @@ class Sales_order_close_request_model extends CI_Model {
 			return $result;
 		}
 		
-		public function update_status($status, $id, $approval)
+		public function updateById($status, $id)
 		{
 			$this->db->set('is_approved', $status);
-			$this->db->set('approved_by', $approval);
+			$this->db->set('approved_by', $this->session->userdata('user_id'));
 			$this->db->set('approved_date', date('Y-m-d'));
 			$this->db->where('id', $id);
 			

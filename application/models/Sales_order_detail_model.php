@@ -255,12 +255,12 @@ class Sales_order_detail_model extends CI_Model {
 			return $result->value;
 		}
 		
-		public function update_from_delivery_order_cancelation($sales_order_array)
+		public function updateCancelDeliveryOrder($sales_order_array)
 		{
 			$this->db->update_batch($this->table_sales_order, $sales_order_array, 'id');
 		}
 		
-		public function update_status_by_code_sales_order_id($sales_order_id)
+		public function updateStatusByCodeSalesOrderId($sales_order_id)
 		{
 			$this->db->set('status', 1);
 			$this->db->where('code_sales_order_id', $sales_order_id);

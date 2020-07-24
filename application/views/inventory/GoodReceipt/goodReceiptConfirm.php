@@ -204,6 +204,32 @@
 			}
 		})
 	}
+
+	function deleteGoodReceipt()
+	{
+		$.ajax({
+			url:'<?= site_url("Good_receipt/deleteById") ?>',
+			data:{
+				id: $('#good_receipt_id').val()
+			},
+			type:'POST',
+			beforeSend:function(){
+				$('button').attr('disabled', true);
+			},
+			success:function(response){
+				$('button').attr('disabled', false);
+				if(response == 1){
+					refresh_view();
+					$('#good_receipt_validation_wrapper .slide_alert_close_button').click();
+				} else {
+					$('#failedConfirmNotification').fadeTo(250, 1);
+					setTimeout(function(){
+						$('#failedConfirmNotification').fadeTo(250, 0)
+					}, 1000);
+				}
+			}
+		})
+	}
 	
 	$('.slide_alert_close_button').click(function(){
 		$('#good_receipt_validation_wrapper .alert_box_slide').hide("slide", { direction: "right" }, 250, function(){

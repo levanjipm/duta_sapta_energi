@@ -96,6 +96,7 @@ class Stock_in_model extends CI_Model {
 		public function insertItemFromGoodReceipt($good_receipt_array)
 		{
 			$this->db->insert_batch($this->table_stock_in, $good_receipt_array);
+			return $this->db->affected_rows();
 		}
 		
 		public function input_from_code_event($event_array)
@@ -174,7 +175,7 @@ class Stock_in_model extends CI_Model {
 			return $sufficient_stock;
 		}
 		
-		public function search_stock_table($offset = 0, $term = '', $limit = 25)
+		public function showItems($offset = 0, $term = '', $limit = 25)
 		{
 			$this->db->select('item.reference, item.name, item.id');
 			$this->db->select_sum('stock_in.residue', 'stock');
@@ -196,8 +197,12 @@ class Stock_in_model extends CI_Model {
 			return $result;
 		}
 		
-		public function count_stock_table($offset = 0, $term = '', $limit = 25)
+		public function countItems($offset = 0, $term = '', $limit = 25)
 		{
+			if($term != ''){
+				$this->db->like('reference', $term, 'both');
+				$this->db->or_like('name', $term, 'both');
+			};
 			$this->db->select_sum('stock_in.residue', 'stock');
 			$this->db->group_by('stock_in.item_id');
 			
@@ -207,17 +212,17 @@ class Stock_in_model extends CI_Model {
 			return $result;
 		}
 		
-		public function card_view($item_id)
+		public function ViewCard($item_id)
 		{
-			$this->db->select('stock_in.*, COALESCE(code_good_receipt.name, code_sales_return.name, code_event.name) as name, COALESCE(customer.name, supplier.name) as opponent_name');
+			$this->db->select('stock_in.*, COALESCE(code_good_receipt.name, "") as name, COALESCE(customer.name, supplier.name, "PT Duta Sapta Energi") as opponent_name');
 			$this->db->from('stock_in');
 			$this->db->join('good_receipt', 'stock_in.good_receipt_id = good_receipt.id', 'left');
 			$this->db->join('code_good_receipt', 'good_receipt.code_good_receipt_id = code_good_receipt.id');
-			$this->db->join('event', 'stock_in.event_id = event.id', 'left');
-			$this->db->join('code_event', 'event.code_event_id = code_event.id');
-			$this->db->join('sales_return', 'stock_in.sales_return_id = sales_return.id', 'left');
-			$this->db->join('code_sales_return', 'sales_return.code_sales_return.id = code_sales_return.id');
-			$this->db->where('item_id', $item_id);
+
+			$this->db->join('customer', 'stock_in.customer_id = customer.id', 'left');
+			$this->db->join('supplier', 'stock_in.supplier_id = supplier.id', 'left');
+
+			$this->db->where('stock_in.item_id', $item_id);
 
 			$query		= $this->db->get();
 			$result		= $query->result();

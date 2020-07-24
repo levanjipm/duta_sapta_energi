@@ -82,18 +82,17 @@ class Good_receipt extends CI_Controller {
 	public function insertItem()
 	{
 		$this->load->model('Good_receipt_model');
-		$id		= $this->Good_receipt_model->input_from_post();
+		$id		= $this->Good_receipt_model->insertItem();
 		
 		if($id != null){
 			$quantity_array		= $this->input->post('quantity');
 			$price_array		= $this->input->post('net_price');
 			
 			$this->load->model('Good_receipt_detail_model');
-			$this->Good_receipt_detail_model->insert_from_post($id, $quantity_array, $price_array);
+			$this->Good_receipt_detail_model->insertItem($id, $quantity_array, $price_array);
 			
 			$this->load->model('Purchase_order_detail_model');
-			// $this->Purchase_order_detail_model->update_purchase_order_received($quantity_array);
-			$this->Purchase_order_detail_model->update_purchase_order_received($quantity_array);
+			$this->Purchase_order_detail_model->updatePurchaseOrderReceivedArray($quantity_array);
 		}
 		
 		redirect(site_url('Good_receipt/createDashboard'));
@@ -119,38 +118,41 @@ class Good_receipt extends CI_Controller {
 		if ($this->Good_receipt_model->updateStatusById(1, $id) == 1)
 		{
 			$this->load->model('Good_receipt_detail_model');
-			$batch = $this->Good_receipt_detail_model->get_batch_by_code_good_receipt_id($id);
+
+			$batch = $this->Good_receipt_detail_model->getStockBatchByCodeGoodReceiptId($id);
+
 			$expectedInput = count($batch);
 
 			$this->load->model('Stock_in_model');
 			$result = $this->Stock_in_model->insertItemFromGoodReceipt($batch);
 
 			if($result == $expectedInput){
-				return 1;
+				echo 1;
 			} else {
+				$this->Good_receipt_detail_model->deleteByCodeGoodReceiptId($id);
 				$this->Stock_in_model->deleteItemFromGoodReceipt($id);
 				$this->Good_receipt_model->updateStatusById(-1, $id);
 
-				return 0;
+				echo 0;
 			}
 		} else {
-			return 0;
+			echo 0;
 		}
 	}
 	
-	public function delete()
+	public function deleteById()
 	{
 		$id		= $this->input->post('id');
-		$this->load->model('Good_receipt_model');
-		$result = $this->Good_receipt_model->delete($id);
+		// $this->load->model('Good_receipt_model');
+		// $result = $this->Good_receipt_model->updateStatusById($id);
 		
-		if($result){
+		// if($result){
 			$this->load->model('Good_receipt_detail_model');
-			$batch = $this->Good_receipt_detail_model->show_by_code_good_receipt_id($id);
+			$batch = $this->Good_receipt_detail_model->getBatchByCodeGoodReceiptId($id);
 
 			$this->load->model('Purchase_order_detail_model');
-			$this->Purchase_order_detail_model->delete_from_good_receipt($batch);
-		}
+			$this->Purchase_order_detail_model->updatePurchaseOrderReceivedArray($batch);
+		// }
 	}
 	
 	public function archiveDashboard()

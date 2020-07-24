@@ -36,7 +36,7 @@
 	
 	function refresh_view(page = $('#page').val()){
 		$.ajax({
-			url:'<?= site_url('Stock/search') ?>',
+			url:'<?= site_url('Stock/showItems') ?>',
 			data:{
 				page:page,
 				term:$('#search_bar').val()

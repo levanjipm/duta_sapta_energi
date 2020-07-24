@@ -25,7 +25,7 @@
 		</select>
 	</div>
 </div>
-<form action='<?= site_url('Invoice/create_retail') ?>' method='POST' id='invoice_form'>
+<form action='<?= site_url('Invoice/createRetailInvoice') ?>' method='POST' id='invoice_form'>
 	<input type='hidden' id='delivery_order_id' name='id'>
 </form>
 <script>

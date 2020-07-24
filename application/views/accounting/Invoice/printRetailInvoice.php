@@ -1,8 +1,8 @@
 <?php
-	$delivery_order_name		= substr($details[0]->do_name,7);
-	$delivery_order_date		= $details[0]->date;
-	$sales_order_name			= $details[0]->so_name;
-	$seller						= $details[0]->seller;
+	$delivery_order_name		= substr($deliveryOrder->name,7);
+	$delivery_order_date		= $deliveryOrder->date;
+	$sales_order_name			= $deliveryOrder->sales_order_name;
+	$seller						= $deliveryOrder->seller;
 	if(empty($seller)){
 		$seller			= "<i>Not assigned</i>";
 	};
@@ -178,7 +178,7 @@
 	
 	function get_say(){
 		$.ajax({
-			url:'<?= site_url('Invoice/convert_number') ?>',
+			url:'<?= site_url('Invoice/convertNumberToWords') ?>',
 			data:{
 				value:<?= $invoice_value ?>
 			},

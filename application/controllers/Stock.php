@@ -22,22 +22,22 @@ class Stock extends CI_Controller {
 			
 		if($department == 'Sales'){
 			$this->load->view('sales/header', $data);
-			$this->load->view('sales/stock_dashboard');
+			$this->load->view('sales/stockDashboard');
 		} else  if($department == 'Inventory'){
 			$this->load->view('inventory/header', $data);
-			$this->load->view('inventory/stock_dashboard');
+			$this->load->view('inventory/stockDashboard');
 		}
 	}
 	
-	public function search()
+	public function showItems()
 	{
 		$page		= $this->input->get('page');
 		$term		= $this->input->get('term');
 		$offset		= ($page - 1 ) * 25;
 		
 		$this->load->model('Stock_in_model');
-		$data['stocks'] = $this->Stock_in_model->search_stock_table($offset, $term);
-		$data['pages']	= $this->Stock_in_model->count_stock_table($offset, $term);
+		$data['stocks'] = $this->Stock_in_model->showItems($offset, $term);
+		$data['pages']	= max(1, ceil($this->Stock_in_model->countItems($offset, $term)/25));
 		
 		header('Content-Type: application/json');
 		echo json_encode($data);
@@ -57,20 +57,18 @@ class Stock extends CI_Controller {
 		$this->load->view('inventory/header', $data);
 		
 		$this->load->model('Item_model');
-		$data['items'] = $this->Item_model->select_by_id($item_id);
+		$data['item'] = $this->Item_model->showById($item_id);
 		
-		$this->load->view('inventory/stock_card', $data);
+		$this->load->view('inventory/stockCard', $data);
 	}
 	
-	public function card_view()
+	public function viewCard()
 	{
-		$item_id		= $this->input->get('item_id');
+		$itemId			= $this->input->get('id');
 		$page			= $this->input->get('page');
 		$offset			= ($page - 1) * 25;
 		$this->load->model('Stock_in_model');
-		$data['stock'] = $this->Stock_in_model->card_view($item_id, $offset);
-		
-		$data['pages'] = $this->Stock_in_model->count_card($item_id);
+		$data['stock'] = $this->Stock_in_model->viewCard($itemId, $offset);
 		
 		header('Content-Type: application/json');
 		echo json_encode($data);

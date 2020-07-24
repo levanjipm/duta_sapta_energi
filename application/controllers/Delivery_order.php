@@ -368,7 +368,7 @@ class Delivery_order extends CI_Controller {
 
 		if(count($sales_order_array) > 0){
 			$this->load->model('Sales_order_detail_model');
-			$this->Sales_order_detail_model->update_from_delivery_order_cancelation($sales_order_array);
+			$this->Sales_order_detail_model->updateCancelDeliveryOrder($sales_order_array);
 			
 			$this->load->model('Delivery_order_model');
 			$this->Delivery_order_model->updateById(0, $id);

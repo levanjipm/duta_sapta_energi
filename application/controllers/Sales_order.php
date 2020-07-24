@@ -346,7 +346,7 @@ class Sales_order extends CI_Controller {
 		$this->load->model('User_model');
 		$data['user_login'] = $this->User_model->getById($user_id);
 
-		if($data['user_login']->access_level > 2){
+		if($data['user_login']->access_level > 1){
 			$this->load->model('Authorization_model');
 			$data['departments']	= $this->Authorization_model->getByUserId($user_id);
 
@@ -368,14 +368,14 @@ class Sales_order extends CI_Controller {
 		echo json_encode($data);
 	}
 
-	public function get_close_request_by_id()
+	public function getCloseSubmissionById()
 	{
 		$this->load->model('Sales_order_close_request_model');
 		$this->load->model('Sales_order_model');
 		$this->load->model('Sales_order_detail_model');
 
 		$id = $this->input->get('id');
-		$data['general'] = $this->Sales_order_close_request_model->show_by_id($id);
+		$data['general'] = $this->Sales_order_close_request_model->getById($id);
 
 		$code_sales_order_id = $data['general']->code_sales_order_id;
 		$data['sales_order'] = $this->Sales_order_model->getById($code_sales_order_id);
@@ -386,25 +386,46 @@ class Sales_order extends CI_Controller {
 		echo json_encode($data);
 	}
 
-	public function update_close_status()
+	public function confirmCloseSalesOrder()
 	{
-		$status = $this->input->post('status');
 		$id = $this->input->post('id');
 		$user_id	= $this->session->userdata('user_id');
+
 		$this->load->model('User_model');
 		$data['user_login'] = $this->User_model->getById($user_id);
-		if($data['user_login']->access_level > 2){
+		if($data['user_login']->access_level > 1){
 			$this->load->model('Sales_order_close_request_model');
-			$data['general'] = $this->Sales_order_close_request_model->show_by_id($id);
 
-			$code_sales_order_id = $data['general']->code_sales_order_id;
+			$data = $this->Sales_order_close_request_model->getById($id);
+			$salesOrderId = $data->code_sales_order_id;
 
-			$result = $this->Sales_order_close_request_model->update_status($status, $id, $user_id);
-
-			if($result == 1 && $status == 1){
+			$result = $this->Sales_order_close_request_model->updateById(1, $id);
+			if($result == 1){
 				$this->load->model('Sales_order_detail_model');
-				$this->Sales_order_detail_model->update_status_by_code_sales_order_id($code_sales_order_id);
+				$this->Sales_order_detail_model->updateStatusByCodeSalesOrderId($salesOrderId);
+				echo 1;
+			} else {
+				echo 0;
 			}
+		} else {
+			echo 0;
+		}
+	}
+
+	public function deleteCloseSalesOrder()
+	{
+		$id = $this->input->post('id');
+		$user_id	= $this->session->userdata('user_id');
+
+		$this->load->model('User_model');
+		$data['user_login'] = $this->User_model->getById($user_id);
+		if($data['user_login']->access_level > 1){
+			$this->load->model('Sales_order_close_request_model');
+			$result = $this->Sales_order_close_request_model->updateById(0, $id);
+
+			echo $result;
+		} else {
+			echo 0;
 		}
 	}
 }
