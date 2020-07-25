@@ -29,6 +29,9 @@
 		<button class='container_button'><p>Invoice</p></button>
 		<div class='container_bar'>
 			<a href='<?= site_url('Invoice') ?>'><button><p style='font-family:museo'>Create</p></button></a>
+			<?php if($user_login->access_level > 1){ ?>
+			<a href='<?= site_url('Invoice/confirmDashboard') ?>'><button><p>Confirm</p></button></a>
+			<?php } ?>
 			<a href='<?= site_url('Invoice/archiveDashboard') ?>'><button><p style='font-family:museo'>Archive</p></button></a>
 		</div>
 		

@@ -109,6 +109,23 @@ class Invoice extends CI_Controller {
 		$this->load->helper('Number_to_words');
 		echo ucwords(Number_to_words($value));
 	}
+
+	public function confirmDashboard()
+	{
+		$user_id		= $this->session->userdata('user_id');
+		$this->load->model('User_model');
+		$data['user_login'] = $this->User_model->getById($user_id);
+		
+		$this->load->model('Authorization_model');
+		$data['departments']	= $this->Authorization_model->getByUserId($user_id);
+		
+		$this->load->view('head');
+		$this->load->view('accounting/header', $data);
+
+		$data = array();
+
+		$this->load->view('accounting/Invoice/confirmInvoiceDashboard');
+	}
 	
 	public function archiveDashboard()
 	{
@@ -125,9 +142,16 @@ class Invoice extends CI_Controller {
 		$data = array();
 		$this->load->model('Invoice_model');
 		$data['years'] = $this->Invoice_model->getYears();
-
-		print_r($data['years']);
 		
 		$this->load->view('accounting/invoice_archive');
+	}
+	
+	public function getUnconfirmedinvoice()
+	{
+		$this->load->model('Invoice_model');
+		$result = $this->Invoice_model->getUnconfirmedInvoice();
+		
+		header('Content-Type: application/json');
+		echo json_encode($data);
 	}
 }

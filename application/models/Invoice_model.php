@@ -10,6 +10,9 @@ class Invoice_model extends CI_Model {
 		public $customer_id;
 		public $date;
 		public $information;
+		public $is_confirm;
+		public $is_done;
+		public $taxInvoice;
 		
 		public function __construct()
 		{
@@ -24,6 +27,9 @@ class Invoice_model extends CI_Model {
 			$this->customer_id			= $db_item->customer_id;
 			$this->date					= $db_item->date;
 			$this->information			= $db_item->information;
+			$this->is_confirm			= $db_item->is_confirm;
+			$this->is_done				= $db_item->is_done;
+			$this->taxInvoice			= $db_item->taxInvoice;
 			
 			return $this;
 		}
@@ -38,6 +44,9 @@ class Invoice_model extends CI_Model {
 			$db_item->customer_id			= $this->customer_id;
 			$db_item->date					= $this->date;
 			$db_item->information			= $this->information;
+			$db_item->is_confirm			= $this->is_confirm;
+			$db_item->is_done				= $this->is_done;
+			$db_item->taxInvoice			= $this->taxInvoice;
 			
 			return $db_item;
 		}
@@ -52,6 +61,9 @@ class Invoice_model extends CI_Model {
 			$stub->customer_id			= $db_item->customer_id;
 			$stub->date					= $db_item->date;
 			$stub->information			= $db_item->information;
+			$stub->is_confirm			= $this->is_confirm;
+			$stub->is_done				= $this->is_done;
+			$stub->taxInvoice			= $this->taxInvoice;
 			
 			return $stub;
 		}
@@ -111,7 +123,10 @@ class Invoice_model extends CI_Model {
 				'value' => $value,
 				'customer_id' => $customerId,
 				'information' => $deliveryOrderName,
-				'date' => $deliveryOrderDate
+				'date' => $deliveryOrderDate,
+				'is_confirm' => 0,
+				'is_done' => 0,
+				'taxInvoice' => null
 			);
 			
 			$this->db->insert($this->table_invoice, $db_item);
@@ -285,5 +300,11 @@ class Invoice_model extends CI_Model {
 			$result = $query->result();
 
 			return $result;
+		}
+
+		public function getUnconfirmedInvoice()
+		{
+			$this->db->select('invoice.*, code_delivery_order.customer_id');
+			$this->db->where('is_confirm', 0);
 		}
 }
