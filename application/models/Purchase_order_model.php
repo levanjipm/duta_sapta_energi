@@ -203,7 +203,7 @@ class Purchase_order_model extends CI_Model {
 			
 		}
 		
-		public function name_generator($date)
+		public function generateName($date)
 		{
 			$name = 'PO.DSE-' . date('Ym', strtotime($date)) . '-' . rand(0,9) . rand(0,9) . rand(0,9) . rand(0,9);
 			$this->db->where('name =',$name);
@@ -211,7 +211,7 @@ class Purchase_order_model extends CI_Model {
 			$item = $query->num_rows();
 			
 			if($item != 0){
-				$this->Purchase_order_model->name_generator($date);
+				$this->Purchase_order_model->generateName($date);
 			};
 			
 			return $name;
@@ -236,7 +236,7 @@ class Purchase_order_model extends CI_Model {
 			$this->load->model('Purchase_order_model');
 			$check_guid = $this->Purchase_order_model->check_guid($guid);
 			if($check_guid){
-				$this->name					= $this->Purchase_order_model->name_generator($date);
+				$this->name					= $this->Purchase_order_model->generateName($date);
 				$this->guid					= $guid;
 				$this->is_delete			= '0';
 				$this->date					= $this->input->post('date');
@@ -279,17 +279,29 @@ class Purchase_order_model extends CI_Model {
 			return $result;
 		}
 
-		public function countIncompletePurchaseOrder($supplier_id)
+		public function countIncompletePurchaseOrder($supplier_id = null)
 		{
-			$query = $this->db->query("
-				SELECT code_purchase_order.* FROM code_purchase_order
-				JOIN (
-					SELECT DISTINCT(purchase_order.code_purchase_order_id) as id FROM purchase_order
-					WHERE purchase_order.status= '0'
-				) as a
-				ON a.id = code_purchase_order.id
-				WHERE code_purchase_order.supplier_id = '$supplier_id'
-			");
+			if($supplier_id != null){
+				$query = $this->db->query("
+					SELECT code_purchase_order.* FROM code_purchase_order
+					JOIN (
+						SELECT DISTINCT(purchase_order.code_purchase_order_id) as id FROM purchase_order
+						WHERE purchase_order.status= '0'
+					) as a
+					ON a.id = code_purchase_order.id
+					WHERE code_purchase_order.supplier_id = '$supplier_id'
+				");
+			} else {
+				$query = $this->db->query("
+					SELECT code_purchase_order.* FROM code_purchase_order
+					JOIN (
+						SELECT DISTINCT(purchase_order.code_purchase_order_id) as id FROM purchase_order
+						WHERE purchase_order.status= '0'
+					) as a
+					ON a.id = code_purchase_order.id
+				");
+			}
+			
 			$result	 	= $query->num_rows();
 			
 			return $result;

@@ -56,14 +56,29 @@
                     </div>
                 </div>
             </div>
+            <div class='col-md-4 col-sm-12 col-xs-12'>
+                <div class='dashboardBox'>
+                    <div class='leftSide'>
+                        <h4><b>Pending</b></h4>
+                        <p>Purchase orders</p>
+                    </div>
+                    <div class='rightSide'>
+                        <h3 id='orders'></h3>
+                        <p class='subtitleText'><?= date('d M Y') ?></p>
+                    </div>
+                </div>
+            </div>
 		</div>
 	</div>
 </div>
 
 <script>
-	calculate_needs();
-	
-	function calculate_needs(){
+    $(document).ready(function(){
+        calculateNeeds();
+        calculatePendingOrders();
+    })
+
+	function calculateNeeds(){
 		$.ajax({
 			url:'<?= site_url('Purchasing/calculateNeeds') ?>',
 			success:function(response){
@@ -72,4 +87,13 @@
 			}
 		});
 	};
+
+    function calculatePendingOrders(){
+        $.ajax({
+            url:"<?= site_url('Purchasing/countIncompletePurchaseOrders') ?>",
+            success:function(response){
+                $('#orders').text(response);
+            }
+        })
+    }
 </script>

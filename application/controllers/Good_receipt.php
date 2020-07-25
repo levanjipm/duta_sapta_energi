@@ -92,7 +92,7 @@ class Good_receipt extends CI_Controller {
 			$this->Good_receipt_detail_model->insertItem($id, $quantity_array, $price_array);
 			
 			$this->load->model('Purchase_order_detail_model');
-			$this->Purchase_order_detail_model->updatePurchaseOrderReceivedArray($quantity_array);
+			$this->Purchase_order_detail_model->updatePurchaseOrderReceivedArray(1, $quantity_array);
 		}
 		
 		redirect(site_url('Good_receipt/createDashboard'));
@@ -143,16 +143,20 @@ class Good_receipt extends CI_Controller {
 	public function deleteById()
 	{
 		$id		= $this->input->post('id');
-		// $this->load->model('Good_receipt_model');
-		// $result = $this->Good_receipt_model->updateStatusById($id);
+		$this->load->model('Good_receipt_model');
+		$result = $this->Good_receipt_model->updateStatusById(0, $id);
 		
-		// if($result){
+		if($result){
 			$this->load->model('Good_receipt_detail_model');
 			$batch = $this->Good_receipt_detail_model->getBatchByCodeGoodReceiptId($id);
 
 			$this->load->model('Purchase_order_detail_model');
-			$this->Purchase_order_detail_model->updatePurchaseOrderReceivedArray($batch);
-		// }
+			$this->Purchase_order_detail_model->updatePurchaseOrderReceivedArray(0, $batch);
+
+			echo 1;
+		} else {
+			echo 0;
+		}
 	}
 	
 	public function archiveDashboard()

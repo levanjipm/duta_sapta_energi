@@ -65,4 +65,13 @@ class Purchasing extends CI_Controller {
 		header('Content-Type: application/json');
 		echo json_encode($orderArray);
 	}
+
+	public function countIncompletePurchaseOrders()
+	{
+		$this->load->model('Purchase_order_model');
+		$data = $this->Purchase_order_model->countIncompletePurchaseOrder();
+
+		header('Content-Type: application/json');
+		echo json_encode($data);
+	}
 }

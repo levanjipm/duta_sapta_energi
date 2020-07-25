@@ -174,33 +174,37 @@ class Purchase_order_detail_model extends CI_Model {
 			return ($item !== null) ? $this->get_stub_from_db($item) : null;
 		}
 
-		public function updatePurchaseOrderReceivedArray($quantity_array)
+		public function updatePurchaseOrderReceivedArray($type, $quantity_array)
 		{
-			print_r($quantity_array);
 			$batch = array();
-			// foreach($quantity_array as $quantity){
-			// 	$purchase_order_id			= key($quantity_array);
-			// 	$items						= $this->Purchase_order_detail_model->getById($purchase_order_id);
-			// 	$received					= $items->received;
-			// 	$ordered					= $items->quantity;
-			// 	$final_quantity				= $received + $quantity;
-			// 	if($final_quantity			== $ordered){
-			// 		$status					= 1;
-			// 	} else {
-			// 		$status 				= 0;
-			// 	}
+			foreach($quantity_array as $quantity){
+				$purchase_order_id			= key($quantity_array);
+				$items						= $this->Purchase_order_detail_model->getById($purchase_order_id);
+				$received					= $items->received;
+				$ordered					= $items->quantity;
+				if($type == 0){
+					$final_quantity				= $received - $quantity;
+				} else if($type == 1){
+					$final_quantity				= $received + $quantity;
+				}
 				
-			// 	$batch[] = array(
-			// 		'id' => $purchase_order_id,
-			// 		'received' => $final_quantity,
-			// 		'status' => $status
-			// 	);
+				if($final_quantity			== $ordered){
+					$status					= 1;
+				} else {
+					$status 				= 0;
+				}
 				
-			// 	next($quantity_array);
+				$batch[] = array(
+					'id' => $purchase_order_id,
+					'received' => $final_quantity,
+					'status' => $status
+				);
+				
+				next($quantity_array);
 					
-			// }
+			}
 			
-			// $this->db->update_batch($this->table_purchase_order,$batch, 'id'); 
+			$this->db->update_batch($this->table_purchase_order,$batch, 'id'); 
 		}
 		
 		public function getByCodeId($id)

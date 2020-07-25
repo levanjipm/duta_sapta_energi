@@ -127,11 +127,19 @@ class Good_receipt_detail_model extends CI_Model {
 		{
 			$this->db->where('code_good_receipt_id', $id);
 			$query = $this->db->get($this->table_good_receipt);
+
 			$items = $query->result();
+			$this->load->model('Purchase_order_detail_model');
+
+			$batch = array();
 
 			foreach($items as $item){
-				print_r($item);
+				$purchaseOrderId = $item->purchase_order_id;
+				$quantity			= $item->quantity;
+				$batch[$purchaseOrderId] = $quantity;
 			}
+
+			return $batch;
 		}
 		
 		public function select_by_code_good_receipt_id_array($documents)
