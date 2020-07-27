@@ -149,9 +149,31 @@ class Invoice extends CI_Controller {
 	public function getUnconfirmedinvoice()
 	{
 		$this->load->model('Invoice_model');
-		$result = $this->Invoice_model->getUnconfirmedInvoice();
+		$data = $this->Invoice_model->getUnconfirmedInvoice();
+
+		$this->load->model('Customer_model');
+		$this->load->model('Delivery_order_model');
+
+		$finalArray = array();
+
+		$resultArray = (array) $data;
+		foreach($resultArray as $result){
+			
+			$arrayResult = (array) $result;
+			$customer_id = $result->customer_id;
+			$deliveryOrderId = $result->code_delivery_order_id;
+			$customer = (array) $this->Customer_model->getById($customer_id);
+			$deliveryOrder = (array) $this->Delivery_order_model->getById($deliveryOrderId);
+			$arrayResult['customer'] = $customer;
+			$arrayResult['deliveryOrder'] = $deliveryOrder;
+
+			array_push($finalArray, $arrayResult);
+		}
+
+		
+		
 		
 		header('Content-Type: application/json');
-		echo json_encode($data);
+		echo json_encode($finalArray);
 	}
 }

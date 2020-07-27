@@ -188,21 +188,6 @@ class Purchase_order_model extends CI_Model {
 			}
 		}
 		
-		public function show_unconfirmed_purchase_order()
-		{
-			$this->db->select('code_purchase_order.*, supplier.name as supplier_name, supplier.address as supplier_address, supplier.city as supplier_city');
-			$this->db->from($this->table_purchase_order);
-			$this->db->join('supplier', 'code_purchase_order.supplier_id = supplier.id');
-			$this->db->where('code_purchase_order.is_confirm', 0);
-			$this->db->where('code_purchase_order.is_delete', 0);
-			
-			$query 		= $this->db->get();
-			$items	 	= $query->result();
-			
-			return $items;
-			
-		}
-		
 		public function generateName($date)
 		{
 			$name = 'PO.DSE-' . date('Ym', strtotime($date)) . '-' . rand(0,9) . rand(0,9) . rand(0,9) . rand(0,9);
@@ -356,19 +341,25 @@ class Purchase_order_model extends CI_Model {
 			return $items;
 		}
 		
-		public function confirm_purchase_order($id)
+		public function confirmById($id)
 		{
+			$this->db->db_debug = false;
 			$this->db->set('is_confirm', 1);
 			$this->db->set('confirmed_by', $this->session->userdata('user_id'));
 			$this->db->where('id', $id);
 			$this->db->update($this->table_purchase_order);
+
+			return $this->db->affected_rows();
 		}
 		
-		public function delete_purchase_order($id)
+		public function deleteById($id)
 		{
+			$this->db->db_debug = false;
 			$this->db->set('is_delete', 1);
 			$this->db->where('id', $id);
 			$this->db->update($this->table_purchase_order);
+
+			return $this->db->affected_rows();
 		}
 		
 		public function show_years()
@@ -424,11 +415,21 @@ class Purchase_order_model extends CI_Model {
 			$query		= $this->db->get();
 			$result		= $query->num_rows();
 			
-			return $result;
+			return $result;		$result = $this->Purchase_order_model->show_unconfirmed_purchase_order();
+
 		}
 		
 		public function create_guid()
 		{	
 			return sprintf('%04X%04X-%04X-%04X-%04X-%04X%04X%04X', mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(16384, 20479), mt_rand(32768, 49151), mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(0, 65535));
+		}
+
+		public function getUnconfirmedPurchaseOrders()
+		{
+			$this->db->where('is_confirm', 0);
+			$this->db->where('is_delete', 0);
+			$query = $this->db->get($this->table_purchase_order);
+			$result = $query->result();
+			return $result;
 		}
 }

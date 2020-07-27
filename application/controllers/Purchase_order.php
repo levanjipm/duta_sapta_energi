@@ -23,12 +23,7 @@ class Purchase_order extends CI_Controller {
 		
 		$this->load->view('head');
 		$this->load->view('purchasing/header', $data);
-		
-		$this->load->model('Purchase_order_model');
-		$result = $this->Purchase_order_model->show_unconfirmed_purchase_order();
-
-		$data['purchase_orders'] = $result;
-		$this->load->view('Purchasing/purchase_order', $data);
+		$this->load->view('Purchasing/purchase_order');
 	}
 	
 	public function create()
@@ -101,22 +96,22 @@ class Purchase_order extends CI_Controller {
 		echo json_encode($data);
 	}
 	
-	public function confirm()
+	public function confirmById()
 	{
 		$id		= $this->input->post('id');
 		$this->load->model('Purchase_order_model');
-		$this->Purchase_order_model->confirm_purchase_order($id);
+		$result = $this->Purchase_order_model->confirmById($id);
 		
-		redirect(site_url('Purchase_order/print/') . $id);
+		echo $result;
 	}
 	
-	public function delete()
+	public function deleteById()
 	{
-		$id		= $this->input->get('id');
+		$id		= $this->input->post('id');
 		$this->load->model('Purchase_order_model');
-		$this->Purchase_order_model->delete_purchase_order($id);
+		$result = $this->Purchase_order_model->deleteById($id);
 		
-		redirect(site_url('Purchase_order'));
+		echo $result;
 	}
 	
 	public function print($purchase_order_id)
@@ -231,5 +226,27 @@ class Purchase_order extends CI_Controller {
 
 		header('Content-Type: application/json');
 		echo json_encode($data);
+	}
+
+	public function getUnconfirmedPurchaseOrders()
+	{
+		$this->load->model('Purchase_order_model');
+		$this->load->model('Supplier_model');
+
+		$data = $this->Purchase_order_model->getUnconfirmedPurchaseOrders();
+		$result = array();
+		$items = (array) $data;
+		foreach($items as $item){
+			$array = (array) $item;
+			$supplierId = $item->supplier_id;
+			$supplier = $this->Supplier_model->getById($supplierId);
+
+			$array['supplier'] = $supplier;
+
+			array_push($result, $array);
+		}
+
+		header('Content-Type: application/json');
+		echo json_encode($result);
 	}
 }

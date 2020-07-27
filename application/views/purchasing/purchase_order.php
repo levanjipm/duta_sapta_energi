@@ -8,81 +8,124 @@
 			<button type='button' class='button button_default_dark'>Create purchase order</button>
 		</a>
 		<br><br>
-<?php
-	if(!empty($purchase_orders)){
-?>
-	<table class='table table-bordered'>
-		<tr>
-			<th>Date</th>
-			<th>Name</th>
-			<th>Supplier</th>
-			<th>Action</th>
-		</tr>
-<?php
-	foreach($purchase_orders as $purchase_order){
-		$id					= $purchase_order->id;
-		$date				= $purchase_order->date;
-		$name				= $purchase_order->name;
-		$supplier_name		= $purchase_order->supplier_name;
-		$supplier_address	= $purchase_order->supplier_address;
-		$supplier_city		= $purchase_order->supplier_city;
-?>
-		<tr>
-			<td><?= date('d M Y',strtotime($date)) ?></td>
-			<td><?= $name ?></td>
-			<td>
-				<p style='font-family:museo'><?= $supplier_name ?></p>
-				<p style='font-family:museo'><?= $supplier_address ?></p>
-				<p style='font-family:museo'><?= $supplier_city ?></p>
-			</td>
-			<td>
-				<button type='button' class='button button_default_dark' onclick='getPurchaseOrderById(<?= $id ?>)'><i class='fa fa-eye'></i></button>
-			</td>
-		</tr>
-<?php
-	}
-?>
-	</table>
-	
-	<div class='alert_wrapper' id='purchase_order_detail_wrapper'>
-		<button type='button' class='slide_alert_close_button'>&times;</button>
-		<div class='alert_box_slide'>
-			<h3 style='font-family:bebasneue'>Confirm purchase order</h3>
-			<hr>
-			<label>Supplier</label>
-			<p style='font-family:museo' id='supplier_name_p'></p>
-			<p style='font-family:museo' id='supplier_address_p'></p>
-			<p style='font-family:museo' id='supplier_city_p'></p>
-			
-			<label>Purchase order</label>
-			<p style='font-family:museo' id='purchase_order_name_p'></p>
-			<p style='font-family:museo' id='purchase_order_date_p'></p>
-			
+		<div id='purchaseOrderTable'>
 			<table class='table table-bordered'>
 				<tr>
-					<th>Reference</th>
+					<th>Date</th>
 					<th>Name</th>
-					<th>Quantity</th>
-					<th>Price list</th>
-					<th>Discount</th>
-					<th>Net price</th>
-					<th>Total price</th>
+					<th>Supplier</th>
+					<th>Action</th>
 				</tr>
-				<tbody id='purchase_order_table'></tbody>
+				<tbody id='purchaseOrderTableContent'></tbody></tbody>
 			</table>
-
-			<label>Purchase order note</label>
-			<p id='note'></p>
-			<form action='<?= site_url('Purchase_order/confirm') ?>' method='POST'>
-				<input type='hidden' id='purchase_order_id' name='id'>
-				<button class='button button_default_dark' style='display:inline-block'><i class='fa fa-long-arrow-right'></i></button>
-				<button type='button' class='button button_danger_dark' style='display:inline-block' onclick='deletePurchaseOrder()'><i class='fa fa-trash'></i></button>
-			</form>
 		</div>
+
+		<p id='purchaseOrderTableText'>There is no unconfirmed purchase order found.</p>
+	</div>
+</div>
+	
+<div class='alert_wrapper' id='purchase_order_detail_wrapper'>
+	<button type='button' class='slide_alert_close_button'>&times;</button>
+	<div class='alert_box_slide'>
+		<h3 style='font-family:bebasneue'>Confirm purchase order</h3>
+		<hr>
+		<label>Supplier</label>
+		<p style='font-family:museo' id='supplier_name_p'></p>
+		<p style='font-family:museo' id='supplier_address_p'></p>
+		<p style='font-family:museo' id='supplier_city_p'></p>
+		
+		<label>Purchase order</label>
+		<p style='font-family:museo' id='purchase_order_name_p'></p>
+		<p style='font-family:museo' id='purchase_order_date_p'></p>
+		
+		<table class='table table-bordered'>
+			<tr>
+				<th>Reference</th>
+				<th>Name</th>
+				<th>Quantity</th>
+				<th>Price list</th>
+				<th>Discount</th>
+				<th>Net price</th>
+				<th>Total price</th>
+			</tr>
+			<tbody id='purchase_order_table'></tbody>
+		</table>
+
+		<label>Purchase order note</label>
+		<p id='note'></p>
+
+		<input type='hidden' id='purchase_order_id'>
+		<button type='button' class='button button_default_dark' style='display:inline-block' onclick='confirmPurchaseOrder()'><i class='fa fa-long-arrow-right'></i></button>
+		<button type='button' class='button button_danger_dark' style='display:inline-block' onclick='deletePurchaseOrder()'><i class='fa fa-trash'></i></button>
+
+		<div class='notificationText danger' id='confirmFailedNotification'><p>Failed to confirm purchase order.</p></div>
+		<div class='notificationText danger' id='deleteFailedNotification'><p>Failed to delete purchase order.</p></div>
+
 	</div>
 </div>
 <script>
-	function getPurchaseOrderById(n){
+	$(document).ready(function(){
+		refresh_view()
+	});
+
+	function refresh_view(){
+		$.ajax({
+			url:'<?= site_url('Purchase_order/getUnconfirmedPurchaseOrders') ?>',
+			success:function(response){
+				var purchaseOrderCount = 0;
+				$('#purchaseOrderTableContent').html('');
+
+				$.each(response, function(index, value){
+					var id = value.id;
+					var date = value.date;
+					var name = value.name;
+					var supplier = value.supplier;
+
+					var supplier_name = supplier.name;
+					var supplier_address		= supplier.address;
+					var supplier_number			= supplier.number;
+					var supplier_block			= supplier.block;
+					var supplier_rt				= supplier.rt;
+					var supplier_rw				= supplier.rw;
+					var supplier_city			= supplier.city;
+					var supplier_postal_code	= supplier.postal_code;
+					var complete_address		= supplier_address;
+
+					if(supplier_number != null && supplier_number != ''){
+						complete_address	+= ' no. ' + supplier_number;
+					};
+					
+					if(supplier_block != null && supplier_block != ''){
+						complete_address	+= ', blok ' + supplier_block;
+					};
+					
+					if(supplier_rt != '000'){
+						complete_address	+= ', RT ' + supplier_rt + ', RW ' + supplier_rw;
+					}
+					
+					if(supplier_postal_code != ''){
+						complete_address += ', ' + supplier_postal_code;
+					}
+					
+					complete_address += ', ' + supplier_city;
+
+					$('#purchaseOrderTableContent').append("<tr><td>" + my_date_format(date) + "</td><td>" + name + "</td><td><p>" + supplier_name + "</p><p>" + complete_address + "</p></td><td><button class='button button_default_dark' onclick='viewPurchaseOrder(" + id + ")'><i class='fa fa-eye'></i></button>");
+
+					purchaseOrderCount++;
+				});
+
+				if(purchaseOrderCount > 0){
+					$('#purchaseOrderTable').show();
+					$('#purchaseOrderTableText').hide();
+				} else {
+					$('#purchaseOrderTable').hide();
+					$('#purchaseOrderTableText').show();
+				}
+			}
+		});
+	}
+
+	function viewPurchaseOrder(n){
 		$.ajax({
 			url:'<?= site_url('Purchase_order/getDetailById/') ?>' + n,
 			dataType:'json',
@@ -135,13 +178,52 @@
 	
 	function deletePurchaseOrder(){
 		$.ajax({
-			url:'<?= site_url('Purchase_order/delete') ?>',
+			url:'<?= site_url('Purchase_order/deleteById') ?>',
 			data:{
 				id:$('#purchase_order_id').val()
 			},
-			type:'GET',
-			success:function(){
-				location.reload();
+			type:'POST',
+			beforeSend:function(){
+				$('button').attr('disabled', true);
+			},
+			success:function(response){
+				$('button').attr('disabled', false);
+				refresh_view();
+
+				if(response != 1){
+					$('#deleteFailedNotification').fadeTo(250, 1);
+					setTimeout(function(){
+						$('#deleteFailedNotification').fadeTo(250, 0);
+					}, 1000);
+				} else {
+					$('#purchase_order_detail_wrapper .slide_alert_close_button').click();	
+				}
+			}
+		});
+	};
+
+	function confirmPurchaseOrder(){
+		$.ajax({
+			url:'<?= site_url('Purchase_order/confirmById') ?>',
+			data:{
+				id:$('#purchase_order_id').val()
+			},
+			type:'POST',
+			beforeSend:function(){
+				$('button').attr('disabled', true);
+			},
+			success:function(response){
+				$('button').attr('disabled', false);
+				refresh_view();
+
+				if(response != 1){
+					$('#confirmFailedNotification').fadeTo(250, 1);
+					setTimeout(function(){
+						$('#confirmFailedNotification').fadeTo(250, 0);
+					}, 1000);
+				} else {
+					window.location.href="<?= site_url('Purchase_order/print/') ?>" + $('#purchase_order_id').val();
+				}
 			}
 		});
 	};
@@ -152,11 +234,3 @@
 		});
 	});
 </script>
-<?php
-	} else {
-?>
-	<p>There is no purchase order to be confirmed</p>
-<?php
-	}
-?>
-</div>

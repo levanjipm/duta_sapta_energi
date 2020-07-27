@@ -454,17 +454,24 @@
 				if(status == false){
 					$('#StockWarningTextSent').show();
 					$('#sentConfirmDeliveryOrderButton').attr('disabled', true);
+
+					if(invoicingMethod == 1 && invoice_id == null){
+						$('#InvoiceWarningTextSent').show();
+						$('#sentConfirmDeliveryOrderButton').attr('disabled', true);
+					} else {
+						$('#InvoiceWarningTextSent').hide();
+					}
 				} else {
 					$('#StockWarningTextSent').hide();
 					$('#sentConfirmDeliveryOrderButton').attr('disabled', false);
-				}
 
-				if(invoicingMethod == 1 && invoice_id == null){
-					$('#InvoiceWarningTextSent').show();
-					$('#sentConfirmDeliveryOrderButton').attr('disabled', true);
-				} else {
-					$('#InvoiceWarningTextSent').hide();
-					$('#sentConfirmDeliveryOrderButton').attr('disabled', false);
+					if(invoicingMethod == 1 && invoice_id == null){
+						$('#InvoiceWarningTextSent').show();
+						$('#sentConfirmDeliveryOrderButton').attr('disabled', true);
+					} else {
+						$('#InvoiceWarningTextSent').hide();
+						$('#sentConfirmDeliveryOrderButton').attr('disabled', false);
+					}
 				}
 				
 				$('#viewSentDeliveryOrderWrapper').fadeIn(300, function(){

@@ -304,7 +304,13 @@ class Invoice_model extends CI_Model {
 
 		public function getUnconfirmedInvoice()
 		{
-			$this->db->select('invoice.*, code_delivery_order.customer_id');
-			$this->db->where('is_confirm', 0);
+			$this->db->select("invoice.*, code_delivery_order.id as code_delivery_order_id");
+			$this->db->from('invoice');
+			$this->db->join('code_delivery_order', 'code_delivery_order.invoice_id = invoice.id');
+			$this->db->where('invoice.is_confirm', 0);
+			$query = $this->db->get();
+			$result = $query->result();
+
+			return $result;
 		}
 }
