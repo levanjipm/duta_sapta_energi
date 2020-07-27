@@ -108,7 +108,7 @@
 	
 	function refresh_view(page = $('#page').val()){
 		$.ajax({
-			url:'<?= site_url('Delivery_order/view_archive') ?>',
+			url:'<?= site_url('Delivery_order/viewArchive') ?>',
 			data:{
 				year: $('#year').val(),
 				month: $('#month').val(),

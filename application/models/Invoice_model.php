@@ -7,7 +7,6 @@ class Invoice_model extends CI_Model {
 		public $id;
 		public $name;
 		public $value;
-		public $customer_id;
 		public $date;
 		public $information;
 		public $is_confirm;
@@ -24,7 +23,6 @@ class Invoice_model extends CI_Model {
 			$this->id					= $db_item->id;
 			$this->name					= $db_item->name;
 			$this->value				= $db_item->value;
-			$this->customer_id			= $db_item->customer_id;
 			$this->date					= $db_item->date;
 			$this->information			= $db_item->information;
 			$this->is_confirm			= $db_item->is_confirm;
@@ -41,7 +39,6 @@ class Invoice_model extends CI_Model {
 			$db_item->id					= $this->id;
 			$db_item->name					= $this->name;
 			$db_item->value					= $this->value;
-			$db_item->customer_id			= $this->customer_id;
 			$db_item->date					= $this->date;
 			$db_item->information			= $this->information;
 			$db_item->is_confirm			= $this->is_confirm;
@@ -58,7 +55,6 @@ class Invoice_model extends CI_Model {
 			$stub->id					= $db_item->id;
 			$stub->name					= $db_item->name;
 			$stub->value				= $db_item->value;
-			$stub->customer_id			= $db_item->customer_id;
 			$stub->date					= $db_item->date;
 			$stub->information			= $db_item->information;
 			$stub->is_confirm			= $this->is_confirm;
@@ -121,7 +117,6 @@ class Invoice_model extends CI_Model {
 				'id' => '',
 				'name' => $invoice_name,
 				'value' => $value,
-				'customer_id' => $customerId,
 				'information' => $deliveryOrderName,
 				'date' => $deliveryOrderDate,
 				'is_confirm' => 0,
@@ -167,9 +162,9 @@ class Invoice_model extends CI_Model {
 			return $result;
 		}
 		
-		public function view_receivable_chart($date_1, $date_2)
+		public function viewReceivableChart($date_1, $date_2)
 		{
-			$this->db->select('sum(invoice.value) as value, customer.name, customer.city, code_sales_order.customer_id, COALESCE(SUM(receivable.value),0) as paid', FALSE);
+			$this->db->select('sum(invoice.value) as value, customer.name, customer.city, code_sales_order.customer_id as id, COALESCE(SUM(receivable.value),0) as paid', FALSE);
 			$this->db->from('invoice');
 			$this->db->join('receivable', 'invoice.id = receivable.invoice_id', 'left');
 			$this->db->join('code_delivery_order', 'code_delivery_order.invoice_id = invoice.id');
@@ -187,17 +182,9 @@ class Invoice_model extends CI_Model {
 			
 			$query	= $this->db->get();
 			$result	= $query->result();
-			
-			$data = $this->Invoice_model->convert_receivable_chart_array($result);
-			
-			return $data;
-		}
-		
-		public function convert_receivable_chart_array($receivable_array)
-		{
-			$chart_array		= array();
-			foreach($receivable_array as $receivable){
-				$customer_id		= $receivable->customer_id;
+
+			foreach($result as $receivable){
+				$customer_id		= $receivable->id;
 				$customer_name		= $receivable->name;
 				$customer_city		= $receivable->city;
 				$invoice_value		= $receivable->value;
@@ -214,13 +201,16 @@ class Invoice_model extends CI_Model {
 				return $a['value'] - $b['value'];
 			});
 
-			return $chart_array;
+			$data = $chart_array;
+			
+			return $data;
 		}
 		
 		public function getReceivableByCustomerId($customer_id)
 		{
-			$query = $this->db->query(
-				"SELECT COALESCE(SUM(a.value),0) as value, COALESCE(SUM(b.value),0) as paid FROM (
+			$query = $this->db->query("
+				SELECT COALESCE(SUM(a.value),0) as value, COALESCE(SUM(b.value),0) as paid 
+				FROM (
 					SELECT invoice.* FROM invoice 
 						JOIN code_delivery_order ON code_delivery_order.invoice_id = invoice.id 
 						LEFT JOIN delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order.id 
@@ -233,12 +223,13 @@ class Invoice_model extends CI_Model {
 					FROM receivable 
 					GROUP BY receivable.invoice_id
 				) as b
-			ON a.id = b.invoice_id");
+				ON a.id = b.invoice_id
+			");
 			$result = $query->row();
 			return $result;
 		}
 		
-		public function getCustomerStatusById($customer_id)
+		public function getCustomerStatusById($customerId)
 		{
 			$query = $this->db->query("
 				SELECT COALESCE(SUM(invoice.value),0) AS debt, COALESCE(a.value, 0) AS paid, MIN(invoice.date) as date FROM invoice
@@ -246,7 +237,11 @@ class Invoice_model extends CI_Model {
 					SELECT SUM(value) as value, invoice_id FROM receivable GROUP BY invoice_id
 				) as a
 				ON invoice.id = a.invoice_id
-				WHERE invoice.customer_id = '$customer_id'
+				JOIN code_delivery_order ON code_delivery_order.invoice_id = invoice.id
+				JOIN delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order_id
+				JOIN sales_order ON sales_order.id = delivery_order.sales_order_id
+				JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
+				WHERE code_sales_order.customer_id = '$customerId'
 				AND invoice.is_done = '0'
 			");
 			$result		= $query->row();
@@ -279,14 +274,28 @@ class Invoice_model extends CI_Model {
 			return $result;
 		}
 		
-		public function view_receivable_by_customer_id($customer_id)
+		public function viewReceivableByCustomerId($customerId)
 		{
-			$query = $this->db->query("SELECT invoice.*, COALESCE(a.value,0) as paid FROM invoice LEFT JOIN
+			$query = $this->db->query("
+				SELECT invoice.*, COALESCE(a.value,0) as paid
+				FROM invoice 
+				JOIN (
+					SELECT DISTINCT(invoice.id) as id FROM invoice
+					JOIN code_delivery_order ON code_delivery_order.invoice_id = invoice.id
+					JOIN delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order_id
+					JOIN sales_order ON sales_order.id = delivery_order.sales_order_id
+					JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
+					WHERE code_sales_order.customer_id = '$customerId'
+					AND invoice.is_done = '0'
+				) as b
+				ON invoice.id = b.id
+				LEFT JOIN
 				(
 					SELECT SUM(value) as value, invoice_id FROM receivable GROUP BY invoice_id
 				) as a
-				ON a.invoice_id = invoice.id
-				WHERE invoice.is_done = '0' AND invoice.customer_id = '$customer_id'");
+				ON a.invoice_id = b.id
+				ORDER BY invoice.date ASC, invoice.name ASC;
+			");
 			$result = $query->result();
 			
 			return $result;
@@ -304,12 +313,41 @@ class Invoice_model extends CI_Model {
 
 		public function getUnconfirmedInvoice()
 		{
-			$this->db->select("invoice.*, code_delivery_order.id as code_delivery_order_id");
-			$this->db->from('invoice');
-			$this->db->join('code_delivery_order', 'code_delivery_order.invoice_id = invoice.id');
-			$this->db->where('invoice.is_confirm', 0);
-			$query = $this->db->get();
+			$query = $this->db->query("
+				SELECT invoice.*, a.code_delivery_order_id as code_delivery_order_id, a.customer_id
+				FROM (
+					SELECT DISTINCT(invoice.id) AS id, code_delivery_order.id as code_delivery_order_id, code_sales_order.customer_id FROM invoice
+					JOIN code_delivery_order ON code_delivery_order.invoice_id = invoice.id
+					JOIN delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order.id
+					JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
+					JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
+					WHERE invoice.is_confirm = '0'
+				) AS a
+				JOIN invoice ON a.id = invoice.id
+				ORDER BY invoice.date ASC;
+			");
+
 			$result = $query->result();
+
+			return $result;
+		}
+
+		public function getValueByMonthYear($month, $year)
+		{
+			$this->db->select_sum('value');
+			$this->db->where('MONTH(date)', (int)$month);
+			$this->db->where('YEAR(date)', $year);
+			$query = $this->db->get($this->table_invoice);
+			$result = $query->row();
+
+			return ($result->value == null)? 0 : (float)$result->value;
+		}
+
+		public function getById($id)
+		{
+			$this->db->where('id', $id);
+			$query = $this->db->get($this->table_invoice);
+			$result = $query->row();
 
 			return $result;
 		}

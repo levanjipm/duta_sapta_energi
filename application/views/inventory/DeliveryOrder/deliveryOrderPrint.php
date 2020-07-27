@@ -20,19 +20,19 @@
 }
 </style>
 <?php
-	$complete_address		= $general->address;
-	$complete_address		.= ' No. ' . $general->number;
+	$complete_address		= $customer->address;
+	$complete_address		.= ' No. ' . $customer->number;
 	
-	if($general->block != '' && $general->block != '000'){
-		$complete_address	.= ' Block ' . $general->block;
+	if($customer->block != '' && $customer->block != '000'){
+		$complete_address	.= ' Block ' . $customer->block;
 	}
 	
-	if($general->rt != '' && $general->rt != '000'){
-		$complete_address	.= ' RT ' . $general->rt;
+	if($customer->rt != '' && $customer->rt != '000'){
+		$complete_address	.= ' RT ' . $customer->rt;
 	}
 	
-	if($general->rw != '' && $general->rw != '000'){
-		$complete_address	.= ' RW ' . $general->rw;
+	if($customer->rw != '' && $customer->rw != '000'){
+		$complete_address	.= ' RW ' . $customer->rw;
 	}
 ?>
 <div class='row' style='margin:0'>	
@@ -50,9 +50,9 @@
 				<div style='line-height:1;text-align:left'>
 					<p>Bandung, <?= date('d M Y',strtotime($general->date));?></p>
 					<p>Kepada Yth.</p>
-					<p><b><?= $general->customer_name ?></b></p>
+					<p><b><?= $customer->name ?></b></p>
 					<p><?= $complete_address ?></p>
-					<p><?= $general->city ?></p>
+					<p><?= $customer->city ?></p>
 				</div>
 			</div>
 		</div>
@@ -90,21 +90,21 @@
 		<br><br>
 		<div class='row'>
 			<div class='col-xs-12'>
-				<table style='width:100%;text-align:center'>
+				<table style='width:100%;text-align:center;border:1px solid #ccc'>
 					<tr>
-						<td style='width:33%;padding:0px 60px'>
+						<td style='width:33%;padding:5px 60px;border:1px solid #ccc'>
 							<p>Penerima</p>
-							<br><br><br><br>
+							<br><br><br>
 							<hr style='border-top:2px solid black'>
 						</td>
-						<td style='width:33%;padding:0px 60px'>
+						<td style='width:33%;padding:5px 60px;border:1px solid #ccc'>
 							<p>Pengirim</p>
-							<br><br><br><br>
+							<br><br><br>
 							<hr style='border-top:2px solid black'>
 						</td>
-						<td style='width:33%;padding:0px 60px'>
+						<td style='width:33%;padding:5px 60px;border:1px solid #ccc'>
 							<p>Hormat kami</p>
-							<br><br><br><br>
+							<br><br><br>
 							<hr style='border-top:2px solid black'>
 						</td>
 					</tr>
@@ -117,6 +117,6 @@
 <div class='row' style='margin:0'>
 	<div class='col-xs-12' style='text-align:center'>
 		<button type='button' class='button button_default_light' onclick='window.print(); $(this).remove();$("#buttonBack").show();'><i class='fa fa-print'></i></button>
-		<a type='button' class='button button_success_dark' href='<?= site_url('Delivery_order') ?>' style='display:none' id='buttonBack'><i class='fa fa-long-arrow-left'></i></a>
+		<a type='button' class='button button_success_dark' href='<?= site_url('Delivery_order/createDashboard') ?>' style='display:none' id='buttonBack'><i class='fa fa-long-arrow-left'></i></a>
 	</div>
 </div>

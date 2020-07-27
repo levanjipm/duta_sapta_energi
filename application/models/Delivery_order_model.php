@@ -193,7 +193,7 @@ class Delivery_order_model extends CI_Model {
 			
 			$item++;
 			
-			$name = 'DO-DSE-' . date('Ym', strtotime($date)) . '-' . str_pad($item, 3, '0', STR_PAD_LEFT) . $taxing;
+			$name = 'DO-DSE-' . date('Ym', strtotime($date)) . '-' . str_pad($item, 4, '0', STR_PAD_LEFT) . $taxing;
 			return $name;
 		}
 		
@@ -417,6 +417,21 @@ class Delivery_order_model extends CI_Model {
 
 			$query = $this->db->get();
 			$result = $query->result();
+
+			return $result;
+		}
+
+		public function getByInvoiceId($invoiceId)
+		{
+			$query = $this->db->query("
+				SELECT code_sales_order.id as code_sales_order_id, code_sales_order.customer_id, code_delivery_order.* FROM code_delivery_order
+				JOIN delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order.id
+				JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
+				JOIN code_sales_order ON code_sales_order.id = sales_order.code_sales_order_id
+				WHERE code_delivery_order.invoice_id = '$invoiceId';
+			");
+
+			$result = $query->row();
 
 			return $result;
 		}

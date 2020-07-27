@@ -155,7 +155,7 @@
 
 	function refresh_view(date_1 = 0, date_2 = 0){
 		$.ajax({
-			url:'<?= site_url('Receivable/view_receivable') ?>',
+			url:'<?= site_url('Receivable/viewReceivable') ?>',
 			data:{
 				date_1:date_1,
 				date_2:date_2
@@ -193,11 +193,10 @@
 
 	function view_receivable_detail(n){
 		$.ajax({
-			url:'<?= site_url('Receivable/view_receivable_by_customer_id') ?>',
+			url:'<?= site_url('Receivable/getReceivableByCustomerId') ?>',
 			data:{
 				id: n
 			},
-			type:'POST',
 			success:function(response){
 				var customer = response.customer;
 				var customer_name = customer.name;

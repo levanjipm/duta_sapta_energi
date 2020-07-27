@@ -195,8 +195,7 @@ class Sales_order_model extends CI_Model {
 			
 			$query 		= $this->db->get();
 			
-			$items 		= $query->result();
-			$result		= $this->map_list($items);
+			$result 		= $query->result();
 			return $result;
 		}
 		

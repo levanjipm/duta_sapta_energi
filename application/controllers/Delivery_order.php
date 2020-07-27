@@ -162,16 +162,13 @@ class Delivery_order extends CI_Controller {
 				if($invoicingMethod == 1){
 					redirect(site_url('Delivery_order/createDashboard'));
 				} else if($invoicingMethod == 2){
-					redirect(site_url('Delivery_order/print/' . $deliveryOrderId));
+					redirect(site_url('Delivery_order/printDeliveryOrder/' . $deliveryOrderId));
 				}
 
 			} else {
 				redirect(site_url('Delivery_order/createDashboard'));
 			}
-		}
-
-		
-		
+		}	
 		
 	}
 	
@@ -218,11 +215,15 @@ class Delivery_order extends CI_Controller {
 	public function printDeliveryOrder($delivery_order_id)
 	{
 		$this->load->model('Delivery_order_model');
-		$result = $this->Delivery_order_model->show_by_id($delivery_order_id);
+		$result = $this->Delivery_order_model->getById($delivery_order_id);
 		$data['general']	= $result;
+
+		$customerId = $result->customer_id;
+		$this->load->model('Customer_model');
+		$data['customer'] = $this->Customer_model->getById($customerId);
 		
 		$this->load->model('Delivery_order_detail_model');
-		$data['items'] = $this->Delivery_order_detail_model->show_by_code_delivery_order_id($delivery_order_id);
+		$data['items'] = $this->Delivery_order_detail_model->getByCodeDeliveryOrderId($delivery_order_id);
 		
 		$this->load->view('head');
 		$this->load->view('inventory/DeliveryOrder/deliveryOrderPrint', $data);
@@ -309,7 +310,7 @@ class Delivery_order extends CI_Controller {
 		echo json_encode($data);
 	}
 	
-	public function view_archive()
+	public function viewArchive()
 	{
 		$page			= $this->input->get('page');
 		$term			= $this->input->get('term');
@@ -362,16 +363,41 @@ class Delivery_order extends CI_Controller {
 	
 	public function deleteById()
 	{
-		$id				= $this->input->post('id');
+		$deliveryOrderId				= $this->input->post('id');
 		$this->load->model('Delivery_order_detail_model');
-		$sales_order_array		= $this->Delivery_order_detail_model->getByCodeDeliveryOrderId($id);
+		$sales_order_array		= (array) $this->Delivery_order_detail_model->getByCodeDeliveryOrderId($deliveryOrderId);
 
 		if(count($sales_order_array) > 0){
+			$result = array();
+			foreach($sales_order_array as $item){
+				$ordered 	= $item->ordered;
+				$quantity	= $item->quantity;
+				$id 		= $item->sales_order_id;
+				$sent 		= $item->sent;
+				if($sent - $quantity == $ordered && $sent - $quantity > 0){
+					$status = 1;
+				} else {
+					$status = 0;
+				}
+
+				$salesOrderArray = array(
+					'id' => $id,
+					'status' => $status,
+					'sent' => max(0, ($sent - $quantity)),
+				);
+
+				array_push($result, $salesOrderArray);
+			}
+
 			$this->load->model('Sales_order_detail_model');
-			$this->Sales_order_detail_model->updateCancelDeliveryOrder($sales_order_array);
+			$this->Sales_order_detail_model->updateCancelDeliveryOrder($result);
 			
 			$this->load->model('Delivery_order_model');
-			$this->Delivery_order_model->updateById(0, $id);
+			$this->Delivery_order_model->updateById(0, $deliveryOrderId);
+
+			echo 1;
+		} else {
+			echo 0;
 		}
 	}
 	

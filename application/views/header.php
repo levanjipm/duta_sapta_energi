@@ -1,39 +1,42 @@
-<style>
-	.department_box{
-		width:80%;
-		background-color:transparent;
-		border-radius:7px;
-		margin-top:20px;
-		cursor:pointer;
-	}
-	
-	.department_box_head{
-		background: transparent linear-gradient(90deg, #9B713A 0%, #5C3B30 42%, #392D33 100%) 0% 0% no-repeat padding-box;
-		padding:10px;
-		color:white;
-		border-top-right-radius:7px;
-		border-top-left-radius:7px;
-		opacity:0.8;
-	}
-	
-	.department_box_body{
-		background-color:#232323;
-		padding:10px;
-		border-bottom-right-radius:7px;
-		border-bottom-left-radius:7px;
-		text-align:right;
-	}
-	
-	.department_box_body img{
-		opacity:0.1;
-		width:30%;
-		min-width:50px;
-	}
-	
-	html, body{
-		background-color:#2B2F38;
-	}
-</style>
+<head>
+	<title>Index page</title>
+	<style>
+		.department_box{
+			width:80%;
+			background-color:transparent;
+			border-radius:7px;
+			margin-top:20px;
+			cursor:pointer;
+		}
+		
+		.department_box_head{
+			background: transparent linear-gradient(90deg, #9B713A 0%, #5C3B30 42%, #392D33 100%) 0% 0% no-repeat padding-box;
+			padding:10px;
+			color:white;
+			border-top-right-radius:7px;
+			border-top-left-radius:7px;
+			opacity:0.8;
+		}
+		
+		.department_box_body{
+			background-color:#232323;
+			padding:10px;
+			border-bottom-right-radius:7px;
+			border-bottom-left-radius:7px;
+			text-align:right;
+		}
+		
+		.department_box_body img{
+			opacity:0.1;
+			width:30%;
+			min-width:50px;
+		}
+		
+		html, body{
+			background-color:#2B2F38;
+		}
+	</style>
+</head>
 <div class='topnav_bar' style='padding-left:8px!important;text-align:center;color:white;height:100px'>
 	<img src='<?= base_url('assets/Logo_dark.png') ?>' style='width:100px'>
 	<h4>Hello, <?= $user_login->name ?></h4>

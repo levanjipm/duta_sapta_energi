@@ -242,9 +242,14 @@ class Customer_model extends CI_Model {
 		}
 
 		public function countActiveCustomer($month, $year){
-			$this->db->select('customer.id');
+			$this->db->select('DISTINCT(customer.id)');
 			$this->db->from('customer');
-			$this->db->join('invoice', 'invoice.customer_id = customer.id', 'left');
+			$this->db->join('code_sales_order', 'code_sales_order.customer_id = customer.id');
+			$this->db->join('sales_order', 'sales_order.code_sales_order_id = code_sales_order.id');
+			$this->db->join('delivery_order', 'delivery_order.sales_order_id = sales_order.id');
+			$this->db->join('code_delivery_order', 'delivery_order.code_delivery_order_id = code_delivery_order.id');
+			$this->db->join('invoice', 'code_delivery_order.invoice_id = invoice.id');
+
 			$this->db->where('MONTH(invoice.date)', $month);
 			$this->db->where('YEAR(invoice.date)', $year);
 

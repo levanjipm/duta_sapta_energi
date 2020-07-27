@@ -9,6 +9,7 @@
 	<link rel='stylesheet' href='<?= base_url('third_party/Jquery/jquery-ui.css') ?>'>
 	<link rel="stylesheet" href='<?= base_url('css/style.css') ?>'>
 	<link rel="stylesheet" href='<?= base_url('css/button_style.css') ?>'>
+	<title>Login</title>
 </head>
 <style>
 	html, body{

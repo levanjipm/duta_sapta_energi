@@ -90,13 +90,21 @@ class Invoice extends CI_Controller {
 			$data['details'] = $this->Delivery_order_detail_model->getByCodeDeliveryOrderId($deliveryOrderId);
 			
 			$this->load->model('Delivery_order_model');
+
+			print_r($result);
+			$invoicingMethod = $result->invoicingMethod;
 	
 			$this->load->model('Invoice_model');
 			$resultInsertInvoice = $this->Invoice_model->insertFromDeliveryOrder($result);
 			if($resultInsertInvoice){
 				$this->Delivery_order_model->updateInvoiceId($deliveryOrderId, $resultInsertInvoice);
-				$this->load->view('head');
-				$this->load->view('accounting/invoice/printRetailInvoice', $data);
+				if($invoicingMethod == 1){
+					$this->load->view('head');
+					$this->load->view('accounting/invoice/printRetailInvoice', $data);
+				} else {
+					$this->load->view('head');
+					$this->load->view('accounting/invoice/printCoorporateInvoice', $data);
+				}				
 			} else {
 				redirect(site_url('Invoice'));
 			}
@@ -170,10 +178,35 @@ class Invoice extends CI_Controller {
 			array_push($finalArray, $arrayResult);
 		}
 
-		
-		
-		
 		header('Content-Type: application/json');
 		echo json_encode($finalArray);
+	}
+
+	public function getById()
+	{
+		$invoiceId = $this->input->get('id');
+		$this->load->model('Invoice_model');
+		$this->load->model('Customer_model');
+
+		$this->load->model('Delivery_order_model');
+		$this->load->model('Delivery_order_detail_model');
+
+		$this->load->model('Sales_order_model');
+
+		$data['invoice'] = $this->Invoice_model->getById($invoiceId);
+
+		$deliveryOrder = $this->Delivery_order_model->getByInvoiceId($invoiceId);
+
+		$customerId = $deliveryOrder->customer_id;
+		$deliveryOrderId = $deliveryOrder->id;
+		$salesOrderId = $deliveryOrder->code_sales_order_id;
+
+		$data['customer'] = $this->Customer_model->getById($customerId);
+		$data['items'] = $this->Delivery_order_detail_model->getByCodeDeliveryOrderId($deliveryOrderId);
+		$data['delivery_order'] = $deliveryOrder;
+		$data['sales_order'] = $this->Sales_order_model->getById($salesOrderId);
+
+		header('Content-Type: application/json');
+		echo json_encode($data);
 	}
 }

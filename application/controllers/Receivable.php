@@ -25,26 +25,27 @@ class Receivable extends CI_Controller {
 		$this->load->view('accounting/receivable_dashboard');
 	}
 	
-	public function view_receivable()
+	public function viewReceivable()
 	{	
 		$date_1		= $this->input->get('date_1');
 		$date_2		= $this->input->get('date_2');
 		
 		$this->load->model('Invoice_model');
-		$data	= $this->Invoice_model->view_receivable_chart($date_1, $date_2);
+		$data	= $this->Invoice_model->viewReceivableChart($date_1, $date_2);
 		
 		header('Content-Type: application/json');
 		echo json_encode($data);
 	}
 	
-	public function view_receivable_by_customer_id()
+	public function getReceivableByCustomerId()
 	{
-		$customer_id = $this->input->post('id');
+		$customerId = $this->input->get('id');
+
 		$this->load->model('Invoice_model');
-		$data['receivable'] = $this->Invoice_model->view_receivable_by_customer_id($customer_id);
+		$data['receivable'] = $this->Invoice_model->viewReceivableByCustomerId($customerId);
 		
 		$this->load->model('Customer_model');
-		$data['customer'] = $this->Customer_model->getById($customer_id);
+		$data['customer'] = $this->Customer_model->getById($customerId);
 		
 		header('Content-Type: application/json');
 		echo json_encode($data);

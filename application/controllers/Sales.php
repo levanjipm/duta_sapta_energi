@@ -33,4 +33,28 @@ class Sales extends CI_Controller {
 
 		$this->load->view('sales/dashboard', $data);
 	}
+
+	public function viewSalesByMonth()
+	{
+		$month_end = $this->input->get('month');
+		$range = $this->input->get('range');
+
+		$this->load->model('Invoice_model');
+		$result = array();
+		for($i = 0; $i <= $range; $i++){
+			$monthObserved = date('m', strtotime("-" . $i . " months"));
+			$yearObserved = date('Y', strtotime("-" . $i . " months"));
+
+			$value = $this->Invoice_model->getValueByMonthYear($monthObserved, $yearObserved);
+			$valueArray = array(
+				'label' => date('F Y', strtotime("-" . $i . " months")),
+				'value' => $value
+			);
+
+			array_push($result, $valueArray);
+		};
+
+		header('Content-Type: application/json');
+		echo json_encode(array_reverse($result));
+	}
 }

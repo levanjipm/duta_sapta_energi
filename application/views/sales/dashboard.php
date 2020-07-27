@@ -39,6 +39,7 @@
             text-align:right;
         }
     </style>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 </head>
 <div class='dashboard'>
     <br>
@@ -57,18 +58,62 @@
                 </div>
             </div>
             <div class='col-md-4 col-sm-12 col-xs-12'>
-            <div class='dashboardBox'>
-                <div class='leftSide'>
-                    <h4><b>Active</b></h4>
-                    <p>Customer</p>
-                </div>
-                <div class='rightSide'>
-                    <h3><?= number_format($activeCustomer) ?> / <?= number_format($customer) ?></h3>
-                    <p class='subtitleText'><?= date('d M Y') ?></p>
+                <div class='dashboardBox'>
+                    <div class='leftSide'>
+                        <h4><b>Active</b></h4>
+                        <p>Customer</p>
+                    </div>
+                    <div class='rightSide'>
+                        <h3><?= number_format($activeCustomer) ?> / <?= number_format($customer) ?></h3>
+                        <p class='subtitleText'><?= date('d M Y') ?></p>
+                    </div>
                 </div>
             </div>
             <div class='col-md-4 col-sm-12 col-xs-12'>
             </div>
+            <div class='col-md-8 col-sm-12 col-xs-12'>
+                <div id="chart_div" style='height:300px'></div>
+            </div>
         </div>
     </div>
 </div>
+<script>
+    var rows = [];
+    $.ajax({
+        url:'<?= site_url('Sales/viewSalesByMonth') ?>',
+        data:{
+            offset: $('#offset').val(),
+            range: 6
+        },
+        success:function(response){
+            rows = [];
+            $.each(response, function(index, item){
+                var value = item.value;
+                var label = item.label;
+                var array = [label, value];
+                rows.push(array);
+            });
+        }
+    });
+
+    google.charts.load('current', {packages: ['corechart', 'line']});
+    google.charts.setOnLoadCallback(drawBasic);
+
+    function drawBasic() {
+        var data = new google.visualization.DataTable();
+        data.addColumn('string', 'X');
+        data.addColumn('number', 'Sales');
+
+        data.addRows(rows);
+
+        var options = {
+            colors:['#E19B3C'],
+            lineWidth: 4,
+            pointSize: 10,
+        };
+
+        var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
+
+        chart.draw(data, options);
+    }
+</script>
