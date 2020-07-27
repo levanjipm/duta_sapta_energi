@@ -114,10 +114,11 @@
 				<p style='font-family:museo'><?= $customer_name ?></p>
 				<p style='font-family:museo'><?= $complete_address ?></p>
 				<p style='font-family:museo'><?= $customer_city ?></p>
+				<input type='text' id='salesOrderNameInput' value='<?= $general->name ?>' style='opacity:0'>
 			</div>
 			<div class='col-sm-6 col-xs-12'>
 				<label>Sales order name</label>
-				<p style='font-family:museo'><?= $general->name ?> <span id='copy_text_span'><i class='fa fa-copy'></i></span></p>
+				<p style='font-family:museo'><?= $general->name ?> <button class='button button_transparent' style='display:inline-block' onclick='copySalesOrderName()'><i class='fa fa-copy'></i></button></p>
 				
 				<label>Sales</label>
 				<p style='font-family:museo'><?= $sales ?></p>
@@ -159,6 +160,7 @@
 				<td colspan='2'>Rp. <?= number_format($sales_order_value,2) ?></td>
 			</tr>
 		</table>
+		<div class='notificationText success' id='successCopyNotification'><p>Sales order number has been copied.</p></div>
 		
 		<a href='<?= site_url('Sales_order/createDashboard') ?>'><button class='button button_default_dark'><i class='fa fa-long-arrow-left'></i></button></a>
 	</div>
@@ -169,4 +171,16 @@
 		var difference		= window_width * 0.5 - 200;		
 		$('.logo_wrapper').css('margin-left', difference, 'important');
 	});
+
+	function copySalesOrderName(){
+		var copyText = document.getElementById("salesOrderNameInput");
+		copyText.select();
+		copyText.setSelectionRange(0, 99999);
+		document.execCommand("copy");
+
+		$('#successCopyNotification').fadeIn(250);
+		setTimeout(function(){
+			$('#successCopyNotification').fadeOut(250);
+		}, 1000);
+	}
 </script>

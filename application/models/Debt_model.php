@@ -183,7 +183,7 @@ class Debt_model extends CI_Model {
 
 			$this->db->update($this->table_purchase_invoice);
 
-			print_r($this->db->last_query());
+			return $this->db->affected_rows();
 		}
 		
 		public function view_payable_chart()

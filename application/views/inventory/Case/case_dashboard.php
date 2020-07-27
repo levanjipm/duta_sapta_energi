@@ -65,7 +65,7 @@
 
 	function loadTab(event){
 		$.ajax({
-			url:'<?= site_url('Inventory_case/create/') ?>' + event,
+			url:'<?= site_url('Inventory_case/createDashboard/') ?>' + event,
 			success:function(response){
 				$('.createTabButton').removeClass('active');
 				$('.createTabButton').attr('disabled', false);

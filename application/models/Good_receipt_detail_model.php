@@ -100,7 +100,7 @@ class Good_receipt_detail_model extends CI_Model {
 			$query	= $this->db->get();
 			$items 	= $query->result();
 			
-			foreach($results as $result){
+			foreach($items as $result){
 				$quantity					= $result->quantity;
 				$item_id					= $result->item_id;
 				$supplier_id				= $result->supplier_id;

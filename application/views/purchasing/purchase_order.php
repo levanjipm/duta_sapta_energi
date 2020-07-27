@@ -191,9 +191,9 @@
 				refresh_view();
 
 				if(response != 1){
-					$('#deleteFailedNotification').fadeTo(250, 1);
+					$('#deleteFailedNotification').fadeIn(250);
 					setTimeout(function(){
-						$('#deleteFailedNotification').fadeTo(250, 0);
+						$('#deleteFailedNotification').fadeOut(250);
 					}, 1000);
 				} else {
 					$('#purchase_order_detail_wrapper .slide_alert_close_button').click();	
@@ -217,9 +217,9 @@
 				refresh_view();
 
 				if(response != 1){
-					$('#confirmFailedNotification').fadeTo(250, 1);
+					$('#confirmFailedNotification').fadeIn(250);
 					setTimeout(function(){
-						$('#confirmFailedNotification').fadeTo(250, 0);
+						$('#confirmFailedNotification').fadeOut(250);
 					}, 1000);
 				} else {
 					window.location.href="<?= site_url('Purchase_order/print/') ?>" + $('#purchase_order_id').val();

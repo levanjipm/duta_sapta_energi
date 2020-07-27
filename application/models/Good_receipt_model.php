@@ -289,6 +289,8 @@ class Good_receipt_model extends CI_Model {
 				$this->db->set('invoice_id', null);
 				$this->db->where('invoice_id', $invoice_id);
 				$this->db->update($this->table_good_receipt);
+
+				return $this->db->affected_rows();
 			} else if($status == 1) {
 				foreach($goodReceiptArray as $goodReceipt)
 				{
@@ -299,7 +301,10 @@ class Good_receipt_model extends CI_Model {
 					
 					next($goodReceiptArray);
 				}
+
 				$this->db->update_batch($this->table_good_receipt,$batch, 'id'); 
+
+				return $this->db->affected_rows();
 			}			
 		}
 		

@@ -180,9 +180,9 @@
 					refresh_view();
 					$('#delete_supplier_wrapper').fadeOut();
 				} else {
-					$('#error_delete_supplier').fadeTo(250, 1);
+					$('#error_delete_supplier').fadeIn(250);
 					setTimeout(function(){
-						$('#error_delete_supplier').fadeTo(250, 0);
+						$('#error_delete_supplier').fadeOut(250);
 					}, 1000);
 				}		
 			}

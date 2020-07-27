@@ -169,9 +169,9 @@
 					refresh_view();
 					$('#delete_area_wrapper').fadeOut();
 				} else {
-					$('#error_delete_area').fadeTo(250, 1);
+					$('#error_delete_area').fadeIn(250);
 					setTimeout(function(){
-						$('#error_delete_area').fadeTo(250, 0);
+						$('#error_delete_area').fadeOut(250);
 					}, 1000);
 				}
 			}

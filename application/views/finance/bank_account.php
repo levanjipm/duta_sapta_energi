@@ -109,9 +109,9 @@
 				if(response == 1){
 					window.location.reload();
 				} else {
-					$('#error_delete_account').fadeTo(250, 1);
+					$('#error_delete_account').fadeIn(250);
 					setTimeout(function(){
-						$('#error_delete_account').fadeTo(250, 0);
+						$('#error_delete_account').fadeOut(250);
 					}, 1000);
 				}
 			}

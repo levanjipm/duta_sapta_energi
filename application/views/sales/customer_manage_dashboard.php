@@ -263,9 +263,9 @@
 					refresh_view();
 					$('#delete_customer_wrapper').fadeOut();
 				} else {
-					$('#error_delete_customer').fadeTo(250, 1);
+					$('#error_delete_customer').fadeIn(250);
 					setTimeout(function(){
-						$('#error_delete_customer').fadeTo(250, 0);
+						$('#error_delete_customer').fadeOut(250);
 					}, 1000);
 				}				
 			}

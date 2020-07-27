@@ -324,9 +324,9 @@
 						window.location.href='<?= site_url("Delivery_order/printDeliveryOrder/") ?>' + $('#delivery_order_id').val();
 					}
 				} else if(result == "failed") {
-					$('#failedConfirmDeliveryOrder').fadeTo(250, 1);
+					$('#failedConfirmDeliveryOrder').fadeIn(250);
 					setTimeout(function(){
-						$('#failedDeleteDeliveryOrder').fadeTo(250, 0);
+						$('#failedDeleteDeliveryOrder').fadeOut(250);
 					}, 1000)
 				}
 				
@@ -352,9 +352,9 @@
 					loadTab(eventChosen, 1);
 					$('#viewSentDeliveryOrderWrapper .slide_alert_close_button').click();
 				} else {
-					$('#sentConfirmDeliveryOrderNotification').fadeTo(250, 1);
+					$('#sentConfirmDeliveryOrderNotification').fadeIn(250);
 					setTimeout(function(){
-						$('#sentConfirmDeliveryOrderNotification').fadeTo(250, 0);
+						$('#sentConfirmDeliveryOrderNotification').fadeOut(250);
 					}, 1000)
 				}
 			}
@@ -378,9 +378,9 @@
 					loadTab(eventChosen, 1);
 					$('#viewSentDeliveryOrderWrapper .slide_alert_close_button').click();
 				} else {
-					$('#sentCancelDeliveryOrderNotification').fadeTo(250, 1);
+					$('#sentCancelDeliveryOrderNotification').fadeIn(250);
 					setTimeout(function(){
-						$('#sentCancelDeliveryOrderNotification').fadeTo(250, 0);
+						$('#sentCancelDeliveryOrderNotification').fadeOut(250);
 					}, 1000)
 				}
 			}

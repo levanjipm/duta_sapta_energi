@@ -40,29 +40,29 @@
 <div class='alert_wrapper' id='sales_order_wrapper'>
 	<button type='button' class='slide_alert_close_button'>&times;</button>
 	<div class='alert_box_slide'>
+		<h3 style='font-family:bebasneue'>Sales order</h3>
+		<hr>
 		<label>Customer</label>
-		<div class='information_box' id='customer_address_select' style='height:350px'>
-			<label>Detail</label>
-			<p style='font-family:museo' id='customer_name_p'></p>
-			<p style='font-family:museo' id='customer_address_p'></p>
-			<p style='font-family:museo' id='customer_city_p'></p>
-			
-			<label>Plafond</label>
-			<p style='font-family:museo'>Rp. <span id='customer_plafond_p'></span></p>
-			
-			<label>Pending sales order</label>
-			<p style='font-family:museo'>Rp. <span id='pending_sales_order_value_p'></span></p>
-			
-			<label>Unpaid invoice</label>
-			<p style='font-family:museo'>Rp. <span id='receivable_value_p'></span></p>
-			
-			<label>Pending bank data</label>
-			<p style='font-family:museo'>Rp. <span id='pending_bank_value_p'></span></p>
-		</div>
+		<p style='font-family:museo' id='customer_name_p'></p>
+		<p style='font-family:museo' id='customer_address_p'></p>
+		<p style='font-family:museo' id='customer_city_p'></p>
+		
+		<label>Plafond</label>
+		<p style='font-family:museo'>Rp. <span id='customer_plafond_p'></span></p>
+		
+		<label>Pending sales order</label>
+		<p style='font-family:museo'>Rp. <span id='pending_sales_order_value_p'></span></p>
+		
+		<label>Unpaid invoice</label>
+		<p style='font-family:museo'>Rp. <span id='receivable_value_p'></span></p>
+		
+		<label>Pending bank data</label>
+		<p style='font-family:museo'>Rp. <span id='pending_bank_value_p'></span></p>
+		<hr>
 		
 		<label>Sales order</label>
 		<p style='font-family:museo' id='sales_order_name'></p>
-		<p style='font-family:museo' id='taxing_name_p'></p>
+		<p style='font-family:museo' id='taxing_p'></p>
 		<p style='font-family:museo' id='invoicing_method_p'></p>
 		
 		<label>Item</label>
@@ -161,7 +161,7 @@
 						complete_address	+= ', ' + customer_postal;
 					}
 					
-					$('#sales_order_table').append("<tr><td>" + my_date_format(sales_order_date) + "</td><td><label>Name</label><p>" + sales_order_name + "</p><label>Seller</label><p>" + seller + "</p></td><td><p style='font-family:museo'>" + customer_name + "</p><p style='font-family:museo'>" + complete_address + "</p><p style='font-family:museo'>" + customer_city + "</p></td><td><button type='button' class='button button_success_dark' title='View " + sales_order_name + "' onclick='view_sales_order(" + sales_order_id + ")'><i class='fa fa-eye'></i></button></td></tr>");
+					$('#sales_order_table').append("<tr><td>" + my_date_format(sales_order_date) + "</td><td><label>Name</label><p>" + sales_order_name + "</p><label>Seller</label><p>" + seller + "</p></td><td><p style='font-family:museo'>" + customer_name + "</p><p style='font-family:museo'>" + complete_address + "</p><p style='font-family:museo'>" + customer_city + "</p></td><td><button type='button' class='button button_default_dark' title='View " + sales_order_name + "' onclick='view_sales_order(" + sales_order_id + ")'><i class='fa fa-eye'></i></button></td></tr>");
 				});
 				
 				$('#page').html('');
@@ -210,6 +210,7 @@
 				}
 
 				$('#invoicing_method_p').html(invoicing_method_text);
+				$('#taxing_p').html(taxing_name);
 
 				var customer = response.customer;
 				
@@ -324,9 +325,9 @@
 					refresh_sales_order();
 					$('#sales_order_wrapper .slide_alert_close_button').click();
 				} else {
-					$('#notificationFailedDelete').fadeTo(250, 1);
+					$('#notificationFailedDelete').fadeIn(250);
 					setTimeout(function(){
-						$('#notificationFailedDelete').fadeTo(250, 0)
+						$('#notificationFailedDelete').fadeOut(250)
 					}, 1000)
 				}
 			}
@@ -345,9 +346,9 @@
 					refresh_sales_order();
 					$('#sales_order_wrapper .slide_alert_close_button').click();
 				} else {
-					$('#notificationFailedConfirm').fadeTo(250, 1);
+					$('#notificationFailedConfirm').fadeIn(250);
 					setTimeout(function(){
-						$('#notificationFailedConfirm').fadeTo(250, 0)
+						$('#notificationFailedConfirm').fadeOut(250)
 					}, 1000)
 				}
 			}

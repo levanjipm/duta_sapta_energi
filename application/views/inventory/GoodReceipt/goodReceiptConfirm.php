@@ -196,9 +196,9 @@
 					refresh_view();
 					$('#good_receipt_validation_wrapper .slide_alert_close_button').click();
 				} else {
-					$('#failedConfirmNotification').fadeTo(250, 1);
+					$('#failedConfirmNotification').fadeIn(250);
 					setTimeout(function(){
-						$('#failedConfirmNotification').fadeTo(250, 0)
+						$('#failedConfirmNotification').fadeOut(250)
 					}, 1000);
 				}
 			}
@@ -222,9 +222,9 @@
 					refresh_view();
 					$('#good_receipt_validation_wrapper .slide_alert_close_button').click();
 				} else {
-					$('#failedConfirmNotification').fadeTo(250, 1);
+					$('#failedConfirmNotification').fadeIn(250);
 					setTimeout(function(){
-						$('#failedConfirmNotification').fadeTo(250, 0)
+						$('#failedConfirmNotification').fadeOut(250)
 					}, 1000);
 				}
 			}

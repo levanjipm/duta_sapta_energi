@@ -286,9 +286,9 @@
 						$('#closeInformation').val('');
 						$('#track_sales_order_wrapper .slide_alert_close_button').click();
 					} else {
-						$('#errorCloseSalesOrderText').fadeTo(250, 1);
+						$('#errorCloseSalesOrderText').fadeIn(250);
 						setTimeout(function(){
-							$('#errorCloseSalesOrderText').fadeTo(250, 0)
+							$('#errorCloseSalesOrderText').fadeOut(250)
 						}, 1000)
 					}
 				}

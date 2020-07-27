@@ -197,9 +197,9 @@
 					refresh_view();
 					$('#salesOrderWrapper .slide_alert_close_button').click();
 				} else {
-					$('#createFailedNotification').fadeTo(250, 1);
+					$('#createFailedNotification').fadeIn(250);
 					setTimeout(function(){
-						$('#createFailedNotification').fadeTo(250, 0);
+						$('#createFailedNotification').fadeOut(250);
 					}, 1000);
 				}
 			}
@@ -223,9 +223,9 @@
 					refresh_view();
 					$('#salesOrderWrapper .slide_alert_close_button').click();
 				} else {
-					$('#createFailedNotification').fadeTo(250, 1);
+					$('#createFailedNotification').fadeIn(250);
 					setTimeout(function(){
-						$('#createFailedNotification').fadeTo(250, 0);
+						$('#createFailedNotification').fadeOut(250);
 					}, 1000);
 				}
 			}

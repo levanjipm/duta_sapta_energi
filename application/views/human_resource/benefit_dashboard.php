@@ -201,9 +201,9 @@
 					refresh_view();
 					$('#delete_benefit_wrapper').fadeOut();
 				} else {
-					$('#error_delete_benefit').fadeTo(250, 1);
+					$('#error_delete_benefit').fadeIn(250);
 					setTimeout(function(){
-						$('#error_delete_benefit').fadeTo(250, 0);
+						$('#error_delete_benefit').fadeOut(250);
 					}, 1000);
 				}
 			}

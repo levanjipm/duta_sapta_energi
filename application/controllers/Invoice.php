@@ -22,7 +22,7 @@ class Invoice extends CI_Controller {
 		$this->load->view('head');
 		$this->load->view('accounting/header', $data);
 		
-		$this->load->view('accounting/create_invoice_dashboard');
+		$this->load->view('accounting/Invoice/createInvoiceDashboard');
 	}
 	
 	public function view_uninvoiced_delivery_orders()
@@ -185,6 +185,7 @@ class Invoice extends CI_Controller {
 	public function getById()
 	{
 		$invoiceId = $this->input->get('id');
+		
 		$this->load->model('Invoice_model');
 		$this->load->model('Customer_model');
 

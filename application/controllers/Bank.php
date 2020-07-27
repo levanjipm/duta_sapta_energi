@@ -66,7 +66,7 @@ class Bank extends CI_Controller {
 		$this->load->model('Internal_bank_account_model');
 		$data['accounts'] = $this->Internal_bank_account_model->show_all();
 		
-		$this->load->view('accounting/assign_bank_dashboard', $data);
+		$this->load->view('accounting/Bank/assignBankDashboard', $data);
 	}
 	
 	public function view_unassigned_data($department)
@@ -114,7 +114,7 @@ class Bank extends CI_Controller {
 		
 		$this->load->view('head');
 		$this->load->view('accounting/header', $data);
-		$this->load->view('accounting/assign_bank', $data);
+		$this->load->view('accounting/Bank/assignBank, $data);
 	}
 	
 	public function assign_input()

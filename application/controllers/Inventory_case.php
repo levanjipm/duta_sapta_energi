@@ -24,7 +24,7 @@ class Inventory_case extends CI_Controller {
 		$this->load->view('inventory/case/case_dashboard');
 	}
 
-	public function create($event)
+	public function createDashboard($event)
 	{
 		switch($event){
 			case 'lost':
@@ -120,7 +120,7 @@ class Inventory_case extends CI_Controller {
 					$this->load->model('Inventory_case_detail_model');
 					$result = $this->Inventory_case_detail_model->insertBatchItem($eventId, $quantity_array, $type);
 
-					$batchResult = $this->Inventory_case_detail_model->insertItem($eventId, $itemIdDem, $quantityDem, 'OUT', $priceDem, );
+					$batchResult = $this->Inventory_case_detail_model->insertItem($eventId, $itemIdDem, $quantityDem, 'OUT', $priceDem);
 					if($result == 1 && $batchResult == $expectedInput){
 						redirect(site_url('Inventory_case/successSubmission/') . $eventId);
 					} else {
@@ -137,6 +137,8 @@ class Inventory_case extends CI_Controller {
 				$this->load->view('inventory/case/case_materialized_goods_dashboard');
 				break;
 			default:
+				redirect(site_url("Inventory_case"));
+				break;
 				
 		}
 	}
@@ -169,6 +171,9 @@ class Inventory_case extends CI_Controller {
 				$data['general'] = $event;
 				$data['items'] = $this->Inventory_case_detail_model->showByCodeId($eventId);
 				$this->load->view('inventory/Case/ResultSubmission/case_found_goods_result', $data);
+				break;
+			default:
+				redirect(site_url("Inventory_case"));
 				break;
 		}
 	}

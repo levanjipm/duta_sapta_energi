@@ -179,26 +179,27 @@ class Debt extends CI_Controller {
 		echo json_encode($data);
 	}
 	
-	public function confirm()
+	public function deleteById()
 	{
-		$purchase_invoice_id		= $this->input->post('id');
+		$invoiceId			= $this->input->post('id');
 		$this->load->model('Debt_model');
-		$data['debt'] = $this->Debt_model->updateById(1, $purchase_invoice_id);
+		$result = $this->Debt_model->updateById(0, $invoiceId);
 		
-		// redirect(site_url('Debt'));
+		if($result){
+			$this->load->model('Good_receipt_model');
+			$result = $this->Good_receipt_model->updateInvoiceStatusById(0, $invoiceId);
+			echo $result;
+		} else {
+			echo 0;
+		}
 	}
-	
-	public function delete()
+
+	public function confirmById()
 	{
-		$purchase_invoice_id		= $this->input->post('id');
-		if($this->session->has_userdata('user_id') == TRUE){
-			$this->load->model('Debt_model');
-			$result = $this->Debt_model->updateById(0, $purchase_invoice_id);
-			
-			if($result){
-				$this->load->model('Good_receipt_model');
-				$this->Good_receipt_model->updateInvoiceStatusById(0, $purchase_invoice_id);
-			}
-		};
+		$invoiceId		= $this->input->post('id');
+		$this->load->model('Debt_model');
+		$result 		= $this->Debt_model->updateById(1, $invoiceId);
+
+		echo $result;
 	}
 }

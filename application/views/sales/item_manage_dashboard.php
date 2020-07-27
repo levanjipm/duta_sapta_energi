@@ -237,9 +237,9 @@
 					refresh_view();
 					$('#delete_item_wrapper').fadeOut();
 				} else {
-					$('#error_delete_item').fadeTo(250, 1);
+					$('#error_delete_item').fadeIn(250);
 					setTimeout(function(){
-						$('#error_delete_item').fadeTo(250, 0);
+						$('#error_delete_item').fadeOut(250);
 					}, 1000);
 				}
 			}

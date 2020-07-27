@@ -247,9 +247,9 @@
 						refresh_view();
 						$('#delete_class_wrapper').fadeOut()
 					} else {
-						$('#error_delete_item_class').fadeTo(250, 1);
+						$('#error_delete_item_class').fadeIn(250);
 						setTimeout(function(){
-							$('#error_delete_item_class').fadeTo(250, 0);
+							$('#error_delete_item_class').fadeOut(250);
 						}, 1000);
 					}						
 				}

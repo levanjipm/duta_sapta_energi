@@ -1,3 +1,6 @@
+<head>
+	<title>Debt document</title>
+</head>
 <div class='dashboard'>
 	<div class='dashboard_head'>
 		<p style='font-family:museo'><a href='<?= site_url('Accounting') ?>' title='Sales'><i class='fa fa-bar-chart'></i></a> /Debt document</p>
@@ -60,8 +63,11 @@
 				<tbody id='good_receipt_table'></tbody>
 			</table>
 			
-			<button class='button button_default_dark'>Submit</button>
-			<button type='button' class='button button_danger_dark' id='delete_purchase_invoice_button'>Delete</button>
+			<button type='button' class='button button_default_dark' onclick='confirmDebt()'><i class='fa fa-long-arrow-right'></i></button>
+			<button type='button' class='button button_danger_dark' onclick='deleteDebt()'><i class='fa fa-trash'></i></button>
+
+			<div class='notificationText danger' id='failedDeleteNotification'><p>Failed to delete debt documnet.</p></div>
+			<div class='notificationText danger' id='failedConfirmNotification'><p>Failed to confirm debt document.</p></div>
 		</form>
 	</div>
 </div>
@@ -98,7 +104,7 @@
 					var supplier_address	= value.address;
 					var supplier_city		= value.city;
 					debtCount++;
-					$('#debtTableContent').append("<tr><td>" + my_date_format(date) + "</td><td><p>" + supplier_name + "</p><p>" + supplier_address + "</p><p>" + supplier_city + "</p></td><td><p>" + invoice_document + "</p><p>" + tax_document + "</p></td><td><button type='button' class='button button_default_dark' onclick='view_debt_document(" + id + ")' title='View " + invoice_document + "'><i class='fa fa-eye'></i></button></td></tr>");
+					$('#debtTableContent').append("<tr><td>" + my_date_format(date) + "</td><td><p>" + supplier_name + "</p><p>" + supplier_address + "</p><p>" + supplier_city + "</p></td><td><p>" + invoice_document + "</p><p>" + tax_document + "</p></td><td><button type='button' class='button button_default_dark' onclick='viewDebtDocument(" + id + ")' title='View " + invoice_document + "'><i class='fa fa-eye'></i></button></td></tr>");
 				});
 
 				if(debtCount > 0){
@@ -122,7 +128,7 @@
 		});
 	}
 	
-	function view_debt_document(n){
+	function viewDebtDocument(n){
 		var code_purchase_invoice_id	= n;
 		$.ajax({
 			url:'<?= site_url('Debt/getById') ?>',
@@ -186,20 +192,53 @@
 		});
 	}
 
-	$('#delete_purchase_invoice_button').click(function(){
+	function deleteDebt(){
 		$.ajax({
-			url:'<?= site_url('Debt/delete') ?>',
+			url:'<?= site_url('Debt/deleteById') ?>',
 			data:{
 				id:$('#purchase_invoice_id').val()
 			},
 			type:'POST',
 			beforeSend:function(){
 				$('button').attr('disabled', true);
-			}, success:function(){
-				// location.reload();
+			}, success:function(response){
+				$('button').attr('disabled', false);
+				if(response == 0){
+					$('#failedDeleteNotification').fadeIn(250);
+					setTimeout(function(){
+						$('#failedDeleteNotification').fadeOut(250);
+					}, 1000);
+				} else {
+					refresh_view();
+					$('#view_debt_wrapper .slide_alert_close_button').click();
+				}
 			}
 		});
-	});
+	};
+
+	function confirmDebt(){
+		$.ajax({
+			url:'<?= site_url('Debt/confirmById') ?>',
+			data:{
+				id:$('#purchase_invoice_id').val()
+			},
+			type:'POST',
+			beforeSend:function(){
+				$('button').attr('disabled', true);
+			}, success:function(response){
+				$('button').attr('disabled', false);
+				if(response == 0){
+					$('#failedConfirmNotification').fadeIn(250);
+					setTimeout(function(){
+						$('#failedConfirmNotification').fadeOut(250);
+					}, 1000);
+				} else {
+					refresh_view();
+					$('#view_debt_wrapper .slide_alert_close_button').click();
+				}
+			}
+		});
+	}
 	
 	$('.slide_alert_close_button').click(function(){
 		$(this).siblings('.alert_box_slide').hide("slide", { direction: "right" }, 250, function(){

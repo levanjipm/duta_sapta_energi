@@ -279,22 +279,17 @@ class Invoice_model extends CI_Model {
 			$query = $this->db->query("
 				SELECT invoice.*, COALESCE(a.value,0) as paid
 				FROM invoice 
-				JOIN (
-					SELECT DISTINCT(invoice.id) as id FROM invoice
-					JOIN code_delivery_order ON code_delivery_order.invoice_id = invoice.id
-					JOIN delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order_id
-					JOIN sales_order ON sales_order.id = delivery_order.sales_order_id
-					JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
-					WHERE code_sales_order.customer_id = '$customerId'
-					AND invoice.is_done = '0'
-				) as b
-				ON invoice.id = b.id
-				LEFT JOIN
-				(
+				JOIN code_delivery_order ON invoice.id = code_delivery_order.invoice_id
+				LEFT JOIN delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order.id
+				JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
+				JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
+				LEFT JOIN (
 					SELECT SUM(value) as value, invoice_id FROM receivable GROUP BY invoice_id
-				) as a
-				ON a.invoice_id = b.id
-				ORDER BY invoice.date ASC, invoice.name ASC;
+				) AS a
+				ON a.invoice_id = invoice.id
+				WHERE code_sales_order.customer_id = '$customerId'
+				AND invoice.is_done = '0'
+				ORDER BY invoice.date ASC, invoice.name ASC, invoice.id ASC
 			");
 			$result = $query->result();
 			
