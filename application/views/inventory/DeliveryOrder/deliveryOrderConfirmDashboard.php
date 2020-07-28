@@ -124,7 +124,6 @@
 		<button type='button' class='button button_danger_dark' id='sentDeleteDeliveryOrderButton'><i class='fa fa-trash'></i></button>
 
 		<div class='notificationText danger' id='sentConfirmDeliveryOrderNotification'><i class='fa fa-exclamation-triangle'></i> Failed to send delivery order.</p></div>
-
 		<div class='notificationText danger' id='sentCancelDeliveryOrderNotification'><i class='fa fa-exclamation-triangle'></i> Failed to send delivery order.</p></div>
 	</div>
 </div>
@@ -318,7 +317,7 @@
 				var invoicingMethod = response.invoicingMethod;
 				if(result == "success"){
 					if(invoicingMethod == 1){
-						loadTab(eventChosen, 1);
+						$('#confirmTab').click();
 						$('#viewDeliveryOrderWrapper .slide_alert_close_button').click();
 					} else if(invoicingMethod == 2){
 						window.location.href='<?= site_url("Delivery_order/printDeliveryOrder/") ?>' + $('#delivery_order_id').val();
@@ -540,8 +539,6 @@
 				$('#customer_name').html(customer_name);
 				$('#customer_address').html(complete_address);
 				$('#customer_city').html(customer_city);
-				
-				$('#delivery_order_form').attr('action', '<?= site_url('Delivery_order/confirm') ?>');
 				
 				var status		= response.status;
 				if(status == false){

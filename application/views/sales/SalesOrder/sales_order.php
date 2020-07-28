@@ -276,13 +276,10 @@
 				$('#pending_bank_value_p').html(numeral(pendingBank).format('0,0.00'));
 
 				var receivable = response.receivable;
-				var value = receivable.debt;
-				var paid = receivable.paid;
+				var debt = receivable.debt;
 
 				var minimumDate = new Date(receivable.date);
 				var todayDate = new Date();
-
-				var debt = value - paid;
 
 				$('#receivable_value_p').html(numeral(debt).format('0,0.00'));
 

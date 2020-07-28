@@ -1,24 +1,27 @@
-<style>
-@media print {
-	body * {
-		visibility: hidden;
+<head>
+	<title><?= $general->name . ' ' . $customer->name ?></title>
+	<style>
+	@media print {
+		body * {
+			visibility: hidden;
+		}
+		
+		#printable, #printable *{
+			visibility:visible!important;
+		}
+		
+		#printable{
+			position: absolute;
+			left: 0;
+			top: 0;
+		}
+		
+		@page {
+		size: 21.59cm 13.97cm;
+		}
 	}
-	
-	#printable, #printable *{
-		visibility:visible!important;
-	}
-	
-	#printable{
-		position: absolute;
-		left: 0;
-		top: 0;
-	}
-	
-	@page {
-	  size: 21.59cm 13.97cm;
-	}
-}
-</style>
+	</style>
+</head>
 <?php
 	$complete_address		= $customer->address;
 	$complete_address		.= ' No. ' . $customer->number;

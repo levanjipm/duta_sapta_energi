@@ -150,4 +150,14 @@ class Plafond_model extends CI_Model {
 			
 			return ($this->db->affected_rows());
 		}
+
+		public function countUnconfirmedSubmission()
+		{
+			$this->db->where('is_confirm', 0);
+			$this->db->where('is_delete', 0);
+			$query = $this->db->get($this->table_plafond);
+			$result = $query->num_rows();
+
+			return $result;
+		}
 }

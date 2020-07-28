@@ -70,6 +70,16 @@
                 </div>
             </div>
             <div class='col-md-4 col-sm-12 col-xs-12'>
+                <div class='dashboardBox'>
+                    <div class='leftSide'>
+                        <h4><b>Plafond</b></h4>
+                        <p>Submission</p>
+                    </div>
+                    <div class='rightSide'>
+                        <h3><?= number_format($plafondSubmission) ?></h3>
+                        <p>&nbsp;</p>
+                    </div>
+                </div>
             </div>
             <div class='col-md-8 col-sm-12 col-xs-12'>
                 <div id="chart_div" style='height:300px'></div>

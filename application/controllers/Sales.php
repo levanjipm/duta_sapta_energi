@@ -31,6 +31,9 @@ class Sales extends CI_Controller {
 
 		$data['customer'] = $this->Customer_model->countItems();
 
+		$this->load->model('Plafond_model');
+		$data['plafondSubmission'] = $this->Plafond_model->countUnconfirmedSubmission();
+
 		$this->load->view('sales/dashboard', $data);
 	}
 

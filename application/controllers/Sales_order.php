@@ -183,19 +183,40 @@ class Sales_order extends CI_Controller {
 		$result 			= $this->Sales_order_model->getById($sales_order_id);
 		$data['general']	= $result;
 
-		$customer_id		= $result->customer_id;
+		$customerId			= $result->customer_id;
 
 		$this->load->model('Customer_model');
-		$data['customer']	= $this->Customer_model->getById($customer_id);
+		$data['customer']	= $this->Customer_model->getById($customerId);
 
 		$this->load->model('Sales_order_detail_model');
-		$data['pendingValue']	= $this->Sales_order_detail_model->getPendingValueByCustomerId($customer_id);
+		$data['pendingValue']	= $this->Sales_order_detail_model->getPendingValueByCustomerId($customerId);
 
 		$this->load->model('Bank_model');
-		$data['pendingBankData']	= $this->Bank_model->getPendingValueByOpponentId('customer', $customer_id);
-
+		$data['pendingBankData']	= $this->Bank_model->getPendingValueByOpponentId('customer', $customerId);
+		
 		$this->load->model('Invoice_model');
-		$data['receivable'] = $this->Invoice_model->getCustomerStatusById($customer_id);
+
+		$minimumDate = date('Y-m-d');
+		$receivableValue = 0;
+		$invoices = $this->Invoice_model->getCustomerStatusById($customerId);
+		foreach($invoices as $invoice){
+			$value = $invoice->value;
+			$paid = $invoice->paid;
+			$date = $invoice->date;
+
+			if($date < date('Y-m-d', strtotime($minimumDate))){
+				$minimumDate = $date;
+			};
+
+			$receivableValue += ($value - $paid);
+		};
+
+		$pendingInvoice = array(
+			'debt' => $receivableValue,
+			'date' => date('Y-m-d', strtotime($minimumDate))
+		);
+
+		$data['receivable'] = (object) $pendingInvoice;
 
 		$this->load->model('Sales_order_detail_model');
 		$data['detail'] = $this->Sales_order_detail_model->show_by_code_sales_order_id($sales_order_id);
@@ -218,27 +239,44 @@ class Sales_order extends CI_Controller {
 		$result 			= $this->Sales_order_model->getById($salesOrderId);
 		$salesOrderObject	= $result;
 
-		$customer_id		= $result->customer_id;
+		$customerId			= $result->customer_id;
 
 		$this->load->model('Customer_model');
-		$customerObject	= $this->Customer_model->getById($customer_id);
+		$customerObject	= $this->Customer_model->getById($customerId);
 
 		$this->load->model('Sales_order_detail_model');
-		$pendingValue	= $this->Sales_order_detail_model->getPendingValueByCustomerId($customer_id);
+		$pendingValue	= $this->Sales_order_detail_model->getPendingValueByCustomerId($customerId);
 
 		$this->load->model('Bank_model');
-		$pendingBankValue	= $this->Bank_model->getPendingValueByOpponentId('customer', $customer_id);
+		$pendingBankValue	= $this->Bank_model->getPendingValueByOpponentId('customer', $customerId);
 
 		$this->load->model('Invoice_model');
-		$receivable = $this->Invoice_model->getCustomerStatusById($customer_id);
+
+		$minimumDate = date('Y-m-d');
+		$receivableValue = 0;
+		$invoices = $this->Invoice_model->getCustomerStatusById($customerId);
+		foreach($invoices as $invoice){
+			$value = $invoice->value;
+			$paid = $invoice->paid;
+			$date = $invoice->date;
+
+			if($date < date('Y-m-d', strtotime($minimumDate))){
+				$minimumDate = $date;
+			};
+
+			$receivableValue += ($value - $paid);
+		};
 
 		$plafond = $customerObject->plafond;
 		$termOfPayment	= $customerObject->term_of_payment;
 
-		$debt = $receivable->debt - $receivable->paid;
-		$dateParameter = $receivable->date;
+		$debt 			= $receivableValue;
+		$dateParameter 	= $minimumDate;
+		$dateDifference = date_diff(new DateTime(date('Y-m-d')), new DateTime(date('Y-m-d', strtotime($dateParameter))));
 
-		if((($dateParameter == null || date_diff(date('Y-m-d'), date('Y-m-d', strtotime($dateParameter))) < $termOfPayment) && ($debt < $plafond)) || $access_level > 2){
+		$dateDifferenceDay = $dateDifference->d;
+
+		if((($dateParameter == null || $dateDifferenceDay < $termOfPayment) && ($debt < $plafond)) || $access_level > 2){
 			$result = $this->Sales_order_model->updateById(1, $salesOrderId);
 			echo $result;
 		} else {

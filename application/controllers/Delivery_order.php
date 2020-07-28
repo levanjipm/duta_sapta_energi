@@ -63,9 +63,9 @@ class Delivery_order extends CI_Controller {
 		$this->load->model('Delivery_order_model');
 		$data['guid'] = $this->Delivery_order_model->create_guid();
 		
-		$user_id			= $this->session->userdata('user_id');
 		$this->load->model('User_model');
-		$data['user']		= $this->User_model->getById($user_id);
+		$userId				= $this->session->userdata('user_id');
+		$data['user']		= $this->User_model->getById($userId);
 
 		$this->load->model('Sales_order_model');
 		$result 			= $this->Sales_order_model->getById($id);
@@ -121,6 +121,8 @@ class Delivery_order extends CI_Controller {
 		$receivable = $this->Invoice_model->getReceivableByCustomerId($customerId)->value;
 
 		$deliveryOrderValue = 0;
+		$totalQuantity = 0;
+		$quantityValidation = true;
 
 		$quantityArray = $this->input->post('quantity');
 		foreach($quantityArray as $quantity){
@@ -135,11 +137,20 @@ class Delivery_order extends CI_Controller {
 			$price = (float) $priceList * (100 - $discount) / 100;
 			$totalPrice = $price * $quantity;
 
+			$totalQuantity += $quantity;
 			$deliveryOrderValue += $totalPrice;
+			if($quantity < 0){
+				$quantityValidation = false;
+				break;
+			}
 			next($quantityArray);
 		}
 
-		if($receivable - $pending_bank_data < $plafond || $accessLevel > 2){
+		if($totalQuantity == 0){
+			$quantityValidation = false;
+		};
+
+		if($quantityValidation && ($receivable - $pending_bank_data + $deliveryOrderValue <= $plafond || $accessLevel > 2)){
 			$this->load->model('Delivery_order_model');
 			$result 		= $this->Delivery_order_model->check_guid($guid);
 			if($result){
@@ -168,17 +179,19 @@ class Delivery_order extends CI_Controller {
 			} else {
 				redirect(site_url('Delivery_order/createDashboard'));
 			}
-		}	
+		} else {
+			redirect(site_url('Delivery_order/createDashboard'));
+		}
 		
 	}
 	
-	public function show_by_code_delivery_order_id($id)
+	public function getByCodeDeliveryOrderId($id)
 	{
 		$this->load->model('Delivery_order_detail_model');
 		$this->load->model('Delivery_order_model');
 		
 		$data['invoice'] = $this->Delivery_order_model->show_by_id($id);
-		$data['general'] = $this->Delivery_order_detail_model->show_by_code_delivery_order_id($id);
+		$data['general'] = $this->Delivery_order_detail_model->getByCodeDeliveryOrderId($id);
 		
 		$delivery_order_array 	= $this->Delivery_order_detail_model->get_batch_by_code_delivery_order_id($id);
 		
@@ -264,21 +277,29 @@ class Delivery_order extends CI_Controller {
 	
 	public function sendById()
 	{
+		$this->load->model('Delivery_order_model');
 		$deliveryOrderId		= $this->input->post('id');
-		
-		$this->load->model('Delivery_order_detail_model');
-		$deliveryOrderArray 	= $this->Delivery_order_detail_model->getDeliveryOrderBatch($deliveryOrderId);
-		
-		$this->load->model('Stock_in_model');
-		$result					= $this->Stock_in_model->checkStock($deliveryOrderArray);
-		
-		if($result){
-			$this->load->model('Delivery_order_model');
-			$check 				= $this->Delivery_order_model->sendById($deliveryOrderId);
-			if($check){			
-				$this->load->model('Stock_out_model');
-				$this->Stock_out_model->sendDeliveryOrder($deliveryOrderArray);
-				echo 1;
+		$deliveryOrderObject	= $this->Delivery_order_model->getById($deliveryOrderId);
+
+		$invoicingMethod		= $deliveryOrderObject->invoicing_method;
+		$invoiceId				= $deliveryOrderObject->invoice_id;
+
+		if(($invoicingMethod == 1 && $invoiceId != null) || ($invoicingMethod == 2 && $invoiceId == null)){
+			$this->load->model('Delivery_order_detail_model');
+			$deliveryOrderArray 	= $this->Delivery_order_detail_model->getDeliveryOrderBatch($deliveryOrderId);
+			
+			$this->load->model('Stock_in_model');
+			$result					= $this->Stock_in_model->checkStock($deliveryOrderArray);
+			
+			if($result){
+				$check 				= $this->Delivery_order_model->sendById($deliveryOrderId);
+				if($check){			
+					$this->load->model('Stock_out_model');
+					$this->Stock_out_model->sendDeliveryOrder($deliveryOrderArray);
+					echo 1;
+				} else {
+					echo 0;
+				}
 			} else {
 				echo 0;
 			}

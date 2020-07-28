@@ -232,19 +232,23 @@ class Invoice_model extends CI_Model {
 		public function getCustomerStatusById($customerId)
 		{
 			$query = $this->db->query("
-				SELECT COALESCE(SUM(invoice.value),0) AS debt, COALESCE(a.value, 0) AS paid, MIN(invoice.date) as date FROM invoice
+				SELECT invoice.value AS value, COALESCE(a.value, 0) AS paid, invoice.date FROM invoice
 				LEFT JOIN (
 					SELECT SUM(value) as value, invoice_id FROM receivable GROUP BY invoice_id
-				) as a
+				) AS a
 				ON invoice.id = a.invoice_id
-				JOIN code_delivery_order ON code_delivery_order.invoice_id = invoice.id
-				JOIN delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order_id
-				JOIN sales_order ON sales_order.id = delivery_order.sales_order_id
-				JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
-				WHERE code_sales_order.customer_id = '$customerId'
-				AND invoice.is_done = '0'
+				JOIN (
+					SELECT DISTINCT(code_delivery_order.invoice_id) as invoice_id FROM code_delivery_order
+					JOIN invoice ON code_delivery_order.invoice_id = invoice.id
+					LEFT JOIN delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order.id
+					JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
+					JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
+					WHERE code_sales_order.customer_id = '$customerId'
+					AND invoice.is_done = '0'
+				) AS b
+				ON invoice.id = b.invoice_id
 			");
-			$result		= $query->row();
+			$result		= $query->result();
 			
 			return $result;
 		}

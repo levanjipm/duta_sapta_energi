@@ -10,44 +10,54 @@
 		
 		<input type='text' class='form-control' id='search_bar'>
 		<br>
-		<table class='table table-bordered' id='delivery_order_table'>
-			<tr>
-				<th>Date</th>
-				<th>Name</th>
-				<th>Customer</th>
-				<th>Action</th>
-			</tr>
-			<tbody id='delivery_order_tbody'></tbody>
-		</table>
-		
-		<select class='form-control' id='page' style='width:100px'>
-			<option value='1'>1</option>
-		</select>
+		<div id='deliveryOrderTable'>
+			<table class='table table-bordered'>
+				<tr>
+					<th>Date</th>
+					<th>Name</th>
+					<th>Customer</th>
+					<th>Action</th>
+				</tr>
+				<tbody id='deliveryOrderTableContent'></tbody>
+			</table>
+			
+			<select class='form-control' id='page' style='width:100px'>
+				<option value='1'>1</option>
+			</select>
+		</div>
+		<div id='deliveryOrderTableText'><p>There is no delivery order found.</p></div>
 	</div>
 </div>
-<form action='<?= site_url('Invoice/createRetailInvoice') ?>' method='POST' id='invoice_form'>
-	<input type='hidden' id='delivery_order_id' name='id'>
+<form action='<?= site_url('Invoice/createRetailInvoice') ?>' method='POST' id='retailInvoiceForm'>
+	<input type='hidden' id='retailDeliveryOrderId' name='id'>
+</form>
+<form action='<?= site_url('Invoice/createCoorporateInvoice') ?>' method='POST' id='coorporateInvoiceForm'>
+	<input type='hidden' id='coorporateDeliveryOrderId' name='id'>
 </form>
 <script>
-	refresh_view(1);
-	
+	$(document).ready(function(){
+		refreshView(1);
+	})
+
 	$('#retail_button').click(function(){
+		$('#search_bar').val('');
 		$('#retail_button').attr('disabled', true);
 		$('#coorporate_button').attr('disabled', false);
 		$('#retail_button').addClass('active');
 		$('#coorporate_button').removeClass('active');
-		refresh_view(1, 1);
+		refreshView(1, 1);
 	});
 	
 	$('#coorporate_button').click(function(){
+		$('#search_bar').val('');
 		$('#retail_button').attr('disabled', false);
 		$('#coorporate_button').attr('disabled', true);
 		$('#retail_button').removeClass('active');
 		$('#coorporate_button').addClass('active');
-		refresh_view(2,1);
+		refreshView(2,1);
 	});
 	
-	function refresh_view(type = 1, page = $('#page').val()){
+	function refreshView(type = 1, page = $('#page').val()){
 		$.ajax({
 			url:'<?= site_url('Invoice/view_uninvoiced_delivery_orders') ?>',
 			data:{
@@ -56,8 +66,9 @@
 				term:$('#search_bar').val()
 			},
 			success:function(response){
-				$('#delivery_order_tbody').html('');
+				$('#deliveryOrderTableContent').html('');
 				var delivery_order_array	= response.delivery_orders;
+				var deliveryOrderCount = 0;
 				$.each(delivery_order_array, function(i, delivery_order){
 					var date					= delivery_order.date;
 					var delivery_order_id		= delivery_order.id;
@@ -68,11 +79,22 @@
 					var is_sent					= delivery_order.is_sent;
 					
 					if(is_sent == 1 && type == 2){
-						$('#delivery_order_tbody').append("<tr><td>" + my_date_format(date) + "</td><td>" + delivery_order_name + "</td><td><p>" + customer_name + "</p><p>" + customer_address + "</p><p>" + customer_city + "</p></td><td><button class='button button_default_dark' onclick='submit_form(" + delivery_order_id + ")'><i class='fa fa-long-arrow-right'></i></button></td>");
+						$('#deliveryOrderTableContent').append("<tr><td>" + my_date_format(date) + "</td><td>" + delivery_order_name + "</td><td><p>" + customer_name + "</p><p>" + customer_address + "</p><p>" + customer_city + "</p></td><td><button class='button button_default_dark' onclick='createCoorporateInvoice(" + delivery_order_id + ")'><i class='fa fa-long-arrow-right'></i></button></td>");
+						deliveryOrderCount++;
 					} else if(type == 1){
-						$('#delivery_order_tbody').append("<tr><td>" + my_date_format(date) + "</td><td>" + delivery_order_name + "</td><td><p>" + customer_name + "</p><p>" + customer_address + "</p><p>" + customer_city + "</p></td><td><button class='button button_default_dark' onclick='submit_form(" + delivery_order_id + ")'><i class='fa fa-long-arrow-right'></i></button></td>");
+						$('#deliveryOrderTableContent').append("<tr><td>" + my_date_format(date) + "</td><td>" + delivery_order_name + "</td><td><p>" + customer_name + "</p><p>" + customer_address + "</p><p>" + customer_city + "</p></td><td><button class='button button_default_dark' onclick='createRetailInvoice(" + delivery_order_id + ")'><i class='fa fa-long-arrow-right'></i></button></td>");
+						deliveryOrderCount++;
 					}
 				});
+
+				if(deliveryOrderCount > 0){
+					$('#deliveryOrderTable').show();
+					$('#deliveryOrderTableText').hide();
+				} else {
+					$('#deliveryOrderTable').hide();
+					$('#deliveryOrderTableText').show();
+				}
+
 				var pages					= response.pages;
 				for(i = 1; i <= pages; i++){
 					if(i == page){
@@ -84,9 +106,14 @@
 			}
 		});
 	}
-	
-	function submit_form(n){
-		$('#delivery_order_id').val(n);
-		$('#invoice_form').submit();
-	};
+
+	function createRetailInvoice(n){
+		$('#retailDeliveryOrderId').val(n);
+		$('#retailInvoiceForm').submit();
+	}
+
+	function createCoorporateInvoice(n){
+		$('#coorporateDeliveryOrderId').val(n);
+		$('#coorporateInvoiceForm').submit();
+	}
 </script>

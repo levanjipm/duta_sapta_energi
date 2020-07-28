@@ -283,10 +283,10 @@ class Delivery_order_model extends CI_Model {
 			return $result;
 		}
 		
-		public function sendById($delivery_order_id)
+		public function sendById($deliveryOrderId)
 		{
 			$this->db->set('is_sent', 1);
-			$this->db->where('id', $delivery_order_id);
+			$this->db->where('id', $deliveryOrderId);
 			$this->db->where('is_sent', 0);
 			$this->db->update($this->table_delivery_order);
 			

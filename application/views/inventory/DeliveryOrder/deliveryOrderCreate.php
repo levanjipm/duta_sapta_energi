@@ -1,3 +1,6 @@
+<head>
+	<title>Delivery order - Create</title>
+</head>
 <div class='dashboard'>
 	<div class='dashboard_head'>
 		<p style='font-family:museo'><a href='<?= site_url('Inventory') ?>' title='Inventory'><i class='fa fa-briefcase'></i></a> /<a href='<?= site_url('Delivery_order') ?>'>Delivery order</a> /Create</p>
@@ -26,6 +29,8 @@
 <div class='alert_wrapper' id='view_sales_order_wrapper'>
 	<button class='slide_alert_close_button'>&times </button>
 	<div class='alert_box_slide'>
+		<h3 style='font-family:bebasneue'>Create delivery order</h3>
+		<hr>
 		<input type='hidden' id='pending_bank_value'>
 		<input type='hidden' id='pending_invoice'>
 		<input type='hidden' id='pending_value'>
@@ -68,10 +73,11 @@
 			<div style='padding:2px 10px;background-color:#ffc107;width:100%;display:none' id='warning_text'>
 				<p ><i class='fa fa-exclamation-triangle'></i> Customer's plafond exceeded</p>
 			</div>
+			
 			<input type='hidden' id='salesOrderId' name='salesOrderId' required>
 			<input type='hidden' value='0' id='total' name='total' min='1'><br>
 			
-			<button type='submit' class='button button_default_dark' id='submit_button'><i class='fa fa-long-arrow-right'></i></button>
+			<button title='Submit delivery order' type='submit' class='button button_default_dark' id='submit_button'><i class='fa fa-long-arrow-right'></i></button>
 		</form>
 	</div>
 </div>
@@ -239,12 +245,12 @@
 	});
 	
 	function changeTotalValue(){
-		var total_delivery_order = 0;
-		var pending_bank_value 	= pendingBankData;
-		var debt				= receivable;
-		var plafond				= customerPlafond;
-		var send_value			= 0;
-		var access_level		= accessLevel
+		total_delivery_order = 0;
+		pending_bank_value 	= pendingBankData;
+		debt				= receivable;
+		plafond				= customerPlafond;
+		send_value			= 0;
+		access_level		= accessLevel
 		
 		$('input[id^="quantity-"]').each(function(){
 			var quantity			= parseInt($(this).val());

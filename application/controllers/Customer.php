@@ -99,7 +99,29 @@ class Customer extends CI_Controller {
 		$data['pending_value']	= $this->Sales_order_detail_model->getPendingValueByCustomerId($customerId);
 		
 		$this->load->model('Invoice_model');
-		$data['pending_invoice']	= $this->Invoice_model->getCustomerStatusById($customerId);
+		// $data['pending_invoice']	= $this->Invoice_model->getCustomerStatusById($customerId);
+		$minimumDate = date('Y-m-d');
+		$receivableValue = 0;
+
+		$invoices = $this->Invoice_model->getCustomerStatusById($customerId);
+		foreach($invoices as $invoice){
+			$value = $invoice->value;
+			$paid = $invoice->paid;
+			$date = $invoice->date;
+
+			if($date < date('Y-m-d', strtotime($minimumDate))){
+				$minimumDate = $date;
+			};
+
+			$receivableValue += ($value - $paid);
+		};
+
+		$pendingInvoice = array(
+			'debt' => $receivableValue,
+			'date' => date('Y-m-d', strtotime($minimumDate))
+		);
+
+		$data['pending_invoice'] = (object) $pendingInvoice;
 
 		$this->load->model('Bank_model');
 		$data['pendingBank'] = $this->Bank_model->getPendingvalueByOpponentId('customer', $customerId);

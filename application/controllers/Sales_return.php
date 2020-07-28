@@ -44,7 +44,7 @@ class Sales_return extends CI_Controller {
 		$data['general'] = $delivery_order;
 		
 		$this->load->model('Delivery_order_detail_model');
-		$data['items'] = $this->Delivery_order_detail_model->show_by_code_delivery_order_id($delivery_order_id);
+		$data['items'] = $this->Delivery_order_detail_model->getByCodeDeliveryOrderId($delivery_order_id);
 		
 		$this->load->view('sales/return_validation', $data);
 	}
