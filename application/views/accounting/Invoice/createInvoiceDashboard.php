@@ -59,7 +59,7 @@
 	
 	function refreshView(type = 1, page = $('#page').val()){
 		$.ajax({
-			url:'<?= site_url('Invoice/view_uninvoiced_delivery_orders') ?>',
+			url:'<?= site_url('Invoice/getUninvoicedDeliveryOrders') ?>',
 			data:{
 				type:type,
 				page:page,

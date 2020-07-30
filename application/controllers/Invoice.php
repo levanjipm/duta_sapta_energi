@@ -25,7 +25,7 @@ class Invoice extends CI_Controller {
 		$this->load->view('accounting/Invoice/createInvoiceDashboard');
 	}
 	
-	public function view_uninvoiced_delivery_orders()
+	public function getUninvoicedDeliveryOrders()
 	{
 		$type		= $this->input->get('type');
 		$term		= $this->input->get('term');
@@ -77,7 +77,7 @@ class Invoice extends CI_Controller {
 
 		$this->load->model('Delivery_order_model');
 		$result = $this->Delivery_order_model->getById($deliveryOrderId);
-		if($result->invoice_id != null){
+		if($result->invoice_id != null && $result->invoicing_method != 1){
 			redirect(site_url('Invoice'));
 		} else {
 			$data['deliveryOrder'] = $result;
@@ -97,13 +97,8 @@ class Invoice extends CI_Controller {
 			$resultInsertInvoice = $this->Invoice_model->insertFromDeliveryOrder($result);
 			if($resultInsertInvoice){
 				$this->Delivery_order_model->updateInvoiceId($deliveryOrderId, $resultInsertInvoice);
-				if($invoicingMethod == 1){
-					$this->load->view('head');
-					$this->load->view('accounting/invoice/printRetailInvoice', $data);
-				} else {
-					$this->load->view('head');
-					$this->load->view('accounting/invoice/printCoorporateInvoice', $data);
-				}				
+				$this->load->view('head');
+				$this->load->view('accounting/invoice/printRetailInvoice', $data);			
 			} else {
 				redirect(site_url('Invoice'));
 			}
@@ -116,7 +111,7 @@ class Invoice extends CI_Controller {
 
 		$this->load->model('Delivery_order_model');
 		$result = $this->Delivery_order_model->getById($deliveryOrderId);
-		if($result->invoice_id != null != $result->invoicing_method != 2){
+		if($result->invoicing_method != 2 && $result->invoice_id == null){
 			redirect(site_url('Invoice'));
 		} else {
 			$data['deliveryOrder'] = $result;
@@ -129,20 +124,13 @@ class Invoice extends CI_Controller {
 			$data['details'] = $this->Delivery_order_detail_model->getByCodeDeliveryOrderId($deliveryOrderId);
 			
 			$this->load->model('Delivery_order_model');
-
-			$invoicingMethod = $result->invoicingMethod;
 	
 			$this->load->model('Invoice_model');
 			$resultInsertInvoice = $this->Invoice_model->insertFromDeliveryOrder($result);
 			if($resultInsertInvoice){
 				$this->Delivery_order_model->updateInvoiceId($deliveryOrderId, $resultInsertInvoice);
-				if($invoicingMethod == 1){
-					$this->load->view('head');
-					$this->load->view('accounting/invoice/printCoorporateInvoice', $data);
-				} else {
-					$this->load->view('head');
-					$this->load->view('accounting/invoice/printCoorporateInvoice', $data);
-				}				
+				$this->load->view('head');
+				$this->load->view('accounting/invoice/printCoorporateInvoice', $data);			
 			} else {
 				redirect(site_url('Invoice'));
 			}

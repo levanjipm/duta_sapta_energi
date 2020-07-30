@@ -2,10 +2,6 @@
 	$delivery_order_name		= substr($deliveryOrder->name,7);
 	$delivery_order_date		= $deliveryOrder->date;
 	$sales_order_name			= $deliveryOrder->sales_order_name;
-	$seller						= $deliveryOrder->seller;
-	if(empty($seller)){
-		$seller			= "<i>Not assigned</i>";
-	};
 	
 	$complete_address		= '';
 	$customer_name			= $customer->name;
@@ -38,70 +34,64 @@
 		$complete_address	.= ', ' . $customer_postal;
 	}
 ?>
-<style>
-@media print {
-	body * {
-		visibility: hidden;
-	}
-	
-	#printable, #printable *{
-		visibility:visible!important;
-	}
-	
-	#printable{
-		position: absolute;
-		left: 0;
-		top: 0;
-	}
-	
-	@page {
-	  size: 21.59cm 13.97cm;
-	}
-}
+<head>
+	<title>INV.DSE<?= $delivery_order_name ?> <?= $customer_name ?> <?= $customer_city ?></title>
+	<style>
+		@media print {
+			body * {
+				visibility: hidden;
+			}
+			
+			#printable, #printable *{
+				visibility:visible!important;
+			}
+			
+			#printable{
+				position: absolute;
+				left: 0;
+				top: 0;
+			}
+			
+			@page {
+				size: A4 portrait;
 
-.table_footer{
-	width:100%;
-	text-align:center;
-	border-collapse: collapse;
-}
+			}
+		}
 
-.table_footer, th, td {
-	border:1px solid black!important;
-	padding:5px;
-}
-</style>
+		.table_footer{
+			width:100%;
+			text-align:center;
+			border-collapse: collapse;
+		}
+
+		.table_footer, th, td {
+			border:1px solid black!important;
+			padding:5px;
+		}
+	</style>
+</head>
 <div class='row' style='margin:0'>	
 	<div class='col-sm-10 col-sm-offset-1' style='background-color:white;padding:20px' id='printable'>
 		<div class='row'>
-			<div class='col-xs-3'>
-				<img src='<?= base_url('assets/Logo.png') ?>' style='width:20%'></img>
-				<p style='margin-top:4px'>PT Duta Sapta Energi - BDG</p>
+			<div class='col-xs-4 col-xs-offset-4' style='text-align:center'>
+				<img src='<?= base_url('assets/logo_dark.png') ?>' style='width:50%'></img>
 			</div>
-			<div class='col-xs-5' style='text-align:center'>
-				<h1 style='font-family:bebasneue;letter-spacing:4px;margin-top:0'>Invoice</h1>
-				<hr style='border-top:2px solid #424242;margin:0;'>
+			<div class='col-xs-12'>
+				<hr style='border-bottom:2px solid #e2bc53;margin-bottom:1px'>
+				<hr style='border-bottom:4px solid #2b2f38;margin-top:1px'>
 			</div>
 		</div>
 		<div class='row'>
 			<div class='col-xs-4'>
-				<label>Customer</label>
+				<label>Invoice number</label>
+				<p>INV.DSE<?= $delivery_order_name ?></p>
+			</div>
+			<div class='col-xs-8' style='text-align:right'>
+				<p>Bandung, <?= date('d M Y',strtotime($delivery_order_date)) ?></p>
+				<label>Kepada Yth.</label>
 				<p><?= $customer_name ?></p>
 				<p><?= $complete_address ?></p>
 				<p><?= $customer_city ?></p>
-			</div>
-			<div class='col-xs-4'>
-				<label>Invoice number</label>
-				<p>INV.DSE<?= $delivery_order_name ?></p>
-				
-				<label>Date</label>
-				<p><?= $delivery_order_date ?></p>
-			</div>
-			<div class='col-xs-4'>
-				<label>Sales order</label>
-				<p><?= $sales_order_name ?></p>
-				
-				<label>Seller</label>
-				<p><?= $seller ?></p>
 			</div>
 		</div>
 		<br><br>
@@ -119,6 +109,7 @@
 					</tr>
 <?php
 	$invoice_value		= 0;
+	$rowCount = 0;
 	foreach($details as $detail){
 		$reference		= $detail->reference;
 		$name			= $detail->name;
@@ -128,6 +119,7 @@
 		$unit_price		= $price_list * (100 - $discount) / 100;
 		$item_value		= $unit_price * $quantity;
 		$invoice_value	+= $item_value;
+		$rowCount++;
 ?>
 					<tr>
 						<td><?= $reference ?></td>
@@ -140,9 +132,25 @@
 					</tr>
 <?php
 	}
+
+	if($rowCount < 8){
+		for($i = 0; $i < (8 - $rowCount); $i++){
 ?>
 					<tr>
-						<td colspan='4'><p>Barang yang sudah dibeli tidak dapat dikembalikan. Harap periksa barang pada saat penerimaan.</p><label>Terbilang</label><p id='value_say'></p></td>
+						<td>&nbsp;</td>
+						<td>&nbsp;</td>
+						<td>&nbsp;</td>
+						<td>&nbsp;</td>
+						<td>&nbsp;</td>
+						<td>&nbsp;</td>
+						<td>&nbsp;</td>
+					</tr>
+<?php
+		}
+	}
+?>
+					<tr>
+						<td colspan='4'><label>Terbilang</label><p id='value_say'></p></td>
 						<td colspan='2'>Total</td>
 						<td>Rp. <?= number_format($invoice_value,2) ?></td>
 					</tr>
@@ -154,14 +162,10 @@
 		</div>
 		<br><br>
 		<div class='row'>
-			<div class='col-xs-12'>
-				<table class='table_footer'>
-					<tr>
-						<td style='width:30%'><p>Penerima</p><br><br><br><br></td>
-						<td style='width:30%'><p>Pengirim</p><br><br><br><br></td>
-						<td style='width:30%'><p>Hormat kami</p><br><br><br><br></td>
-					</tr>
-				</table>
+			<div class='col-xs-3 col-xs-offset-9' style='text-align:center'>
+				<p>Hormat kami,</p>
+				<br><br><br><br>
+				<hr style='border-bottom:1px solid black;width:75%'>
 			</div>
 		</div>
 	</div>

@@ -63,7 +63,11 @@
         </table>
 
         <input type='hidden' id='invoice_id'>
-        <button class='button button_default_dark' onclick='confirmInvoice()'><i class='fa fa-long-arrow-right'></i></button>
+        <button class='button button_default_dark' title='Confirm invoice' onclick='confirmInvoice()'><i class='fa fa-long-arrow-right'></i></button>
+        <button class='button button_danger_dark' title='Delete invoice' onclick='deleteInvoice()'><i class='fa fa-trash'></i></button>
+   
+        <div class='notificationText danger' id='confirmFailedNotification'><p>Failed to confirm invoice.</p></div>
+        <div class='notificationText danger' id='deleteFailedNotification'><p>Failed to delete invoice.</p></div>
     </div>
 </div>
 <script>
@@ -231,6 +235,10 @@
                 });
             }
         })
+    }
+
+    function confirmInvoice(){
+        
     }
 
     $('.slide_alert_close_button').click(function(){

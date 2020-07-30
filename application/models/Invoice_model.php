@@ -174,6 +174,7 @@ class Invoice_model extends CI_Model {
 			$this->db->join('customer', 'code_sales_order.customer_id = customer.id');
 			$this->db->group_by('code_sales_order.customer_id');
 			$this->db->where('invoice.is_done', 0);
+			$this->db->where('invoice.is_confirm', 1);
 			
 			if($date_2 > 0){
 				$this->db->where('invoice.date >=', date('Y-m-d', strtotime('-' . $date_2 . ' days')));
