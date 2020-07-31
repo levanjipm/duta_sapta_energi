@@ -226,7 +226,7 @@ class Debt_model extends CI_Model {
 			return $chart_array;
 		}
 		
-		public function view_incompleted_transaction($supplier_id)
+		public function getIncompletedTransaction($supplier_id)
 		{
 			$this->db->select('sum(good_receipt.quantity * good_receipt.billed_price) as value, purchase_invoice.id, purchase_invoice.date, purchase_invoice.invoice_document as name, purchase_invoice.tax_document, sum(payable.value) as paid');
 			$this->db->from('purchase_invoice');

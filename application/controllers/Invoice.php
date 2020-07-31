@@ -175,7 +175,7 @@ class Invoice extends CI_Controller {
 		$this->load->model('Invoice_model');
 		$data['years'] = $this->Invoice_model->getYears();
 		
-		$this->load->view('accounting/invoice_archive');
+		$this->load->view('accounting//invoice/archiveInvoiceDashboard', $data);
 	}
 	
 	public function getUnconfirmedinvoice()
@@ -265,5 +265,19 @@ class Invoice extends CI_Controller {
 
 		echo $result;
 		
+	}
+
+	public function getItems(){
+		$page = $this->input->get('page');
+		$month = $this->input->get('month');
+		$year = $this->input->get('year');
+		$offset = ($page - 1) * 10;
+
+		$this->load->model('Invoice_model');
+		$data['items'] = $this->Invoice_model->getItems($offset, $month, $year);
+		$data['pages'] = max(1, ceil($this->Invoice_model->countItems($month, $year) / 10));
+
+		header('Content-Type: application/json');
+		echo json_encode($data);
 	}
 }

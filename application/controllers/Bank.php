@@ -97,11 +97,11 @@ class Bank extends CI_Controller {
 		
 		if($type == 1 && $customer_id != null){
 			$this->load->model('Invoice_model');
-			$data['invoices'] = $this->Invoice_model->view_incompleted_transaction($customer_id);
+			$data['invoices'] = $this->Invoice_model->getIncompletedTransaction($customer_id);
 			$data['opponent'] = 'Customer';
 		} else  if($type == 2 && $supplier_id != null){
 			$this->load->model('Debt_model');
-			$data['invoices'] = $this->Debt_model->view_incompleted_transaction($supplier_id);
+			$data['invoices'] = $this->Debt_model->getIncompletedTransaction($supplier_id);
 			$data['opponent'] = 'Supplier';
 		}
 		

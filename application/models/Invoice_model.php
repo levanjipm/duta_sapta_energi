@@ -142,7 +142,7 @@ class Invoice_model extends CI_Model {
 			return $result->value;
 		}
 		
-		public function view_incompleted_transaction($customer_id)
+		public function getIncompletedTransaction($customer_id)
 		{
 			$this->db->select('invoice.*, sum(receivable.value) as paid');
 			$this->db->from('invoice');
@@ -361,5 +361,36 @@ class Invoice_model extends CI_Model {
 			$this->db->update($this->table_invoice);
 			
 			return $this->db->affected_rows();
+		}
+
+		public function getItems($offset, $month, $year)
+		{
+			$this->db->select('invoice.*');
+			$this->db->from('invoice');
+			$this->db->join('code_delivery_order', 'code_delivery_order.invoice_id = invoice.id');
+			$this->db->where('MONTH(invoice.date)', $month);
+			$this->db->where('YEAR(invoice.date)', $year);
+			$this->db->order_by('invoice.name');
+			$this->db->limit(10, $offset);
+
+			$query = $this->db->get();
+			$result = $query->result();
+
+			return $result;
+		}
+
+		public function countItems($month, $year)
+		{
+			$this->db->select('invoice.id');
+			$this->db->from('invoice');
+			$this->db->join('code_delivery_order', 'code_delivery_order.invoice_id = invoice.id');
+			$this->db->where('MONTH(invoice.date)', $month);
+			$this->db->where('YEAR(invoice.date)', $year);
+			$this->db->order_by('invoice.name');
+
+			$query = $this->db->get();
+			$result = $query->num_rows();
+
+			return $result;
 		}
 }
