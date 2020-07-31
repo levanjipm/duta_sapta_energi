@@ -90,8 +90,6 @@ class Invoice extends CI_Controller {
 			$data['details'] = $this->Delivery_order_detail_model->getByCodeDeliveryOrderId($deliveryOrderId);
 			
 			$this->load->model('Delivery_order_model');
-
-			$invoicingMethod = $result->invoicingMethod;
 	
 			$this->load->model('Invoice_model');
 			$resultInsertInvoice = $this->Invoice_model->insertFromDeliveryOrder($result);
@@ -235,5 +233,37 @@ class Invoice extends CI_Controller {
 
 		header('Content-Type: application/json');
 		echo json_encode($data);
+	}
+
+	public function confirmById()
+	{
+		$invoiceId = $this->input->post('id');
+		$taxInvoice = $this->input->post('taxInvoice');
+
+		$this->load->model('Delivery_order_model');
+		$deliveryOrder = $this->Delivery_order_model->getByInvoiceId($invoiceId);
+		$salesOrderId = $deliveryOrder->code_sales_order_id;
+
+		$this->load->model('Sales_order_model');
+		$salesOrder = $this->Sales_order_model->getById($salesOrderId);
+		$taxing		= $salesOrder->taxing;
+		$invoicingMethod = $salesOrder->invoicing_method;
+
+		$sentStatus = $deliveryOrder->is_sent;
+		$confirmStatus = $deliveryOrder->is_confirm;
+
+		if($sentStatus == 1 && $confirmStatus == 1){
+			$this->load->model('Invoice_model');
+			if($taxing == 1){
+				$result = $this->Invoice_model->updateById($invoiceId, $taxInvoice);
+			} else {
+				$result = $this->Invoice_model->updateById($invoiceId);
+			}
+		} else {
+			$result = 0;
+		}
+
+		echo $result;
+		
 	}
 }

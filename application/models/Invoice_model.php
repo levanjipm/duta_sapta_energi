@@ -351,4 +351,15 @@ class Invoice_model extends CI_Model {
 
 			return $result;
 		}
+
+		public function updateById($invoiceId, $taxInvoice = null)
+		{
+			$this->db->set('is_confirm', 1);
+			$this->db->set('taxInvoice', $taxInvoice);
+			$this->db->where('id', $invoiceId);
+			$this->db->where('is_confirm', 0);
+			$this->db->update($this->table_invoice);
+			
+			return $this->db->affected_rows();
+		}
 }

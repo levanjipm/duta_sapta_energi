@@ -149,4 +149,13 @@ class Area_model extends CI_Model {
 			
 			return $result;
 		}
+
+		public function getAllItems()
+		{
+			$this->db->order_by('name');
+			$query = $this->db->get($this->table_area);
+			$result = $query->result();
+
+			return $result;
+		}
 }

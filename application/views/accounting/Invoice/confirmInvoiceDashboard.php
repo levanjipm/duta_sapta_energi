@@ -64,10 +64,8 @@
 
         <input type='hidden' id='invoice_id'>
         <button class='button button_default_dark' title='Confirm invoice' onclick='confirmInvoice()'><i class='fa fa-long-arrow-right'></i></button>
-        <button class='button button_danger_dark' title='Delete invoice' onclick='deleteInvoice()'><i class='fa fa-trash'></i></button>
    
         <div class='notificationText danger' id='confirmFailedNotification'><p>Failed to confirm invoice.</p></div>
-        <div class='notificationText danger' id='deleteFailedNotification'><p>Failed to delete invoice.</p></div>
     </div>
 </div>
 <script>
@@ -80,7 +78,7 @@
             url:'<?= site_url("Invoice/getUnconfirmedinvoice") ?>',
             success:function(response){
                 var invoiceCount = 0;
-                $('#invoiceTableContent').html('');
+                $('#retailInvoiceTableContent').html('');
 
                 $.each(response, function(index, value){
                     var id = value.id;
@@ -124,15 +122,15 @@
 
                         invoiceCount++;
                     };
-                    
-                    if(invoiceCount > 0){
-                        $('#retailInvoiceTable').show();
-                        $('#retailInvoiceTableText').hide();
-                    } else {
-                        $('#retailInvoiceTable').hide();
-                        $('#retailInvoiceTableText').show();
-                    }
-                })
+                });
+
+                if(invoiceCount > 0){
+                    $('#retailInvoiceTable').show();
+                    $('#retailInvoiceTableText').hide();
+                } else {
+                    $('#retailInvoiceTable').hide();
+                    $('#retailInvoiceTableText').show();
+                }
             }
         })
     }
@@ -238,7 +236,30 @@
     }
 
     function confirmInvoice(){
-        
+        $.ajax({
+            url:"<?= site_url('Invoice/confirmById') ?>",
+            data:{
+                id: $('#invoice_id').val(),
+                taxInvoice: $('#taxInvoice').val()
+            },
+            type:'POST',
+            beforeSend:function(){
+                $('button').attr('disabled', true);
+            },
+            success:function(response){
+                $('button').attr('disabled', false);
+                if(response == 1){
+                    refresh_view();
+                    $('#invoice_alert .slide_alert_close_button').click();
+                } else {
+                    refresh_view();
+                    $('#confirmFailedNotification').fadeIn(250);
+                    setTimeout(function(){
+                        $('#confirmFailedNotification').fadeOut(250);
+                    }, 1000)
+                }
+            }
+        })
     }
 
     $('.slide_alert_close_button').click(function(){

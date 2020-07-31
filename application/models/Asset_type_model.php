@@ -115,4 +115,14 @@ class Asset_type_model extends CI_Model {
 			
 			$this->db->update($this->table_asset_type);
 		}
+
+		
+		public function getAllItems()
+		{
+			$this->db->order_by('name');
+			$query = $this->db->get($this->table_asset_type);
+			$result = $query->result();
+
+			return $result;
+		}
 }

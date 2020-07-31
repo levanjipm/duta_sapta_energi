@@ -147,4 +147,13 @@ class Asset extends CI_Controller {
 		
 		redirect('Asset/fixed');
 	}
+
+	public function getAllTypes()
+	{
+		$this->load->model('Asset_type_model');
+		$data = $this->Asset_type_model->getAllItems();
+
+		header('Content-Type: application/json');
+		echo json_encode($data);
+	}
 }
