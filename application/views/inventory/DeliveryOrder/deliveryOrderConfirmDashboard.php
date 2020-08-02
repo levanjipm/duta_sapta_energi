@@ -313,11 +313,12 @@
 			},
 			success:function(response){
 				$('button').attr('disabled', false);
+				loadTab(eventChosen, 1);
+				
 				var result = response.result;
 				var invoicingMethod = response.invoicingMethod;
 				if(result == "success"){
 					if(invoicingMethod == 1){
-						$('#confirmTab').click();
 						$('#viewDeliveryOrderWrapper .slide_alert_close_button').click();
 					} else if(invoicingMethod == 2){
 						window.location.href='<?= site_url("Delivery_order/printDeliveryOrder/") ?>' + $('#delivery_order_id').val();

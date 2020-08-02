@@ -134,10 +134,11 @@ class Stock_out_model extends CI_Model {
 				$quantity				= $event['quantity'];
 				$event_id				= $event['id'];
 
-				$stock_in				= $this->Stock_in_model->getResidueByItemId($item_id);
-				$residue				= $stock_in->quantity;
-				$in_id					= $stock_in->id;
 				while($quantity > 0){
+					$stock_in				= $this->Stock_in_model->getResidueByItemId($item_id);
+					$residue				= $stock_in->quantity;
+					$in_id					= $stock_in->id;
+					
 					if($residue	> $quantity){
 						$current_residue	= $residue - $quantity;
 						$this->Stock_in_model->updateById($in_id, $current_residue);

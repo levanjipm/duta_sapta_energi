@@ -85,4 +85,28 @@ class Users extends CI_Controller {
 		
 		echo $result;
 	}
+
+	public function attandance()
+	{
+		$user_id		= $this->session->userdata('user_id');
+		$this->load->model('User_model');
+		$data['user_login'] = $this->User_model->getById($user_id);
+		
+		$this->load->model('Authorization_model');
+		$data['departments']	= $this->Authorization_model->getByUserId($user_id);
+		
+		$this->load->view('head');
+		$this->load->view('human_resource/header', $data);
+		$this->load->view('human_resource/attandanceList');
+	}
+
+	public function getTodayAbsentee()
+	{
+		$date = date('Y-m-d');
+		$this->load->model('Attendance_model');
+		$data = $this->Attendance_model->getUnattendedList($date);
+		
+		header('Content-Type: application/json');
+		echo json_encode($data);
+	}
 }

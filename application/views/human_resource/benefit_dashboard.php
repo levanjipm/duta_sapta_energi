@@ -1,3 +1,6 @@
+<head>
+	<title>Employee's benefits</title>
+</head>
 <div class='dashboard'>
 	<div class='dashboard_head'>
 		<p style='font-family:museo'><a href='<?= site_url('Human_resource') ?>' title='Human resource'><i class='fa fa-briefcase'></i></a> / Employee's benefit</p>

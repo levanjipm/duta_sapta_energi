@@ -75,6 +75,7 @@
 			</div>
 			
 			<input type='hidden' id='salesOrderId' name='salesOrderId' required>
+			<input type='hidden' id='taxing' name='taxing' required>
 			<input type='hidden' value='0' id='total' name='total' min='1'><br>
 			
 			<button title='Submit delivery order' type='submit' class='button button_default_dark' id='submit_button'><i class='fa fa-long-arrow-right'></i></button>
@@ -158,6 +159,8 @@
 				} else {
 					var taxing			= "Non-taxable sales";
 				}
+
+				$('#taxing').val(taxing_code);
 				
 				$('#customer_name_p').html(customer_name);
 				$('#customer_address_p').html(complete_address);

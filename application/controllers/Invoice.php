@@ -190,12 +190,12 @@ class Invoice extends CI_Controller {
 
 		$resultArray = (array) $data;
 		foreach($resultArray as $result){
-			
 			$arrayResult = (array) $result;
 			$customer_id = $result->customer_id;
 			$deliveryOrderId = $result->code_delivery_order_id;
 			$customer = (array) $this->Customer_model->getById($customer_id);
 			$deliveryOrder = (array) $this->Delivery_order_model->getById($deliveryOrderId);
+
 			$arrayResult['customer'] = $customer;
 			$arrayResult['deliveryOrder'] = $deliveryOrder;
 
@@ -246,6 +246,7 @@ class Invoice extends CI_Controller {
 
 		$this->load->model('Sales_order_model');
 		$salesOrder = $this->Sales_order_model->getById($salesOrderId);
+
 		$taxing		= $salesOrder->taxing;
 		$invoicingMethod = $salesOrder->invoicing_method;
 
