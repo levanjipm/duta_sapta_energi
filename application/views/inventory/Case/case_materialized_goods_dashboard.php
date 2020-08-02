@@ -1,22 +1,27 @@
+<style>
+	.button_default_light{
+		float:right;
+	}
+</style>
 <h4><strong>Materialized</strong></h4>
 <form action='<?= site_url('Inventory_case/input/materialized') ?>' method="POST" id='materializedForm'>
     <div class='row'>
         <div class='col-sm-12 col-xs-12'>
             <label>Date</label>
-            <input type='date' class='form-control' required>
+            <input type='date' name='date' class='form-control' required>
             <br>
         </div>
         <div class='col-sm-4 col-xs-12'>
             <label>Materialized item</label> 
-            <input type='hidden' id='itemDemId'>
+            <input type='hidden' id='itemMatId' name='itemMatId'>
             <button type='button' class='button button_default_dark' id='addMatItemButton'>Add item</button>
 
             <div id='itemMatDetail' style='display:none'>
                 <hr>
                 <p><strong><span id='itemMatRef'></span></strong></p>
-                <p id='itemDemName'></p>
+                <p id='itemMatName'></p>
                 <label>Quantity</label>
-                <input type='number' class='form-control' id='quantityDem' min='1' required value='0'>
+                <input type='number' class='form-control' id='quantityMat' name='quantityMat' min='1' required value='0'>
             </div>
         </div>
         <div class='col-sm-8 col-xs-12'>
@@ -52,19 +57,21 @@
 				<label>Search</label>
 				<input type='text' class='form-control' id='search_bar'>
 				<br>
-				<table class='table table-bordered' id='shopping_item_list_table'>
-					<tr>
-						<th>Reference</th>
-						<th>Name</th>
-						<th>Action</th>
-					</tr>
-					<tbody id='itemListTable'>
-					</tbody>
-				</table>
-				
-				<select class='form-control' id='page' style='width:100px'>
-					<option value='1'></option>
-				</select>
+                <div id='itemListTable'>
+                    <table class='table table-bordered'>
+                        <tr>
+                            <th>Reference</th>
+                            <th>Name</th>
+                            <th>Action</th>
+                        </tr>
+                        <tbody id='itemListTableContent'></tbody>
+                    </table>
+                    
+                    <select class='form-control' id='page' style='width:100px'>
+                        <option value='1'></option>
+                    </select>
+                </div>
+                <p id='itemListTableText'>Item not found.</p>
 			</div>
 		</div>
 	</div>
@@ -76,21 +83,22 @@
     });
 
     var method = 1;
+
     $('#addMatItemButton').click(function(){
         method = 1;
 		$('#search_bar').val('');
-        refresh_view(1, method);
+        refreshView(method, 1);
         $('#add_item_wrapper').fadeIn();
     });
     
     $('#addProductItemButton').click(function(){
         method = 2;
 		$('#search_bar').val('');
-        refresh_view(1, method);
+        refreshView(method, 1);
         $('#add_item_wrapper').fadeIn();
     })
 	
-	function refresh_view(page = $('#page').val(), method){
+	function refreshView(method, page = $('#page').val()){
 		$.ajax({
 			url:'<?= site_url('Item/showItems') ?>',
 			data:{
@@ -98,27 +106,31 @@
 				page: page,
 			},
 			success:function(response){
-				$('#itemListTable').html('');
+                var itemCount = 0;
+				$('#itemListTableContent').html('');
 				var item_array	= response.items;
 				var pages		= response.pages;
 				var page		= response.page;
+                $.each(item_array, function(index, item){
+                    var reference		= item.reference;
+                    var id				= item.item_id;
+                    var name			= item.name;
+                    if(method == 1){
+                        $('#itemListTableContent').append("<tr><td>" + reference + "</td><td>" + name + "</td><td><button type='button' class='demButton button button_default_dark' onclick='pickMatItem(" + id + ")' title='Add " + reference + " to list'><i class='fa fa-cart-plus'></i></button></td></tr>");
+                    } else if(method == 2){
+                        $('#itemListTableContent').append("<tr><td>" + reference + "</td><td>" + name + "</td><td><button type='button' class='productButton button button_success_dark' onclick='pickProductItem(" + id + ")' title='Add " + reference + " to list'><i class='fa fa-cart-plus'></i></button></td></tr>");
+                    }
+
+                    itemCount++;	
+                });
 				
-				if(item_array.length > 0){
-					$.each(item_array, function(index, item){
-						var reference		= item.reference;
-						var id				= item.item_id;
-                        var name			= item.name;
-                        if(method == 1){
-                            $('#itemListTable').append("<tr><td>" + reference + "</td><td>" + name + "</td><td><button type='button' class='demButton button button_default_dark' onclick='pickDemItem(" + id + ")' title='Add " + reference + " to list'><i class='fa fa-cart-plus'></i></button></td></tr>");
-                        } else if(method == 2){
-                            $('#itemListTable').append("<tr><td>" + reference + "</td><td>" + name + "</td><td><button type='button' class='productButton button button_success_dark' onclick='pickProductItem(" + id + ")' title='Add " + reference + " to list'><i class='fa fa-cart-plus'></i></button></td></tr>");
-                        }
-						
-						
-					});
-				} else {
-					$('#shopping_item_list_table').hide();
-				}
+                if(itemCount > 0){
+                    $('#itemListTableContent').show();
+                    $('#itemListTableText').hide();
+                } else {
+                    $('#itemListTableContent').hide();
+                    $('#itemListTableText').show();
+                }
 				
 				$('#page').html('');
 				for(i = 1; i <= pages; i++){
@@ -135,18 +147,18 @@
 	}
 	
 	$('#page').change(function(){
-		refresh_view();
+		refreshView(method);
 	});
 	
 	$('#search_bar').change(function(){
-		refresh_view(1);
+		refreshView(method, 1);
 	});
 	
 	$('.alert_full_close_button').click(function(){
 		$(this).parents().find('.alert_wrapper').fadeOut();
     });
 
-    function pickDemItem(n){
+    function pickMatItem(n){
         $.ajax({
             url:'<?= site_url('Item/showById') ?>',
             data:{
@@ -159,8 +171,8 @@
                     var name = response.name;
 
                     $('#itemMatRef').html(reference);
-                    $('#itemDemName').html(name);
-                    $('#itemDemId').val(id);
+                    $('#itemMatName').html(name);
+                    $('#itemMatId').val(id);
 
                     $('#itemMatDetail').show();
                     $('#add_item_wrapper .alert_full_close_button').click();
@@ -186,7 +198,7 @@
                     if($('#productItemTableBody > tr').length > 0){
                         $('#productItemTable').show();
                         if($('#itemDemId').val() != ""){
-                            $('#submitButtonWrapper').html("<button class='button button_default_dark'>Submit</button>");
+                            $('#submitButtonWrapper').html("<button class='button button_default_light'><i class='fa fa-long-arrow-right'></i></button>");
                         }  
                     } else {
                         $('#productItemTable').hide();

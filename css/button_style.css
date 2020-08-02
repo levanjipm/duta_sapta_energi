@@ -36,11 +36,13 @@
 .button_default_light{
 	color:white;
 	border:2px solid white;
+	background-color:#E19B3C;
 }
 
 .button_default_light:hover{
 	background-color:white;
 	color:#333;
+	border:2px solid #E19B3C;
 	transition:0.3s all ease;
 }
 

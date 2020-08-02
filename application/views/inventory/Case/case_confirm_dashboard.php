@@ -14,10 +14,12 @@
 </select>
 
 <div class='alert_wrapper' id='view_inventory_case_wrapper'>
-	<button type='button' class='slide_alert_close_button'>&times </button>
+	<button type='button' class='slide_alert_close_button'>&times;</button>
 	<div class='alert_box_slide'>
+		<h3 style='font-family:bebasneue'>Confirm event</h3>
+		<hr>
 		<label>Date</label>
-		<p style='font-family:museo' id='date_p'></p>
+		<p style='font-family:museo' id='view_date_p'></p>
 		
 		<label>Type</label>
 		<p style='font-family:museo' id='type_p'></p>
@@ -36,16 +38,20 @@
 			<tbody id='event_table'></tbody>
 		</table>
 		<div style='padding:2px 10px;background-color:#ffc107;width:100%;display:none;' id='warning_text'><p style='font-family:museo'><i class='fa fa-exclamation-triangle'></i> Warning! Insufficient stock detected.</p></div><br>
-		<form action='<?= site_url('Inventory_case/confirm') ?>' method='POST'>
-			<input type='hidden' name='id' id='event_id'>
-			<input type='hidden' name='status' id='status'>
-			<button type='button' class='button button_danger_dark' onclick='deleteEvent()'><i class='fa fa-trash'></i></button>
-			<button class='button button_default_dark' id='confirm_button'><i class='fa fa-long-arrow-right'></i></button>
-		</form>
+		<input type='hidden' name='id' id='event_id'>
+		<input type='hidden' name='status' id='status'>
+
+		<button type='button' class='button button_default_dark' onclick='confirmEvent()'><i class='fa fa-long-arrow-right'></i></button>
+		<button type='button' class='button button_danger_dark' onclick='deleteEvent()'><i class='fa fa-trash'></i></button>
+
+		<div class='notificationText danger' id='deleteFailedNotification'><p>Failed to delete event.</p></div>
+		<div class='notificationText danger' id='confirmFailedNotification'><p>Failed to confirm event.</p></div>
 	</div>
 </div>
 <script>
-	refresh_view();
+	$(document).ready(function(){
+		refresh_view();
+	})
 	
 	function view_case(n){
 		$.ajax({
@@ -60,12 +66,16 @@
 				var date		= general.date;
 				var type		= general.type;
 				
-				$('#date_p').html(my_date_format(date));
+				$('#view_date_p').html(my_date_format(date));
 				$('#created_p').html(created_by);
 				if(type == 1){
 					var text = 'Lost goods';
 				} else if(type == 2){
 					var text = 'Found goods';
+				} else if(type == 3){
+					var text = 'Dematerialized goods';
+				} else if(type == 4){
+					var text = 'Materialized goods';
 				}
 				
 				$('#type_p').html(text);
@@ -132,6 +142,8 @@
 						var text = 'Found goods';
 					} else if(type == 3){
 						var text = 'Dematerialized goods';
+					} else if(type == 4){
+						var text = 'Materialized goods';
 					}
 					
 					$('#case_tbody').append("<tr><td>" + my_date_format(date) + "</td><td>" + text + "</td><td>" + created_by + "</td><td><button type='button' class='button button_default_dark' onclick='view_case(" + id + ")'><i class='fa fa-long-arrow-right'></i></button></td></tr>");
@@ -153,5 +165,31 @@
 	function deleteEvent(){
 		var eventId = $('#event_id').val();
 		alert(eventId);
+	}
+
+	function confirmEvent(){
+		$.ajax({
+			url:"<?= site_url("Inventory_case/confirmById") ?>",
+			data:{
+				id:$('#event_id').val()
+			},
+			type:'POST',
+			beforeSend:function(){
+				$('button').attr('disabled', true);
+			},
+			success:function(response){
+				$('button').attr('disabled', false);
+				if(response == 1){
+					refresh_view();
+					$('#view_inventory_case_wrapper .slide_alert_close_button').click();
+				} else {
+					refresh_view();
+					$('#confirmFailedNotification').fadeIn(250);
+					setTimeout(function(){
+						$('#confirmFailedNotification').fadeOut(250);
+					}, 1000);
+				}
+			}
+		})
 	}
 </script>

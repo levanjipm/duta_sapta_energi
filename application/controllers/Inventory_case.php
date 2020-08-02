@@ -100,11 +100,10 @@ class Inventory_case extends CI_Controller {
 				$quantityDem	= $this->input->post('quantityDem');
 				$priceDem		= $this->input->post('priceDem');
 
-				$expectedInput	= count($quantityDem);
-
 				$type			= 3;
 
 				$productItemArray	= $this->input->post('productItem');
+				$expectedInput		= count($productItemArray);
 
 				$quantity_array = array();
 				foreach($productItemArray as $productItem)
@@ -116,7 +115,7 @@ class Inventory_case extends CI_Controller {
 
 				$this->load->model('Inventory_case_model');
 				$eventId = $this->Inventory_case_model->insertItem($user_id, $date, $type);
-				if($result != NULL){
+				if($eventId != NULL){
 					$this->load->model('Inventory_case_detail_model');
 					$result = $this->Inventory_case_detail_model->insertBatchItem($eventId, $quantity_array, $type);
 
@@ -134,7 +133,41 @@ class Inventory_case extends CI_Controller {
 
 				break;
 			case 'materialized':
-				$this->load->view('inventory/case/case_materialized_goods_dashboard');
+				$date			= $this->input->post('date');
+				$itemIdMat		= $this->input->post('itemMatId');
+				$quantityMat	= $this->input->post('quantityMat');
+				$type			= 4;
+
+				$productItemArray	= $this->input->post('productItem');
+				$expectedInput		= count($productItemArray);
+
+				$quantity_array = array();
+				foreach($productItemArray as $productItem)
+				{
+					$key = key($productItemArray);
+					$quantity_array[$key] = $productItem * $quantityMat;
+					next($productItemArray);
+				}
+
+				$this->load->model('Inventory_case_model');
+				$eventId = $this->Inventory_case_model->insertItem($user_id, $date, $type);
+
+				if($eventId != NULL){
+					$this->load->model('Inventory_case_detail_model');
+					$result = $this->Inventory_case_detail_model->insertBatchItem($eventId, $quantity_array, $type);
+					$batchResult = $this->Inventory_case_detail_model->insertItem($eventId, $itemIdMat, $quantityMat, 'IN');
+
+					if($result == 1 && $batchResult == $expectedInput){
+						redirect(site_url('Inventory_case/successSubmission/') . $eventId);
+					} else {
+						$this->inventory_case_detail_model->deleteByCodeId($eventId);
+						$this->inventory_case_model->deleteById($eventId);
+						redirect(site_url('Inventory_case/failedSubmission'));
+					}
+				} else {
+					redirect(site_url('Inventory_case/failedSubmission'));
+				}
+
 				break;
 			default:
 				redirect(site_url("Inventory_case"));
@@ -172,10 +205,25 @@ class Inventory_case extends CI_Controller {
 				$data['items'] = $this->Inventory_case_detail_model->showByCodeId($eventId);
 				$this->load->view('inventory/Case/ResultSubmission/case_found_goods_result', $data);
 				break;
+			case 3:
+				$data['general'] = $event;
+				$data['items'] = $this->Inventory_case_detail_model->showByCodeId($eventId);
+				$this->load->view('inventory/Case/ResultSubmission/case_dematerialized_goods_result', $data);
+				break;
+			case 4:
+				$data['general'] = $event;
+				$data['items'] = $this->Inventory_case_detail_model->showByCodeId($eventId);
+				$this->load->view('inventory/Case/ResultSubmission/case_materialized_goods_result', $data);
+				break;
 			default:
 				redirect(site_url("Inventory_case"));
 				break;
 		}
+	}
+
+	public function failedSubmission()
+	{
+
 	}
 	
 	public function confirmDashboard()
@@ -210,47 +258,44 @@ class Inventory_case extends CI_Controller {
 		$result		= $this->Inventory_case_detail_model->showByCodeId($id);
 		$data['details']	= $result;
 		
-		$stock_array 	= $this->Inventory_case_detail_model->get_batch_by_code_event_id($id);
+		$stock_array 	= $this->Inventory_case_detail_model->getOutBatchByCodeEventId($id);
 		
 		$this->load->model('Stock_in_model');
-		$stock = $this->Stock_in_model->check_stock($stock_array);
+		$stock = $this->Stock_in_model->checkStock($stock_array);
 		$data['status'] = $stock;
 		
 		header('Content-Type: application/json');
 		echo json_encode($data);
 	}
 	
-	public function confirm()
+	public function confirmById()
 	{
 		$user_id		= $this->session->userdata('user_id');
 		$id				= $this->input->post('id');
-		$status			= $this->input->post('status');
 
-		if($status == 'true'){
-			$this->load->model('Inventory_case_detail_model');
-			$stock_array 	= $this->Inventory_case_detail_model->get_batch_by_code_event_id($id);
-			
-			$this->load->model('Stock_in_model');
-			
-			$stock = $this->Stock_in_model->check_stock($stock_array);
-			if($stock){
-				$stock_array 	= $this->Inventory_case_detail_model->get_stock_out_batch_by_code_event_id($id);
-				if(!empty($stock_array)){
-					$this->load->model('Stock_out_model');
-					$this->Stock_out_model->send_event($stock_array);
-				}
-				
-				$stock_array 	= $this->Inventory_case_detail_model->get_stock_in_batch_by_code_event_id($id);
-				
-				if(!empty($stock_array)){
-					$this->load->model('Stock_in_model');
-					$this->Stock_in_model->input_from_code_event($stock_array);
-				}
-				$this->load->model('Inventory_case_model');
-				$result = $this->Inventory_case_model->confirm($id, $user_id);
-			}
-		}
+		$this->load->model('Inventory_case_detail_model');
+		$stock_array 	= $this->Inventory_case_detail_model->getOutBatchByCodeEventId($id);
 		
-		redirect(site_url('Inventory_case'));
+		$this->load->model('Stock_in_model');
+		
+		$stock = $this->Stock_in_model->checkStock($stock_array);
+		if($stock){
+			$this->load->model('Stock_out_model');
+			$this->Stock_out_model->insertByEvent($stock_array);
+
+			$stockInArray 	= $this->Inventory_case_detail_model->get_stock_in_batch_by_code_event_id($id);
+		
+			if(!empty($stockInArray)){
+				$this->load->model('Stock_in_model');
+				$this->Stock_in_model->input_from_code_event($stockInArray);
+			}
+
+			$this->load->model('Inventory_case_model');
+			$result = $this->Inventory_case_model->updateById(1, $id);
+
+			echo $result;
+		} else {
+			echo 0;
+		}
 	}
 }

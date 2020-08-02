@@ -99,6 +99,7 @@ class Inventory_case_detail_model extends CI_Model {
 					next($quantity_array);
 				}
 			} else if($type == 3){
+				//Dematerialized goods//
 				$priceDem		= $this->input->post('priceDem');
 				$this->load->model('Item_model');
 
@@ -123,6 +124,20 @@ class Inventory_case_detail_model extends CI_Model {
 						'transaction' => 'IN',
 						'code_event_id' => $code_event_id,
 						'price' => $price
+					);
+					next($quantity_array);
+				}
+			} else if($type == 4){
+				//Materialized goods//
+				foreach($quantity_array as $quantity){
+					$item_id		= key($quantity_array);
+					$batch[] = array(
+						'id' => '',
+						'item_id' => $item_id,
+						'quantity' => $quantity,
+						'transaction' => 'OUT',
+						'code_event_id' => $code_event_id,
+						'price' => 0
 					);
 					next($quantity_array);
 				}
@@ -166,7 +181,7 @@ class Inventory_case_detail_model extends CI_Model {
 			$this->db->delete($this->table_event);
 		}
 		
-		public function get_batch_by_code_event_id($id)
+		public function getOutBatchByCodeEventId($id)
 		{
 			$this->db->select('event.*, item.name, item.reference');
 			$this->db->from('event');
@@ -176,21 +191,23 @@ class Inventory_case_detail_model extends CI_Model {
 			$query	= $this->db->get();
 			$result	= $query->result();
 			
-			$batch = $this->Inventory_case_detail_model->create_stock_batch($result);
+			$batch = $this->Inventory_case_detail_model->convertToStockBatch($result);
 			return (count($batch) != 0) ? $batch : null;
 		}
 		
-		public function create_stock_batch($results)
+		public function convertToStockBatch($results)
 		{
 			$batch		= array();
 			foreach($results as $result){
 				$quantity					= $result->quantity;
 				$item_id					= $result->item_id;
 				$transaction				= $result->transaction;
+				$id							= $result->id;
 				if($transaction == 'OUT'){
 					$batch[] = array(
 						'quantity' => $quantity,
 						'item_id' => $item_id,
+						'id' => $id
 					);
 				}
 			}
@@ -236,19 +253,5 @@ class Inventory_case_detail_model extends CI_Model {
 			}
 			
 			return $batch;
-		}
-		
-		public function get_stock_out_batch_by_code_event_id($id)
-		{
-			$this->db->select('event.*, item.name, item.reference');
-			$this->db->from('event');
-			$this->db->join('item', 'item.id = event.item_id');
-			$this->db->where('event.code_event_id', $id);
-			$this->db->where('event.transaction', 'OUT');
-			$query	= $this->db->get();
-			$result	= $query->result();
-			
-			$batch = $this->Inventory_case_detail_model->create_complete_stock_batch($result);
-			return (count($batch) != 0) ? $batch : null;
 		}
 }

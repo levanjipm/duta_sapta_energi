@@ -1,3 +1,8 @@
+<style>
+    .button_default_light{
+        float:right;
+    }
+</style>
 <h4><strong>Dematerialized</strong></h4>
 <form action='<?= site_url('Inventory_case/input/dematerialized') ?>' method="POST" id='dematerializedForm'>
     <div class='row'>
@@ -188,7 +193,7 @@
                     if($('#productItemTableBody > tr').length > 0){
                         $('#productItemTable').show();
                         if($('#itemDemId').val() != ""){
-                            $('#submitButtonWrapper').html("<button class='button button_default_dark'>Submit</button>");
+                            $('#submitButtonWrapper').html("<button class='button button_default_light'>Submit</button>");
                         }  
                     } else {
                         $('#productItemTable').hide();

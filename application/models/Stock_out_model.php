@@ -91,18 +91,18 @@ class Stock_out_model extends CI_Model {
 				$quantity				= $delivery_order['quantity'];
 				$code_delivery_order_id	= $delivery_order['code_delivery_order_id'];
 				$customer_id			= $delivery_order['customer_id'];
-				$stock_in				= $this->Stock_in_model->search_by_item_id($item_id);
+				$stock_in				= $this->Stock_in_model->getResidueByItemId($item_id);
 				$residue				= $stock_in->residue;
 				$in_id					= $stock_in->id;
 				while($quantity > 0){
 					if($residue		> $quantity){
 						$current_residue	= $residue - $quantity;
-						$this->Stock_in_model->update_stock_in($in_id, $current_residue);
+						$this->Stock_in_model->updateById($in_id, $current_residue);
 						$this->Stock_out_model->insertStockDeliveryOrder($in_id, $quantity, $code_delivery_order_id, $customer_id); 
 						break;
 					} else {
 						$current_residue		= $quantity - $residue;
-						$this->Stock_in_model->update_stock_in($in_id, 0);
+						$this->Stock_in_model->updateById($in_id, 0);
 						$this->Stock_out_model->insertStockDeliveryOrder($in_id, $current_residue, $code_delivery_order_id, $customer_id);
 						
 						$quantity = $quantity - $residue;
@@ -126,35 +126,34 @@ class Stock_out_model extends CI_Model {
 			$this->db->insert($this->table_stock_out, $db_item);
 		}
 		
-		public function send_event($event_array)
+		public function insertByEvent($eventItemArray)
 		{
 			$this->load->model('Stock_in_model');
-			foreach($event_array as $event){
+			foreach($eventItemArray as $event){
 				$item_id				= $event['item_id'];
 				$quantity				= $event['quantity'];
-				$event_id				= $event['event_id'];
-				print_r($event);
-				$stock_in				= $this->Stock_in_model->search_by_item_id($item_id);
-				$residue				= $stock_in->residue;
+				$event_id				= $event['id'];
+
+				$stock_in				= $this->Stock_in_model->getResidueByItemId($item_id);
+				$residue				= $stock_in->quantity;
 				$in_id					= $stock_in->id;
 				while($quantity > 0){
-					if($residue		> $quantity){
+					if($residue	> $quantity){
 						$current_residue	= $residue - $quantity;
-						$this->Stock_in_model->update_stock_in($in_id, $current_residue);
-						$this->Stock_out_model->insert_stock_out_event($in_id, $quantity, $event_id); 
+						$this->Stock_in_model->updateById($in_id, $current_residue);
+						$result = $this->Stock_out_model->insertStockOutFromEvent($in_id, $quantity, $event_id); 
 						break;
 					} else {
 						$current_residue		= $quantity - $residue;
-						$this->Stock_in_model->update_stock_in($in_id, 0);
-						$this->Stock_out_model->insert_stock_out_event($in_id, $current_residue, $event_id);
-						
+						$this->Stock_in_model->updateById($in_id, 0);
+						$result = $this->Stock_out_model->insertStockOutFromEvent($in_id, $current_residue, $event_id);
 						$quantity = $quantity - $residue;
 					}
 				}
 			}
 		}
 		
-		public function insert_stock_out_event($in_id, $quantity, $event_id)
+		public function insertStockOutFromEvent($in_id, $quantity, $event_id)
 		{
 			$db_item		= array(
 				'in_id' => $in_id,
@@ -167,5 +166,6 @@ class Stock_out_model extends CI_Model {
 			);
 				
 			$this->db->insert($this->table_stock_out, $db_item);
+			return $this->db->affected_rows();
 		}
 }

@@ -274,7 +274,22 @@ class Invoice extends CI_Controller {
 		$offset = ($page - 1) * 10;
 
 		$this->load->model('Invoice_model');
-		$data['items'] = $this->Invoice_model->getItems($offset, $month, $year);
+
+		$this->load->model('Customer_model');
+		$invoices = $this->Invoice_model->getItems($offset, $month, $year);
+		$result = array();
+		foreach($invoices as $invoice){
+			$itemArray = array();
+			$customerId = $invoice->customer_id;
+
+			$customerObject = (array) $this->Customer_model->getById($customerId);
+			$itemArray = (array) $invoice;
+			$itemArray['customer'] = $customerObject;
+
+			array_push($result, $itemArray);
+		};
+
+		$data['items'] = (object) $result;
 		$data['pages'] = max(1, ceil($this->Invoice_model->countItems($month, $year) / 10));
 
 		header('Content-Type: application/json');

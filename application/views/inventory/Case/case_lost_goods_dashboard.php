@@ -1,3 +1,8 @@
+<style>
+	.button_default_light{
+		float:right;
+	}
+</style>
 <h4><strong>Lost</strong></h4>
 <form action='<?= site_url('Inventory_case/input/lost') ?>' method='POST' id='lostGoodsForm'>
 	<label>Date</label>
@@ -15,7 +20,7 @@
 		<tbody id='cart_products'></tbody>
 	</table>
 	
-	<button type='button' class='button button_default_dark' id='validationButton' style='display:none'><i class='fa fa-long-arrow-right'></i></button>
+	<button type='button' class='button button_default_light' id='validationButton' style='display:none'><i class='fa fa-long-arrow-right'></i></button>
 </form>
 
 <div class='alert_wrapper' id='add_item_wrapper'>

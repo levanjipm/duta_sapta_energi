@@ -1,4 +1,8 @@
-<h4><strong>Found</strong></h4>
+<style>
+	.button_default_light{
+		float:right;
+	}
+</style>
 <form action='<?= site_url('Inventory_case/input/found') ?>' method='POST' id='foundGoodsForm'>
 	<label>Date</label>
 	<input type='date' class='form-control' name='date' id='case_date' required><br>
@@ -16,7 +20,7 @@
 		<tbody id='cart_products'></tbody>
 	</table>
 	
-	<button type='button' class='button button_default_dark' id='shopping_item_list_button' style='display:none'><i class='fa fa-long-arrow-right'></i></button>
+	<button type='button' class='button button_default_light' id='shopping_item_list_button' style='display:none'><i class='fa fa-long-arrow-right'></i></button>
 </form>
 
 <div class='alert_wrapper' id='add_item_wrapper'>

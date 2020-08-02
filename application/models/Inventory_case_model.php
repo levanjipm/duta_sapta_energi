@@ -68,33 +68,46 @@ class Inventory_case_model extends CI_Model {
 				
 		public function insertItem($created_by, $date, $type)
 		{
-			if($type == 1){
-				$db_item = array(
-					'id' => '',
-					'type' => $type,
-					'created_by' => $created_by,
-					'date' => $date,
-					'is_confirm' => 0,
-					'confirmed_by' => null
-				);
-			} else if($type == 2){
-				$db_item = array(
-					'id' => '',
-					'type' => $type,
-					'created_by' => $created_by,
-					'date' => $date,
-					'is_confirm' => 0,
-					'confirmed_by' => null
-				);
-			} else if($type == 3){
-				$db_item = array(
-					'id' => '',
-					'type' => $type,
-					'created_by' => $created_by,
-					'date' => $date,
-					'is_confirm' => 0,
-					'confirmed_by' => null
-				);
+			switch($type){
+				case 1:
+					$db_item = array(
+						'id' => '',
+						'type' => $type,
+						'created_by' => $created_by,
+						'date' => $date,
+						'is_confirm' => 0,
+						'confirmed_by' => null
+					);
+					break;
+				case 2:
+					$db_item = array(
+						'id' => '',
+						'type' => $type,
+						'created_by' => $created_by,
+						'date' => $date,
+						'is_confirm' => 0,
+						'confirmed_by' => null
+					);
+					break;
+				case 3:
+					$db_item = array(
+						'id' => '',
+						'type' => $type,
+						'created_by' => $created_by,
+						'date' => $date,
+						'is_confirm' => 0,
+						'confirmed_by' => null
+					);
+					break;
+				case 4:
+					$db_item = array(
+						'id' => '',
+						'type' => $type,
+						'created_by' => $created_by,
+						'date' => $date,
+						'is_confirm' => 0,
+						'confirmed_by' => null
+					);
 			}
 			
 			$this->db->insert($this->table_event, $db_item);
@@ -145,11 +158,17 @@ class Inventory_case_model extends CI_Model {
 			return $result;
 		}
 		
-		public function confirm($id, $user_id)
+		public function updateById($status, $id)
 		{
-			$this->db->set('is_confirm', 1);
-			$this->db->set('confirmed_by', $user_id);
-			$this->db->where('id', $id);
-			$this->db->update($this->table_event);
+			$user_id = $this->session->userdata('user_id');
+			if($status == 1){
+				$this->db->set('is_confirm', 1);
+				$this->db->set('confirmed_by', $user_id);
+				$this->db->where('id', $id);
+				$this->db->update($this->table_event);
+			}
+
+			return $this->db->affected_rows();
 		}
+			
 }

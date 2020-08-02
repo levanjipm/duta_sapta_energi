@@ -104,7 +104,7 @@ class Stock_in_model extends CI_Model {
 			$this->db->insert_batch($this->table_stock_in, $event_array);
 		}
 		
-		public function search_by_item_id($item_id)
+		public function getResidueByItemId($item_id)
 		{
 			$this->db->where('residue >', 0);
 			$this->db->where('item_id', $item_id);
@@ -131,7 +131,7 @@ class Stock_in_model extends CI_Model {
 			$this->db->update_batch($this->table_stock_in,$batch, 'good_receipt_id'); 
 		}
 		
-		public function update_stock_in($id, $final_quantity)
+		public function updateById($id, $final_quantity)
 		{
 			$this->db->set('residue', $final_quantity);
 			$this->db->where('id', $id);
@@ -232,7 +232,7 @@ class Stock_in_model extends CI_Model {
 
 		public function getStockByItemId($itemId)
 		{
-			$this->db->select("COALESCE(SUM(residue), 0) as quantity");
+			$this->db->select("COALESCE(SUM(residue), 0) as quantity, id");
 			$this->db->where('item_id', $itemId);
 			
 			$query = $this->db->get($this->table_stock_in);

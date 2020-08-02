@@ -365,12 +365,16 @@ class Invoice_model extends CI_Model {
 
 		public function getItems($offset, $month, $year)
 		{
-			$this->db->select('invoice.*');
+			$this->db->select('invoice.*, code_sales_order.customer_id, code_sales_order.taxing');
 			$this->db->from('invoice');
 			$this->db->join('code_delivery_order', 'code_delivery_order.invoice_id = invoice.id');
+			$this->db->join('delivery_order', 'delivery_order.code_delivery_order_id = code_delivery_order.id');
+			$this->db->join('sales_order', 'delivery_order.sales_order_id = sales_order.id');
+			$this->db->join('code_sales_order', 'sales_order.code_sales_order_id = code_sales_order.id');
 			$this->db->where('MONTH(invoice.date)', $month);
 			$this->db->where('YEAR(invoice.date)', $year);
 			$this->db->order_by('invoice.name');
+			$this->db->order_by('invoice.date');
 			$this->db->limit(10, $offset);
 
 			$query = $this->db->get();
