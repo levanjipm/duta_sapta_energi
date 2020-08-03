@@ -1,14 +1,13 @@
 -- phpMyAdmin SQL Dump
--- version 4.8.5
+-- version 5.0.2
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Waktu pembuatan: 18 Jul 2020 pada 09.42
--- Versi server: 10.1.38-MariaDB
--- Versi PHP: 7.3.2
+-- Waktu pembuatan: 03 Agu 2020 pada 03.24
+-- Versi server: 10.4.13-MariaDB
+-- Versi PHP: 7.2.32
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-SET AUTOCOMMIT = 0;
 START TRANSACTION;
 SET time_zone = "+00:00";
 
@@ -25,6 +24,20 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
+-- Struktur dari tabel `attendance_list`
+--
+
+CREATE TABLE `attendance_list` (
+  `id` int(255) NOT NULL,
+  `user_id` int(255) NOT NULL,
+  `date` date NOT NULL,
+  `time` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `status` int(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
 -- Struktur dari tabel `bank_transaction`
 --
 
@@ -36,8 +49,8 @@ CREATE TABLE `bank_transaction` (
   `customer_id` int(255) DEFAULT NULL,
   `supplier_id` int(255) DEFAULT NULL,
   `other_id` int(255) DEFAULT NULL,
-  `is_done` tinyint(1) NOT NULL DEFAULT '0',
-  `is_delete` tinyint(1) NOT NULL DEFAULT '0',
+  `is_done` tinyint(1) NOT NULL DEFAULT 0,
+  `is_delete` tinyint(1) NOT NULL DEFAULT 0,
   `bank_transaction_major` int(255) DEFAULT NULL,
   `account_id` int(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -73,9 +86,9 @@ CREATE TABLE `code_delivery_order` (
   `id` int(11) NOT NULL,
   `date` date NOT NULL,
   `name` varchar(50) NOT NULL,
-  `is_confirm` tinyint(1) NOT NULL DEFAULT '0',
-  `is_delete` tinyint(1) NOT NULL DEFAULT '0',
-  `is_sent` tinyint(1) NOT NULL DEFAULT '0',
+  `is_confirm` tinyint(1) NOT NULL DEFAULT 0,
+  `is_delete` tinyint(1) NOT NULL DEFAULT 0,
+  `is_sent` tinyint(1) NOT NULL DEFAULT 0,
   `guid` varchar(50) NOT NULL,
   `invoice_id` int(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
@@ -85,16 +98,10 @@ CREATE TABLE `code_delivery_order` (
 --
 
 INSERT INTO `code_delivery_order` (`id`, `date`, `name`, `is_confirm`, `is_delete`, `is_sent`, `guid`, `invoice_id`) VALUES
-(1, '2020-07-16', 'DO-DSE-202007-001', 0, 1, 0, '91BE89D3-59E5-485D-9057-85695701597D', NULL),
-(2, '2020-07-16', 'DO-DSE-202007-002', 0, 1, 0, '2C2F58BF-5531-44D9-8593-1710E6F9A2DA', NULL),
-(3, '2020-07-16', 'DO-DSE-202007-003', 0, 1, 0, 'B85D5313-A8E6-4C05-8003-8B30E7956E05', NULL),
-(4, '2020-07-16', 'DO-DSE-202007-004', 0, 1, 0, '1A0742B3-B405-48F9-BB85-CB40567D7293', NULL),
-(5, '2020-07-16', 'DO-DSE-202007-005', 0, 0, 0, '84BD6CAD-7973-423B-BF5A-97E3937CCB8E', NULL),
-(6, '2020-07-17', 'DO-DSE-202007-006', 1, 1, 0, '4A0B4724-E400-4DED-980D-58E93B9B578F', NULL),
-(7, '2020-07-17', 'DO-DSE-202007-007', 1, 0, 0, '337CED69-1638-4B0A-AC2E-1E17E8C32577', NULL),
-(8, '2020-07-18', 'DO-DSE-202007-008', 0, 1, 0, '6DA27E35-F175-4DEE-B534-34337F323FEC', NULL),
-(9, '2020-07-18', 'DO-DSE-202007-009', 1, 0, 1, 'F245555B-138D-4C10-95C5-45683FA55255', 1),
-(10, '2020-07-17', 'DO-DSE-202007-010', 0, 0, 0, '101977B5-9658-469A-B85A-B93CF26414E5', NULL);
+(1, '2020-07-25', 'DO-DSE-202007-001', 1, 0, 1, 'E958D42A-7A64-4FF9-B09F-9F124AD5BB0E', 1),
+(2, '2020-07-27', 'DO-DSE-202007-0002', 1, 0, 0, '86D15818-3866-4B0F-BD21-66A9D121A5E2', 2),
+(3, '2020-08-01', 'DO-DSE-202008-0001', 1, 0, 1, '16A65DE5-63DC-4CD5-8DC6-E36A5EAC057B', 3),
+(4, '2020-08-02', 'DO-DSE-202008-0002', 1, 0, 1, '8E62DC58-5242-484C-BE1E-D8A469C16D88', 4);
 
 -- --------------------------------------------------------
 
@@ -107,7 +114,7 @@ CREATE TABLE `code_event` (
   `type` int(255) NOT NULL,
   `created_by` int(255) NOT NULL,
   `date` date NOT NULL,
-  `is_confirm` tinyint(1) NOT NULL DEFAULT '0',
+  `is_confirm` tinyint(1) NOT NULL DEFAULT 0,
   `confirmed_by` int(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -116,12 +123,26 @@ CREATE TABLE `code_event` (
 --
 
 INSERT INTO `code_event` (`id`, `type`, `created_by`, `date`, `is_confirm`, `confirmed_by`) VALUES
-(1, 1, 1, '2020-07-09', 1, 1),
-(2, 2, 1, '2020-07-16', 1, 1),
-(3, 1, 1, '2020-07-17', 1, 1),
-(4, 1, 1, '2020-07-17', 0, NULL),
-(5, 1, 1, '2020-07-17', 0, NULL),
-(6, 1, 1, '2020-07-17', 0, NULL);
+(1, 4, 1, '2020-08-01', 0, NULL),
+(2, 1, 1, '2020-08-01', 1, 1),
+(3, 2, 1, '2020-08-01', 1, 1),
+(4, 3, 1, '2020-08-01', 0, NULL),
+(5, 3, 1, '2020-08-01', 0, NULL),
+(6, 3, 1, '2020-08-01', 0, NULL),
+(7, 3, 1, '2020-08-01', 0, NULL),
+(8, 3, 1, '2020-08-01', 0, NULL),
+(9, 3, 1, '2020-08-01', 0, NULL),
+(10, 3, 1, '2020-08-01', 0, NULL),
+(11, 3, 1, '2020-08-01', 0, NULL),
+(12, 4, 1, '2020-08-01', 0, NULL),
+(13, 4, 1, '2020-08-01', 0, NULL),
+(14, 4, 1, '2020-08-01', 0, NULL),
+(15, 4, 1, '2020-08-01', 0, NULL),
+(16, 4, 1, '2020-08-01', 1, 1),
+(17, 4, 1, '2020-08-01', 1, 1),
+(18, 4, 1, '2020-08-01', 1, 1),
+(19, 3, 1, '2020-08-02', 1, 1),
+(20, 3, 1, '2020-08-02', 1, 1);
 
 -- --------------------------------------------------------
 
@@ -133,8 +154,8 @@ CREATE TABLE `code_good_receipt` (
   `id` int(255) NOT NULL,
   `name` varchar(50) NOT NULL,
   `date` date NOT NULL,
-  `is_confirm` tinyint(1) NOT NULL DEFAULT '0',
-  `is_delete` tinyint(1) NOT NULL DEFAULT '0',
+  `is_confirm` tinyint(1) NOT NULL DEFAULT 0,
+  `is_delete` tinyint(1) NOT NULL DEFAULT 0,
   `invoice_id` int(255) DEFAULT NULL,
   `received_date` date NOT NULL,
   `created_by` int(255) NOT NULL,
@@ -147,9 +168,10 @@ CREATE TABLE `code_good_receipt` (
 --
 
 INSERT INTO `code_good_receipt` (`id`, `name`, `date`, `is_confirm`, `is_delete`, `invoice_id`, `received_date`, `created_by`, `confirmed_by`, `guid`) VALUES
-(1, 'PI-CK-BO-ODFEA', '2020-07-18', 1, 0, NULL, '2020-07-17', 1, 1, 'F734C21F-8F56-40CE-A1EA-21DF4A514C84'),
-(2, 'asdfasdf', '2020-07-19', 1, 0, NULL, '2020-07-17', 1, 1, '41BB32AD-201A-4C2E-A88C-FA12D6EA3F94'),
-(3, 'ASDFASDFASDFASDF', '2020-07-18', 1, 0, 1, '2020-07-17', 1, 1, '06AFA711-41E4-4E2F-9E90-38EFB6208AA9');
+(1, 'asss', '2020-07-27', 1, 0, NULL, '2020-07-27', 1, 1, '5CBE89BE-2CA9-4BC4-9296-E7ACEA3BF82C'),
+(2, 'asssd', '2020-07-27', 1, 0, NULL, '2020-07-27', 1, 1, 'AE0979A3-999B-476A-A925-4A0B409FA5A6'),
+(3, 'assder', '2020-07-27', 1, 0, 1, '2020-07-27', 1, 1, '15057C31-5EDC-492B-ADB0-DC881BDF1AC7'),
+(4, 'asdfasdfasdfasdf', '2020-08-01', 1, 0, NULL, '2020-08-01', 1, 1, '8B29DDA3-8FE9-4B05-83BC-AB9685955A1B');
 
 -- --------------------------------------------------------
 
@@ -164,9 +186,9 @@ CREATE TABLE `code_purchase_order` (
   `supplier_id` int(255) NOT NULL,
   `created_by` int(255) NOT NULL,
   `confirmed_by` int(255) DEFAULT NULL,
-  `is_closed` tinyint(1) NOT NULL DEFAULT '0',
+  `is_closed` tinyint(1) NOT NULL DEFAULT 0,
   `promo_code` varchar(50) DEFAULT NULL,
-  `dropship_address` text,
+  `dropship_address` text DEFAULT NULL,
   `dropship_city` varchar(50) DEFAULT NULL,
   `dropship_contact_person` varchar(50) DEFAULT NULL,
   `dropship_contact` varchar(50) DEFAULT NULL,
@@ -174,8 +196,8 @@ CREATE TABLE `code_purchase_order` (
   `date_send_request` date DEFAULT NULL,
   `status` varchar(10) DEFAULT NULL,
   `guid` varchar(50) NOT NULL,
-  `is_delete` tinyint(1) NOT NULL DEFAULT '0',
-  `is_confirm` tinyint(1) NOT NULL DEFAULT '0',
+  `is_delete` tinyint(1) NOT NULL DEFAULT 0,
+  `is_confirm` tinyint(1) NOT NULL DEFAULT 0,
   `note` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -184,13 +206,7 @@ CREATE TABLE `code_purchase_order` (
 --
 
 INSERT INTO `code_purchase_order` (`id`, `date`, `name`, `supplier_id`, `created_by`, `confirmed_by`, `is_closed`, `promo_code`, `dropship_address`, `dropship_city`, `dropship_contact_person`, `dropship_contact`, `taxing`, `date_send_request`, `status`, `guid`, `is_delete`, `is_confirm`, `note`) VALUES
-(1, '2020-07-17', 'PO.DSE-202007-9696', 1, 1, 1, 0, NULL, NULL, NULL, NULL, NULL, 1, NULL, 'TOP URGENT', '0679D431-ABC1-46F8-A34F-845F777B50BC', 0, 1, ''),
-(2, '2020-07-17', 'PO.DSE-202007-4654', 1, 1, 1, 0, NULL, NULL, NULL, NULL, NULL, 1, NULL, 'TOP URGENT', '1092F491-B721-4E2C-B295-E65284740939', 0, 1, ''),
-(3, '2020-07-17', 'PO.DSE-202007-6605', 1, 1, 1, 0, NULL, NULL, NULL, NULL, NULL, 1, NULL, 'TOP URGENT', '659256AD-BBDD-4EB7-B445-5167C493A6C6', 0, 1, ''),
-(4, '2020-07-17', 'PO.DSE-202007-0682', 1, 1, 1, 0, NULL, NULL, NULL, NULL, NULL, 1, NULL, 'TOP URGENT', '35E6BCB3-C15C-44CD-A8B5-B80CB48E97B3', 0, 1, ''),
-(5, '2020-07-17', 'PO.DSE-202007-3285', 1, 1, 1, 0, NULL, NULL, NULL, NULL, NULL, 1, NULL, 'TOP URGENT', 'C2782E7E-47F6-4897-990F-283D37CC12FC', 0, 1, ''),
-(6, '2020-07-17', 'PO.DSE-202007-6530', 1, 1, 1, 0, NULL, NULL, NULL, NULL, NULL, 1, NULL, 'TOP URGENT', '16365FF9-B155-4AB5-9DBA-FD6C16E35B9C', 0, 1, 'Daniel'),
-(7, '2020-07-18', 'PO.DSE-202007-3185', 1, 1, 1, 0, NULL, 'jalan jamuju no 1', 'bandung ', 'martin', '089687884773', 1, NULL, 'TOP URGENT', '79CE5F3F-0E2B-4501-9ED3-7140AE1A2A43', 0, 1, 'rumah biru');
+(1, '2020-07-26', 'PO.DSE-202007-8897', 1, 1, 1, 0, NULL, NULL, NULL, NULL, NULL, 1, NULL, 'TOP URGENT', '2B0C033C-15BA-4008-9059-D022F312E4F0', 0, 1, '');
 
 -- --------------------------------------------------------
 
@@ -219,12 +235,12 @@ CREATE TABLE `code_sales_order` (
   `date` date NOT NULL,
   `taxing` tinyint(1) NOT NULL,
   `seller` int(255) DEFAULT NULL,
-  `is_confirm` tinyint(1) NOT NULL DEFAULT '0',
+  `is_confirm` tinyint(1) NOT NULL DEFAULT 0,
   `confirmed_by` int(255) DEFAULT NULL,
   `guid` varchar(50) NOT NULL,
   `created_by` int(255) NOT NULL,
-  `invoicing_method` tinyint(1) NOT NULL DEFAULT '1',
-  `is_delete` tinyint(1) NOT NULL DEFAULT '0'
+  `invoicing_method` tinyint(1) NOT NULL DEFAULT 1,
+  `is_delete` tinyint(1) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
@@ -232,17 +248,9 @@ CREATE TABLE `code_sales_order` (
 --
 
 INSERT INTO `code_sales_order` (`id`, `customer_id`, `name`, `date`, `taxing`, `seller`, `is_confirm`, `confirmed_by`, `guid`, `created_by`, `invoicing_method`, `is_delete`) VALUES
-(1, 116, '202007.18975273', '2020-07-16', 0, 1, 1, 1, '8B63FB64-6D87-4C78-A307-808BE1CA6233', 1, 2, 0),
-(2, 133, '202007.48729154', '2020-07-14', 0, 1, 1, 1, '4843367F-7B9A-4B1F-A1B5-064592B1DD3C', 1, 2, 0),
-(3, 66, '202007.83679114', '2020-07-17', 0, NULL, 1, 1, '561D81E1-02D9-4C3B-B679-420F864E8BD1', 1, 1, 0),
-(4, 5, '202007.16027207', '2020-07-17', 0, 3, 1, 1, '48767868-6FCA-4850-A686-58CE654D4447', 1, 1, 0),
-(5, 133, '202007.20896934', '2020-07-17', 0, NULL, 1, 1, 'A3BA54AF-BD74-444D-A525-E468B16B05CE', 1, 1, 0),
-(6, 133, '202007.61950131', '2020-07-17', 1, 2, 1, 1, 'F2A65AE8-4479-477A-ABD1-21D7645B9E8C', 1, 1, 0),
-(7, 80, '202007.75132866', '2020-07-17', 1, 2, 1, 1, 'B0D56714-7EEE-4A2C-A784-BD443215306D', 1, 1, 0),
-(8, 69, '202007.90241801', '2020-07-18', 0, NULL, 0, NULL, '1F86A040-E326-4309-BEF9-4D5E033965CF', 1, 1, 1),
-(9, 116, '202007.03971053', '2020-07-18', 0, NULL, 1, 1, '58A07D75-E161-4B30-977C-BE59156D07C5', 1, 1, 0),
-(10, 116, '202007.72025037', '2020-07-18', 0, NULL, 1, 1, 'DC886FD9-8608-4C06-AB6E-43083A72590E', 1, 1, 0),
-(11, 116, '202007.19781440', '2020-07-18', 0, NULL, 1, 1, '2064538F-27BC-4B3B-BC31-1C28EF239C8D', 1, 1, 0);
+(1, 116, '202007.66789069', '2020-07-25', 0, NULL, 1, 1, 'B2EE7B13-E549-4BFB-8A64-95EEA5CF8903', 1, 1, 0),
+(2, 69, '202007.30413153', '2020-07-27', 0, NULL, 1, 1, '0B9BCDFF-431E-4C33-B1ED-6A4B7BBDD39F', 1, 1, 0),
+(3, 83, '202007.34955410', '2020-07-28', 0, NULL, 0, NULL, '20F615CC-6A2E-4BD2-A50B-300EBC034F21', 1, 1, 0);
 
 -- --------------------------------------------------------
 
@@ -254,20 +262,13 @@ CREATE TABLE `code_sales_order_close_request` (
   `id` int(255) NOT NULL,
   `date` date NOT NULL,
   `code_sales_order_id` int(255) NOT NULL,
+  `requested_by` int(255) NOT NULL,
   `information` text NOT NULL,
   `is_approved` tinyint(1) DEFAULT NULL,
   `approved_by` int(255) DEFAULT NULL,
   `approved_date` date DEFAULT NULL,
   `created_by` int(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
---
--- Dumping data untuk tabel `code_sales_order_close_request`
---
-
-INSERT INTO `code_sales_order_close_request` (`id`, `date`, `code_sales_order_id`, `information`, `is_approved`, `approved_by`, `approved_date`, `created_by`) VALUES
-(1, '2020-07-18', 1, 'Pelanggan kocak minta beli barang terus udah gitu batalin', NULL, NULL, NULL, 1),
-(2, '2020-07-18', 9, 'Sama ini juga dasar kocak emang orangnya', NULL, NULL, NULL, 1);
 
 -- --------------------------------------------------------
 
@@ -279,7 +280,7 @@ CREATE TABLE `code_sales_return` (
   `id` int(255) NOT NULL,
   `created_by` int(255) NOT NULL,
   `created_date` date NOT NULL,
-  `is_confirm` tinyint(1) NOT NULL DEFAULT '0',
+  `is_confirm` tinyint(1) NOT NULL DEFAULT 0,
   `confirmed_by` int(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -293,7 +294,7 @@ CREATE TABLE `code_sales_return_received` (
   `id` int(255) NOT NULL,
   `created_by` int(255) NOT NULL,
   `created_date` date NOT NULL,
-  `is_confirm` tinyint(1) NOT NULL DEFAULT '0',
+  `is_confirm` tinyint(1) NOT NULL DEFAULT 0,
   `confirmed_by` int(255) NOT NULL,
   `name` varchar(100) NOT NULL,
   `date` date NOT NULL
@@ -315,7 +316,7 @@ CREATE TABLE `customer` (
   `city` varchar(100) NOT NULL,
   `postal_code` varchar(10) DEFAULT NULL,
   `area_id` int(255) NOT NULL,
-  `is_black_list` tinyint(1) NOT NULL DEFAULT '0',
+  `is_black_list` tinyint(1) NOT NULL DEFAULT 0,
   `block` varchar(10) NOT NULL,
   `npwp` varchar(20) DEFAULT NULL,
   `phone_number` varchar(50) DEFAULT NULL,
@@ -324,7 +325,7 @@ CREATE TABLE `customer` (
   `created_by` int(255) NOT NULL,
   `latitude` decimal(33,30) DEFAULT NULL,
   `longitude` decimal(33,30) DEFAULT NULL,
-  `term_of_payment` int(255) NOT NULL DEFAULT '45',
+  `term_of_payment` int(255) NOT NULL DEFAULT 45,
   `plafond` decimal(50,2) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -441,7 +442,7 @@ INSERT INTO `customer` (`id`, `name`, `address`, `number`, `rt`, `rw`, `city`, `
 (113, 'Toko Golden Lite', 'Jalan Banceuy', '100', '000', '000', 'Bandung', '40111', 4, 0, '000', '', '081220016888', 'Mr. Joni', '2020-02-04', 1, NULL, NULL, 45, '3000000.00'),
 (114, 'Toko Bangunan Hadap Jaya', 'Jalan Margasari', '082', '000', '000', 'Bandung', '40287', 1, 0, '000', '', '022-7510948', 'Mrs. Suamiati', '2020-02-04', 1, NULL, NULL, 45, '3000000.00'),
 (115, 'Toko Bangunan Hadap Jaya II', 'Jalan Ciwastra', '169', '000', '000', 'Bandung', '40287', 1, 0, '000', '', '082115009077', 'Mr. David', '2020-02-04', 1, NULL, NULL, 45, '3000000.00'),
-(116, 'Perusahaan Dagang Hasil Jaya', 'Jalan Peta', '210', '000', '000', 'Bandung', '40231', 2, 0, '000', '', '022-6036170', 'Mrs. Sandra', '2020-02-04', 1, NULL, NULL, 45, '2000000.00'),
+(116, 'Perusahaan Dagang Hasil Jaya', 'Jalan Peta', '210', '000', '000', 'Bandung', '40231', 2, 0, '000', '', '022-6036170', 'Mrs. Sandra', '2020-02-04', 1, NULL, NULL, 45, '3000000.00'),
 (117, 'Toko Bangunan Hidup Sejahtera', 'Jalan Raya Barat', '785', '000', '000', 'Cimahi', '40526', 2, 0, '000', '', '081221204121', 'Mr. Sarip', '2020-02-04', 1, NULL, NULL, 45, '3000000.00'),
 (118, 'Toko Indo Mitra', 'Jalan Leuwi Panjang', '074', '000', '000', 'Bandung', '40233', 2, 0, '000', '', '081220691333', 'Mr. Chandra', '2020-02-04', 1, NULL, NULL, 45, '3000000.00'),
 (119, 'Toko Intio', 'Jalan Babakan Sari I', '105', '000', '000', 'Bandung', '40283', 3, 0, '000', '', '087815400681', 'Mr. Warto', '2020-02-04', 1, NULL, NULL, 45, '3000000.00'),
@@ -458,7 +459,7 @@ INSERT INTO `customer` (`id`, `name`, `address`, `number`, `rt`, `rw`, `city`, `
 (130, 'Toko Nceng', 'Jalan Bojong Koneng', '123', '000', '000', 'Bandung', '40191', 4, 0, '000', '', '081395112236', 'Mr. Enceng', '2020-02-07', 1, NULL, NULL, 45, '3000000.00'),
 (131, 'Toko Omega Electric', 'Jalan Indramayu', '012', '000', '000', 'Bandung', '40291', 1, 0, '000', '', '081322922888', 'Mrs. Diana', '2020-02-07', 1, NULL, NULL, 45, '3000000.00'),
 (132, 'Toko Panca Mulya', 'Jalan Kopo Sayati', '144', '000', '000', 'Bandung', '40228', 2, 0, '000', '', '022-5420586', 'Mrs. Dede', '2020-02-07', 1, NULL, NULL, 45, '3000000.00'),
-(133, 'Toko Pelita Putra', 'Ruko Gunung Batu', '009', '000', '000', 'Bandung', '40175', 2, 0, '000', '', '0811239777', 'Mr. Sunsun', '2020-02-07', 1, NULL, NULL, 45, '10000000.00'),
+(133, 'Toko Pelita Putra', 'Ruko Gunung Batu', '009', '000', '000', 'Bandung', '40175', 2, 0, '000', '', '0811239777', 'Mr. Sunsun', '2020-02-07', 1, NULL, NULL, 45, '3000000.00'),
 (134, 'Toko Bangunan Pesantren II', 'Jalan Pagarsih', '339', '000', '000', 'Bandung', '40221', 2, 0, '000', '', '022-6040285', 'Mr. Yanto', '2020-02-07', 1, NULL, NULL, 45, '3000000.00'),
 (135, 'Toko Prima Elektrik', 'Jalan ABC Komplek Cikapundung Electronic Center lt.1', '003', '000', '000', 'Bandung', '40111', 4, 0, 'EE', '', '085227160748', 'Mr. Endhi', '2020-02-07', 1, NULL, NULL, 45, '3000000.00'),
 (136, 'Toko Purnama Jaya Electronic', 'Jalan Cibodas Raya', '006', '000', '000', 'Bandung', '40291', 1, 0, '000', '', '081224798744', 'Mr. Nurzaki', '2020-02-07', 1, NULL, NULL, 45, '3000000.00'),
@@ -496,7 +497,7 @@ CREATE TABLE `delivery_order` (
   `id` int(255) NOT NULL,
   `sales_order_id` int(255) NOT NULL,
   `code_delivery_order_id` int(255) NOT NULL,
-  `quantity` int(255) NOT NULL DEFAULT '0'
+  `quantity` int(255) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
@@ -505,19 +506,9 @@ CREATE TABLE `delivery_order` (
 
 INSERT INTO `delivery_order` (`id`, `sales_order_id`, `code_delivery_order_id`, `quantity`) VALUES
 (1, 1, 1, 1),
-(2, 1, 2, 1),
-(3, 1, 3, 1),
-(4, 1, 4, 1),
-(5, 2, 5, 5),
-(6, 3, 5, 1),
-(7, 4, 5, 1),
-(8, 5, 5, 1),
-(9, 6, 6, 2),
-(10, 6, 7, 2),
-(11, 7, 8, 1),
-(12, 8, 8, 5),
-(13, 9, 9, 5),
-(14, 2, 10, 1);
+(2, 2, 2, 1),
+(3, 1, 3, 2),
+(4, 1, 4, 2);
 
 -- --------------------------------------------------------
 
@@ -556,7 +547,7 @@ CREATE TABLE `event` (
   `quantity` int(11) NOT NULL,
   `transaction` varchar(3) NOT NULL,
   `code_event_id` int(255) NOT NULL,
-  `price` decimal(50,4) NOT NULL DEFAULT '0.0000'
+  `price` decimal(50,4) NOT NULL DEFAULT 0.0000
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
@@ -564,11 +555,30 @@ CREATE TABLE `event` (
 --
 
 INSERT INTO `event` (`id`, `item_id`, `quantity`, `transaction`, `code_event_id`, `price`) VALUES
-(1, 9, 2, 'OUT', 1, '0.0000'),
-(2, 9, 2, 'IN', 2, '200000.0000'),
-(3, 9, 1, 'OUT', 4, '0.0000'),
-(4, 9, 1, 'OUT', 5, '0.0000'),
-(5, 9, 1, 'OUT', 6, '0.0000');
+(1, 9, 1, 'OUT', 2, '0.0000'),
+(2, 9, 1, 'IN', 3, '0.0000'),
+(3, 1, 1, 'IN', 3, '0.0000'),
+(4, 2, 10, 'IN', 8, '0.0000'),
+(5, 2, 10, 'IN', 9, '0.0000'),
+(6, 9, 1, 'OUT', 9, '0.0000'),
+(7, 3, 4, 'IN', 10, '0.0000'),
+(8, 4, 2, 'OUT', 10, '0.0000'),
+(9, 1, 10, 'IN', 11, '1000.0000'),
+(10, 4, 1, 'OUT', 11, '10000.0000'),
+(11, 3, 4, 'OUT', 13, '0.0000'),
+(12, 9, 1, 'IN', 13, '0.0000'),
+(13, 1, 2, 'OUT', 14, '0.0000'),
+(14, 2, 1, 'IN', 14, '0.0000'),
+(15, 1, 20, 'OUT', 16, '0.0000'),
+(16, 9, 1, 'IN', 16, '0.0000'),
+(17, 1, 20, 'OUT', 17, '0.0000'),
+(18, 9, 1, 'IN', 17, '0.0000'),
+(19, 1, 20, 'OUT', 18, '0.0000'),
+(20, 9, 1, 'IN', 18, '0.0000'),
+(21, 1, 4, 'IN', 19, '0.0000'),
+(22, 2, 2, 'OUT', 19, '0.0000'),
+(23, 2, 20, 'IN', 20, '0.0000'),
+(24, 9, 2, 'OUT', 20, '0.0000');
 
 -- --------------------------------------------------------
 
@@ -629,13 +639,6 @@ CREATE TABLE `fixed_asset` (
   `residue_value` float(50,4) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
---
--- Dumping data untuk tabel `fixed_asset`
---
-
-INSERT INTO `fixed_asset` (`id`, `name`, `description`, `sold_date`, `value`, `depreciation_time`, `date`, `type`, `residue_value`) VALUES
-(1, 'Motor Beat', 'motor mewah untuk saudara andi', NULL, '5000000000000.0000', 8, '1996-05-20', 2, 0.0000);
-
 -- --------------------------------------------------------
 
 --
@@ -676,9 +679,13 @@ CREATE TABLE `good_receipt` (
 --
 
 INSERT INTO `good_receipt` (`id`, `purchase_order_id`, `quantity`, `code_good_receipt_id`, `billed_price`) VALUES
-(1, 1, 20, 1, '984000.0000'),
-(2, 2, 50, 2, '345056.0000'),
-(3, 3, 10, 3, '492000.0000');
+(1, 1, 10, 1, '268960.0000'),
+(2, 2, 5, 1, '0.0000'),
+(3, 1, 10, 2, '268960.0000'),
+(4, 2, 1, 2, '0.0000'),
+(5, 1, 10, 3, '268960.0000'),
+(6, 1, 50, 4, '268960.0000'),
+(7, 2, 1, 4, '0.0000');
 
 -- --------------------------------------------------------
 
@@ -736,18 +743,22 @@ CREATE TABLE `invoice` (
   `id` int(255) NOT NULL,
   `name` varchar(50) NOT NULL,
   `value` decimal(50,2) NOT NULL,
-  `customer_id` int(255) DEFAULT NULL,
   `date` date NOT NULL,
   `information` text NOT NULL,
-  `is_done` tinyint(1) DEFAULT '0'
+  `is_done` tinyint(1) DEFAULT 0,
+  `is_confirm` tinyint(1) NOT NULL DEFAULT 0,
+  `taxInvoice` varchar(50) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data untuk tabel `invoice`
 --
 
-INSERT INTO `invoice` (`id`, `name`, `value`, `customer_id`, `date`, `information`, `is_done`) VALUES
-(1, 'INV.DSE202007-009', '1714760.00', 133, '2020-07-03', 'DO-DSE-202007-009', 0);
+INSERT INTO `invoice` (`id`, `name`, `value`, `date`, `information`, `is_done`, `is_confirm`, `taxInvoice`) VALUES
+(1, 'INV.DSE202007-001', '268960.00', '2020-07-25', 'DO-DSE-202007-001', 0, 1, NULL),
+(2, 'INV.DSE202007-0002', '268960.00', '2020-07-27', 'DO-DSE-202007-0002', 0, 0, NULL),
+(3, 'INV.DSE202008-0001', '537920.00', '2020-08-01', 'DO-DSE-202008-0001', 0, 1, NULL),
+(4, 'INV.DSE202008-0002', '537920.00', '2020-08-02', 'DO-DSE-202008-0002', 0, 1, NULL);
 
 -- --------------------------------------------------------
 
@@ -760,8 +771,8 @@ CREATE TABLE `item` (
   `reference` varchar(50) NOT NULL,
   `name` varchar(100) NOT NULL,
   `type` int(255) DEFAULT NULL,
-  `is_notified_stock` tinyint(1) NOT NULL DEFAULT '0',
-  `confidence_level` float(5,2) NOT NULL DEFAULT '90.00'
+  `is_notified_stock` tinyint(1) NOT NULL DEFAULT 0,
+  `confidence_level` float(5,2) NOT NULL DEFAULT 90.00
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
@@ -903,13 +914,6 @@ CREATE TABLE `petty_cash` (
   `created_by` int(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
---
--- Dumping data untuk tabel `petty_cash`
---
-
-INSERT INTO `petty_cash` (`id`, `date`, `transaction`, `value`, `information`, `expense_class`, `bank_id`, `created_by`) VALUES
-(1, '2020-07-17', 1, '50000.00', '', 4, NULL, 1);
-
 -- --------------------------------------------------------
 
 --
@@ -922,21 +926,11 @@ CREATE TABLE `plafond_submission` (
   `submitted_plafond` decimal(50,2) NOT NULL,
   `submitted_by` int(255) NOT NULL,
   `submitted_date` date NOT NULL,
-  `is_confirm` tinyint(1) NOT NULL DEFAULT '0',
-  `is_delete` tinyint(1) NOT NULL DEFAULT '0',
+  `is_confirm` tinyint(1) NOT NULL DEFAULT 0,
+  `is_delete` tinyint(1) NOT NULL DEFAULT 0,
   `confirmed_by` int(255) DEFAULT NULL,
   `confirmed_date` date DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
---
--- Dumping data untuk tabel `plafond_submission`
---
-
-INSERT INTO `plafond_submission` (`id`, `customer_id`, `submitted_plafond`, `submitted_by`, `submitted_date`, `is_confirm`, `is_delete`, `confirmed_by`, `confirmed_date`) VALUES
-(1, 133, '10000000.00', 1, '2020-07-16', 1, 0, 1, '2020-07-16'),
-(2, 116, '10000000.00', 1, '2020-07-16', 1, 0, 1, '2020-07-16'),
-(3, 116, '3000000.00', 1, '2020-07-16', 1, 0, 1, '2020-07-16'),
-(4, 116, '2000000.00', 1, '2020-07-16', 1, 0, 1, '2020-07-16');
 
 -- --------------------------------------------------------
 
@@ -1030,10 +1024,10 @@ CREATE TABLE `purchase_invoice` (
   `tax_document` varchar(100) NOT NULL,
   `invoice_document` varchar(100) NOT NULL,
   `created_by` int(255) NOT NULL,
-  `is_confirm` tinyint(1) NOT NULL DEFAULT '0',
-  `is_delete` tinyint(1) NOT NULL DEFAULT '0',
+  `is_confirm` tinyint(1) NOT NULL DEFAULT 0,
+  `is_delete` tinyint(1) NOT NULL DEFAULT 0,
   `confirmed_by` int(255) DEFAULT NULL,
-  `is_done` tinyint(4) NOT NULL DEFAULT '0'
+  `is_done` tinyint(4) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
@@ -1041,7 +1035,7 @@ CREATE TABLE `purchase_invoice` (
 --
 
 INSERT INTO `purchase_invoice` (`id`, `date`, `tax_document`, `invoice_document`, `created_by`, `is_confirm`, `is_delete`, `confirmed_by`, `is_done`) VALUES
-(1, '2020-07-17', '010.003-20.35135135', '010.003-20.35135135', 1, 0, 0, NULL, 0);
+(1, '2020-07-27', '010.003-20.35145684', 'Dualipa', 1, 1, 0, 1, 0);
 
 -- --------------------------------------------------------
 
@@ -1054,10 +1048,10 @@ CREATE TABLE `purchase_invoice_other` (
   `supplier_id` int(255) NOT NULL,
   `value` decimal(50,2) NOT NULL,
   `created_by` int(255) NOT NULL,
-  `is_confirm` tinyint(1) NOT NULL DEFAULT '0',
+  `is_confirm` tinyint(1) NOT NULL DEFAULT 0,
   `confirmed_by` int(255) DEFAULT NULL,
-  `is_delete` tinyint(1) NOT NULL DEFAULT '0',
-  `is_done` tinyint(1) NOT NULL DEFAULT '0'
+  `is_delete` tinyint(1) NOT NULL DEFAULT 0,
+  `is_done` tinyint(1) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -1072,8 +1066,8 @@ CREATE TABLE `purchase_order` (
   `price_list` decimal(50,4) NOT NULL,
   `net_price` decimal(50,4) NOT NULL,
   `quantity` int(255) NOT NULL,
-  `received` int(255) NOT NULL DEFAULT '0',
-  `status` tinyint(1) NOT NULL DEFAULT '0',
+  `received` int(255) NOT NULL DEFAULT 0,
+  `status` tinyint(1) NOT NULL DEFAULT 0,
   `code_purchase_order_id` int(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -1082,13 +1076,8 @@ CREATE TABLE `purchase_order` (
 --
 
 INSERT INTO `purchase_order` (`id`, `item_id`, `price_list`, `net_price`, `quantity`, `received`, `status`, `code_purchase_order_id`) VALUES
-(1, 17, '1200000.0000', '984000.0000', 20, -20, 0, 1),
-(2, 11, '420800.0000', '345056.0000', 50, -50, 0, 2),
-(3, 16, '600000.0000', '492000.0000', 10, -10, 0, 3),
-(4, 35, '9280000.0000', '7609600.0000', 20, 0, 0, 4),
-(5, 1, '328000.0000', '262400.0000', 500, 0, 0, 5),
-(6, 9, '6560000.0000', '5379200.0000', 1, 0, 0, 6),
-(7, 1, '328000.0000', '268960.0000', 500, 0, 0, 7);
+(1, 1, '328000.0000', '268960.0000', 100, 80, 0, 1),
+(2, 1, '1.0000', '0.0000', 10, 7, 0, 1);
 
 -- --------------------------------------------------------
 
@@ -1103,7 +1092,7 @@ CREATE TABLE `purchase_return` (
   `discount` decimal(10,4) NOT NULL,
   `quantity` int(255) NOT NULL,
   `received` int(255) NOT NULL,
-  `status` tinyint(1) NOT NULL DEFAULT '0',
+  `status` tinyint(1) NOT NULL DEFAULT 0,
   `code_purchase_return_id` int(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -1162,8 +1151,8 @@ CREATE TABLE `sales_order` (
   `price_list_id` int(255) NOT NULL,
   `discount` decimal(10,4) NOT NULL,
   `quantity` int(255) NOT NULL,
-  `sent` int(255) NOT NULL DEFAULT '0',
-  `status` tinyint(1) NOT NULL DEFAULT '0',
+  `sent` int(255) NOT NULL DEFAULT 0,
+  `status` tinyint(1) NOT NULL DEFAULT 0,
   `code_sales_order_id` int(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -1172,21 +1161,9 @@ CREATE TABLE `sales_order` (
 --
 
 INSERT INTO `sales_order` (`id`, `price_list_id`, `discount`, `quantity`, `sent`, `status`, `code_sales_order_id`) VALUES
-(1, 35, '14.0000', 1, 0, 0, 1),
-(2, 57, '18.0000', 10, 6, 0, 2),
-(3, 13, '16.0000', 1, 1, 1, 2),
-(4, 35, '12.0000', 1, 1, 1, 2),
-(5, 57, '100.0000', 1, 1, 1, 2),
-(6, 20, '18.0000', 2, 2, 1, 3),
-(7, 9, '16.0000', 1, 0, 0, 4),
-(8, 57, '16.0000', 5, 0, 0, 4),
-(9, 15, '18.5000', 5, 5, 1, 5),
-(10, 57, '18.0000', 5, 0, 0, 6),
-(11, 15, '16.0000', 1, 0, 0, 7),
-(12, 9, '18.0000', 20, 0, 0, 8),
-(13, 57, '18.0000', 1, 0, 0, 9),
-(14, 9, '18.0000', 1, 0, 0, 10),
-(15, 11, '18.0000', 1, 0, 0, 11);
+(1, 57, '18.0000', 20, 5, 0, 1),
+(2, 57, '18.0000', 20, 1, 0, 2),
+(3, 57, '18.0000', 2, 0, 0, 3);
 
 -- --------------------------------------------------------
 
@@ -1199,7 +1176,7 @@ CREATE TABLE `sales_return` (
   `delivery_order_id` int(255) NOT NULL,
   `quantity` int(255) NOT NULL,
   `received` int(255) NOT NULL,
-  `is_done` tinyint(1) NOT NULL DEFAULT '0',
+  `is_done` tinyint(1) NOT NULL DEFAULT 0,
   `code_sales_return_id` int(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -1240,10 +1217,22 @@ CREATE TABLE `stock_in` (
 --
 
 INSERT INTO `stock_in` (`id`, `item_id`, `quantity`, `residue`, `supplier_id`, `customer_id`, `good_receipt_id`, `sales_return_id`, `event_id`, `price`) VALUES
-(1, 9, 2, 0, NULL, NULL, NULL, NULL, 2, '200000.0000'),
-(2, 17, 20, 20, 1, NULL, 1, NULL, NULL, '984000.0000'),
-(3, 11, 50, 45, 1, NULL, 2, NULL, NULL, '345056.0000'),
-(4, 16, 10, 10, 1, NULL, 3, NULL, NULL, '492000.0000');
+(1, 1, 10, 0, 1, NULL, 5, NULL, NULL, '268960.0000'),
+(2, 9, 1, 0, NULL, NULL, NULL, NULL, 2, '0.0000'),
+(3, 1, 1, 0, NULL, NULL, NULL, NULL, 3, '0.0000'),
+(4, 1, 50, 25, 1, NULL, 6, NULL, NULL, '268960.0000'),
+(5, 1, 1, 1, 1, NULL, 7, NULL, NULL, '0.0000'),
+(6, 9, 1, 0, NULL, NULL, NULL, NULL, 20, '0.0000'),
+(7, 9, 1, 0, NULL, NULL, NULL, NULL, 20, '0.0000'),
+(8, 9, 1, 1, NULL, NULL, NULL, NULL, 20, '0.0000'),
+(9, 9, 1, 1, NULL, NULL, NULL, NULL, 20, '0.0000'),
+(10, 9, 1, 1, NULL, NULL, NULL, NULL, 20, '0.0000'),
+(11, 9, 1, 1, NULL, NULL, NULL, NULL, 18, '0.0000'),
+(12, 9, 1, 1, NULL, NULL, NULL, NULL, 16, '0.0000'),
+(13, 9, 1, 1, NULL, NULL, NULL, NULL, 16, '0.0000'),
+(14, 9, 1, 1, NULL, NULL, NULL, NULL, 16, '0.0000'),
+(15, 2, 20, 18, NULL, NULL, NULL, NULL, 23, '0.0000'),
+(16, 1, 4, 4, NULL, NULL, NULL, NULL, 21, '0.0000');
 
 -- --------------------------------------------------------
 
@@ -1267,8 +1256,40 @@ CREATE TABLE `stock_out` (
 --
 
 INSERT INTO `stock_out` (`id`, `in_id`, `quantity`, `customer_id`, `supplier_id`, `code_delivery_order_id`, `event_id`, `code_purchase_return_id`) VALUES
-(1, 1, 0, NULL, NULL, NULL, 1, NULL),
-(2, 3, 5, 133, NULL, 9, NULL, NULL);
+(1, 2, 0, NULL, NULL, NULL, NULL, NULL),
+(2, 1, 10, NULL, NULL, NULL, NULL, NULL),
+(3, 1, 0, NULL, NULL, NULL, NULL, NULL),
+(4, 3, 19, NULL, NULL, NULL, NULL, NULL),
+(5, 3, 18, NULL, NULL, NULL, NULL, NULL),
+(6, 3, 17, NULL, NULL, NULL, NULL, NULL),
+(7, 3, 16, NULL, NULL, NULL, NULL, NULL),
+(8, 3, 15, NULL, NULL, NULL, NULL, NULL),
+(9, 3, 14, NULL, NULL, NULL, NULL, NULL),
+(10, 3, 13, NULL, NULL, NULL, NULL, NULL),
+(11, 3, 12, NULL, NULL, NULL, NULL, NULL),
+(12, 3, 11, NULL, NULL, NULL, NULL, NULL),
+(13, 3, 10, NULL, NULL, NULL, NULL, NULL),
+(14, 3, 9, NULL, NULL, NULL, NULL, NULL),
+(15, 3, 8, NULL, NULL, NULL, NULL, NULL),
+(16, 3, 7, NULL, NULL, NULL, NULL, NULL),
+(17, 3, 6, NULL, NULL, NULL, NULL, NULL),
+(18, 3, 5, NULL, NULL, NULL, NULL, NULL),
+(19, 3, 4, NULL, NULL, NULL, NULL, NULL),
+(20, 3, 3, NULL, NULL, NULL, NULL, NULL),
+(21, 3, 2, NULL, NULL, NULL, NULL, NULL),
+(22, 3, 1, NULL, NULL, NULL, NULL, NULL),
+(23, 3, 0, NULL, NULL, NULL, NULL, NULL),
+(24, 4, 20, NULL, NULL, NULL, 19, NULL),
+(25, 4, 20, NULL, NULL, NULL, 17, NULL),
+(26, 4, 20, NULL, NULL, NULL, 15, NULL),
+(27, 4, 20, NULL, NULL, NULL, 15, NULL),
+(28, 4, 20, NULL, NULL, NULL, 15, NULL),
+(29, 6, 1, NULL, NULL, NULL, 24, NULL),
+(30, 7, 0, NULL, NULL, NULL, 24, NULL),
+(31, 15, 2, NULL, NULL, NULL, 22, NULL),
+(32, 4, 1, 116, NULL, 1, NULL, NULL),
+(33, 4, 2, 116, NULL, 3, NULL, NULL),
+(34, 4, 2, 116, NULL, 4, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -1285,7 +1306,7 @@ CREATE TABLE `supplier` (
   `rw` varchar(3) NOT NULL,
   `city` varchar(100) NOT NULL,
   `postal_code` varchar(10) DEFAULT NULL,
-  `is_black_list` tinyint(1) NOT NULL DEFAULT '0',
+  `is_black_list` tinyint(1) NOT NULL DEFAULT 0,
   `block` varchar(10) NOT NULL,
   `npwp` varchar(20) DEFAULT NULL,
   `phone_number` varchar(50) DEFAULT NULL,
@@ -1312,12 +1333,12 @@ CREATE TABLE `users` (
   `name` varchar(100) NOT NULL,
   `address` varchar(500) NOT NULL,
   `bank_account` varchar(50) NOT NULL,
-  `is_active` tinyint(1) NOT NULL DEFAULT '1',
+  `is_active` tinyint(1) NOT NULL DEFAULT 1,
   `entry_date` date DEFAULT NULL,
   `password` varchar(50) NOT NULL,
   `email` varchar(50) NOT NULL,
   `image_url` varchar(100) DEFAULT NULL,
-  `access_level` tinyint(1) NOT NULL DEFAULT '1'
+  `access_level` tinyint(1) NOT NULL DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
@@ -1326,8 +1347,7 @@ CREATE TABLE `users` (
 
 INSERT INTO `users` (`id`, `name`, `address`, `bank_account`, `is_active`, `entry_date`, `password`, `email`, `image_url`, `access_level`) VALUES
 (1, 'Daniel Tri', 'Jalan Jamuju no. 18, Bandung', '8090175441', 1, '2020-01-01', '27a9dc715a8e1b472ba494313425de62', 'danielrudianto12@gmail.com', NULL, 5),
-(2, 'Andrew Bambang Rudianto', 'Jalan Jamuju no. 18, Bandung', '8090175441', 1, '2020-07-08', 'df68de1228db0edd7590b6c89f8dab7e', 'andrewbambang@gmail.com', NULL, 5),
-(3, 'Martin Luhulima', 'Jalan XXXYYYZZZ', '8080808080', 1, '2020-07-17', '34f74c049edea51851c6924f4a386762', '', NULL, 1);
+(2, 'Andrew Bambang Rudianto', 'Jalan Jamuju no. 18, Bandung', '8090175441', 1, '2020-07-08', 'df68de1228db0edd7590b6c89f8dab7e', 'andrewbambang@gmail.com', NULL, 5);
 
 -- --------------------------------------------------------
 
@@ -1356,6 +1376,12 @@ INSERT INTO `user_authorization` (`id`, `user_id`, `department_id`) VALUES
 --
 -- Indexes for dumped tables
 --
+
+--
+-- Indeks untuk tabel `attendance_list`
+--
+ALTER TABLE `attendance_list`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indeks untuk tabel `bank_transaction`
@@ -1511,8 +1537,7 @@ ALTER TABLE `internal_bank_account`
 -- Indeks untuk tabel `invoice`
 --
 ALTER TABLE `invoice`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `customer_id` (`customer_id`);
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indeks untuk tabel `item`
@@ -1646,7 +1671,8 @@ ALTER TABLE `stock_in`
 --
 ALTER TABLE `stock_out`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `in_id` (`in_id`);
+  ADD KEY `in_id` (`in_id`),
+  ADD KEY `event_id` (`event_id`);
 
 --
 -- Indeks untuk tabel `supplier`
@@ -1672,6 +1698,12 @@ ALTER TABLE `user_authorization`
 --
 
 --
+-- AUTO_INCREMENT untuk tabel `attendance_list`
+--
+ALTER TABLE `attendance_list`
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT untuk tabel `bank_transaction`
 --
 ALTER TABLE `bank_transaction`
@@ -1687,25 +1719,25 @@ ALTER TABLE `benefit`
 -- AUTO_INCREMENT untuk tabel `code_delivery_order`
 --
 ALTER TABLE `code_delivery_order`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT untuk tabel `code_event`
 --
 ALTER TABLE `code_event`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- AUTO_INCREMENT untuk tabel `code_good_receipt`
 --
 ALTER TABLE `code_good_receipt`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT untuk tabel `code_purchase_order`
 --
 ALTER TABLE `code_purchase_order`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT untuk tabel `code_purchase_return`
@@ -1717,13 +1749,13 @@ ALTER TABLE `code_purchase_return`
 -- AUTO_INCREMENT untuk tabel `code_sales_order`
 --
 ALTER TABLE `code_sales_order`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT untuk tabel `code_sales_order_close_request`
 --
 ALTER TABLE `code_sales_order_close_request`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT untuk tabel `code_sales_return`
@@ -1753,7 +1785,7 @@ ALTER TABLE `customer_area`
 -- AUTO_INCREMENT untuk tabel `delivery_order`
 --
 ALTER TABLE `delivery_order`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT untuk tabel `department`
@@ -1765,7 +1797,7 @@ ALTER TABLE `department`
 -- AUTO_INCREMENT untuk tabel `event`
 --
 ALTER TABLE `event`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
 
 --
 -- AUTO_INCREMENT untuk tabel `expense_class`
@@ -1777,7 +1809,7 @@ ALTER TABLE `expense_class`
 -- AUTO_INCREMENT untuk tabel `fixed_asset`
 --
 ALTER TABLE `fixed_asset`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT untuk tabel `fixed_asset_type`
@@ -1789,7 +1821,7 @@ ALTER TABLE `fixed_asset_type`
 -- AUTO_INCREMENT untuk tabel `good_receipt`
 --
 ALTER TABLE `good_receipt`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT untuk tabel `income_class`
@@ -1807,7 +1839,7 @@ ALTER TABLE `internal_bank_account`
 -- AUTO_INCREMENT untuk tabel `invoice`
 --
 ALTER TABLE `invoice`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT untuk tabel `item`
@@ -1837,13 +1869,13 @@ ALTER TABLE `payable`
 -- AUTO_INCREMENT untuk tabel `petty_cash`
 --
 ALTER TABLE `petty_cash`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT untuk tabel `plafond_submission`
 --
 ALTER TABLE `plafond_submission`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT untuk tabel `price_list`
@@ -1867,7 +1899,7 @@ ALTER TABLE `purchase_invoice_other`
 -- AUTO_INCREMENT untuk tabel `purchase_order`
 --
 ALTER TABLE `purchase_order`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT untuk tabel `purchase_return`
@@ -1897,7 +1929,7 @@ ALTER TABLE `salary_slip`
 -- AUTO_INCREMENT untuk tabel `sales_order`
 --
 ALTER TABLE `sales_order`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT untuk tabel `sales_return`
@@ -1915,13 +1947,13 @@ ALTER TABLE `sales_return_received`
 -- AUTO_INCREMENT untuk tabel `stock_in`
 --
 ALTER TABLE `stock_in`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT untuk tabel `stock_out`
 --
 ALTER TABLE `stock_out`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=35;
 
 --
 -- AUTO_INCREMENT untuk tabel `supplier`
@@ -1933,7 +1965,7 @@ ALTER TABLE `supplier`
 -- AUTO_INCREMENT untuk tabel `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT untuk tabel `user_authorization`
@@ -2011,12 +2043,6 @@ ALTER TABLE `event`
   ADD CONSTRAINT `event_ibfk_2` FOREIGN KEY (`item_id`) REFERENCES `item` (`id`);
 
 --
--- Ketidakleluasaan untuk tabel `invoice`
---
-ALTER TABLE `invoice`
-  ADD CONSTRAINT `invoice_ibfk_1` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`id`);
-
---
 -- Ketidakleluasaan untuk tabel `item`
 --
 ALTER TABLE `item`
@@ -2092,7 +2118,8 @@ ALTER TABLE `stock_in`
 -- Ketidakleluasaan untuk tabel `stock_out`
 --
 ALTER TABLE `stock_out`
-  ADD CONSTRAINT `stock_out_ibfk_1` FOREIGN KEY (`in_id`) REFERENCES `stock_in` (`id`);
+  ADD CONSTRAINT `stock_out_ibfk_1` FOREIGN KEY (`in_id`) REFERENCES `stock_in` (`id`),
+  ADD CONSTRAINT `stock_out_ibfk_2` FOREIGN KEY (`event_id`) REFERENCES `event` (`id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
