@@ -214,17 +214,16 @@ class Stock_in_model extends CI_Model {
 		
 		public function ViewCard($item_id)
 		{
-			$this->db->select('stock_in.*, COALESCE(code_good_receipt.name, "") as name, COALESCE(customer.name, supplier.name, "PT Duta Sapta Energi") as opponent_name');
-			$this->db->from('stock_in');
-			$this->db->join('good_receipt', 'stock_in.good_receipt_id = good_receipt.id', 'left');
-			$this->db->join('code_good_receipt', 'good_receipt.code_good_receipt_id = code_good_receipt.id');
-
-			$this->db->join('customer', 'stock_in.customer_id = customer.id', 'left');
-			$this->db->join('supplier', 'stock_in.supplier_id = supplier.id', 'left');
-
-			$this->db->where('stock_in.item_id', $item_id);
-
-			$query		= $this->db->get();
+			$query = $this->db->query("
+				SELECT stock_in.* FROM stock_in
+				LEFT JOIN (
+					SELECT good_receipt.id, code_good_receipt.name FROM code_good_receipt
+					JOIN good_receipt ON good_receipt.code_good_receipt_id = code_good_receipt.id
+				) goodReceiptTable
+				ON stock_in.good_receipt_id = goodReceiptTable.id
+				WHERE stock_in.item_id = '$item_id'
+			");
+			
 			$result		= $query->result();
 			
 			return $result;

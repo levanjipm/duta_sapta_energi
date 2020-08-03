@@ -308,7 +308,7 @@ class Sales_order extends CI_Controller {
 		$this->load->view('sales/SalesOrder/sales_order_track_dashboard');
 	}
 
-	public function archive()
+	public function archiveDashboard()
 	{
 		$user_id		= $this->session->userdata('user_id');
 		$this->load->model('User_model');
@@ -323,7 +323,7 @@ class Sales_order extends CI_Controller {
 		$this->load->model('Sales_order_model');
 		$data['years']	= $this->Sales_order_model->show_years();
 
-		$this->load->view('sales/SalesOrder/sales_order_archive', $data);
+		$this->load->view('sales/SalesOrder/archiveDashboard', $data);
 	}
 
 	public function archiveView()

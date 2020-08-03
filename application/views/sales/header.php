@@ -46,7 +46,7 @@
 		<?php if($user_login->access_level > 1) { ?>
 			<a href='<?= site_url('Sales_order/confirmCloseSalesOrderDashboard') ?>'><p>Confirm close</p></a>
 		<?php } ?>
-			<a href='<?= site_url('Sales_order/archive') ?>'>Archive</a>
+			<a href='<?= site_url('Sales_order/archiveDashboard') ?>'>Archive</a>
 		</div>
 		<button class='container_button'><p style='font-family:museo'>Return  <i class='fa fa-caret-down'></i></p></button>
 		<div class='container_bar'>

@@ -68,9 +68,23 @@ class Stock extends CI_Controller {
 		$page			= $this->input->get('page');
 		$offset			= ($page - 1) * 25;
 		$this->load->model('Stock_in_model');
-		$data['stock'] = $this->Stock_in_model->viewCard($itemId, $offset);
-		
-		header('Content-Type: application/json');
-		echo json_encode($data);
+		$stock = $this->Stock_in_model->viewCard($itemId);
+
+		$stockInArray = (array) $stock;
+		$stockInIdArray = array();
+		foreach($stockInArray as $stockIn){
+			$id = $stockIn->id;
+			if(!in_array($id, $stockInIdArray)){
+				array_push($stockInIdArray, $id);	
+			}
+		}
+
+		$this->load->model('Stock_out_model');
+		$stockOutArray = $this->Stock_out_model->getByInIdArray($stockInIdArray);
+
+		// $data['stock'] = $stock;
+
+		// header('Content-Type: application/json');
+		// echo json_encode($data);
 	}
 }

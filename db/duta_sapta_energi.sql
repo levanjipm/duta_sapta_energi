@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Waktu pembuatan: 03 Agu 2020 pada 03.24
+-- Waktu pembuatan: 04 Agu 2020 pada 01.22
 -- Versi server: 10.4.13-MariaDB
 -- Versi PHP: 7.2.32
 
@@ -171,7 +171,8 @@ INSERT INTO `code_good_receipt` (`id`, `name`, `date`, `is_confirm`, `is_delete`
 (1, 'asss', '2020-07-27', 1, 0, NULL, '2020-07-27', 1, 1, '5CBE89BE-2CA9-4BC4-9296-E7ACEA3BF82C'),
 (2, 'asssd', '2020-07-27', 1, 0, NULL, '2020-07-27', 1, 1, 'AE0979A3-999B-476A-A925-4A0B409FA5A6'),
 (3, 'assder', '2020-07-27', 1, 0, 1, '2020-07-27', 1, 1, '15057C31-5EDC-492B-ADB0-DC881BDF1AC7'),
-(4, 'asdfasdfasdfasdf', '2020-08-01', 1, 0, NULL, '2020-08-01', 1, 1, '8B29DDA3-8FE9-4B05-83BC-AB9685955A1B');
+(4, 'asdfasdfasdfasdf', '2020-08-01', 1, 0, 2, '2020-08-01', 1, 1, '8B29DDA3-8FE9-4B05-83BC-AB9685955A1B'),
+(5, 'bcdefgh', '2020-08-03', 1, 0, 2, '2020-08-03', 1, 1, 'D0E44287-9AA6-41D3-96A7-355D1782097D');
 
 -- --------------------------------------------------------
 
@@ -685,7 +686,9 @@ INSERT INTO `good_receipt` (`id`, `purchase_order_id`, `quantity`, `code_good_re
 (4, 2, 1, 2, '0.0000'),
 (5, 1, 10, 3, '268960.0000'),
 (6, 1, 50, 4, '268960.0000'),
-(7, 2, 1, 4, '0.0000');
+(7, 2, 1, 4, '0.0000'),
+(8, 1, 10, 5, '268960.0000'),
+(9, 2, 1, 5, '0.0000');
 
 -- --------------------------------------------------------
 
@@ -1035,7 +1038,8 @@ CREATE TABLE `purchase_invoice` (
 --
 
 INSERT INTO `purchase_invoice` (`id`, `date`, `tax_document`, `invoice_document`, `created_by`, `is_confirm`, `is_delete`, `confirmed_by`, `is_done`) VALUES
-(1, '2020-07-27', '010.003-20.35145684', 'Dualipa', 1, 1, 0, 1, 0);
+(1, '2020-07-27', '010.003-20.35145684', 'Dualipa', 1, 1, 0, 1, 0),
+(2, '2020-08-04', '010.003-20.63513513', '010.003-20.63513513', 1, 1, 0, 1, 0);
 
 -- --------------------------------------------------------
 
@@ -1076,8 +1080,8 @@ CREATE TABLE `purchase_order` (
 --
 
 INSERT INTO `purchase_order` (`id`, `item_id`, `price_list`, `net_price`, `quantity`, `received`, `status`, `code_purchase_order_id`) VALUES
-(1, 1, '328000.0000', '268960.0000', 100, 80, 0, 1),
-(2, 1, '1.0000', '0.0000', 10, 7, 0, 1);
+(1, 1, '328000.0000', '268960.0000', 100, 90, 0, 1),
+(2, 1, '1.0000', '0.0000', 10, 8, 0, 1);
 
 -- --------------------------------------------------------
 
@@ -1232,7 +1236,9 @@ INSERT INTO `stock_in` (`id`, `item_id`, `quantity`, `residue`, `supplier_id`, `
 (13, 9, 1, 1, NULL, NULL, NULL, NULL, 16, '0.0000'),
 (14, 9, 1, 1, NULL, NULL, NULL, NULL, 16, '0.0000'),
 (15, 2, 20, 18, NULL, NULL, NULL, NULL, 23, '0.0000'),
-(16, 1, 4, 4, NULL, NULL, NULL, NULL, 21, '0.0000');
+(16, 1, 4, 4, NULL, NULL, NULL, NULL, 21, '0.0000'),
+(17, 1, 10, 10, 1, NULL, 8, NULL, NULL, '268960.0000'),
+(18, 1, 1, 1, 1, NULL, 9, NULL, NULL, '0.0000');
 
 -- --------------------------------------------------------
 
@@ -1591,7 +1597,9 @@ ALTER TABLE `price_list`
 -- Indeks untuk tabel `purchase_invoice`
 --
 ALTER TABLE `purchase_invoice`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `created_by` (`created_by`),
+  ADD KEY `confirmed_by` (`confirmed_by`);
 
 --
 -- Indeks untuk tabel `purchase_invoice_other`
@@ -1731,7 +1739,7 @@ ALTER TABLE `code_event`
 -- AUTO_INCREMENT untuk tabel `code_good_receipt`
 --
 ALTER TABLE `code_good_receipt`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT untuk tabel `code_purchase_order`
@@ -1821,7 +1829,7 @@ ALTER TABLE `fixed_asset_type`
 -- AUTO_INCREMENT untuk tabel `good_receipt`
 --
 ALTER TABLE `good_receipt`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT untuk tabel `income_class`
@@ -1887,7 +1895,7 @@ ALTER TABLE `price_list`
 -- AUTO_INCREMENT untuk tabel `purchase_invoice`
 --
 ALTER TABLE `purchase_invoice`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT untuk tabel `purchase_invoice_other`
@@ -1947,7 +1955,7 @@ ALTER TABLE `sales_return_received`
 -- AUTO_INCREMENT untuk tabel `stock_in`
 --
 ALTER TABLE `stock_in`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
 -- AUTO_INCREMENT untuk tabel `stock_out`
@@ -2065,6 +2073,13 @@ ALTER TABLE `plafond_submission`
 --
 ALTER TABLE `price_list`
   ADD CONSTRAINT `price_list_ibfk_1` FOREIGN KEY (`item_id`) REFERENCES `item` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Ketidakleluasaan untuk tabel `purchase_invoice`
+--
+ALTER TABLE `purchase_invoice`
+  ADD CONSTRAINT `purchase_invoice_ibfk_1` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`),
+  ADD CONSTRAINT `purchase_invoice_ibfk_2` FOREIGN KEY (`confirmed_by`) REFERENCES `users` (`id`);
 
 --
 -- Ketidakleluasaan untuk tabel `purchase_order`
