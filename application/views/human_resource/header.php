@@ -27,8 +27,13 @@
 	</div>
 	<div class='sidenav_bar_functions'>
 		<a href='<?= site_url('Users') ?>'><button><p style='font-family:museo'>Users</p></button></a>
-		<a href='<?= site_url('Users/salary_slip_dashboard') ?>'><button><p style='font-family:museo'>Salary Slip</p></button></a>
-		<a href='<?= site_url('Users/attandance') ?>'><button><p style='font-family:museo'>Attandance</p></button></a>
+		<a href='<?= site_url('Users/salarySlipDashboard') ?>'><button><p style='font-family:museo'>Salary Slip</p></button></a>
+		<button class='container_button'><p style='font-family:museo'>Attendance</p></button>
+		<div class='container_bar'>
+			<a href='<?= site_url('Attendance') ?>'><button><p style='font-family:museo'>List</p></button></a>
+			<a href='<?= site_url('Attendance/statusDashboard') ?>'><button><p style='font-family:museo'>Status</p></button></a>
+			<a href='<?= site_url('Users/attandance') ?>'><button><p style='font-family:museo'>History</p></button></a>
+		</div>
 		<a href='<?= site_url('Benefits') ?>'><button><p style='font-family:museo'>Benefits</p></button></a>
 	</div>
 </div>

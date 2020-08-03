@@ -21,7 +21,7 @@ class Users extends CI_Controller {
 		
 		$this->load->view('head');
 		$this->load->view('human_resource/header', $data);
-		$this->load->view('human_resource/users_dashboard');
+		$this->load->view('human_resource/userDashboard');
 	}
 	
 	public function get_users()
@@ -48,7 +48,7 @@ class Users extends CI_Controller {
 		echo json_encode($data);
 	}
 	
-	public function salary_slip_dashboard()
+	public function salarySlipDashboard()
 	{
 		$user_id		= $this->session->userdata('user_id');
 		$this->load->model('User_model');
@@ -59,7 +59,7 @@ class Users extends CI_Controller {
 		
 		$this->load->view('head');
 		$this->load->view('human_resource/header', $data);
-		$this->load->view('human_resource/salary_slip_dashboard');
+		$this->load->view('human_resource/salarySlipDashboard');
 	}
 	
 	public function update_status()
@@ -84,29 +84,5 @@ class Users extends CI_Controller {
 		$result = $result = $this->User_model->insert_from_post();
 		
 		echo $result;
-	}
-
-	public function attandance()
-	{
-		$user_id		= $this->session->userdata('user_id');
-		$this->load->model('User_model');
-		$data['user_login'] = $this->User_model->getById($user_id);
-		
-		$this->load->model('Authorization_model');
-		$data['departments']	= $this->Authorization_model->getByUserId($user_id);
-		
-		$this->load->view('head');
-		$this->load->view('human_resource/header', $data);
-		$this->load->view('human_resource/attandanceList');
-	}
-
-	public function getTodayAbsentee()
-	{
-		$date = date('Y-m-d');
-		$this->load->model('Attendance_model');
-		$data = $this->Attendance_model->getUnattendedList($date);
-		
-		header('Content-Type: application/json');
-		echo json_encode($data);
 	}
 }

@@ -92,6 +92,7 @@ class Area_model extends CI_Model {
 		
 		public function insertItem()
 		{
+			$this->db->db_debug = false;
 			$this->db->select('*');
 			$this->db->from($this->table_area);
 			$this->db->where('name =', $this->input->post('name'));;

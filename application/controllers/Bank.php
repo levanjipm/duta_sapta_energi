@@ -114,7 +114,7 @@ class Bank extends CI_Controller {
 		
 		$this->load->view('head');
 		$this->load->view('accounting/header', $data);
-		$this->load->view('accounting/Bank/assignBank, $data);
+		$this->load->view('accounting/Bank/assignBank', $data);
 	}
 	
 	public function assign_input()

@@ -17,11 +17,36 @@
     </div>
 </div>
 <script>
+    $(document).ready(function(){
+        refreshView();
+    });
+
     function refreshView(){
         $.ajax({
-            url:"<?= site_url('Users/getTodayAbsentee') ?>",
+            url:"<?= site_url('Attendance/getTodayAbsentee') ?>",
             success:function(response){
-                console.log(response);
+                var attendanceCount = 0;
+                $('#attendanceListTableContent').html("");
+                $.each(response, function(index, value){
+                    var user = value.user;
+                    var name = user.name;
+                    var id = user.id;
+
+                    var attendance = value.attendance;
+                    var attendanceId = attendance.id;
+                    var status = attendance.status;
+
+                    $('#attendanceListTableContent').append("<tr><td>" + name + "</td><td><button class='button button_success_dark'>OK</button> <button class='button button_danger_dark'>No</button>");
+                    attendanceCount++;
+                })
+
+                if(attendanceCount > 0){
+                    $('#attendanceListTable').show();
+                    $('#attendanceListTableText').hide();
+                } else {
+                    $('#attendanceListTable').hide();
+                    $('#attendanceListTableText').show();
+                }
             }
         })
     }

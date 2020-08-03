@@ -21,7 +21,7 @@ class Benefits extends CI_Controller {
 		
 		$this->load->view('head');
 		$this->load->view('human_resource/header', $data);
-		$this->load->view('human_resource/benefit_dashboard');
+		$this->load->view('human_resource/benefitDashboard');
 	}
 	
 	public function getItems()

@@ -46,6 +46,7 @@
 		<button class='container_button'>Asset</button>
 		<div class='container_bar'>
 			<a href='<?= site_url('Asset') ?>'><button><p style='font-family:museo'>List</p></button></a>
+			<a href='<?= site_url('Asset/calculateValue') ?>'><button><p style='font-family:museo'>Value</p></button></a>
 			<a href='<?= site_url('Asset/class_dashboard') ?>'><button><p style='font-family:museo'>Class</p></button></a>
 		</div>
 	</div>
