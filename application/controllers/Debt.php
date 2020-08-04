@@ -86,7 +86,7 @@ class Debt extends CI_Controller {
 		$this->load->view('accounting/create_blank_debt_document_dashboard');
 	}
 	
-	public function view_uninvoiced_documents_by_supplier()
+	public function getUninvoicedDocumentsBySupplierId()
 	{
 		$term				= $this->input->get('term');
 		$page				= $this->input->get('page');
@@ -94,10 +94,10 @@ class Debt extends CI_Controller {
 		$supplier_id		= $this->input->get('supplier_id');
 		
 		$this->load->model('Good_receipt_model');
-		$items = $this->Good_receipt_model->select_uninvoiced_documents_group_supplier($supplier_id, $offset, $term);
+		$items = $this->Good_receipt_model->getUninvoicedDocumentsBySupplierId($supplier_id, $offset, $term);
 		$data['bills'] = $items;
 		
-		$items = $this->Good_receipt_model->count_uninvoiced_documents_group_supplier($supplier_id, $term);
+		$items = $this->Good_receipt_model->countUninvoicedDocumentsBySupplierId($supplier_id, $term);
 		$data['pages'] = max(ceil($items / 25), 1);
 		
 		header('Content-Type: application/json');
@@ -161,6 +161,13 @@ class Debt extends CI_Controller {
 		}
 		
 		redirect(site_url('Debt'));
+	}
+
+	public function insertBlankItem()
+	{
+		$this->load->model('Debt_other_model');
+		$result = $this->Debt_other_model->insertItem();
+		echo $result;
 	}
 	
 	public function getById()

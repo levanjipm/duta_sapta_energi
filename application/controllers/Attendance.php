@@ -62,6 +62,15 @@ class Attendance extends CI_Controller {
         $result = $this->Attendance_status_model->insertItem();
 
         echo $result;
-    }
+	}
+	
+	public function deleteStatusById()
+	{
+		$id = $this->input->post('id');
+		$this->load->model('Attendance_status_model');
+		$result = $this->Attendance_status_model->deleteById($id);
+
+		echo $result;
+	}
 }
 ?>

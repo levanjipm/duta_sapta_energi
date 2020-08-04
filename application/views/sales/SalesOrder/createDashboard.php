@@ -81,8 +81,7 @@
 <div class='alert_wrapper' id='select_customer_wrapper'>
 	<div class='alert_box_full'>		
 		<button type='button' class='button alert_full_close_button' title='Close select customer session'>&times;</button>
-
-		<h2 style='font-family:bebasneue'>Select customer</h2>
+		<h3 style='font-family:bebasneue'>Select customer</h3>
 		<br>
 		<input type='text' class='form-control' id='search_customer'>
 		<br>
@@ -131,7 +130,7 @@
 </div>
 
 <div class='alert_wrapper' id='validate_sales_order_wrapper'>
-	<button class='slide_alert_close_button'>&times </button>
+	<button class='slide_alert_close_button'>&times;</button>
 	<div class='alert_box_slide' id='validate_sales_order_box'>
 		<label>Date</label>
 		<p id='date'></p>

@@ -186,7 +186,7 @@ class Debt_model extends CI_Model {
 			return $this->db->affected_rows();
 		}
 		
-		public function view_payable_chart()
+		public function viewPayableChart()
 		{
 			$query		= $this->db->query("SELECT SUM(good_receipt.billed_price * good_receipt.quantity) as value, supplier.name, supplier.city, COALESCE(a.value,0) as paid, code_purchase_order.supplier_id
 				FROM good_receipt 
@@ -199,31 +199,32 @@ class Debt_model extends CI_Model {
 					(SELECT SUM(value) as value, purchase_id FROM payable GROUP BY purchase_id) a
 				ON a.purchase_id = purchase_invoice.id
 				WHERE purchase_invoice.is_done = '0'
-				GROUP BY code_purchase_order.supplier_id");
+				GROUP BY code_purchase_order.supplier_id
+			");
 			$result		= $query->result();
-			$data		= $this->Debt_model->convert_payable_chart_array($result);
 			
 			return $result;
 		}
-		
-		public function convert_payable_chart_array($payable_array)
+
+		public function getPayableBySupplierId($supplierId)
 		{
-			$chart_array		= array();
-			foreach($payable_array as $payable){
-				$supplier_id		= $payable->supplier_id;
-				$supplier_name		= $payable->name;
-				$supplier_city		= $payable->city;
-				$value				= $payable->value;
-				$paid				= $payable->paid;
-				$chart_array[$supplier_id] = array(
-					'id' => $supplier_id,
-					'name' => $supplier_name,
-					'city' => $supplier_city,
-					'value' => $value - $paid
-				);
-			}
-			
-			return $chart_array;
+			$query = $this->db->query("
+				SELECT purchase_invoice.*, SUM(good_receipt.billed_price * good_receipt.quantity) as value, COALESCE(a.value,0) AS paid FROM good_receipt
+				INNER JOIN code_good_receipt ON good_receipt.code_good_receipt_id = code_good_receipt.id 
+				JOIN purchase_order ON good_receipt.purchase_order_id = purchase_order.id
+				INNER JOIN code_purchase_order ON purchase_order.code_purchase_order_id = code_purchase_order.id
+				JOIN supplier ON code_purchase_order.supplier_id = supplier.id
+				JOIN purchase_invoice ON code_good_receipt.invoice_id = purchase_invoice.id
+				LEFT JOIN
+					(SELECT SUM(value) as value, purchase_id FROM payable GROUP BY purchase_id) a
+				ON a.purchase_id = purchase_invoice.id
+				GROUP BY code_good_receipt_id.purchase_invoice_id
+				WHERE purchase_invoice.is_done = '0'
+				AND code_purchase_order.supplier_id = '$supplierId'
+			");
+
+			$result = $query->result();
+			return $result;
 		}
 		
 		public function getIncompletedTransaction($supplier_id)

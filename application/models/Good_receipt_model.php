@@ -203,7 +203,7 @@ class Good_receipt_model extends CI_Model {
 			return $item;
 		}
 		
-		public function count_uninvoiced_documents_group_supplier($supplier_id, $term)
+		public function countUninvoicedDocumentsBySupplierId($supplier_id, $term)
 		{
 			$this->db->select('code_good_receipt.id');
 			$this->db->from($this->table_good_receipt);
@@ -223,7 +223,7 @@ class Good_receipt_model extends CI_Model {
 			return $item;
 		}
 		
-		public function select_uninvoiced_documents_group_supplier($supplier_id, $offset = 0, $term = '', $limit = 25)
+		public function getUninvoicedDocumentsBySupplierId($supplier_id, $offset = 0, $term = '', $limit = 25)
 		{
 			$this->db->select('DISTINCT(code_good_receipt.id) as id, code_good_receipt.name, code_good_receipt.date, code_good_receipt.received_date , supplier.name as supplier_name, supplier.address, supplier.city, code_purchase_order.name as purchase_order_name, code_purchase_order.date as purchase_order_date');
 			$this->db->from($this->table_good_receipt);

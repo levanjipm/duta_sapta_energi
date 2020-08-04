@@ -54,7 +54,7 @@
 	
 	$(document).ready(function(){
 		$.ajax({
-			url:'<?= site_url('Debt/view_uninvoiced_documents_by_supplier') ?>',
+			url:'<?= site_url('Debt/getUninvoicedDocumentsBySupplierId') ?>',
 			data:{
 				supplier_id:$('#supplier').val(),
 				page:1,
@@ -99,7 +99,7 @@
 	
 	function get_uninvoiced_debt_document(){
 		$.ajax({
-			url:'<?= site_url('Debt/view_uninvoiced_documents_by_supplier') ?>',
+			url:'<?= site_url('Debt/getUninvoicedDocumentsBySupplierId') ?>',
 			data:{
 				supplier_id:$('#supplier').val(),
 				page:$('#page').val(),

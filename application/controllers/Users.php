@@ -21,7 +21,7 @@ class Users extends CI_Controller {
 		
 		$this->load->view('head');
 		$this->load->view('human_resource/header', $data);
-		$this->load->view('human_resource/userDashboard');
+		$this->load->view('human_resource/usersDashboard');
 	}
 	
 	public function get_users()

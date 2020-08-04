@@ -89,7 +89,7 @@ class Sales_order extends CI_Controller {
 		$this->load->model('User_model');
 		$data['users'] = $this->User_model->show_all();
 
-		$this->load->view('sales/SalesOrder/sales_order_create_dashboard',$data);
+		$this->load->view('sales/SalesOrder/createDashboard',$data);
 	}
 
 	public function inputItem()

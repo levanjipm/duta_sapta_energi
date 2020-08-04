@@ -85,4 +85,17 @@ class Attendance_status_model extends CI_Model {
 
 			return $this->db->affected_rows();
 		}
+
+		public function deleteById($statusId)
+		{
+			$this->db->db_debug = FALSE;
+			$this->db->where('id', $statusId);
+			$this->db->delete($this->table_status);
+
+			if($this->db->affected_rows() == 1){
+				return 1;
+			} else {
+				return 0;
+			}
+		}
 }
