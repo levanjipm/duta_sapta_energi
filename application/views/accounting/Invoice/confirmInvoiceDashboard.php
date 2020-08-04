@@ -253,9 +253,9 @@
                     $('#invoice_alert .slide_alert_close_button').click();
                 } else {
                     refresh_view();
-                    $('#confirmFailedNotification').fadeIn(250);
+                    $('#confirmFailedNotification').fadeTo(250, 1);
                     setTimeout(function(){
-                        $('#confirmFailedNotification').fadeOut(250);
+                        $('#confirmFailedNotification').fadeTo(250, 0);
                     }, 1000)
                 }
             }

@@ -68,7 +68,7 @@ class Debt extends CI_Controller {
 		$supplier = $this->Good_receipt_model->select_supplier_from_uninvoiced_document();
 		$data['suppliers'] = $supplier;
 		
-		$this->load->view('accounting/debt_document_create_dashboard', $data);
+		$this->load->view('accounting/Debt/createDashboard', $data);
 	}
 	
 	public function createBlank()

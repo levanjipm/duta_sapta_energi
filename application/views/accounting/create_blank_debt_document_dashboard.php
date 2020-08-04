@@ -106,6 +106,7 @@
 	var value;
 	var taxInvoiceName;
 	var invoiceName;
+	var date;
 
 	var taxing;
 

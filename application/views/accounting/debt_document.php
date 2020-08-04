@@ -204,9 +204,9 @@
 			}, success:function(response){
 				$('button').attr('disabled', false);
 				if(response == 0){
-					$('#failedDeleteNotification').fadeIn(250);
+					$('#failedDeleteNotification').fadeTo(250, 1);
 					setTimeout(function(){
-						$('#failedDeleteNotification').fadeOut(250);
+						$('#failedDeleteNotification').fadeTo(250, 0);
 					}, 1000);
 				} else {
 					refresh_view();
