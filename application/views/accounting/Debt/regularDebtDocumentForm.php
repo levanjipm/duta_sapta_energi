@@ -49,6 +49,7 @@
 		<p id='supplierName_p'></p>
 		<p id='supplierAddress_p'></p>
 		<p id='supplierCity_p'></p>
+		<hr>
 
 		<label>Good receipts</label>
 		<div id='goodReceiptsTable'></div>
@@ -196,14 +197,31 @@
 				type:'GET',
 				success:function(response){
 					$('#date_p').html(my_date_format($('#date').val()));
-					var goodReceipts = response.goodReceipts;
+					var goodReceipts 		= response.goodReceipts;
 					$.each(goodReceipts, function(index, goodReceipt){
+						var id		= goodReceipt.id;
 						var date 	= goodReceipt.date;
 						var name	= goodReceipt.name;
 						var purchaseOrderName = goodReceipt.purchase_order_name;
 						var receivedDate = goodReceipt.received_date;
+						var goodReceiptValue 	= 0;
 						
-						goodReceiptsTable.append("<label>Date</label><p>" + my_date_format(date) + "</p><label>Name</label><p>" + name + "</p><label>Purchase order</label><p>" + purchaseOrderName + "</p><label>Received date</label><p>" + my_date_format(receivedDate) + "</p>")
+						$("<label>Date</label><p>" + my_date_format(date) + "</p><label>Name</label><p>" + name + "</p><label>Purchase order</label><p>" + purchaseOrderName + "</p><label>Received date</label><p>" + my_date_format(receivedDate) + "</p><div class='table-responsive-sm'><table class='table table-bordered'><tr><th>Reference</th><th>Name</th><th>Price</th><th>Quantity</th><th>Total price</th><tbody id='goodReceiptTable-" + id + "' required min='0'></tbody></table></div>").appendTo(goodReceiptsTable);
+						
+						var items = goodReceipt.detail;
+						$.each(items, function(index, item){
+							var goodReceiptId = item.id;
+							var reference = item.reference;
+							var name = item.name;
+							var net_price = parseFloat(item.net_price);
+							var quantity = parseInt(item.quantity);
+							var total_price = net_price * quantity;
+							goodReceiptValue += total_price;
+
+							$('#goodReceiptTable-' + id).append("<tr><td>" + reference + "</td><td>" + name + "</td><td><input type='number' class='form-control' name='price[" + goodReceiptId + "]' value='" + net_price + "'></td><td>" + numeral(quantity).format('0,0.00') + "</td><td id='totalPrice-" + goodReceiptId + "'>Rp. " + numeral(total_price).format('0,0.00') + "</td></tr>")
+						})
+
+						$('#goodReceiptTable-' + id).append("<tr><td colspan='2'></td><td colspan='2'>Total</td><td id='totalGoodReceiptPrice-" + id + "'>Rp. " + numeral(goodReceiptValue).format('0,0.00') + "</td>")
 					})
 
 					var supplier 				= response.supplier;
