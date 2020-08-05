@@ -1,7 +1,4 @@
 <form id='debtDocumentForm'>
-	<label>Date</label>
-	<input type='date' class='form-control' id='date' required>
-	
 	<label>Supplier</label>
 	<select class='form-control' name='supplier' id='supplier' required></select>
 	<br>
@@ -30,29 +27,34 @@
 <div class='alert_wrapper' id='debtDocumentFormValidation'>
 	<button class='slide_alert_close_button'>&times;</button>
 	<div class='alert_box_slide'>
-		<h3 style='font-family:bebasneue'>Create debt document</h3>
-		<hr>
-		<label>Invoice</label><br>
-		<label>Date</label>
-		<p id='date_p'></p>
-		
-		<label>Document</label>
-		<input type='text' class='form-control' id='invoiceName' required>
+		<form id='debtDocumentValidationForm'>
+			<h3 style='font-family:bebasneue'>Create debt document</h3>
+			<hr>
+			<label>Invoice</label><br>
+			<label>Date</label>
+			<input type='date' class='form-control' id='date' required>
+			
+			<label>Document</label>
+			<input type='text' class='form-control' id='invoiceName' required>
 
-		<label>Tax document</label>
-		<input type='text' class='form-control' id='taxInvoiceName'>
-		<script>
-			$("#taxInvoiceName").inputmask("999.999-99.99999999");
-		</script>
+			<label>Tax document</label>
+			<input type='text' class='form-control' id='taxInvoiceName'>
+			<script>
+				$("#taxInvoiceName").inputmask("999.999-99.99999999");
+			</script>
+			<hr>
 
-		<label>Supplier</label>
-		<p id='supplierName_p'></p>
-		<p id='supplierAddress_p'></p>
-		<p id='supplierCity_p'></p>
-		<hr>
+			<label>Supplier</label>
+			<p id='supplierName_p'></p>
+			<p id='supplierAddress_p'></p>
+			<p id='supplierCity_p'></p>
+			<hr>
 
-		<label>Good receipts</label>
-		<div id='goodReceiptsTable'></div>
+			<label>Good receipts</label>
+			<div id='goodReceiptsTable'></div>
+
+			<button type='button' id='submitDebtButton' class='button button_default_dark'><i class='fa fa-long-arrow-right'></i></button>
+		</form>
 	</div>
 </div>
 
@@ -63,11 +65,13 @@
 		rules: {"hidden_field": {required: true}}
 	});
 
-	$('#debtDocumentForm').on('submit', function(){
-		return false;
-	})
+	$('#debtDocumentValidationForm').validate();
 
 	$('#debtDocumentForm input').on('keypress', function(e) {
+		return e.which !== 13;
+	});
+
+	$('#debtDocumentValidationForm input').on('keypress', function(e) {
 		return e.which !== 13;
 	});
 
@@ -196,8 +200,8 @@
 				},
 				type:'GET',
 				success:function(response){
-					$('#date_p').html(my_date_format($('#date').val()));
 					var goodReceipts 		= response.goodReceipts;
+					var quantityArray		= [];
 					$.each(goodReceipts, function(index, goodReceipt){
 						var id		= goodReceipt.id;
 						var date 	= goodReceipt.date;
@@ -216,9 +220,22 @@
 							var net_price = parseFloat(item.net_price);
 							var quantity = parseInt(item.quantity);
 							var total_price = net_price * quantity;
+							quantityArray[goodReceiptId] = quantity;
 							goodReceiptValue += total_price;
 
-							$('#goodReceiptTable-' + id).append("<tr><td>" + reference + "</td><td>" + name + "</td><td><input type='number' class='form-control' name='price[" + goodReceiptId + "]' value='" + net_price + "'></td><td>" + numeral(quantity).format('0,0.00') + "</td><td id='totalPrice-" + goodReceiptId + "'>Rp. " + numeral(total_price).format('0,0.00') + "</td></tr>")
+							$('#goodReceiptTable-' + id).append("<tr><td>" + reference + "</td><td>" + name + "</td><td><input type='number' class='form-control form-" + id + "' id='price-" + goodReceiptId + "' name='price[" + goodReceiptId + "]' value='" + net_price + "' required min='0'></td><td>" + numeral(quantity).format('0,0.00') + "</td><td id='totalPrice-" + goodReceiptId + "'>Rp. " + numeral(total_price).format('0,0.00') + "</td></tr>");
+
+							$('#price-' + goodReceiptId).on('change', function(){
+								var itemEditValue = $(this).val() * quantity;
+								$('#totalPrice-' + goodReceiptId).html('Rp. ' + numeral(itemEditValue).format('0,0.00'));
+								var goodReceiptEditValue = 0;
+								$('.form-' + id).each(function(){
+									var itemEditValueForm = quantityArray[goodReceiptId] * parseFloat($('#price-' + goodReceiptId).val());
+									goodReceiptEditValue += itemEditValueForm;
+								});
+
+								$('#totalGoodReceiptPrice-' + id).html("Rp. " + numeral(goodReceiptEditValue).format('0,0.00'));
+							});
 						})
 
 						$('#goodReceiptTable-' + id).append("<tr><td colspan='2'></td><td colspan='2'>Total</td><td id='totalGoodReceiptPrice-" + id + "'>Rp. " + numeral(goodReceiptValue).format('0,0.00') + "</td>")
@@ -264,6 +281,13 @@
 			$('#debtDocumentFormValidation').fadeIn(300, function(){
 				$('#debtDocumentFormValidation .alert_box_slide').show("slide", { direction: "right" }, 250);
 			});	
+		}
+	})
+
+	$('#submitDebtButton').click(function(){
+		$('#debtDocumentValidationForm').validate();
+		if($('#debtDocumentValidationForm').valid()){
+
 		}
 	})
 
