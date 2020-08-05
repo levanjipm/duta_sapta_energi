@@ -22,7 +22,7 @@ class Debt extends CI_Controller {
 		$this->load->view('head');
 		$this->load->view('accounting/header', $data);
 		
-		$this->load->view('accounting/debt_document');
+		$this->load->view('accounting/Debt/dashboard');
 	}
 	
 	public function showUnconfirmedDocuments()
@@ -64,10 +64,6 @@ class Debt extends CI_Controller {
 		$this->load->view('head');
 		$this->load->view('accounting/header', $data);
 		
-		$this->load->model('Good_receipt_model');
-		$supplier = $this->Good_receipt_model->select_supplier_from_uninvoiced_document();
-		$data['suppliers'] = $supplier;
-		
 		$this->load->view('accounting/Debt/createDashboard', $data);
 	}
 	
@@ -84,6 +80,15 @@ class Debt extends CI_Controller {
 		$this->load->view('accounting/header', $data);
 		
 		$this->load->view('accounting/create_blank_debt_document_dashboard');
+	}
+
+	public function getUninvoicedSupplierIds()
+	{
+		$this->load->model('Good_receipt_model');
+		$supplier = $this->Good_receipt_model->getUninvoicedSupplierIds();
+		
+		header('Content-Type: application/json');
+		echo json_encode($supplier);
 	}
 	
 	public function getUninvoicedDocumentsBySupplierId()
@@ -208,5 +213,43 @@ class Debt extends CI_Controller {
 		$result 		= $this->Debt_model->updateById(1, $invoiceId);
 
 		echo $result;
+	}
+
+	public function confirmDashboard()
+	{
+		$user_id		= $this->session->userdata('user_id');
+		$this->load->model('User_model');
+		$data['user_login'] = $this->User_model->getById($user_id);
+		
+		$this->load->model('Authorization_model');
+		$data['departments']	= $this->Authorization_model->getByUserId($user_id);
+		
+		$this->load->view('head');
+		$this->load->view('accounting/header', $data);
+
+		$this->load->view('accounting/debt/confirmDashboard');
+	}
+
+	public function archiveDashboard()
+	{
+		$user_id		= $this->session->userdata('user_id');
+		$this->load->model('User_model');
+		$data['user_login'] = $this->User_model->getById($user_id);
+		
+		$this->load->model('Authorization_model');
+		$data['departments']	= $this->Authorization_model->getByUserId($user_id);
+		
+		$this->load->view('head');
+		$this->load->view('accounting/header', $data);
+	}
+
+	public function loadForm()
+	{
+		$event	= $this->input->get('type');
+		if($event == 2){
+			$this->load->view('accounting/Debt/blankDebtDocumentForm');
+		} else if($event == 1){
+			$this->load->view('accounting/Debt/regularDebtDocumentForm');
+		}
 	}
 }

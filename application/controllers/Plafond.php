@@ -37,7 +37,7 @@ class Plafond extends CI_Controller {
 		$result		= $this->Plafond_model->insertItem();
 		if($result != NULL){
 			$id			= $result;
-			redirect('Plafond/plafond_check_out/' . $id);
+			redirect('Plafond/successSubmission/' . $id);
 		} else {
 			redirect('Plafond/failedSubmission');
 		}

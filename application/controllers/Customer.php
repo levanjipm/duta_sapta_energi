@@ -27,7 +27,7 @@ class Customer extends CI_Controller {
 		
 		$data['authorize'] = $this->session->userdata('user_role');
 		
-		$this->load->view('sales/customer_manage_dashboard',$data);
+		$this->load->view('sales/customerDashboard',$data);
 	}
 	
 	public function insertItem()

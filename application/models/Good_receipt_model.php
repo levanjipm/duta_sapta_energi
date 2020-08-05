@@ -187,7 +187,7 @@ class Good_receipt_model extends CI_Model {
 			return $item;
 		}
 		
-		public function select_supplier_from_uninvoiced_document()
+		public function getUninvoicedSupplierIds()
 		{
 			$this->db->select('DISTINCT(code_purchase_order.supplier_id) as id, supplier.name');
 			$this->db->from('code_good_receipt');

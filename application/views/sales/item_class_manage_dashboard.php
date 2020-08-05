@@ -164,18 +164,22 @@
 				description: $('#item_class_description').val()
 			},
 			type:"POST",
+			beforeSend:function(){
+				$('button').attr('disabled', true);
+			},
 			success:function(response){
+				$('button').attr('disabled', false);
 				if(response == 1){
 					$('#item_class_name').val('');
 					$('#item_class_description').val('');
-					
 					refresh_view();
+
 					$('#add_item_class_wrapper .slide_alert_close_button').click();
 				} else {
-					$('#error_insert_item_class').show();
+					$('#error_insert_item_class').fadeIn(250);
 					setTimeout(function(){
-						$('#error_insert_item_class').fadeOut();
-					}, 300);
+						$('#error_insert_item_class').fadeOut(250);
+					}, 1000);
 				}
 			}
 		});
@@ -247,9 +251,9 @@
 						refresh_view();
 						$('#delete_class_wrapper').fadeOut()
 					} else {
-						$('#error_delete_item_class').fadeIn(250);
+						$('#error_delete_item_class').fadeTo(250, 1);
 						setTimeout(function(){
-							$('#error_delete_item_class').fadeOut(250);
+							$('#error_delete_item_class').fadeTo(250, 0);
 						}, 1000);
 					}						
 				}

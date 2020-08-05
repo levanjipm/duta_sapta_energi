@@ -7,13 +7,7 @@
 	</div>
 	<br>
 	<div class='dashboard_in'>
-		<div class='input_group'>
-			<input type='text' class='form-control input-lg' id='search_bar'>
-			<div class='input-group-append'>
-				<a href='<?= site_url('Debt/create') ?>' role='button' class='button button_default_dark'>Create</a>
-				<a href='<?= site_url('Debt/createBlank') ?>' role='button' class='button button_default_dark'>Create blank </a>
-			</div>
-		</div>
+        <input type='text' class='form-control input-lg' id='search_bar' placeholder="Search debt document">
 		<br>
 		<div id='debtTable'>
 			<table class='table table-bordered' id='debt_document_table'>

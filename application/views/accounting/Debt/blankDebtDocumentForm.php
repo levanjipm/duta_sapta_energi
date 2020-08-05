@@ -1,51 +1,40 @@
-<head>
-	<title>Create blank debt document</title>
-</head>
-<div class='dashboard'>
-	<div class='dashboard_head'>
-		<p style='font-family:museo'><a href='<?= site_url('Accounting') ?>' title='Accounting'><i class='fa fa-briefcase'></i></a> /<a href='<?= site_url('Debt') ?>'>Debt</a> /Create blank</p>
+<form id='debt_document_form'>
+	<label>Date</label>
+	<input type='date' class='form-control' name='date' required>
+	
+	<label>Supplier</label>
+	<button type='button' class='form-control' id='supplierPickButton' style='text-align:left!important'></button>			
+	<input type='hidden' id='supplier_id' name='supplier_id'>
+
+	<label>Supplier detail</label>
+	<div class='information_box' id='supplierDetail'></div>
+	
+	<label>Value</label>
+	<input type='number' class='form-control' id='value' required min='1'>
+	
+	<label>Information</label>
+	<textarea class='form-control' style='resize:none' id='information' minlength='25'></textarea>
+
+	<label>Taxing</label>
+	<select class='form-control' id='taxing'>
+		<option value='0'>Non-taxable</option>
+		<option value='1'>Taxable</option>
+	</select>
+
+	<label>Invoice</label>
+	<input type='text' class='form-control' id='invoiceName' required>
+
+	<div id='taxInvoiceWrapper' style='display:none'>
+		<label>Tax invoice</label>
+		<input type='text' class='form-control' id='taxInvoiceName'>
+		<script>
+			$("#taxInvoice").inputmask("999.999-99.99999999");
+		</script>
 	</div>
+	
 	<br>
-	<div class='dashboard_in'>
-		<form id='debt_document_form'>
-			<label>Date</label>
-			<input type='date' class='form-control' name='date' required>
-			
-			<label>Supplier</label>
-			<button type='button' class='form-control' id='supplierPickButton' style='text-align:left!important'></button>			
-			<input type='hidden' id='supplier_id' name='supplier_id'>
-
-			<label>Supplier detail</label>
-			<div class='information_box' id='supplierDetail'></div>
-			
-			<label>Value</label>
-			<input type='number' class='form-control' id='value' required min='1'>
-			
-			<label>Information</label>
-			<textarea class='form-control' style='resize:none' id='information' minlength='25'></textarea>
-
-			<label>Taxing</label>
-			<select class='form-control' id='taxing'>
-				<option value='0'>Non-taxable</option>
-				<option value='1'>Taxable</option>
-			</select>
-
-			<label>Invoice</label>
-			<input type='text' class='form-control' id='invoiceName' required>
-
-			<div id='taxInvoiceWrapper' style='display:none'>
-				<label>Tax invoice</label>
-				<input type='text' class='form-control' id='taxInvoiceName'>
-				<script>
-					$("#taxInvoice").inputmask("999.999-99.99999999");
-				</script>
-			</div>
-			
-			<br>
-			<button class='button button_default_dark' id='submitButton'><i class='fa fa-long-arrow-right'></i></button>
-		</form>
-	</div>
-</div>
+	<button class='button button_default_dark' id='submitButton'><i class='fa fa-long-arrow-right'></i></button>
+</form>
 
 <div class='alert_wrapper' id='selectSupplierWrapper'>
 	<div class='alert_box_full'>		
@@ -317,10 +306,4 @@
 			}
 		})
 	}
-
-	$('.slide_alert_close_button').click(function(){
-		$(this).siblings('.alert_box_slide').hide("slide", { direction: "right" }, 250, function(){
-			$(this).parent().fadeOut();
-		});
-	});
 </script>
