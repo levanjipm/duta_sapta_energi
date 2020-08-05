@@ -244,22 +244,14 @@ class Good_receipt_model extends CI_Model {
 			return $item;
 		}
 		
-		public function select_by_code_good_receipt_id_array($documents)
+		public function getByIdArray($idArray)
 		{
-			$array		= array();
-			foreach($documents as $document){
-				$code_good_receipt_id	= key($documents);
-				array_push($array, $code_good_receipt_id);
-				
-				next($documents);
-			}
-			
-			$this->db->select('DISTINCT(code_good_receipt.id) AS id, code_good_receipt.name, code_good_receipt.date, code_good_receipt.received_date, code_purchase_order.name as purchase_order_name, code_purchase_order.date as purchase_order_date');
+			$this->db->select('DISTINCT(code_good_receipt.id) AS id, code_good_receipt.name, code_good_receipt.date, code_good_receipt.received_date, code_purchase_order.name as purchase_order_name, code_purchase_order.date as purchase_order_date, code_purchase_order.supplier_id');
 			$this->db->from('code_good_receipt');
 			$this->db->join('good_receipt', 'good_receipt.code_good_receipt_id = code_good_receipt.id');
 			$this->db->join('purchase_order', 'good_receipt.purchase_order_id = purchase_order.id');
 			$this->db->join('code_purchase_order', 'purchase_order.code_purchase_order_id = code_purchase_order.id');
-			$this->db->where_in('code_good_receipt.id', $array);
+			$this->db->where_in('code_good_receipt.id', $idArray);
 			
 			$query		= $this->db->get();
 			$item		= $query->result();

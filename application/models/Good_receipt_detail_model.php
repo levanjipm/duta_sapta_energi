@@ -142,21 +142,13 @@ class Good_receipt_detail_model extends CI_Model {
 			return $batch;
 		}
 		
-		public function select_by_code_good_receipt_id_array($documents)
-		{
-			$array		= array();
-			foreach($documents as $document){
-				$code_good_receipt_id	= key($documents);
-				array_push($array, $code_good_receipt_id);
-				
-				next($documents);
-			}
-				
+		public function getByCodeGoodReceiptIdArray($goodReceiptIdArray)
+		{				
 			$this->db->select('good_receipt.id, item.reference, item.name, good_receipt.quantity, purchase_order.net_price, good_receipt.code_good_receipt_id');
 			$this->db->from('good_receipt');
 			$this->db->join('purchase_order', 'good_receipt.purchase_order_id = purchase_order.id');
 			$this->db->join('item', 'purchase_order.item_id = item.id');
-			$this->db->where_in('good_receipt.code_good_receipt_id', $array);
+			$this->db->where_in('good_receipt.code_good_receipt_id', $goodReceiptIdArray);
 			
 			$query		= $this->db->get();
 			$item		= $query->result();

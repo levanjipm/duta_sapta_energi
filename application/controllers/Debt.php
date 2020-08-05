@@ -39,34 +39,6 @@ class Debt extends CI_Controller {
 		echo json_encode($data);	
 	}
 	
-	public function view_uninvoiced_documents()
-	{
-		$this->load->model('Good_receipt_model');
-		$items = $this->Good_receipt_model->view_uninvoiced_documents();
-		$data['bills'] = $items;
-		
-		$items = $this->Good_receipt_model->count_uninvoiced_documents();
-		$data['pages'] = max(ceil($items / 25), 1);
-		
-		header('Content-Type: application/json');
-		echo json_encode($data);
-	}
-	
-	public function create()
-	{
-		$user_id		= $this->session->userdata('user_id');
-		$this->load->model('User_model');
-		$data['user_login'] = $this->User_model->getById($user_id);
-		
-		$this->load->model('Authorization_model');
-		$data['departments']	= $this->Authorization_model->getByUserId($user_id);
-		
-		$this->load->view('head');
-		$this->load->view('accounting/header', $data);
-		
-		$this->load->view('accounting/Debt/createDashboard', $data);
-	}
-	
 	public function createBlank()
 	{
 		$user_id		= $this->session->userdata('user_id');
@@ -109,63 +81,31 @@ class Debt extends CI_Controller {
 		echo json_encode($data);
 	}
 	
-	public function createDebtDocument()
-	{
-		$user_id		= $this->session->userdata('user_id');
-		$this->load->model('User_model');
-		$data['user_login'] = $this->User_model->getById($user_id);
-		
-		$this->load->model('Authorization_model');
-		$data['departments']	= $this->Authorization_model->getByUserId($user_id);
-		
-		$this->load->view('head');
-		$this->load->view('accounting/header', $data);
-		
-		$supplier_id		= $this->input->post('supplier');
-		$this->load->model('Supplier_model');
-		$item				= $this->Supplier_model->getById($supplier_id);
-		$data['supplier']	= $item;
-		
-		$date				= $this->input->post('date');
-		$data['date']		= $date;
-		
-		$documents	= $this->input->post('document');
-		$this->load->model('Good_receipt_model');
-		$item = $this->Good_receipt_model->select_by_code_good_receipt_id_array($documents);
-		$data['documents'] = $item;
-		
-		$this->load->model('Good_receipt_detail_model');
-		$item	= $this->Good_receipt_detail_model->select_by_code_good_receipt_id_array($documents);
-		$data['details']	= $item;
-		
-		$this->load->view('accounting/create_debt_document_validation', $data);
-	}
-	
 	public function insertItem()
 	{
-		$document_array		= $this->input->post('document');
-		foreach($document_array as $document){
-			$code_good_receipt_id	= key($document_array);
-			$good_receipt_array[]	= $code_good_receipt_id;
-			next($document_array);
-		}
+		// $document_array		= $this->input->post('document');
+		// foreach($document_array as $document){
+		// 	$code_good_receipt_id	= key($document_array);
+		// 	$good_receipt_array[]	= $code_good_receipt_id;
+		// 	next($document_array);
+		// }
 		
-		$price_array	= $this->input->post('price');
-		$this->load->model('Debt_model');
-		$invoice_id		= $this->Debt_model->insertItem();
+		// $price_array	= $this->input->post('price');
+		// $this->load->model('Debt_model');
+		// $invoice_id		= $this->Debt_model->insertItem();
 		
-		if($invoice_id != null){
-			$this->load->model('Good_receipt_model');
-			$this->Good_receipt_model->updateInvoiceStatusById(1, $invoice_id, $good_receipt_array);
+		// if($invoice_id != null){
+		// 	$this->load->model('Good_receipt_model');
+		// 	$this->Good_receipt_model->updateInvoiceStatusById(1, $invoice_id, $good_receipt_array);
 			
-			$this->load->model('Stock_in_model');
-			$this->Stock_in_model->update_price($price_array);
+		// 	$this->load->model('Stock_in_model');
+		// 	$this->Stock_in_model->update_price($price_array);
 			
-			$this->load->model('Good_receipt_detail_model');
-			$this->Good_receipt_detail_model->update_price($price_array);
-		}
+		// 	$this->load->model('Good_receipt_detail_model');
+		// 	$this->Good_receipt_detail_model->update_price($price_array);
+		// }
 		
-		redirect(site_url('Debt'));
+		// redirect(site_url('Debt'));
 	}
 
 	public function insertBlankItem()

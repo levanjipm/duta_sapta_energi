@@ -205,6 +205,56 @@ class Good_receipt extends CI_Controller {
 		header('Content-Type: application/json');
 		echo json_encode($data);
 	}
+
+	public function getByIdArray()
+	{
+		$supplierId = null;
+		$supplierStatus = true;
+
+		$idArray		= json_decode($this->input->get('goodReceiptArray'));
+		$this->load->model('Good_receipt_model');
+		$result = (array) $this->Good_receipt_model->getByIdArray($idArray);
+
+		$this->load->model('Good_receipt_detail_model');
+		$detailResult = $this->Good_receipt_detail_model->getByCodeGoodReceiptIdArray($idArray);
+
+		$detailArray = array();
+		foreach($detailResult as $detail){
+			$codeGoodReceiptId = $detail->code_good_receipt_id;
+			if(array_key_exists($codeGoodReceiptId, $detailArray)){
+				$detailResultArray = $detail;		
+			} else {
+				$detailResultArray = $detail;
+				$detailArray[$codeGoodReceiptId] = array();
+			}
+			array_push($detailArray[$codeGoodReceiptId], $detailResultArray);
+		}
+
+		$dataArray = array();
+
+		foreach($result as $item){
+			$itemArray = (array) $item;
+			if($supplierId == null){
+				$supplierId = $item->supplier_id;
+			} else if($supplierId != $item->supplier_id){
+				$supplierStatus = false;
+			}
+
+			$dataArray[$item->id] = $itemArray;
+			$dataArray[$item->id]['detail'] = $detailArray[$item->id];
+		}
+
+		if($supplierStatus == false){
+			$dataArray = array();
+		} else {
+			$data['goodReceipts'] = $dataArray;
+			$this->load->model('Supplier_model');
+			$supplier = $this->Supplier_model->getById($supplierId);
+			$data['supplier'] = $supplier;
+		}
+		header('Content-Type: application/json');
+		echo json_encode($data);
+	}
 	
 	public function getByInvoiceId($invoice_id)
 	{
