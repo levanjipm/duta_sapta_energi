@@ -4,7 +4,7 @@
 	</div>
 	<br>
 	<div class='dashboard_in'>
-		<form action='<?= site_url('Petty_cash/input_transaction') ?>' method='POST' id='petty_cash_form'>
+		<form id='pettyCashForm'>
 			<label>Date</label>
 			<input type='date' class='form-control' name='date' id='transaction_date' required>
 			
@@ -16,7 +16,7 @@
 			</select>
 			
 			<label>Information</label>
-			<textarea class='form-control' style='resize:none' name='information' id='information'></textarea>
+			<textarea class='form-control' style='resize:none' name='information' id='information' required></textarea>
 			
 			<br>
 			<button type='button' class='button button_default_dark' id='submit_button'><i class='fa fa-long-arrow-right'></i></button>
@@ -24,19 +24,15 @@
 	</div>
 </div>
 
-<div class='alert_wrapper' id='add_transaction_wrapper'>
-	<button type='button' class='alert_close_button'>&times </button>
-	<div class='alert_box_default'>
-		<h2 style='font-family:bebasneue'>Add transaction</h2>
+<div class='alert_wrapper' id='addTransactionWrapper'>
+	<button type='button' class='slide_alert_close_button'>&times;</button>
+	<div class='alert_box_slide'>
+		<h3 style='font-family:bebasneue'>Add transaction</h3>
 		<hr>
 		<table class='table table-bordered'>
 			<tr>
 				<td><strong>Date</strong></td>
 				<td><p style='font-family:museo' id='date_p'></p></td>
-			</tr>
-			<tr>
-				<td><strong>Transaction</strong></td>
-				<td><p style='font-family:museo' id='transaction_p'></p></td>
 			</tr>
 			<tr>
 				<td><strong>Value</strong></td>
@@ -53,47 +49,79 @@
 		</table>
 		<br>
 		<button type='button' class='button button_default_dark' id='confirm_button'><i class='fa fa-long-arrow-right'></i></button>
+
+		<div class='notificationText danger' id='failedInsertNotification'><p>Failed to insert data.</p></div>
 	</div>
 </div>
 <script>
+	$(document).ready(function(){
+		update_select();
+	});
+
+	$('#pettyCashForm').validate();
+
+	$('#pettyCashForm input').on('keypress', function(e) {
+		return e.which !== 13;
+	});
+
 	$('#submit_button').click(function(){
-		$('#petty_cash_form').validate();
-		
-		if($('#petty_cash_form').valid()){
+		if($('#pettyCashForm').valid()){
 			var date				= $('#transaction_date').val();
 			var transaction_class	= $('#transaction_class option:selected').html();
 			var value				= $('#transaction_value').val();
-			var transaction			= $('#transaction option:selected').html();
 			var information			= $('#information').val();
 			
 			$('#date_p').html(my_date_format(date));
-			$('#transaction_p').html(transaction);
 			$('#value_p').html('Rp. ' + numeral(value).format('0,0.00'));
 			$('#class_p').html(transaction_class);
 			$('#information_p').html(information);
 			
-			$('#add_transaction_wrapper').fadeIn();
+			$('#addTransactionWrapper').fadeIn(300, function(){
+				$('#addTransactionWrapper .alert_box_slide').show("slide", { direction: "right" }, 250);
+			});
 		}
 	});
 	
-	$('.alert_close_button').click(function(){
-		$(this).parent().fadeOut();
-	});
-	
 	$('#confirm_button').click(function(){
-		$('#petty_cash_form').validate();
+		$('#pettyCashForm').validate();
 		
-		if($('#petty_cash_form').valid()){
-			$('#petty_cash_form').submit();
+		if($('#pettyCashForm').valid()){
+			$.ajax({
+				url:"<?= site_url('Petty_cash/insertItem') ?>",
+				data:{
+					date				: $('#transaction_date').val(),
+					class				: $('#transaction_class').val(),
+					value				: $('#transaction_value').val(),
+					information			: $('#information').val(),
+				},
+				type:'POST',
+				beforeSend:function(){
+					$('button').attr('disabled', true);
+				},
+				success:function(response){
+					$('button').attr('disabled', false);
+					if(response == 1){
+						$('#pettyCashForm').trigger("reset");
+						$('#addTransactionWrapper .slide_alert_close_button').click();
+					} else {
+						$('#failedInsertNotification').fadeIn(250);
+						setTimeout(function(){
+							$('#failedInsertNotification').fadeOut(250);
+						}, 1000)
+					}
+				}
+			})
 		};
 	});
-	
-	update_select();
 	
 	function update_select(){
 		$.ajax({
 			url:'<?= site_url('Expense/view_class') ?>',
+			beforeSend:function(){
+				$('#transaction_class').attr('disabled', true);
+			},
 			success:function(response){
+				$('#transaction_class').attr('disabled', false);
 				$('#transaction_class').html('');
 				var classes		= response.classes;
 				$.each(classes, function(index, value){
@@ -110,4 +138,10 @@
 			}
 		});
 	}
+
+	$('.slide_alert_close_button').click(function(){
+		$(this).siblings('.alert_box_slide').hide("slide", { direction: "right" }, 250, function(){
+			$(this).parent().fadeOut();
+		});
+	});
 </script>

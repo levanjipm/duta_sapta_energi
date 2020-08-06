@@ -25,12 +25,11 @@ class Petty_cash extends CI_Controller {
 		$this->load->view('finance/petty_cash_dashboard');
 	}
 	
-	public function input_transaction()
+	public function insertItem()
 	{
 		$this->load->model('Petty_cash_model');
-		$this->Petty_cash_model->insert_from_post(1);
-		
-		redirect(site_url('Petty_cash/transaction'));
+		$result = $this->Petty_cash_model->insertItem();
+		echo $result;
 	}
 	
 	public function mutation()

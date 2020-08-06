@@ -85,26 +85,22 @@ class Debt_model extends CI_Model {
 		
 		public function insertItem()
 		{
-			$created_by			= $this->session->userdata('user_id');
-			$date				= $this->input->post('date');
 			$tax_document		= $this->input->post('taxInvoiceName');
 			if(strlen($tax_document) < 19){
 				$tax_document	= NULL;
 			}
 			
-			$invoice_document	= $this->input->post('invoiceName');
-			
 			$data		= array(
 				'id' => '',
-				'created_by' => $created_by,
-				'date' => $date,
+				'created_by' => $this->session->userdata('user_id'),
+				'date' => $this->input->post('date'),
 				'tax_document' => $tax_document,
-				'invoice_document' => $invoice_document,
+				'invoice_document' => $this->input->post('invoiceName'),
 				'is_confirm' => '0',
 				'is_delete' => '0',
 				'confirmed_by' => null,
 				'is_done' => '0'
-				);
+			);
 				
 			$this->db->insert($this->table_purchase_invoice, $data);
 			$insert_id 	= $this->db->insert_id();
@@ -247,9 +243,49 @@ class Debt_model extends CI_Model {
 			return $result;
 		}
 		
-		public function deleteItem($purchaseInvoiceId)
+		public function deleteById($purchaseInvoiceId)
 		{
 			$this->db->where('id', $purchaseInvoiceId);
 			$this->db->delete($this->table_purchase_invoice);
+		}
+
+		public function getItems($offset, $month, $year)
+		{
+			$query = $this->db->query("
+				SELECT purchase_invoice.*, code_purchase_order.supplier_id
+				FROM purchase_invoice
+				JOIN (
+					SELECT DISTINCT(code_good_receipt.invoice_id) AS id 
+					FROM code_good_receipt
+					GROUP BY code_good_receipt.invoice_id
+				) AS a
+				ON a.id = purchase_invoice.id
+			")
+			$this->db->select('purchase_invoice.*, code_purchase_order.supplier_id');
+			$this->db->from('purchase_invoice');
+			$this->db->join('code_delivery_order', 'code_delivery_order.invoice_id = invoice.id');
+			$this->db->join('delivery_order', 'delivery_order.code_delivery_order_id = code_delivery_order.id');
+			$this->db->join('sales_order', 'delivery_order.sales_order_id = sales_order.id');
+			$this->db->join('code_sales_order', 'sales_order.code_sales_order_id = code_sales_order.id');
+			$this->db->where('MONTH(invoice.date)', $month);
+			$this->db->where('YEAR(invoice.date)', $year);
+			$this->db->order_by('invoice.name');
+			$this->db->order_by('invoice.date');
+			$this->db->limit(10, $offset);
+
+			$query = $this->db->get();
+			$result = $query->result();
+
+			return $result;
+		}
+
+		public function getYears()
+		{
+			$this->db->select("DISTINCT(YEAR(date)) as years");
+			$this->db->order_by('date');
+			$query = $this->db->get($this->table_purchase_invoice);
+			$result = $query->result();
+
+			return $result;
 		}
 }

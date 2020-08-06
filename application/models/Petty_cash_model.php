@@ -85,28 +85,29 @@ class Petty_cash_model extends CI_Model {
 			return $result;
 		}
 		
-		public function insert_from_post($transaction)
+		public function insertItem()
 		{
-			$date		= $this->input->post('date');
+			$this->db->db_debug = false;
+
+			$date			= $this->input->post('date');
 			$class			= $this->input->post('class');
 			$information	= $this->input->post('information');
 			$created_by		= $this->session->userdata('user_id');
 			$value			= $this->input->post('value');
-			
-			if($transaction == 1){
-				$db_item		= array(
-					'id' => '',
-					'date' => $date,
-					'transaction' => $transaction,
-					'information' => $information,
-					'expense_class' => $class,
-					'bank_id' => null,
-					'value' => $value,
-					'created_by' => $created_by
-				);
-			};
+
+			$db_item		= array(
+				'id' => '',
+				'date' => $date,
+				'transaction' => 1,
+				'information' => $information,
+				'expense_class' => $class,
+				'bank_id' => null,
+				'value' => $value,
+				'created_by' => $created_by
+			);
 			
 			$this->db->insert($this->table_petty_cash, $db_item);
+			return $this->db->affected_rows();
 		}
 		
 		public function insert_income($bank_id, $value, $date)

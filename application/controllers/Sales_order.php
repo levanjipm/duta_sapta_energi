@@ -305,7 +305,7 @@ class Sales_order extends CI_Controller {
 		$this->load->view('head');
 		$this->load->view('sales/header', $data);
 
-		$this->load->view('sales/SalesOrder/sales_order_track_dashboard');
+		$this->load->view('sales/SalesOrder/trackDashboard');
 	}
 
 	public function archiveDashboard()

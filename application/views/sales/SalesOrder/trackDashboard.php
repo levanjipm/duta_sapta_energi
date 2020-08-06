@@ -207,15 +207,15 @@
 					$('#sales_order_seller_p').html("<i>Not available</i>");
 				} else {
 					$('#sales_order_seller_p').html(sales_order_seller);
-				}
+				};
 
-				var delivery_orders = response.delivery_orders;
+				var deliveryOrders = response.deliveryOrders;
 				var deliveryOrderCount = 0;
 				$('#deliveryOrderTableContent').html('');
-				$.each(delivery_orders, function(index, delivery_order){
-					var is_confirm = delivery_order.is_confirm;
-					var name = delivery_order.name;
-					var date = delivery_order.date;
+				$.each(deliveryOrders, function(index, deliveryOrder){
+					var is_confirm = deliveryOrder.is_confirm;
+					var name = deliveryOrder.name;
+					var date = deliveryOrder.date;
 					
 					if(is_confirm == 0){
 						var status = "Pending";
@@ -225,7 +225,7 @@
 
 					$('#deliveryOrderTableContent').append("<tr><td>" + my_date_format(date) + "</td><td>" + name + "</td><td>" + status + "</td></tr>");
 					deliveryOrderCount++;
-				})
+				});
 
 				if(deliveryOrderCount > 0){
 					$('#deliveryOrderTable').show();

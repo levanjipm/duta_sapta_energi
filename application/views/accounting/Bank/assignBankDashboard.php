@@ -84,10 +84,10 @@
 
 				if(transactionCount > 0){
 					$('#transactionTable').show();
-					$('#transactionTableContent').hide();
+					$('#transactionTableText').hide();
 				} else {
 					$('#transactionTable').hide();
-					$('#transactionTableContent').show();
+					$('#transactionTableText').show();
 				}
 				
 				for(i = 1; i <= pages; i++){

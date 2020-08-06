@@ -102,7 +102,7 @@ class Debt extends CI_Controller {
 
 				echo 1;
 			} else {
-				$this->Debt_model->deleteItem($purchaseInvoiceId);
+				$this->Debt_model->deleteById($purchaseInvoiceId);
 				echo 0;
 			}
 		} else {
@@ -183,6 +183,9 @@ class Debt extends CI_Controller {
 		
 		$this->load->view('head');
 		$this->load->view('accounting/header', $data);
+		$this->load->model('Debt_model');
+		$data['years'] = $this->Debt_model->getYears();
+		$this->load->view('accounting/debt/archiveDashboard', $data);
 	}
 
 	public function loadForm()
@@ -193,5 +196,35 @@ class Debt extends CI_Controller {
 		} else if($event == 1){
 			$this->load->view('accounting/Debt/regularDebtDocumentForm');
 		}
+	}
+
+	public function getItems()
+	{
+		$page 		= $this->input->get('page');
+		$month		= $this->input->get('month');
+		$year		= $this->input->get('year');
+		$offset		= ($page - 1) * 10;
+
+		$this->load->model('Debt_model');
+		$this->load->model('Supplier_model');
+		
+		$invoices = $this->Debt_model->getItems($offset, $month, $year);
+		$result = array();
+		foreach($invoices as $invoice){
+			$itemArray = array();
+			$supplierId = $invoice->supplier_id;
+
+			$supplierObject = (array) $this->Supplier_model->getById($supplierId);
+			$itemArray = (array) $invoice;
+			$itemArray['supplier'] = $supplierObject;
+
+			array_push($result, $itemArray);
+		};
+
+		$data['items'] = (object) $result;
+		$data['pages'] = max(1, ceil($this->Debt_model->countItems($month, $year) / 10));
+
+		header('Content-Type: application/json');
+		echo json_encode($data);
 	}
 }

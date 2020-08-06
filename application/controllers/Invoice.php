@@ -22,7 +22,7 @@ class Invoice extends CI_Controller {
 		$this->load->view('head');
 		$this->load->view('accounting/header', $data);
 		
-		$this->load->view('accounting/Invoice/createInvoiceDashboard');
+		$this->load->view('accounting/Invoice/createDashboard');
 	}
 	
 	public function getUninvoicedDeliveryOrders()
@@ -156,7 +156,7 @@ class Invoice extends CI_Controller {
 
 		$data = array();
 
-		$this->load->view('accounting/Invoice/confirmInvoiceDashboard');
+		$this->load->view('accounting/Invoice/confirmDashboard');
 	}
 	
 	public function archiveDashboard()
@@ -175,7 +175,7 @@ class Invoice extends CI_Controller {
 		$this->load->model('Invoice_model');
 		$data['years'] = $this->Invoice_model->getYears();
 		
-		$this->load->view('accounting//invoice/archiveInvoiceDashboard', $data);
+		$this->load->view('accounting//invoice/archiveDashboard', $data);
 	}
 	
 	public function getUnconfirmedinvoice()
@@ -275,8 +275,8 @@ class Invoice extends CI_Controller {
 		$offset = ($page - 1) * 10;
 
 		$this->load->model('Invoice_model');
-
 		$this->load->model('Customer_model');
+
 		$invoices = $this->Invoice_model->getItems($offset, $month, $year);
 		$result = array();
 		foreach($invoices as $invoice){

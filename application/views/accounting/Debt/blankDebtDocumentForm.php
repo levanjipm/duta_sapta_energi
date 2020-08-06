@@ -1,6 +1,6 @@
 <form id='debt_document_form'>
 	<label>Date</label>
-	<input type='date' class='form-control' name='date' required>
+	<input type='date' class='form-control' id='date' name='date' required>
 	
 	<label>Supplier</label>
 	<button type='button' class='form-control' id='supplierPickButton' style='text-align:left!important'></button>			
@@ -136,7 +136,6 @@
 	$('#submitButton').click(function(){
 		if($('#debt_document_form').valid()){
 			taxing = $('#taxing').val();
-
 			supplier_id = $('#supplier_id').val();
 			date = $('#date').val();
 			value = $('#value').val();
@@ -181,8 +180,8 @@
 					invoiceName: invoiceName,
 					information: information,
 					value: value,
-					date: date,
-					supplier_id: supplier_id,
+					date: $('#date').val(),
+					supplier_id: $('#supplier_id').val(),
 				},
 				type:'POST',
 				beforeSend:function(){
@@ -191,7 +190,11 @@
 				success:function(response){
 					$('button').attr('disabled', false);
 					if(response == 1){
-						alert('muantap');
+						$('#debt_document_form').trigger("reset");
+						$('#supplierDetail').html("");
+						$('#supplierPickButton').text("");
+
+						$('#debtDocumentWrapper .slide_alert_close_button').click();
 					} else {
 						$('#failedInsertNotification').fadeIn();
 						setTimeout(function(){
@@ -299,6 +302,7 @@
 				}
 
 				$('#supplierPickButton').text(supplier_name);
+				$('#supplier_id').val(n);
 
 				$('#supplierDetail').html("<label>Name</label><p>" + supplier_name + "</p><label>Address</label><p>" + complete_address + "</p><p>" + supplier_city + "</p>");
 
@@ -306,4 +310,10 @@
 			}
 		})
 	}
+
+	$('.slide_alert_close_button').click(function(){
+		$(this).siblings('.alert_box_slide').hide("slide", { direction: "right" }, 250, function(){
+			$(this).parent().fadeOut();
+		});
+	});
 </script>

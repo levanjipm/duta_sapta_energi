@@ -12,6 +12,8 @@ class Invoice_model extends CI_Model {
 		public $is_confirm;
 		public $is_done;
 		public $taxInvoice;
+		public $lastBillingDate;
+		public $nextBillingDate;
 		
 		public function __construct()
 		{
@@ -28,6 +30,8 @@ class Invoice_model extends CI_Model {
 			$this->is_confirm			= $db_item->is_confirm;
 			$this->is_done				= $db_item->is_done;
 			$this->taxInvoice			= $db_item->taxInvoice;
+			$this->nextBillingDate		= $db_item->nextBillingDate;
+			$this->lastBillingDate		= $db_item->lastBillingDate;
 			
 			return $this;
 		}
@@ -44,6 +48,8 @@ class Invoice_model extends CI_Model {
 			$db_item->is_confirm			= $this->is_confirm;
 			$db_item->is_done				= $this->is_done;
 			$db_item->taxInvoice			= $this->taxInvoice;
+			$db_item->nextBillingDate		= $this->nextBillingDate;
+			$db_item->lastBillingDate		= $this->lastBillingDate;
 			
 			return $db_item;
 		}
@@ -60,6 +66,8 @@ class Invoice_model extends CI_Model {
 			$stub->is_confirm			= $this->is_confirm;
 			$stub->is_done				= $this->is_done;
 			$stub->taxInvoice			= $this->taxInvoice;
+			$stub->nextBillingDate		= $this->nextBillingDate;
+			$stub->lastBillingDate		= $this->lastBillingDate;
 			
 			return $stub;
 		}

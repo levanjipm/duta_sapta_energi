@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Waktu pembuatan: 04 Agu 2020 pada 11.39
+-- Waktu pembuatan: 06 Agu 2020 pada 11.45
 -- Versi server: 10.1.38-MariaDB
 -- Versi PHP: 7.3.2
 
@@ -69,6 +69,13 @@ CREATE TABLE `bank_transaction` (
   `account_id` int(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+--
+-- Dumping data untuk tabel `bank_transaction`
+--
+
+INSERT INTO `bank_transaction` (`id`, `value`, `date`, `transaction`, `customer_id`, `supplier_id`, `other_id`, `is_done`, `is_delete`, `bank_transaction_major`, `account_id`) VALUES
+(1, '275520.00', '2020-08-08', 1, 7, NULL, NULL, 1, 0, NULL, 2);
+
 -- --------------------------------------------------------
 
 --
@@ -116,7 +123,8 @@ INSERT INTO `code_delivery_order` (`id`, `date`, `name`, `is_confirm`, `is_delet
 (2, '2020-07-27', 'DO-DSE-202007-0002', 1, 0, 1, '86D15818-3866-4B0F-BD21-66A9D121A5E2', 2),
 (3, '2020-08-01', 'DO-DSE-202008-0001', 1, 0, 1, '16A65DE5-63DC-4CD5-8DC6-E36A5EAC057B', 3),
 (4, '2020-08-02', 'DO-DSE-202008-0002', 1, 0, 1, '8E62DC58-5242-484C-BE1E-D8A469C16D88', 4),
-(5, '2020-08-04', 'DO-DSE-202008-00030', 1, 0, 1, '44305715-519D-4224-95BD-D6F6E625A712', 5);
+(5, '2020-08-04', 'DO-DSE-202008-00030', 1, 0, 1, '44305715-519D-4224-95BD-D6F6E625A712', 5),
+(6, '2020-08-05', 'DO-DSE-202008-00040', 1, 0, 1, '28E7F6AB-F940-4D46-9F8D-49A18D42D043', 6);
 
 -- --------------------------------------------------------
 
@@ -183,11 +191,12 @@ CREATE TABLE `code_good_receipt` (
 --
 
 INSERT INTO `code_good_receipt` (`id`, `name`, `date`, `is_confirm`, `is_delete`, `invoice_id`, `received_date`, `created_by`, `confirmed_by`, `guid`) VALUES
-(1, 'asss', '2020-07-27', 1, 0, NULL, '2020-07-27', 1, 1, '5CBE89BE-2CA9-4BC4-9296-E7ACEA3BF82C'),
+(1, 'asss', '2020-07-27', 1, 0, 3, '2020-07-27', 1, 1, '5CBE89BE-2CA9-4BC4-9296-E7ACEA3BF82C'),
 (2, 'asssd', '2020-07-27', 1, 0, NULL, '2020-07-27', 1, 1, 'AE0979A3-999B-476A-A925-4A0B409FA5A6'),
 (3, 'assder', '2020-07-27', 1, 0, 1, '2020-07-27', 1, 1, '15057C31-5EDC-492B-ADB0-DC881BDF1AC7'),
 (4, 'asdfasdfasdfasdf', '2020-08-01', 1, 0, 2, '2020-08-01', 1, 1, '8B29DDA3-8FE9-4B05-83BC-AB9685955A1B'),
-(5, 'bcdefgh', '2020-08-03', 1, 0, 2, '2020-08-03', 1, 1, 'D0E44287-9AA6-41D3-96A7-355D1782097D');
+(5, 'bcdefgh', '2020-08-03', 1, 0, 2, '2020-08-03', 1, 1, 'D0E44287-9AA6-41D3-96A7-355D1782097D'),
+(6, 'ABCD', '2020-08-06', 1, 0, 4, '2020-08-06', 1, 1, '43AA972B-8BBF-4094-8BAD-F1EAF7C854BC');
 
 -- --------------------------------------------------------
 
@@ -222,7 +231,8 @@ CREATE TABLE `code_purchase_order` (
 --
 
 INSERT INTO `code_purchase_order` (`id`, `date`, `name`, `supplier_id`, `created_by`, `confirmed_by`, `is_closed`, `promo_code`, `dropship_address`, `dropship_city`, `dropship_contact_person`, `dropship_contact`, `taxing`, `date_send_request`, `status`, `guid`, `is_delete`, `is_confirm`, `note`) VALUES
-(1, '2020-07-26', 'PO.DSE-202007-8897', 1, 1, 1, 0, NULL, NULL, NULL, NULL, NULL, 1, NULL, 'TOP URGENT', '2B0C033C-15BA-4008-9059-D022F312E4F0', 0, 1, '');
+(1, '2020-07-26', 'PO.DSE-202007-8897', 1, 1, 1, 0, NULL, NULL, NULL, NULL, NULL, 1, NULL, 'TOP URGENT', '2B0C033C-15BA-4008-9059-D022F312E4F0', 0, 1, ''),
+(2, '2020-08-05', 'PO.DSE-202008-1909', 1, 1, 1, 0, NULL, NULL, NULL, NULL, NULL, 1, NULL, NULL, '8197286A-2A34-4F6D-BB81-59F57F660283', 0, 1, '');
 
 -- --------------------------------------------------------
 
@@ -266,7 +276,9 @@ CREATE TABLE `code_sales_order` (
 INSERT INTO `code_sales_order` (`id`, `customer_id`, `name`, `date`, `taxing`, `seller`, `is_confirm`, `confirmed_by`, `guid`, `created_by`, `invoicing_method`, `is_delete`) VALUES
 (1, 116, '202007.66789069', '2020-07-25', 0, NULL, 1, 1, 'B2EE7B13-E549-4BFB-8A64-95EEA5CF8903', 1, 1, 0),
 (2, 69, '202007.30413153', '2020-07-27', 0, NULL, 1, 1, '0B9BCDFF-431E-4C33-B1ED-6A4B7BBDD39F', 1, 1, 0),
-(3, 83, '202007.34955410', '2020-07-28', 0, NULL, 0, NULL, '20F615CC-6A2E-4BD2-A50B-300EBC034F21', 1, 1, 0);
+(3, 83, '202007.34955410', '2020-07-28', 0, NULL, 1, 1, '20F615CC-6A2E-4BD2-A50B-300EBC034F21', 1, 1, 0),
+(4, 7, '202008.24064387', '2020-08-05', 0, 1, 1, 1, 'D0896347-8D18-4991-8ED3-90FA82E0D8D3', 1, 1, 0),
+(5, 27, '202008.58692217', '2020-08-03', 0, 2, 1, 1, 'B92905FC-57BF-4B40-81CA-54FB9DBDE02A', 1, 2, 0);
 
 -- --------------------------------------------------------
 
@@ -525,7 +537,8 @@ INSERT INTO `delivery_order` (`id`, `sales_order_id`, `code_delivery_order_id`, 
 (2, 2, 2, 1),
 (3, 1, 3, 2),
 (4, 1, 4, 2),
-(5, 2, 5, 10);
+(5, 2, 5, 10),
+(6, 4, 6, 1);
 
 -- --------------------------------------------------------
 
@@ -704,7 +717,9 @@ INSERT INTO `good_receipt` (`id`, `purchase_order_id`, `quantity`, `code_good_re
 (6, 1, 50, 4, '268960.0000'),
 (7, 2, 1, 4, '0.0000'),
 (8, 1, 10, 5, '268960.0000'),
-(9, 2, 1, 5, '0.0000');
+(9, 2, 1, 5, '0.0000'),
+(10, 3, 50, 6, '268960.0000'),
+(11, 4, 50, 6, '345056.0000');
 
 -- --------------------------------------------------------
 
@@ -766,19 +781,22 @@ CREATE TABLE `invoice` (
   `information` text NOT NULL,
   `is_done` tinyint(1) DEFAULT '0',
   `is_confirm` tinyint(1) NOT NULL DEFAULT '0',
-  `taxInvoice` varchar(50) DEFAULT NULL
+  `taxInvoice` varchar(50) DEFAULT NULL,
+  `lastBillingDate` date DEFAULT NULL,
+  `nextBillingDate` date DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data untuk tabel `invoice`
 --
 
-INSERT INTO `invoice` (`id`, `name`, `value`, `date`, `information`, `is_done`, `is_confirm`, `taxInvoice`) VALUES
-(1, 'INV.DSE202007-001', '268960.00', '2020-07-25', 'DO-DSE-202007-001', 0, 1, NULL),
-(2, 'INV.DSE202007-0002', '268960.00', '2020-07-27', 'DO-DSE-202007-0002', 0, 0, NULL),
-(3, 'INV.DSE202008-0001', '537920.00', '2020-08-01', 'DO-DSE-202008-0001', 0, 1, NULL),
-(4, 'INV.DSE202008-0002', '537920.00', '2020-08-02', 'DO-DSE-202008-0002', 0, 1, NULL),
-(5, 'INV.DSE202008-00030', '2689600.00', '2020-08-04', 'DO-DSE-202008-00030', 0, 0, NULL);
+INSERT INTO `invoice` (`id`, `name`, `value`, `date`, `information`, `is_done`, `is_confirm`, `taxInvoice`, `lastBillingDate`, `nextBillingDate`) VALUES
+(1, 'INV.DSE202007-001', '268960.00', '2020-07-25', 'DO-DSE-202007-001', 0, 1, NULL, NULL, NULL),
+(2, 'INV.DSE202007-0002', '268960.00', '2020-07-27', 'DO-DSE-202007-0002', 0, 0, NULL, NULL, NULL),
+(3, 'INV.DSE202008-0001', '537920.00', '2020-08-01', 'DO-DSE-202008-0001', 0, 1, NULL, NULL, NULL),
+(4, 'INV.DSE202008-0002', '537920.00', '2020-08-02', 'DO-DSE-202008-0002', 0, 1, NULL, NULL, NULL),
+(5, 'INV.DSE202008-00030', '2689600.00', '2020-08-04', 'DO-DSE-202008-00030', 0, 0, NULL, NULL, NULL),
+(6, 'INV.DSE202008-00040', '275520.00', '2020-08-05', 'DO-DSE-202008-00040', 1, 1, NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -936,6 +954,13 @@ CREATE TABLE `petty_cash` (
   `created_by` int(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+--
+-- Dumping data untuk tabel `petty_cash`
+--
+
+INSERT INTO `petty_cash` (`id`, `date`, `transaction`, `value`, `information`, `expense_class`, `bank_id`, `created_by`) VALUES
+(1, '2020-08-06', 1, '30000.00', 'Pembelian kaos', 20, NULL, 1);
+
 -- --------------------------------------------------------
 
 --
@@ -953,6 +978,14 @@ CREATE TABLE `plafond_submission` (
   `confirmed_by` int(255) DEFAULT NULL,
   `confirmed_date` date DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data untuk tabel `plafond_submission`
+--
+
+INSERT INTO `plafond_submission` (`id`, `customer_id`, `submitted_plafond`, `submitted_by`, `submitted_date`, `is_confirm`, `is_delete`, `confirmed_by`, `confirmed_date`) VALUES
+(1, 116, '5000000.00', 1, '2020-08-05', 0, 1, 1, '2020-08-05'),
+(2, 124, '4500000.00', 1, '2020-08-05', 0, 1, 1, '2020-08-05');
 
 -- --------------------------------------------------------
 
@@ -1043,7 +1076,7 @@ INSERT INTO `price_list` (`id`, `item_id`, `price_list`) VALUES
 CREATE TABLE `purchase_invoice` (
   `id` int(255) NOT NULL,
   `date` date NOT NULL,
-  `tax_document` varchar(100) NOT NULL,
+  `tax_document` varchar(100) DEFAULT NULL,
   `invoice_document` varchar(100) NOT NULL,
   `created_by` int(255) NOT NULL,
   `is_confirm` tinyint(1) NOT NULL DEFAULT '0',
@@ -1058,7 +1091,9 @@ CREATE TABLE `purchase_invoice` (
 
 INSERT INTO `purchase_invoice` (`id`, `date`, `tax_document`, `invoice_document`, `created_by`, `is_confirm`, `is_delete`, `confirmed_by`, `is_done`) VALUES
 (1, '2020-07-27', '010.003-20.35145684', 'Dualipa', 1, 1, 0, 1, 0),
-(2, '2020-08-04', '010.003-20.63513513', '010.003-20.63513513', 1, 1, 0, 1, 0);
+(2, '2020-08-04', '010.003-20.63513513', '010.003-20.63513513', 1, 1, 0, 1, 0),
+(3, '2020-08-06', '010.003-20.35351351', '30asd1', 1, 0, 0, NULL, 0),
+(4, '2020-08-06', '010.005-20.55214632', 'GHIJ', 1, 1, 0, 1, 0);
 
 -- --------------------------------------------------------
 
@@ -1081,6 +1116,13 @@ CREATE TABLE `purchase_invoice_other` (
   `is_delete` tinyint(1) NOT NULL DEFAULT '0',
   `is_done` tinyint(1) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data untuk tabel `purchase_invoice_other`
+--
+
+INSERT INTO `purchase_invoice_other` (`id`, `date`, `tax_document`, `invoice_document`, `supplier_id`, `value`, `taxing`, `information`, `created_by`, `is_confirm`, `confirmed_by`, `is_delete`, `is_done`) VALUES
+(1, '2020-08-06', NULL, 'as', 1, '300000.00', 0, '', 1, 0, NULL, 0, 0);
 
 -- --------------------------------------------------------
 
@@ -1105,7 +1147,9 @@ CREATE TABLE `purchase_order` (
 
 INSERT INTO `purchase_order` (`id`, `item_id`, `price_list`, `net_price`, `quantity`, `received`, `status`, `code_purchase_order_id`) VALUES
 (1, 1, '328000.0000', '268960.0000', 100, 90, 0, 1),
-(2, 1, '1.0000', '0.0000', 10, 8, 0, 1);
+(2, 1, '1.0000', '0.0000', 10, 8, 0, 1),
+(3, 1, '328000.0000', '268960.0000', 100, 50, 0, 2),
+(4, 11, '420800.0000', '345056.0000', 100, 50, 0, 2);
 
 -- --------------------------------------------------------
 
@@ -1137,6 +1181,13 @@ CREATE TABLE `receivable` (
   `date` date NOT NULL,
   `invoice_id` int(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data untuk tabel `receivable`
+--
+
+INSERT INTO `receivable` (`id`, `bank_id`, `value`, `date`, `invoice_id`) VALUES
+(1, 1, '275520.00', '2020-08-08', 6);
 
 -- --------------------------------------------------------
 
@@ -1191,7 +1242,11 @@ CREATE TABLE `sales_order` (
 INSERT INTO `sales_order` (`id`, `price_list_id`, `discount`, `quantity`, `sent`, `status`, `code_sales_order_id`) VALUES
 (1, 57, '18.0000', 20, 5, 0, 1),
 (2, 57, '18.0000', 20, 11, 0, 2),
-(3, 57, '18.0000', 2, 0, 0, 3);
+(3, 57, '18.0000', 2, 0, 0, 3),
+(4, 57, '16.0000', 3, 1, 0, 4),
+(5, 10, '16.0000', 6, 0, 0, 5),
+(6, 16, '16.0000', 10, 0, 0, 5),
+(7, 30, '16.0000', 2, 0, 0, 5);
 
 -- --------------------------------------------------------
 
@@ -1248,7 +1303,7 @@ INSERT INTO `stock_in` (`id`, `item_id`, `quantity`, `residue`, `supplier_id`, `
 (1, 1, 10, 0, 1, NULL, 5, NULL, NULL, '268960.0000'),
 (2, 9, 1, 0, NULL, NULL, NULL, NULL, 2, '0.0000'),
 (3, 1, 1, 0, NULL, NULL, NULL, NULL, 3, '0.0000'),
-(4, 1, 50, 14, 1, NULL, 6, NULL, NULL, '268960.0000'),
+(4, 1, 50, 13, 1, NULL, 6, NULL, NULL, '268960.0000'),
 (5, 1, 1, 1, 1, NULL, 7, NULL, NULL, '0.0000'),
 (6, 9, 1, 0, NULL, NULL, NULL, NULL, 20, '0.0000'),
 (7, 9, 1, 0, NULL, NULL, NULL, NULL, 20, '0.0000'),
@@ -1262,7 +1317,9 @@ INSERT INTO `stock_in` (`id`, `item_id`, `quantity`, `residue`, `supplier_id`, `
 (15, 2, 20, 18, NULL, NULL, NULL, NULL, 23, '0.0000'),
 (16, 1, 4, 4, NULL, NULL, NULL, NULL, 21, '0.0000'),
 (17, 1, 10, 10, 1, NULL, 8, NULL, NULL, '268960.0000'),
-(18, 1, 1, 1, 1, NULL, 9, NULL, NULL, '0.0000');
+(18, 1, 1, 1, 1, NULL, 9, NULL, NULL, '0.0000'),
+(19, 1, 50, 50, 1, NULL, 10, NULL, NULL, '268960.0000'),
+(20, 11, 50, 50, 1, NULL, 11, NULL, NULL, '345056.0000');
 
 -- --------------------------------------------------------
 
@@ -1321,7 +1378,8 @@ INSERT INTO `stock_out` (`id`, `in_id`, `quantity`, `customer_id`, `supplier_id`
 (33, 4, 2, 116, NULL, 3, NULL, NULL),
 (34, 4, 2, 116, NULL, 4, NULL, NULL),
 (35, 4, 1, 69, NULL, 2, NULL, NULL),
-(36, 4, 10, 69, NULL, 5, NULL, NULL);
+(36, 4, 10, 69, NULL, 5, NULL, NULL),
+(37, 4, 1, 7, NULL, 6, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -1557,7 +1615,9 @@ ALTER TABLE `fixed_asset_type`
 -- Indeks untuk tabel `good_receipt`
 --
 ALTER TABLE `good_receipt`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `purchase_order_id` (`purchase_order_id`),
+  ADD KEY `code_good_receipt_id` (`code_good_receipt_id`);
 
 --
 -- Indeks untuk tabel `income_class`
@@ -1750,13 +1810,13 @@ ALTER TABLE `attendance_list`
 -- AUTO_INCREMENT untuk tabel `attendance_status`
 --
 ALTER TABLE `attendance_status`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT untuk tabel `bank_transaction`
 --
 ALTER TABLE `bank_transaction`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT untuk tabel `benefit`
@@ -1768,7 +1828,7 @@ ALTER TABLE `benefit`
 -- AUTO_INCREMENT untuk tabel `code_delivery_order`
 --
 ALTER TABLE `code_delivery_order`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT untuk tabel `code_event`
@@ -1780,13 +1840,13 @@ ALTER TABLE `code_event`
 -- AUTO_INCREMENT untuk tabel `code_good_receipt`
 --
 ALTER TABLE `code_good_receipt`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT untuk tabel `code_purchase_order`
 --
 ALTER TABLE `code_purchase_order`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT untuk tabel `code_purchase_return`
@@ -1798,7 +1858,7 @@ ALTER TABLE `code_purchase_return`
 -- AUTO_INCREMENT untuk tabel `code_sales_order`
 --
 ALTER TABLE `code_sales_order`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT untuk tabel `code_sales_order_close_request`
@@ -1834,7 +1894,7 @@ ALTER TABLE `customer_area`
 -- AUTO_INCREMENT untuk tabel `delivery_order`
 --
 ALTER TABLE `delivery_order`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT untuk tabel `department`
@@ -1870,7 +1930,7 @@ ALTER TABLE `fixed_asset_type`
 -- AUTO_INCREMENT untuk tabel `good_receipt`
 --
 ALTER TABLE `good_receipt`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT untuk tabel `income_class`
@@ -1888,7 +1948,7 @@ ALTER TABLE `internal_bank_account`
 -- AUTO_INCREMENT untuk tabel `invoice`
 --
 ALTER TABLE `invoice`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT untuk tabel `item`
@@ -1918,13 +1978,13 @@ ALTER TABLE `payable`
 -- AUTO_INCREMENT untuk tabel `petty_cash`
 --
 ALTER TABLE `petty_cash`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT untuk tabel `plafond_submission`
 --
 ALTER TABLE `plafond_submission`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT untuk tabel `price_list`
@@ -1936,19 +1996,19 @@ ALTER TABLE `price_list`
 -- AUTO_INCREMENT untuk tabel `purchase_invoice`
 --
 ALTER TABLE `purchase_invoice`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT untuk tabel `purchase_invoice_other`
 --
 ALTER TABLE `purchase_invoice_other`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT untuk tabel `purchase_order`
 --
 ALTER TABLE `purchase_order`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT untuk tabel `purchase_return`
@@ -1960,7 +2020,7 @@ ALTER TABLE `purchase_return`
 -- AUTO_INCREMENT untuk tabel `receivable`
 --
 ALTER TABLE `receivable`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT untuk tabel `salary_benefit`
@@ -1978,7 +2038,7 @@ ALTER TABLE `salary_slip`
 -- AUTO_INCREMENT untuk tabel `sales_order`
 --
 ALTER TABLE `sales_order`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT untuk tabel `sales_return`
@@ -1996,13 +2056,13 @@ ALTER TABLE `sales_return_received`
 -- AUTO_INCREMENT untuk tabel `stock_in`
 --
 ALTER TABLE `stock_in`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- AUTO_INCREMENT untuk tabel `stock_out`
 --
 ALTER TABLE `stock_out`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=37;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=38;
 
 --
 -- AUTO_INCREMENT untuk tabel `supplier`
@@ -2090,6 +2150,13 @@ ALTER TABLE `delivery_order`
 ALTER TABLE `event`
   ADD CONSTRAINT `event_ibfk_1` FOREIGN KEY (`code_event_id`) REFERENCES `code_event` (`id`),
   ADD CONSTRAINT `event_ibfk_2` FOREIGN KEY (`item_id`) REFERENCES `item` (`id`);
+
+--
+-- Ketidakleluasaan untuk tabel `good_receipt`
+--
+ALTER TABLE `good_receipt`
+  ADD CONSTRAINT `good_receipt_ibfk_1` FOREIGN KEY (`purchase_order_id`) REFERENCES `purchase_order` (`id`),
+  ADD CONSTRAINT `good_receipt_ibfk_2` FOREIGN KEY (`code_good_receipt_id`) REFERENCES `code_good_receipt` (`id`);
 
 --
 -- Ketidakleluasaan untuk tabel `item`
