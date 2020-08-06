@@ -83,29 +83,31 @@ class Debt extends CI_Controller {
 	
 	public function insertItem()
 	{
-		// $document_array		= $this->input->post('document');
-		// foreach($document_array as $document){
-		// 	$code_good_receipt_id	= key($document_array);
-		// 	$good_receipt_array[]	= $code_good_receipt_id;
-		// 	next($document_array);
-		// }
+		$priceArray	= $this->input->post('price');
+
+		$this->load->model('Debt_model');
+		$purchaseInvoiceId		= $this->Debt_model->insertItem();
 		
-		// $price_array	= $this->input->post('price');
-		// $this->load->model('Debt_model');
-		// $invoice_id		= $this->Debt_model->insertItem();
-		
-		// if($invoice_id != null){
-		// 	$this->load->model('Good_receipt_model');
-		// 	$this->Good_receipt_model->updateInvoiceStatusById(1, $invoice_id, $good_receipt_array);
-			
-		// 	$this->load->model('Stock_in_model');
-		// 	$this->Stock_in_model->update_price($price_array);
-			
-		// 	$this->load->model('Good_receipt_detail_model');
-		// 	$this->Good_receipt_detail_model->update_price($price_array);
-		// }
-		
-		// redirect(site_url('Debt'));
+		if($purchaseInvoiceId != null){
+			$goodReceiptIdArray = $this->input->post('document');
+			$this->load->model('Good_receipt_model');
+			$resultGoodReceipt = $this->Good_receipt_model->updateInvoiceStatusById(1, $purchaseInvoiceId, $goodReceiptIdArray);
+
+			if($resultGoodReceipt > 0){
+				$this->load->model('Stock_in_model');
+				$this->Stock_in_model->updatePrice($priceArray);
+				
+				$this->load->model('Good_receipt_detail_model');
+				$this->Good_receipt_detail_model->updatePrice($priceArray);
+
+				echo 1;
+			} else {
+				$this->Debt_model->deleteItem($purchaseInvoiceId);
+				echo 0;
+			}
+		} else {
+			echo 0;
+		}
 	}
 
 	public function insertBlankItem()

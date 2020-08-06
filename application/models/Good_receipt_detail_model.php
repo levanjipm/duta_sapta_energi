@@ -169,16 +169,16 @@ class Good_receipt_detail_model extends CI_Model {
 			return $item;
 		}
 		
-		public function update_price($price_array)
+		public function updatePrice($priceArray)
 		{
-			foreach($price_array as $price){
-				$id		= key($price_array);
+			foreach($priceArray as $price){
+				$id		= key($priceArray);
 				$batch[] = array(
 					'id' => $id,
 					'billed_price' => $price
 				);
 				
-				next($price_array);
+				next($priceArray);
 			}
 			
 			$this->db->update_batch($this->table_good_receipt,$batch, 'id'); 

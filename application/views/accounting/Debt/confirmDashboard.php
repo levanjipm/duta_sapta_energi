@@ -1,5 +1,5 @@
 <head>
-	<title>Debt document</title>
+	<title>Debt document - Confirm</title>
 </head>
 <div class='dashboard'>
 	<div class='dashboard_head'>
@@ -28,11 +28,12 @@
 </div>
 
 <div class='alert_wrapper' id='view_debt_wrapper'>
-	<button type='button' class='slide_alert_close_button'>&times </button>
+	<button type='button' class='slide_alert_close_button'>&times;</button>
 	<div class='alert_box_slide'>
 		<form action='<?= site_url('Debt/confirm') ?>' method='POST'>
+			<h3 style='font-family:bebasneue'>Debt document</h3>
+			
 			<input type='hidden' id='purchase_invoice_id' name='id'>
-			<h2 style='font-family:bebasneue'>Debt document</h2>
 			<hr>
 			<label>Purchase invoice</label>
 			<p style='font-family:museo' id='invoice_date_p'></p>
@@ -43,20 +44,30 @@
 			<p style='font-family:museo' id='supplier_name_p'></p>
 			<p style='font-family:museo' id='supplier_address_p'></p>
 			<p style='font-family:museo' id='supplier_city_p'></p>
-			
+
+			<label>Good receipts</label>
 			<table class='table table-bordered'>
 				<tr>
 					<th>Date</th>
-					<th>Document</th>
-					<th>Reference</th>
 					<th>Name</th>
-					<th>Unit price</th>
-					<th>Quantity</th>
-					<th>Total price</th>
+					<th>Received date</th>
 				</tr>
-				<tbody id='good_receipt_table'></tbody>
+				<tbody id='goodReceiptInformation'></tbody>
 			</table>
-			
+			<hr>
+
+			<div class='table-responsive-md'>
+				<table class='table table-bordered'>
+					<tr>
+						<th>Reference</th>
+						<th>Name</th>
+						<th>Unit price</th>
+						<th>Quantity</th>
+						<th>Total price</th>
+					</tr>
+					<tbody id='good_receipt_table'></tbody>
+				</table>
+			</div>
 			<button type='button' class='button button_default_dark' onclick='confirmDebt()'><i class='fa fa-long-arrow-right'></i></button>
 			<button type='button' class='button button_danger_dark' onclick='deleteDebt()'><i class='fa fa-trash'></i></button>
 
@@ -66,7 +77,9 @@
 	</div>
 </div>
 <script>
-	refresh_view();
+	$(document).ready(function(){
+		refresh_view();
+	})
 	
 	$('#page').change(function(){
 		refresh_view();
@@ -76,8 +89,7 @@
 		refresh_view(1);
 	});
 	
-	function refresh_view(page = $('#page').val())
-	{
+	function refresh_view(page = $('#page').val()){
 		$.ajax({
 			url:'<?= site_url('Debt/showUnconfirmedDocuments') ?>',
 			data:{
@@ -88,17 +100,22 @@
 				var page	= $('#page').val();
 				array	= response.invoices;
 				var debtCount = 0;
-				$('#debt_document_tbody').html('');
+				$('#debtTableContent').html('');
 				$.each(array, function(index, value){
 					var id					= value.id;
 					var date				= value.date;
 					var tax_document		= value.tax_document;
+					if(tax_document == null){
+						var taxDocumentText = "<i>Not available</i>";
+					} else {
+						var taxDocumentText = tax_document;
+					}
 					var invoice_document	= value.invoice_document;
 					var supplier_name		= value.name;
 					var supplier_address	= value.address;
 					var supplier_city		= value.city;
 					debtCount++;
-					$('#debtTableContent').append("<tr><td>" + my_date_format(date) + "</td><td><p>" + supplier_name + "</p><p>" + supplier_address + "</p><p>" + supplier_city + "</p></td><td><p>" + invoice_document + "</p><p>" + tax_document + "</p></td><td><button type='button' class='button button_default_dark' onclick='viewDebtDocument(" + id + ")' title='View " + invoice_document + "'><i class='fa fa-eye'></i></button></td></tr>");
+					$('#debtTableContent').append("<tr><td>" + my_date_format(date) + "</td><td><p>" + supplier_name + "</p><p>" + supplier_address + "</p><p>" + supplier_city + "</p></td><td><p>" + invoice_document + "</p><p>" + taxDocumentText + "</p></td><td><button type='button' class='button button_default_dark' onclick='viewDebtDocument(" + id + ")' title='View " + invoice_document + "'><i class='fa fa-eye'></i></button></td></tr>");
 				});
 
 				if(debtCount > 0){
@@ -152,13 +169,14 @@
 				$('#supplier_address_p').html(supplier_address);
 				$('#supplier_city_p').html(supplier_city);
 				$('#good_receipt_table').html('');
+				$('#goodReceiptInformation').html("");
 				$.each(document_array, function(index, value){
 					var document_date			= value.date;
 					var document_name			= value.name;
 					var document_received_date	= value.received_date;
 					var document_id				= value.id;
-					$('#good_receipt_table').append("<tr><td>" + my_date_format(document_date) + "</td><td>" + document_name + "</td><td colspan='4'></td><td id='document_value-" + document_id + "'></td></tr>");
-					
+
+					$("<tr><td>" + document_name + "</td><td>" + my_date_format(document_date) + "</td><td>" + my_date_format(document_received_date) + "</td></tr>").appendTo( $('#goodReceiptInformation') );
 					var document_value			= 0;
 					$.each(detail_array, function (index_a, value_a){
 						if(value_a.code_good_receipt_id == document_id){
@@ -167,7 +185,7 @@
 							var quantity			= value_a.quantity;
 							var billed_price		= value_a.billed_price;
 							var total_price			= billed_price * quantity;
-							$('#good_receipt_table').append("<tr><td colspan='2'></td><td>" + reference + "</td><td>" + name + "</td><td>Rp. " + numeral(billed_price).format('0,0.00') + "</td><td>" + numeral(quantity).format('0,0') + "</td><td>Rp. " + numeral(total_price).format('0,0.00') + "</td></tr>");
+							$('#good_receipt_table').append("<tr><td>" + reference + "</td><td>" + name + "</td><td>Rp. " + numeral(billed_price).format('0,0.00') + "</td><td>" + numeral(quantity).format('0,0') + "</td><td>Rp. " + numeral(total_price).format('0,0.00') + "</td></tr>");
 							
 							document_value += total_price;
 						};
@@ -177,7 +195,7 @@
 					$('#document_value-' + document_id).html('Rp. ' + numeral(document_value).format('0,0.00'));
 				});
 				
-				$('#good_receipt_table').append("<tr><td colspan='5'></td><td>Total</td><td>Rp. " + numeral(total_value).format('0,0.00') + "</td></tr>");
+				$('#good_receipt_table').append("<tr><td colspan='2'></td><td>Total</td><td colspan='2'>Rp. " + numeral(total_value).format('0,0.00') + "</td></tr>");
 				
 				$('#view_debt_wrapper').fadeIn(300, function(){
 					$('#view_debt_wrapper .alert_box_slide').show("slide", { direction: "right" }, 250);
@@ -198,6 +216,7 @@
 			}, success:function(response){
 				$('button').attr('disabled', false);
 				if(response == 0){
+					refresh_view();
 					$('#failedDeleteNotification').fadeTo(250, 1);
 					setTimeout(function(){
 						$('#failedDeleteNotification').fadeTo(250, 0);
@@ -222,6 +241,7 @@
 			}, success:function(response){
 				$('button').attr('disabled', false);
 				if(response == 0){
+					refresh_view();
 					$('#failedConfirmNotification').fadeIn(250);
 					setTimeout(function(){
 						$('#failedConfirmNotification').fadeOut(250);

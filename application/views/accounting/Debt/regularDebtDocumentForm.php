@@ -4,19 +4,22 @@
 	<br>
 	<input type='text' class='form-control' id='search_bar' placeholder='Search'>
 	<br>
-	<table class='table table-bordered'>
-		<tr>
-			<th>Date</th>
-			<th>Document</th>
-			<th>Informaction</th>
-			<th>Action</th>
-		</tr>
-		<tbody id='debt_document_by_supplier_tbody'></tbody>
-	</table>
+	<div id='goodReceiptTable' style='display:none'>
+		<table class='table table-bordered'>
+			<tr>
+				<th>Date</th>
+				<th>Document</th>
+				<th>Informaction</th>
+				<th>Action</th>
+			</tr>
+			<tbody id='goodReceiptTableContent'></tbody>
+		</table>
 	
-	<select class='form-control' id='page' style='width:100px'>
-		<option value='1'>1</option>
-	</select>
+		<select class='form-control' id='page' style='width:100px'>
+			<option value='1'>1</option>
+		</select>
+	</div>
+	<p id='goodReceiptTableText' style='display:none' style='display:none'>There is no uninvoiced good receipts found.</p>
 	
 	<div id='document_input'></div><br>
 
@@ -32,13 +35,13 @@
 			<hr>
 			<label>Invoice</label><br>
 			<label>Date</label>
-			<input type='date' class='form-control' id='date' required>
+			<input type='date' class='form-control' name='date' required>
 			
 			<label>Document</label>
-			<input type='text' class='form-control' id='invoiceName' required>
+			<input type='text' class='form-control' name='invoiceName' required>
 
 			<label>Tax document</label>
-			<input type='text' class='form-control' id='taxInvoiceName'>
+			<input type='text' class='form-control' id='taxInvoiceName' name='taxInvoiceName'>
 			<script>
 				$("#taxInvoiceName").inputmask("999.999-99.99999999");
 			</script>
@@ -53,13 +56,18 @@
 			<label>Good receipts</label>
 			<div id='goodReceiptsTable'></div>
 
-			<button type='button' id='submitDebtButton' class='button button_default_dark'><i class='fa fa-long-arrow-right'></i></button>
+			<div id='documentInputValidate'></div>
+
+			<button type='button' id='submitDebtButton' class='button button_default_dark'><i class='fa fa-long-arrow-right'></i></button><br>
+			<div class='notificationText danger' id='insertItemFailed'><p>Failed to insert debt document.</p></div>
 		</form>
 	</div>
 </div>
 
 <script>
 	var documentCount = 0;
+	var documentArray;
+
 	$('#debtDocumentForm').validate({
 		ignore: '',
 		rules: {"hidden_field": {required: true}}
@@ -120,7 +128,8 @@
 			},
 			type:'GET',
 			success:function(response){
-				$('#debt_document_by_supplier_tbody').html('');
+				var goodReceiptCount = 0;
+				$('#goodReceiptTableContent').html('');
 				var bills		= response.bills;
 				$.each(bills, function(index, value){
 					var code_good_receipt_id	= value.id;
@@ -134,37 +143,46 @@
 					var document				= value.name;
 					var date					= value.date;
 					var received_date			= value.received_date;
+					goodReceiptCount++;
 					
 					if($('#document-' + code_good_receipt_id).length == 0){
-						$('#debt_document_by_supplier_tbody').append("<tr><td>" + my_date_format(date) + "</td><td><p style='font-family:museo'>" + document + "</p><p sytle='font-family:museo'>Received on " + my_date_format(received_date) + "</p></td>" + 
+						$('#goodReceiptTableContent').append("<tr><td>" + my_date_format(date) + "</td><td><p style='font-family:museo'>" + document + "</p><p sytle='font-family:museo'>Received on " + my_date_format(received_date) + "</p></td>" + 
 							"<td><label>Purchase order</label><p style='font-family:museo'>" + purchase_order_name + "</p><p style='font-family:museo'>" + my_date_format(purchase_order_date) + "</p></td>" + 
 							"<td><button type='button' class='button button_default_light' onclick='addGoodReceipt(" + code_good_receipt_id + ")' id='plus_button-" + code_good_receipt_id + "'><i class='fa fa-plus'></i></button>" + 
 							"<button type='button' class='button button_danger_dark' onclick='removeGoodReceipt(" + code_good_receipt_id + ")' id='minus_button-" + code_good_receipt_id + "' style='display:none'><i class='fa fa-minus'></i></button></td></tr>");
 					} else {
-						$('#debt_document_by_supplier_tbody').append("<tr><td>" + my_date_format(date) + "</td><td><p style='font-family:museo'>" + document + "</p><p sytle='font-family:museo'>Received on " + my_date_format(received_date) + "</p></td>" + 
+						$('#goodReceiptTableContent').append("<tr><td>" + my_date_format(date) + "</td><td><p style='font-family:museo'>" + document + "</p><p sytle='font-family:museo'>Received on " + my_date_format(received_date) + "</p></td>" + 
 							"<td><label>Purchase order</label><p style='font-family:museo'>" + purchase_order_name + "</p><p style='font-family:museo'>" + my_date_format(purchase_order_date) + "</p></td>" + 
 							"<td><button type='button' class='button button_default_light' onclick='addGoodReceipt(" + code_good_receipt_id + ")' id='plus_button-" + code_good_receipt_id + "' style='display:none'><i class='fa fa-plus'></i></button>" + 
 							"<button type='button' class='button button_danger_dark' onclick='removeGoodReceipt(" + code_good_receipt_id + ")' id='minus_button-" + code_good_receipt_id + "'><i class='fa fa-minus'></i></button></td></tr>");
 					}
-					
-					var selected_page = $('#page').val();
-					var pages			= response.pages;
-					$('#page').html('');
-					for(i = 1; i <= pages; i++){
-						if(i == selected_page){
-							$('#page').append("<option value='" + i + "' selected>" + i + "</option>");
-						} else {
-							$('#page').append("<option value='" + i + "'>" + i + "</option>");
-						}
-					}
 				});
+
+				var selected_page = $('#page').val();
+				var pages			= response.pages;
+				$('#page').html('');
+				for(i = 1; i <= pages; i++){
+					if(i == selected_page){
+						$('#page').append("<option value='" + i + "' selected>" + i + "</option>");
+					} else {
+						$('#page').append("<option value='" + i + "'>" + i + "</option>");
+					}
+				}
+
+				if(goodReceiptCount > 0){
+					$('#goodReceiptTable').show();
+					$('#goodReceiptTableText').hide();	
+				} else {
+					$('#goodReceiptTable').hide();
+					$('#goodReceiptTableText').show();	
+				}
 			}
 		});
 	}
 	
 	function addGoodReceipt(code_good_receipt_id){
 		if($('#document-' + code_good_receipt_id).length == 0){
-			$('#document_input').append("<input type='hidden' class='form-control' id='document-" + code_good_receipt_id + "' value='" + code_good_receipt_id + "'>");
+			$('#document_input').append("<input type='hidden' name='document[" + documentCount + "]' class='form-control' id='document-" + code_good_receipt_id + "' value='" + code_good_receipt_id + "'>");
 			$('#plus_button-' + code_good_receipt_id).hide();
 			$('#minus_button-' + code_good_receipt_id).show();
 			
@@ -186,7 +204,7 @@
 	}
 
 	$('#submit_button').click(function(){
-		var documentArray = [];
+		documentArray = [];
 		if($('#debtDocumentForm').valid()){
 			$('input[id^="document-"]').each(function(){
 				var goodReceiptId = $(this).val();
@@ -201,7 +219,7 @@
 				type:'GET',
 				success:function(response){
 					var goodReceipts 		= response.goodReceipts;
-					var quantityArray		= [];
+					var quantityArray		= new Array();
 					$.each(goodReceipts, function(index, goodReceipt){
 						var id		= goodReceipt.id;
 						var date 	= goodReceipt.date;
@@ -228,15 +246,19 @@
 							$('#price-' + goodReceiptId).on('change', function(){
 								var itemEditValue = $(this).val() * quantity;
 								$('#totalPrice-' + goodReceiptId).html('Rp. ' + numeral(itemEditValue).format('0,0.00'));
+
 								var goodReceiptEditValue = 0;
-								$('.form-' + id).each(function(){
-									var itemEditValueForm = quantityArray[goodReceiptId] * parseFloat($('#price-' + goodReceiptId).val());
+
+								$.each($('.form-' + id), function(index, form){
+									var goodReceiptEditId = parseInt($(form).attr('id').substring(6, 261));
+
+									var itemEditValueForm = quantityArray[goodReceiptEditId] * parseFloat($(form).val());
 									goodReceiptEditValue += itemEditValueForm;
 								});
 
 								$('#totalGoodReceiptPrice-' + id).html("Rp. " + numeral(goodReceiptEditValue).format('0,0.00'));
 							});
-						})
+						});
 
 						$('#goodReceiptTable-' + id).append("<tr><td colspan='2'></td><td colspan='2'>Total</td><td id='totalGoodReceiptPrice-" + id + "'>Rp. " + numeral(goodReceiptValue).format('0,0.00') + "</td>")
 					})
@@ -286,8 +308,36 @@
 
 	$('#submitDebtButton').click(function(){
 		$('#debtDocumentValidationForm').validate();
+		$('#documentInputValidate').html($('#document_input').html());
+		var data = $('#debtDocumentValidationForm').serializeArray();
 		if($('#debtDocumentValidationForm').valid()){
+			$.ajax({
+				url:"<?= site_url('Debt/insertItem') ?>",
+				data:data,
+				type:'POST',
+				beforeSend:function(){
+					$('button').attr('disabled', true);
+				},
+				success:function(response){
+					$('button').attr('disabled', false);
+					if(response == 1){
+						$('#documentInputValidate').html("");
+						getUninvoicedDebtDocument(1, "");
+						documentCount = 0;
+						$('#document_input').html("");
+						$('#documentCount').val(0);
 
+						$('#debtDocumentFormValidation .slide_alert_close_button').click();
+						
+						$('#debtDocumentValidationForm').trigger("reset");
+					} else {
+						$('#insertItemFailed').fadeIn(250);
+						setTimeout(function(){
+							$('#insertItemFailed').fadeOut(250);
+						}, 1000);
+					}
+				}
+			})
 		}
 	})
 

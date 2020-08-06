@@ -87,12 +87,12 @@ class Debt_model extends CI_Model {
 		{
 			$created_by			= $this->session->userdata('user_id');
 			$date				= $this->input->post('date');
-			$tax_document		= $this->input->post('tax_document');
+			$tax_document		= $this->input->post('taxInvoiceName');
 			if(strlen($tax_document) < 19){
 				$tax_document	= NULL;
 			}
 			
-			$invoice_document	= $this->input->post('invoice_document');
+			$invoice_document	= $this->input->post('invoiceName');
 			
 			$data		= array(
 				'id' => '',
@@ -245,5 +245,11 @@ class Debt_model extends CI_Model {
 			$result	= $query->result();
 			
 			return $result;
+		}
+		
+		public function deleteItem($purchaseInvoiceId)
+		{
+			$this->db->where('id', $purchaseInvoiceId);
+			$this->db->delete($this->table_purchase_invoice);
 		}
 }

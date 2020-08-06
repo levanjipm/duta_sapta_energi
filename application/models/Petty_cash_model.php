@@ -150,7 +150,7 @@ class Petty_cash_model extends CI_Model {
 			return $result;
 		}
 		
-		public function calculate_balance($month, $year, $offset = 0)
+		public function calculateBalance($month, $year, $offset = 0)
 		{
 			$date		= date('Y-m-d', mktime(1,1,1,$month, 1, $year));
 			$this->db->select_sum('petty_cash.value');
@@ -179,12 +179,14 @@ class Petty_cash_model extends CI_Model {
 				$value_2	= $result->value;
 			}
 			
-			$query		= $this->db->query("SELECT  SUM(value) as value FROM (
-				SELECT value FROM petty_cash 
-				WHERE MONTH(date) = '$month' AND YEAR(date) = '$year'
-				AND transaction = '1'
-				ORDER BY id
-				LIMIT $offset) q");
+			$query		= $this->db->query("
+				SELECT  SUM(value) as value FROM (
+					SELECT value FROM petty_cash 
+					WHERE MONTH(date) = '$month' AND YEAR(date) = '$year'
+					AND transaction = '1'
+					ORDER BY id
+					LIMIT $offset) q
+				");
 			$result		= $query->row();
 			$value_3	= $result->value;
 			
@@ -208,5 +210,23 @@ class Petty_cash_model extends CI_Model {
 			$result		= $query->result();
 			
 			return $result;
+		}
+
+		public function getCurrentBalance()
+		{
+			$query = $this->db->query("
+				SELECT COALESCE(SUM(value), 0) AS value FROM petty_cash WHERE transaction = '1'
+			");
+			$result = $query->row();
+
+			$expense = $result->value;
+
+			$query = $this->db->query("
+				SELECT COALESCE(SUM(value), 0) AS value FROM petty_cash WHERE transaction = '2'
+			");
+			$result = $query->row();
+			$income = $result->value;
+
+			return $income - $expense;
 		}
 }

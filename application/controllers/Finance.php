@@ -22,7 +22,7 @@ class Finance extends CI_Controller {
 		$this->load->view('head');
 		$this->load->view('finance/header', $data);
 		
-		$this->load->view('finance/index_page');
+		$this->load->view('finance/dashboard');
 	}
 	
 	public function view_recommendation_list()

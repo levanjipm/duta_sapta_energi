@@ -116,16 +116,16 @@ class Stock_in_model extends CI_Model {
 			
 		}
 		
-		public function update_price($price_array)
+		public function updatePrice($priceArray)
 		{
-			foreach($price_array as $price){
-				$id		= key($price_array);
+			foreach($priceArray as $price){
+				$id		= key($priceArray);
 				$batch[] = array(
 					'good_receipt_id' => $id,
 					'price' => $price
 				);
 				
-				next($price_array);
+				next($priceArray);
 			}
 			
 			$this->db->update_batch($this->table_stock_in,$batch, 'good_receipt_id'); 

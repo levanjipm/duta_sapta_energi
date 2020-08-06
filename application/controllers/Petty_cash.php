@@ -44,11 +44,14 @@ class Petty_cash extends CI_Controller {
 		
 		$this->load->view('head');
 		$this->load->view('finance/header', $data);
+
+		$this->load->model('Petty_cash_model');
+		$data['currentBalance']	= $this->Petty_cash_model->getCurrentBalance();
 		
-		$this->load->view('finance/petty_cash_mutation');
+		$this->load->view('finance/petty_cash_mutation', $data);
 	}
 	
-	public function view_mutation()
+	public function getMutation()
 	{
 		$month		= $this->input->get('month');
 		$year		= $this->input->get('year');
@@ -56,7 +59,7 @@ class Petty_cash extends CI_Controller {
 		$offset		= ($page - 1) * 25;
 		
 		$this->load->model('Petty_cash_model');
-		$data['balance']		= $this->Petty_cash_model->calculate_balance($month, $year, $offset);
+		$data['balance']		= $this->Petty_cash_model->calculateBalance($month, $year, $offset);
 		$data['transactions'] 	= $this->Petty_cash_model->view_mutation($month, $year, $offset);
 		$data['pages'] 			= max(1, ceil($this->Petty_cash_model->count_mutation($month, $year)/25));
 		

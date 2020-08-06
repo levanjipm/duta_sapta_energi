@@ -275,11 +275,11 @@ class Good_receipt_model extends CI_Model {
 			return $item;
 		}
 		
-		public function updateInvoiceStatusById($status, $invoice_id, $goodReceiptArray = array())
+		public function updateInvoiceStatusById($status, $invoiceId, $goodReceiptArray = array())
 		{
 			if($status == 0){
 				$this->db->set('invoice_id', null);
-				$this->db->where('invoice_id', $invoice_id);
+				$this->db->where('invoice_id', $invoiceId);
 				$this->db->update($this->table_good_receipt);
 
 				return $this->db->affected_rows();
@@ -288,15 +288,17 @@ class Good_receipt_model extends CI_Model {
 				{
 					$batch[] = array(
 						'id' => $goodReceipt,
-						'invoice_id' => $invoice_id
+						'invoice_id' => $invoiceId,
 					);
 					
 					next($goodReceiptArray);
 				}
 
-				$this->db->update_batch($this->table_good_receipt,$batch, 'id'); 
+				$this->db->where('invoice_id', null);
 
-				return $this->db->affected_rows();
+				$result = $this->db->update_batch($this->table_good_receipt, $batch, 'id'); 
+
+				return $result;
 			}			
 		}
 		
