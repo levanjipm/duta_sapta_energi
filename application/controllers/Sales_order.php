@@ -23,7 +23,7 @@ class Sales_order extends CI_Controller {
 		$this->load->view('head');
 		$this->load->view('sales/header', $data);
 
-		$this->load->view('sales/SalesOrder/sales_order');
+		$this->load->view('sales/SalesOrder/dashboard');
 		} else {
 			redirect(site_url("Sales"));
 		}		
@@ -132,7 +132,7 @@ class Sales_order extends CI_Controller {
 
 		$this->load->view('head');
 		$this->load->view('sales/header', $data);
-		$this->load->view('sales/SalesOrder/sales_order_check_out', $data);
+		$this->load->view('sales/SalesOrder/checkOut', $data);
 	}
 
 	public function failedSubmission()
@@ -367,7 +367,7 @@ class Sales_order extends CI_Controller {
 		$this->load->view('head');
 		$this->load->view('sales/header', $data);
 
-		$this->load->view('sales/salesOrder/sales_order_close_dashboard');
+		$this->load->view('sales/salesOrder/closeDashboard');
 	}
 
 	public function closeSalesOrderInput()
@@ -384,14 +384,14 @@ class Sales_order extends CI_Controller {
 		$this->load->model('User_model');
 		$data['user_login'] = $this->User_model->getById($user_id);
 
-		if($data['user_login']->access_level > 1){
+		if($data['user_login']->access_level > 2){
 			$this->load->model('Authorization_model');
 			$data['departments']	= $this->Authorization_model->getByUserId($user_id);
 
 			$this->load->view('head');
 			$this->load->view('sales/header', $data);
 
-			$this->load->view('sales/SalesOrder/sales_order_close_confirm');
+			$this->load->view('sales/SalesOrder/closeConfirmDashboard');
 		} else {
 			redirect(site_url('Sales_order'));
 		}		

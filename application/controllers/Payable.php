@@ -37,7 +37,10 @@ class Payable extends CI_Controller {
 	{
 		$supplierId = $this->input->get('id');
 		$this->load->model('Debt_model');
-		$data = $this->Debt_model->getPayableBySupplierId($supplierId);
+		$data['items'] = $this->Debt_model->getPayableBySupplierId($supplierId);
+
+		$this->load->model('Supplier_model');
+		$data['supplier'] = $this->Supplier_model->getById($supplierId);
 
 		header('Content-Type: application/json');
 		echo json_encode($data);

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Waktu pembuatan: 06 Agu 2020 pada 11.45
+-- Waktu pembuatan: 07 Agu 2020 pada 12.34
 -- Versi server: 10.1.38-MariaDB
 -- Versi PHP: 7.3.2
 
@@ -792,7 +792,7 @@ CREATE TABLE `invoice` (
 
 INSERT INTO `invoice` (`id`, `name`, `value`, `date`, `information`, `is_done`, `is_confirm`, `taxInvoice`, `lastBillingDate`, `nextBillingDate`) VALUES
 (1, 'INV.DSE202007-001', '268960.00', '2020-07-25', 'DO-DSE-202007-001', 0, 1, NULL, NULL, NULL),
-(2, 'INV.DSE202007-0002', '268960.00', '2020-07-27', 'DO-DSE-202007-0002', 0, 0, NULL, NULL, NULL),
+(2, 'INV.DSE202007-0002', '268960.00', '2020-07-27', 'DO-DSE-202007-0002', 0, 1, NULL, NULL, NULL),
 (3, 'INV.DSE202008-0001', '537920.00', '2020-08-01', 'DO-DSE-202008-0001', 0, 1, NULL, NULL, NULL),
 (4, 'INV.DSE202008-0002', '537920.00', '2020-08-02', 'DO-DSE-202008-0002', 0, 1, NULL, NULL, NULL),
 (5, 'INV.DSE202008-00030', '2689600.00', '2020-08-04', 'DO-DSE-202008-00030', 0, 0, NULL, NULL, NULL),
@@ -1722,7 +1722,8 @@ ALTER TABLE `purchase_return`
 --
 ALTER TABLE `receivable`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `bank_id` (`bank_id`);
+  ADD KEY `bank_id` (`bank_id`),
+  ADD KEY `invoice_id` (`invoice_id`);
 
 --
 -- Indeks untuk tabel `salary_benefit`
@@ -2214,7 +2215,8 @@ ALTER TABLE `purchase_return`
 -- Ketidakleluasaan untuk tabel `receivable`
 --
 ALTER TABLE `receivable`
-  ADD CONSTRAINT `receivable_ibfk_1` FOREIGN KEY (`bank_id`) REFERENCES `bank_transaction` (`id`);
+  ADD CONSTRAINT `receivable_ibfk_1` FOREIGN KEY (`bank_id`) REFERENCES `bank_transaction` (`id`),
+  ADD CONSTRAINT `receivable_ibfk_2` FOREIGN KEY (`invoice_id`) REFERENCES `invoice` (`id`);
 
 --
 -- Ketidakleluasaan untuk tabel `salary_slip`

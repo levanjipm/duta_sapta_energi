@@ -175,11 +175,11 @@ class Supplier_model extends CI_Model {
 		public function getById($supplier_id)
 		{
 			$this->db->where('id', $supplier_id);
-			$query = $this->db->get($this->table_supplier, 1);
+			$query = $this->db->get($this->table_supplier);
 			
 			$item = $query->row();
 
-			return ($item !== null) ? $this->get_stub_from_db($item) : null;
+			return ($item !== null) ? $item : null;
 		}
 		
 		public function updateById()

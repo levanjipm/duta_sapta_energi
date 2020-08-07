@@ -145,16 +145,13 @@ class Debt_model extends CI_Model {
 		
 		public function getById($invoice_id)
 		{
-			$this->db->select('purchase_invoice.*, supplier.name, supplier.address, supplier.city');
+			$this->db->select('purchase_invoice.*, code_purchase_order.supplier_id');
 			$this->db->from('purchase_invoice');
 			$this->db->join('code_good_receipt', 'code_good_receipt.invoice_id = purchase_invoice.id');
 			$this->db->join('good_receipt', 'code_good_receipt.id = good_receipt.code_good_receipt_id');
 			$this->db->join('purchase_order', 'good_receipt.purchase_order_id = purchase_order.id');
 			$this->db->join('code_purchase_order', 'purchase_order.code_purchase_order_id = code_purchase_order.id');
-			$this->db->join('supplier', 'code_purchase_order.supplier_id = supplier.id');
 
-			$this->db->where('purchase_invoice.is_confirm', 0);
-			$this->db->where('purchase_invoice.is_delete', 0);
 			$this->db->where('purchase_invoice.id', $invoice_id);
 			
 			$query = $this->db->get();
@@ -214,9 +211,9 @@ class Debt_model extends CI_Model {
 				LEFT JOIN
 					(SELECT SUM(value) as value, purchase_id FROM payable GROUP BY purchase_id) a
 				ON a.purchase_id = purchase_invoice.id
-				GROUP BY code_good_receipt_id.purchase_invoice_id
 				WHERE purchase_invoice.is_done = '0'
 				AND code_purchase_order.supplier_id = '$supplierId'
+				GROUP BY code_good_receipt.invoice_id
 			");
 
 			$result = $query->result();
@@ -252,30 +249,36 @@ class Debt_model extends CI_Model {
 		public function getItems($offset, $month, $year)
 		{
 			$query = $this->db->query("
-				SELECT purchase_invoice.*, code_purchase_order.supplier_id
+				SELECT purchase_invoice.*, a.supplier_id
 				FROM purchase_invoice
 				JOIN (
-					SELECT DISTINCT(code_good_receipt.invoice_id) AS id 
+					SELECT DISTINCT(code_good_receipt.invoice_id) AS id, code_purchase_order.supplier_id 
 					FROM code_good_receipt
+					JOIN good_receipt ON good_receipt.code_good_receipt_id = code_good_receipt.id
+					JOIN purchase_order ON good_receipt.purchase_order_id = purchase_order.id
+					JOIN code_purchase_order ON purchase_order.code_purchase_order_id = code_purchase_order.id
 					GROUP BY code_good_receipt.invoice_id
 				) AS a
 				ON a.id = purchase_invoice.id
-			")
-			$this->db->select('purchase_invoice.*, code_purchase_order.supplier_id');
-			$this->db->from('purchase_invoice');
-			$this->db->join('code_delivery_order', 'code_delivery_order.invoice_id = invoice.id');
-			$this->db->join('delivery_order', 'delivery_order.code_delivery_order_id = code_delivery_order.id');
-			$this->db->join('sales_order', 'delivery_order.sales_order_id = sales_order.id');
-			$this->db->join('code_sales_order', 'sales_order.code_sales_order_id = code_sales_order.id');
-			$this->db->where('MONTH(invoice.date)', $month);
-			$this->db->where('YEAR(invoice.date)', $year);
-			$this->db->order_by('invoice.name');
-			$this->db->order_by('invoice.date');
-			$this->db->limit(10, $offset);
-
-			$query = $this->db->get();
+				WHERE MONTH(purchase_invoice.date) = '$month' AND YEAR(purchase_invoice.date) = '$year'
+				AND purchase_invoice.is_delete = '0'
+				ORDER BY purchase_invoice.date ASC
+				LIMIT 10 OFFSET $offset
+			");
+			
 			$result = $query->result();
 
+			return $result;
+		}
+
+		public function countItems($month, $year)
+		{
+			$this->db->where('MONTH(date)', $month);
+			$this->db->where('YEAR(date)', $year);
+			$this->db->where('is_delete', 0);
+			$query = $this->db->get($this->table_purchase_invoice);
+
+			$result = $query->num_rows();
 			return $result;
 		}
 

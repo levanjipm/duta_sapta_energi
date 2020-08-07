@@ -81,30 +81,68 @@
                     </div>
                 </div>
             </div>
-            <div class='col-md-8 col-sm-12 col-xs-12'>
-                <div id="chart_div" style='height:300px'></div>
+            <div class='col-md-7 col-sm-12 col-xs-12'>
+                <div id="salesChart" style='height:300px'></div>
+            </div>
+            <div class='col-md-5 col-sm-12 col-xs-12'>
+                <div id="customerChart" style='height:300px'></div>
+                <p id='customerChartText' style='margin-top:50px'>Data not available.</p>
             </div>
         </div>
     </div>
 </div>
 <script>
-    var rows = [];
-    $.ajax({
-        url:'<?= site_url('Sales/viewSalesByMonth') ?>',
-        data:{
-            offset: $('#offset').val(),
-            range: 6
-        },
-        success:function(response){
-            rows = [];
-            $.each(response, function(index, item){
-                var value = item.value;
-                var label = item.label;
-                var array = [label, value];
-                rows.push(array);
-            });
-        }
-    });
+    var salesData = [];
+    var customerData = [];
+    $(document).ready(function(){
+        refreshView();
+    })
+    function refreshView(){
+        $.ajax({
+            url:'<?= site_url('Sales/viewSalesByMonth') ?>',
+            data:{
+                offset: 6,
+                range: 6
+            },
+            success:function(response){
+                $.each(response, function(index, item){
+                    var value = item.value;
+                    var label = item.label;
+                    var array = [label, value];
+                    salesData.push(array);
+                });
+            }
+        });
+
+        $.ajax({
+            url:'<?= site_url('Sales/viewSalesByCustomer') ?>',
+            data:{
+                offset: 5,
+                month: <?= date('m') ?>,
+                year: <?= date('Y') ?>
+            },
+            success:function(response){
+                var headerArray = ["Customer", "Sales"];
+                customerData.push(headerArray);
+                $.each(response, function(index, item){
+                    var value = parseFloat(item.value);
+                    var label = item.name;
+                    var array = [label, value];
+                    if(value > 0){
+                        customerData.push(array);
+                    }
+                });
+
+                if(customerData.length == 1){
+                    $('#customerChart').hide();
+                    $('#customerChartText').show();
+                } else {
+                    $('#customerChart').show();
+                    $('#customerChartText').hide();
+                }
+            }
+        })
+    }
 
     google.charts.load('current', {packages: ['corechart', 'line']});
     google.charts.setOnLoadCallback(drawBasic);
@@ -114,7 +152,7 @@
         data.addColumn('string', 'X');
         data.addColumn('number', 'Sales');
 
-        data.addRows(rows);
+        data.addRows(salesData);
 
         var options = {
             colors:['#E19B3C'],
@@ -122,8 +160,19 @@
             pointSize: 10,
         };
 
-        var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
+        var salesChart = new google.visualization.LineChart(document.getElementById('salesChart'));
 
-        chart.draw(data, options);
+        salesChart.draw(data, options);
+
+        var dataCustomer = google.visualization.arrayToDataTable(customerData);
+        var view = new google.visualization.DataView(dataCustomer);
+
+        var options = {
+            bar: {groupWidth: "95%"},
+            legend: { position: "none" },
+        };
+
+        var customerChart = new google.visualization.BarChart(document.getElementById("customerChart"));
+        customerChart.draw(view, options);
     }
 </script>

@@ -60,4 +60,17 @@ class Sales extends CI_Controller {
 		header('Content-Type: application/json');
 		echo json_encode(array_reverse($result));
 	}
+
+	public function viewSalesByCustomer()
+	{
+		$month		= $this->input->get('month');
+		$year		= $this->input->get('year');
+		$offset		= $this->input->get('offset');
+
+		$this->load->model('Invoice_model');
+		$result = $this->Invoice_model->getByMonthYear($month, $year, $offset);
+
+		header('Content-Type: application/json');
+		echo json_encode(array_reverse($result));
+	}
 }

@@ -120,9 +120,15 @@ class Debt extends CI_Controller {
 	public function getById()
 	{
 		$purchase_invoice_id		= $this->input->get('id');
+
 		$this->load->model('Debt_model');
-		$data['debt'] = $this->Debt_model->getById($purchase_invoice_id);
-		
+		$debt = $this->Debt_model->getById($purchase_invoice_id);
+		$data['debt'] = $debt;
+
+		$supplierId = $debt->supplier_id;
+		$this->load->model('Supplier_model');
+		$data['supplier'] = $this->Supplier_model->getById($supplierId);
+
 		$this->load->model('Good_receipt_model');
 		$data['documents'] = $this->Good_receipt_model->getByInvoiceId($purchase_invoice_id);
 		

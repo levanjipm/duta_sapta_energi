@@ -405,4 +405,32 @@ class Invoice_model extends CI_Model {
 
 			return $result;
 		}
+
+		public function getByMonthYear($month, $year, $offset)
+		{
+			$query = $this->db->query("
+				SELECT (a.value - a.paid) as value, a.name FROM (
+					SELECT SUM(invoice.value) as value, COALESCE(receivableTable.value,0) AS paid, customer.name
+					FROM invoice
+					LEFT JOIN (
+						SELECT SUM(receivable.value) as value, receivable.invoice_id 
+						FROM receivable
+						GROUP BY receivable.invoice_id
+					) receivableTable
+					ON receivableTable.invoice_id = invoice.id
+					JOIN code_delivery_order ON code_delivery_order.invoice_id = invoice.id
+					JOIN delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order.id
+					JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
+					JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
+					JOIN customer ON code_sales_order.customer_id = customer.id
+					WHERE MONTH(invoice.date) = '$month'
+					AND YEAR(invoice.date) = '$year'
+					GROUP BY code_sales_order.customer_id
+				) a
+				ORDER BY value DESC
+			");
+			$result = $query->result();
+			return $result;
+
+		}
 }

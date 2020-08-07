@@ -1,6 +1,3 @@
-<head>
-	<title>Accounting</title>
-</head>
 <div class='topnav_bar'>
 	<h3>Accounting</h3>
 </div>

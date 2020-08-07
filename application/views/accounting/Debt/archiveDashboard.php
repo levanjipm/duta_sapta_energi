@@ -47,40 +47,19 @@
 	<div class='alert_box_slide'>
 		<h3 style='font-family:bebasneue'>Invoice archive</h3>
 		<hr>
-		<label>Customer</label>
-		<p id='customer_name_p'></p>
-		<p id='customer_address_p'></p>
-		<p id='customer_city_p'></p>
+		<label>Supplier</label>
+		<p id='supplier_name_p'></p>
+		<p id='supplier_address_p'></p>
+		<p id='supplier_city_p'></p>
 
 		<label>Invoice</label>
 		<p id='invoice_name_p'></p>
 		<p id='invoice_tax_p'></p>
 		<p id='invoice_date_p'></p>
+		<p><strong>Rp. <span id='invoice_value_p'></span></strong></p>
 
-		<label>Sales order</label>
-		<p id='sales_order_name_p'></p>
-		<p id='sales_order_date_p'></p>
-		<p id='sales_order_seller_p'></p>
-
-		<label>Other</label>
-        <p id='invoicing_method_p'></p>
-        <p id='taxing_p'></p>
-
-		<label>Items</label>
-		<div class='table-responsive-md'>
-			<table class='table table-bordered'>
-				<tr>
-					<th>Reference</th>
-					<th>Name</th>
-					<th>Price list</th>
-					<th>Discount</th>
-					<th>Net price</th>
-					<th>Quantity</th>
-					<th>Total price</th>
-				</tr>
-				<tbody id='deliveryOrderTableContent'></tbody>
-			</table>
-		</div>
+		<hr>
+		<div id='goodReceiptWrapper'></div>
 	</div>
 </div>
 <script>
@@ -114,47 +93,46 @@
 				var invoiceCount = 0;
 
 				$.each(items, function(index, item){
-					var name = item.name;
+					var invoiceName = item.invoice_document;
 					var date = item.date;
-					var taxInvoice = item.taxInvoice;
+					var taxInvoiceName = item.tax_document;
 					var isConfirm = item.is_confirm;
-					var taxing = item.taxing;
 					var id = item.id;
 					
-					var customer = item.customer;
-					var customer_name = customer.name;
-					var complete_address = customer.address;
-					var customer_number = customer.number;
-					var customer_block = customer.block;
-					var customer_rt = customer.rt;
-					var customer_rw = customer.rw;
-					var customer_city = customer.city;
-					var customer_postal = customer.postal;
+					var supplier = item.supplier;
+					var supplier_name = supplier.name;
+					var complete_address = supplier.address;
+					var supplier_number = supplier.number;
+					var supplier_block = supplier.block;
+					var supplier_rt = supplier.rt;
+					var supplier_rw = supplier.rw;
+					var supplier_city = supplier.city;
+					var supplier_postal = supplier.postal_code;
 					
-					if(customer_number != null){
-						complete_address	+= ' No. ' + customer_number;
+					if(supplier_number != null){
+						complete_address	+= ' No. ' + supplier_number;
 					}
 					
-					if(customer_block != null && customer_block != '000'){
-						complete_address	+= ' Blok ' + customer_block;
+					if(supplier_block != null && supplier_block != '000'){
+						complete_address	+= ' Blok ' + supplier_block;
 					}
 				
-					if(customer_rt != '000'){
-						complete_address	+= ' RT ' + customer_rt;
+					if(supplier_rt != '000'){
+						complete_address	+= ' RT ' + supplier_rt;
 					}
 					
-					if(customer_rw != '000' && customer_rt != '000'){
-						complete_address	+= ' /RW ' + customer_rw;
+					if(supplier_rw != '000' && supplier_rw != '000'){
+						complete_address	+= ' /RW ' + supplier_rw;
 					}
 					
-					if(customer_postal != null){
-						complete_address	+= ', ' + customer_postal;
+					if(supplier_postal != null){
+						complete_address	+= ', ' + supplier_postal;
 					}
 
 					if(isConfirm == 0){
-						$('#archiveTable').append("<div class='row archive_row'><div class='col-md-3 col-sm-3 col-xs-4'><p><strong>" + name + "</strong></p></div><div class='col-md-3 col-sm-3 col-xs-3'><p><strong>" + customer_name + "</strong></p><p>" + complete_address + "</p><p>" + customer_city + "</p></div><div class='col-md-4 col-sm-5 col-xs-5 col-md-offset-2 col-sm-offset-1 col-xs-offset-2'><p style='display:inline-block'>" + my_date_format(date) + " <strong>|</strong> </p> <button type='button' class='button button_transparent' onclick='openView(" + id + ")' title='View " + name + "'><i class='fa fa-eye'></i></button></div>");
+						$('#archiveTable').append("<div class='row archive_row'><div class='col-md-3 col-sm-3 col-xs-4'><p><strong>" + invoiceName + "</strong></p></div><div class='col-md-3 col-sm-3 col-xs-3'><p><strong>" + supplier_name + "</strong></p><p>" + complete_address + "</p><p>" + supplier_city + "</p></div><div class='col-md-4 col-sm-5 col-xs-5 col-md-offset-2 col-sm-offset-1 col-xs-offset-2'><p style='display:inline-block'>" + my_date_format(date) + " <strong>|</strong> </p> <button type='button' class='button button_transparent' onclick='openView(" + id + ")' title='View " + invoiceName + "'><i class='fa fa-eye'></i></button></div>");
 					} else {
-						$('#archiveTable').append("<div class='row archive_row'><div class='col-md-3 col-sm-3 col-xs-4'><p><strong>" + name + "</strong></p></div><div class='col-md-3 col-sm-3 col-xs-3'><p><strong>" + customer_name + "</strong></p><p>" + complete_address + "</p><p>" + customer_city + "</p></div><div class='col-md-4 col-sm-5 col-xs-5 col-md-offset-2 col-sm-offset-1 col-xs-offset-2'><p style='display:inline-block'>" + my_date_format(date) + " <strong>|</strong> </p> <button type='button' class='button button_transparent' onclick='openView(" + id + ")' title='View " + name + "'><i class='fa fa-eye'></i></button> <button type='button' class='button button_verified' title='Confirmed'><i class='fa fa-check'></i></button></div>");
+						$('#archiveTable').append("<div class='row archive_row'><div class='col-md-3 col-sm-3 col-xs-4'><p><strong>" + invoiceName + "</strong></p></div><div class='col-md-3 col-sm-3 col-xs-3'><p><strong>" + supplier_name + "</strong></p><p>" + complete_address + "</p><p>" + supplier_city + "</p></div><div class='col-md-4 col-sm-5 col-xs-5 col-md-offset-2 col-sm-offset-1 col-xs-offset-2'><p style='display:inline-block'>" + my_date_format(date) + " <strong>|</strong> </p> <button type='button' class='button button_transparent' onclick='openView(" + id + ")' title='View " + invoiceName + "'><i class='fa fa-eye'></i></button> <button type='button' class='button button_verified' title='Confirmed'><i class='fa fa-check'></i></button></div>");
 					}
 
 					invoiceCount++;
@@ -183,108 +161,119 @@
 
 	function openView(n){
 		$.ajax({
-			url:'<?= site_url('Invoice/getById') ?>',
+			url:'<?= site_url('Debt/getById') ?>',
 			data:{
 				id:n
 			},
 			success:function(response){
-				var customer = response.customer;
-				var customer_name = customer.name;
-				var complete_address = customer.address;
-				var customer_number = customer.number;
-				var customer_block = customer.block;
-				var customer_rt = customer.rt;
-				var customer_rw = customer.rw;
-				var customer_city = customer.city;
-				var customer_postal = customer.postal;
+				var supplier = response.supplier;
+				var supplier_name = supplier.name;
+				var complete_address = supplier.address;
+				var supplier_number = supplier.number;
+				var supplier_block = supplier.block;
+				var supplier_rt = supplier.rt;
+				var supplier_rw = supplier.rw;
+				var supplier_city = supplier.city;
+				var supplier_postal = supplier.postal_code;
 				
-				if(customer_number != null){
-					complete_address	+= ' No. ' + customer_number;
+				if(supplier_number != null){
+					complete_address	+= ' No. ' + supplier_number;
 				}
 				
-				if(customer_block != null && customer_block != '000'){
-					complete_address	+= ' Blok ' + customer_block;
+				if(supplier_block != null && supplier_block != '000'){
+					complete_address	+= ' Blok ' + supplier_block;
 				}
 			
-				if(customer_rt != '000'){
-					complete_address	+= ' RT ' + customer_rt;
+				if(supplier_rt != '000'){
+					complete_address	+= ' RT ' + supplier_rt;
 				}
 				
-				if(customer_rw != '000' && customer_rt != '000'){
-					complete_address	+= ' /RW ' + customer_rw;
+				if(supplier_rw != '000' && supplier_rw != '000'){
+					complete_address	+= ' /RW ' + supplier_rw;
 				}
 				
-				if(customer_postal != null){
-					complete_address	+= ', ' + customer_postal;
+				if(supplier_postal != null){
+					complete_address	+= ', ' + supplier_postal;
 				}
 
-				$('#customer_name_p').html(customer_name);
-				$('#customer_address_p').html(complete_address);
-				$('#customer_city_p').html(customer_city);
+				$('#supplier_name_p').html(supplier_name);
+				$('#supplier_address_p').html(complete_address);
+				$('#supplier_city_p').html(supplier_city);
 				
-				var invoice = response.invoice;
-				var date = invoice.date;
-				var name = invoice.name;
+				var debt = response.debt;
 
-				$('#invoice_name_p').html(name);
+				var date = debt.date;
+				var invoiceDocument = debt.invoice_document;
+				var taxDocument = debt.tax_document;
+
+				if(taxDocument == null){
+					var taxDocumentName = "<i>Not available</i>";
+				} else {
+					var taxDocumentName = taxDocument;
+				}
+
+				$('#invoice_name_p').html(invoiceDocument);
+				$('#invoice_tax_p').html(taxDocumentName);
 				$('#invoice_date_p').html(my_date_format(date));
 
-				var salesOrder = response.sales_order;
-				var taxing = salesOrder.taxing;
-				if(taxing == 0){
-					var taxingText = "Non-taxable";
-					var taxInvoice = "<i>Not available</i>";
-				} else {
-					var taxingText = "Taxable";
-					if(invoice.is_confirm == 1){
-						var taxInvoice = invoice.taxInvoice;
-					} else {
-						var taxInvoice = "<i>Not available</i>";
-					}
-				}
-				
-				$('#invoice_tax_p').html(taxInvoice);
+				$('#goodReceiptWrapper').html("");
+				var documents = response.documents;
+				$.each(documents, function(index, document){
+					var name= document.name;
+					var date = document.date;
+					var received_date = document.received_date;
+					var id = document.id;
 
-				var invoicing_method = salesOrder.invoicing_method;
-				if(invoicing_method == 1){
-					var invoicingMethodText = "Retail";
-				} else {
-					var invoicingMethodText = "Coorporate";
-				}
-
-				$('#invoicing_method_p').html(invoicingMethodText);
-				$('#taxing_p').html(taxingText);
-
-				var name = salesOrder.name;
-
-				var seller = salesOrder.seller;
-				if(seller == null){
-					var sellerText = "<i>Not available</i>";
-				} else {
-					var sellerText = seller;
-				}
-
-				$('#sales_order_name_p').html(name);
-				$('#sales_order_date_p').html(my_date_format(date));
-				$('#sales_order_seller_p').html(sellerText);
-
-				$('#deliveryOrderTableContent').html('');
-				var items = response.items;
-				var invoiceValue = 0;
-				$.each(items, function(index, item){
-					var reference = item.reference;
-					var name = item.name;
-					var discount = parseFloat(item.discount);
-					var priceList = parseFloat(item.price_list);
-					var quantity = parseInt(item.quantity);
-					var netPrice = (100 - discount) * priceList / 100;
-					var totalPrice = netPrice * quantity;
-					invoiceValue += totalPrice;
-
-					$('#deliveryOrderTableContent').append("<tr><td>" + reference + "</td><td>" + name + "</td><td>Rp. " + numeral(priceList).format('0,0.00') + "</td><td>" + numeral(discount).format('0,0.00') + "%</td><td>Rp. " + numeral(netPrice).format("0,0.00") + "</td><td>" + numeral(quantity).format("0,0") + "</td><td>Rp. " + numeral(totalPrice).format('0,0.00') + "</td></tr>");
+					$('#goodReceiptWrapper').append("<label>Name</label><p>" + name + "</p><label>Date</label><p>" + my_date_format(date) + "</p><p>Received on " + my_date_format(received_date) + "</p><br><table class='table table-bordered'><tr><th>Reference</th><th>Name</th><th>Quantity</th><th>Price</th><th>Total</th></tr><tbody id='goodReceiptDetailTable-" + id + "'></tbody></table>");
 				});
 
-				$('#deliveryOrderTableContent').append("<tr><td colspan='4'><td colspan='2'>Total</td><td>Rp. " + numeral(invoiceValue).format('0,0.00') + "</td></tr>");
+				var items = response.details;
+				var invoiceValue = 0;
+				$.each(items, function(index, item){
+					var quantity = parseInt(item.quantity);
+					var price = parseFloat(item.billed_price);
+					var reference = item.reference;
+					var name = item.name;
+					var codeGoodReceiptId = item.code_good_receipt_id;
+					var totalPrice = quantity * price;
+
+					invoiceValue += totalPrice;
+
+					$('#goodReceiptDetailTable-' + codeGoodReceiptId).append("<tr><td>" + reference + "</td><td>" + name + "</td><td>" + numeral(quantity).format("0,0.00") + "</td><td>Rp. " + numeral(price).format('0,0.00') + "</td><td>Rp. " + numeral(totalPrice).format('0,0.00') + "</td></tr>");
+				});
+
+				$('#invoice_value_p').html(numeral(invoiceValue).format('0,0.00'));
+
+				// var name = salesOrder.name;
+
+				// var seller = salesOrder.seller;
+				// if(seller == null){
+				// 	var sellerText = "<i>Not available</i>";
+				// } else {
+				// 	var sellerText = seller;
+				// }
+
+				// $('#sales_order_name_p').html(name);
+				// $('#sales_order_date_p').html(my_date_format(date));
+				// $('#sales_order_seller_p').html(sellerText);
+
+				// $('#deliveryOrderTableContent').html('');
+				// var items = response.items;
+				// var invoiceValue = 0;
+				// $.each(items, function(index, item){
+				// 	var reference = item.reference;
+				// 	var name = item.name;
+				// 	var discount = parseFloat(item.discount);
+				// 	var priceList = parseFloat(item.price_list);
+				// 	var quantity = parseInt(item.quantity);
+				// 	var netPrice = (100 - discount) * priceList / 100;
+				// 	var totalPrice = netPrice * quantity;
+				// 	invoiceValue += totalPrice;
+
+				// 	$('#deliveryOrderTableContent').append("<tr><td>" + reference + "</td><td>" + name + "</td><td>Rp. " + numeral(priceList).format('0,0.00') + "</td><td>" + numeral(discount).format('0,0.00') + "%</td><td>Rp. " + numeral(netPrice).format("0,0.00") + "</td><td>" + numeral(quantity).format("0,0") + "</td><td>Rp. " + numeral(totalPrice).format('0,0.00') + "</td></tr>");
+				// });
+
+				// $('#deliveryOrderTableContent').append("<tr><td colspan='4'><td colspan='2'>Total</td><td>Rp. " + numeral(invoiceValue).format('0,0.00') + "</td></tr>");
 
 				$('#viewInvoiceWrapper').fadeIn(300, function(){
 					$('#viewInvoiceWrapper .alert_box_slide').show("slide", { direction: "right" }, 250);
