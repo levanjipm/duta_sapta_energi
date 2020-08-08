@@ -122,15 +122,19 @@
                 year: <?= date('Y') ?>
             },
             success:function(response){
-                var headerArray = ["Customer", "Sales"];
+                var headerArray = ["Customer", "Sales", { role: 'style'}];
                 customerData.push(headerArray);
+                var opacity = 1;
                 $.each(response, function(index, item){
                     var value = parseFloat(item.value);
                     var label = item.name;
-                    var array = [label, value];
+                    var styleString = "color: #01bb00; opacity: " + opacity;
+                    var array = [label, value, styleString];
                     if(value > 0){
                         customerData.push(array);
                     }
+
+                    opacity = opacity - 0.1;
                 });
 
                 if(customerData.length == 1){
@@ -140,6 +144,8 @@
                     $('#customerChart').show();
                     $('#customerChartText').hide();
                 }
+
+                console.log(customerData);
             }
         })
     }
@@ -170,6 +176,7 @@
         var options = {
             bar: {groupWidth: "95%"},
             legend: { position: "none" },
+            fill: '#01bb00',
         };
 
         var customerChart = new google.visualization.BarChart(document.getElementById("customerChart"));
