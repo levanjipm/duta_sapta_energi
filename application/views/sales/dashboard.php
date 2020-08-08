@@ -144,8 +144,6 @@
                     $('#customerChart').show();
                     $('#customerChartText').hide();
                 }
-
-                console.log(customerData);
             }
         })
     }
@@ -176,7 +174,6 @@
         var options = {
             bar: {groupWidth: "95%"},
             legend: { position: "none" },
-            fill: '#01bb00',
         };
 
         var customerChart = new google.visualization.BarChart(document.getElementById("customerChart"));

@@ -39,7 +39,7 @@
 		<div class='container_bar'>
 			<a href='<?= site_url('Debt') ?>'><button><p style='font-family:museo'>Create</p></button></a>
 			<a href='<?= site_url('Debt/confirmDashboard') ?>'><button><p style='font-family:museo'>Confirm</p></button></a>
-			<a href='<?= site_url('Debt/typeDashboard') ?>'><button><p style='font-family:museo'>Types</p></button></a>
+			<a href='<?= site_url('Debt_type') ?>'><button><p style='font-family:museo'>Types</p></button></a>
 			<a href='<?= site_url('Debt/archiveDashboard') ?>'><button><p style='font-family:museo'>Archive</p></button></a>
 		</div>
 		<a href='<?= site_url('Receivable') ?>'><button><p style='font-family:museo'>Receivable</p></button></a>

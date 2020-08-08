@@ -433,4 +433,82 @@ class Invoice_model extends CI_Model {
 			return $result;
 
 		}
+
+		public function getBillingData($offset, $term, $limit = 10)
+		{
+			$query = $this->db->query("
+				SELECT (a.value - a.paid) as value, customer.* 
+				FROM (
+					SELECT SUM(invoice.value) as value, COALESCE(receivableTable.value,0) AS paid, code_sales_order.customer_id
+					FROM invoice
+					LEFT JOIN (
+						SELECT SUM(receivable.value) as value, receivable.invoice_id 
+						FROM receivable
+						GROUP BY receivable.invoice_id
+					) receivableTable
+					ON receivableTable.invoice_id = invoice.id
+					JOIN code_delivery_order ON code_delivery_order.invoice_id = invoice.id
+					JOIN delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order.id
+					JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
+					JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
+					JOIN customer ON code_sales_order.customer_id = customer.id
+					WHERE invoice.is_done = '0'
+					AND customer.name LIKE '%" . $term . "%'
+					GROUP BY code_sales_order.customer_id
+					ORDER BY invoice.date ASC
+				) a
+				JOIN customer ON a.customer_id = customer.id
+				ORDER BY value DESC
+				LIMIT $limit OFFSET $offset
+			");
+
+			$result = $query->result();
+			return $result;
+		}
+
+		public function countBillingData($term)
+		{
+			$query = $this->db->query("
+				SELECT customer.id
+				FROM (
+					SELECT SUM(invoice.value) as value, COALESCE(receivableTable.value,0) AS paid, code_sales_order.customer_id
+					FROM invoice
+					LEFT JOIN (
+						SELECT SUM(receivable.value) as value, receivable.invoice_id 
+						FROM receivable
+						GROUP BY receivable.invoice_id
+					) receivableTable
+					ON receivableTable.invoice_id = invoice.id
+					JOIN code_delivery_order ON code_delivery_order.invoice_id = invoice.id
+					JOIN delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order.id
+					JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
+					JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
+					JOIN customer ON code_sales_order.customer_id = customer.id
+					WHERE invoice.is_done = '0'
+					AND customer.name LIKE '%" . $term . "%'
+					GROUP BY code_sales_order.customer_id
+					ORDER BY invoice.date ASC
+				) a
+				JOIN customer ON a.customer_id = customer.id
+				ORDER BY value DESC
+			");
+
+			$result = $query->num_rows();
+			return $result;
+		}
+
+		public function getBillingSuggestionData($date)
+		{
+			$query = $this->db->query("
+				SELECT invoice.*, code_sales_order.customer_id FROM invoice 
+				JOIN code_delivery_order ON code_delivery_order.invoice_id = invoice.id
+				JOIN delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order.id
+				JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
+				JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
+				WHERE invoice.nextBillingDate = '$date'
+			");
+
+			$result = $query->result();
+			return $result;
+		}
 }
