@@ -79,4 +79,26 @@ class Debt_type_model extends CI_Model {
 			$result = $query->num_rows();
 			return $result;
 		}
+
+		public function insertItem($name, $description)
+		{
+			$this->db->db_debug = false;
+			$this->id = "";
+			$this->name = $name;
+			$this->description = $description;
+			$db_item 					= $this->get_db_from_stub($this);
+			$db_result 					= $this->db->insert($this->table_type, $db_item);
+			
+			return $this->db->affected_rows();
+		}
+
+		public function deleteById($itemId)
+		{
+			$this->db->db_debug = false;
+			$this->db->where('id', $itemId);
+			$this->db->delete($this->table_type);
+
+			$result = $this->db->affected_rows();
+			return $result;
+		}
 }
