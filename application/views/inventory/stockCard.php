@@ -1,3 +1,6 @@
+<head>
+    <title><?= $item->reference ?> Stock card</title>
+</head>
 <div class='dashboard'>
     <div class='dashboard_head'>
         <p style='font-family:museo'><a href='<?= site_url('Inventory') ?>' title='Inventory'><i class='fa fa-briefcase'></i></a> /<a href='<?= site_url('Stock/view/inventory') ?>'>Check stock</a> / <?= $item->reference ?> - <?= $item->name ?></p>
@@ -30,6 +33,7 @@
     $(document).ready(function(){
         refresh_view();
     })
+    
     function refresh_view(){
         $.ajax({
             url:"<?= site_url('Stock/viewCard') ?>",

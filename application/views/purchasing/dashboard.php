@@ -1,5 +1,5 @@
 <head>
-    <title>Sales</title>
+    <title>Purchasing</title>
     <style>
         .dashboardBox{
             padding:8px;

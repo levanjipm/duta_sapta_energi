@@ -7,12 +7,7 @@
 	</div>
 	<br>
 	<div class='dashboard_in'>
-		<div class='input_group'>
-			<input type='text' class='form-control input-lg' id='search_bar' placeholder="Search sales order">
-			<div class='input_group_append'>
-				<button type='button' class='button button_default_dark' onclick='window.location.href="<?= site_url('Sales_order/create') ?>"'>Create Sales Order</button>
-			</div>
-		</div>
+		<input type='text' class='form-control input-lg' id='search_bar' placeholder="Search sales order">
 		<br>
 		
 		<div id='empty_text'>

@@ -9,22 +9,21 @@ class Stock_out_model extends CI_Model {
 		public $quantity;
 		public $customer_id;
 		public $supplier_id;
-		public $code_delivery_order_id;
+		public $delivery_order_id;
 		public $code_event_id;
-		public $code_purchase_return_id;
+		public $purchase_return_id;
 		
 		public function __construct()
 		{
 			parent::__construct();
 			
-			$this->id						='';
-			$this->in_id					='';
-			$this->quantity					='';
-			$this->supplier_id				='';
-			$this->customer_id				='';
-			$this->code_delivery_order_id	='';
-			$this->code_purchase_return_id	='';
-			$this->code_event_id			='';
+			$this->id						= '';
+			$this->in_id					= NULL;
+			$this->supplier_id				= NULL;
+			$this->customer_id				= NULL;
+			$this->delivery_order_id	= NULL;
+			$this->purchase_return_id		= NULL;
+			$this->code_event_id			= NULL;
 		}
 		
 		public function get_stub_from_db($db_item)
@@ -34,8 +33,8 @@ class Stock_out_model extends CI_Model {
 			$this->quantity					= $db_item->quantity;
 			$this->supplier_id				= $db_item->supplier_id;
 			$this->customer_id				= $db_item->customer_id;
-			$this->code_delivery_order_id	= $db_item->code_delivery_order_id;
-			$this->code_purchase_return_id	= $db_item->code_purchase_return_id;
+			$this->delivery_order_id		= $db_item->delivery_order_id;
+			$this->purchase_return_id		= $db_item->purchase_return_id;
 			$this->code_event_id			= $db_item->code_event_id;
 			
 			return $this;
@@ -50,8 +49,8 @@ class Stock_out_model extends CI_Model {
 			$db_item->quantity					= $this->quantity;
 			$db_item->supplier_id				= $this->supplier_id;
 			$db_item->customer_id				= $this->customer_id;
-			$db_item->code_delivery_order_id	= $this->code_delivery_order_id;
-			$db_item->code_purchase_return_id	= $this->code_purchase_return_id;
+			$db_item->delivery_order_id			= $this->delivery_order_id;
+			$db_item->purchase_return_id		= $this->purchase_return_id;
 			$db_item->code_event_id				= $this->code_event_id;
 			
 			return $db_item;
@@ -66,19 +65,19 @@ class Stock_out_model extends CI_Model {
 			$stub->quantity					= $db_item->quantity;
 			$stub->supplier_id				= $db_item->supplier_id;
 			$stub->customer_id				= $db_item->customer_id;
-			$stub->code_delivery_order_id	= $db_item->code_delivery_order_id;
-			$stub->code_purchase_return_id	= $db_item->code_purchase_return_id;
+			$stub->delivery_order_id		= $db_item->delivery_order_id;
+			$stub->purchase_return_id		= $db_item->purchase_return_id;
 			$stub->code_event_id			= $db_item->code_event_id;
 			
 			return $stub;
 		}
 		
-		public function map_list($delivery_orders)
+		public function map_list($items)
 		{
 			$result = array();
-			foreach ($delivery_orders as $delivery_order)
+			foreach ($items as $item)
 			{
-				$result[] = $this->get_new_stub_from_db($delivery_order);
+				$result[] = $this->get_new_stub_from_db($item);
 			}
 			return $result;
 		}
@@ -89,7 +88,7 @@ class Stock_out_model extends CI_Model {
 			foreach($delivery_order_array as $delivery_order){
 				$item_id				= $delivery_order['item_id'];
 				$quantity				= $delivery_order['quantity'];
-				$code_delivery_order_id	= $delivery_order['code_delivery_order_id'];
+				$delivery_order_id		= $delivery_order['delivery_order_id'];
 				$customer_id			= $delivery_order['customer_id'];
 				$stock_in				= $this->Stock_in_model->getResidueByItemId($item_id);
 				$residue				= $stock_in->residue;
@@ -98,12 +97,12 @@ class Stock_out_model extends CI_Model {
 					if($residue		> $quantity){
 						$current_residue	= $residue - $quantity;
 						$this->Stock_in_model->updateById($in_id, $current_residue);
-						$this->Stock_out_model->insertStockDeliveryOrder($in_id, $quantity, $code_delivery_order_id, $customer_id); 
+						$this->Stock_out_model->insertStockDeliveryOrder($in_id, $quantity, $delivery_order_id, $customer_id); 
 						break;
 					} else {
 						$current_residue		= $quantity - $residue;
 						$this->Stock_in_model->updateById($in_id, 0);
-						$this->Stock_out_model->insertStockDeliveryOrder($in_id, $current_residue, $code_delivery_order_id, $customer_id);
+						$this->Stock_out_model->insertStockDeliveryOrder($in_id, $current_residue, $delivery_order_id, $customer_id);
 						
 						$quantity = $quantity - $residue;
 					}
@@ -111,16 +110,16 @@ class Stock_out_model extends CI_Model {
 			}
 		}
 		
-		public function insertStockDeliveryOrder($in_id, $quantity, $code_delivery_order_id, $customer_id)
+		public function insertStockDeliveryOrder($in_id, $quantity, $delivery_order_id, $customer_id)
 		{
 			$db_item		= array(
 				'in_id' => $in_id,
 				'quantity' => $quantity,
-				'code_delivery_order_id' => $code_delivery_order_id,
+				'delivery_order_id' => $delivery_order_id,
 				'customer_id' => $customer_id,
 				'supplier_id' => null,
 				'event_id' => null,
-				'code_purchase_return_id' => null
+				'purchase_return_id' => null
 			);
 				
 			$this->db->insert($this->table_stock_out, $db_item);
@@ -162,11 +161,20 @@ class Stock_out_model extends CI_Model {
 				'event_id' => $event_id,
 				'customer_id' => null,
 				'supplier_id' => null,
-				'code_purchase_return_id' => null,
-				'code_delivery_order_id' => null
+				'purchase_return_id' => null,
+				'delivery_order_id' => null
 			);
 				
 			$this->db->insert($this->table_stock_out, $db_item);
 			return $this->db->affected_rows();
+		}
+
+		public function getByInIdArray($inIdArray){
+			foreach($inIdArray as $inId)
+			{
+				$query		= $this-db->query("
+					SELECT COALESCE(code_delivery_order.name, code_
+				")
+			}
 		}
 }
