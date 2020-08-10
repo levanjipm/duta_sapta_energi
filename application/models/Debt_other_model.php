@@ -103,6 +103,7 @@ class Debt_other_model extends CI_Model {
 			$invoice_document	= $this->input->post('invoiceName');
 			$value				= $this->input->post('value');
 			$created_by			= $this->session->userdata('user_id');
+			$debtType			= $this->input->post('debtType');
 			
 			if($taxing == 0){
 				$tax_document	= null;

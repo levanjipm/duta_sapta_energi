@@ -57,4 +57,35 @@ class Debt_type extends CI_Controller {
 		$result = $this->Debt_type_model->deleteById($typeId);
 		echo $result;
 	}
+
+	public function getById()
+	{
+		$typeId				= $this->input->get('id');
+
+		$this->load->model('Debt_type_model');
+		$data 				= $this->Debt_type_model->getById($typeId);
+
+		header('Content-Type: application/json');
+		echo json_encode($data);
+	}
+
+	public function updateById()
+	{
+		$typeId				= $this->input->post('id');
+		$name				= $this->input->post('name');
+		$description		= $this->input->post('description');
+
+		$this->load->model('Debt_type_model');
+		$result = $this->Debt_type_model->updateById($typeId, $name, $description);
+		echo $result;
+	}
+
+	public function getAllItems()
+	{
+		$this->load->model('Debt_type_model');
+		$data	 = $this->Debt_type_model->getAllItems();
+
+		header('Content-Type: application/json');
+		echo json_encode($data);
+	}
 }

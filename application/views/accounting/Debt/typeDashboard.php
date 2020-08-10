@@ -51,6 +51,27 @@
 	</div>
 </div>
 
+<div class='alert_wrapper' id='editTypeWrapper'>
+    <button class='slide_alert_close_button'>&times;</button>
+    <div class='alert_box_slide'>
+        <form id='editTypeDebtForm'>
+            <h3 style='font-family:bebasneue'>Edit debt type</h3>
+            <hr>
+
+            <input type='hidden' id='editId'>
+            <label>Name</label>
+            <input type='text' class='form-control' id='editName'>
+
+            <label>Description</label>
+            <textarea class='form-control' id='editDescription' rows='3' style='resize:none'></textarea>
+            <br>
+            <button type='button' class='button button_default_dark' id='editItemButton'><i class='fa fa-long-arrow-right'></i></button>
+
+            <div class='notificationText danger' id='failedEditNotification'><p>Failed to update item</p></div>
+        </form>
+    </div>
+</div>
+
 <div class='alert_wrapper' id='addTypeWrapper'>
     <button class='slide_alert_close_button'>&times;</button>
     <div class='alert_box_slide'>
@@ -75,6 +96,7 @@
     });
 
     $('#typeDebtForm').validate();
+    $('#editTypeDebtForm').validate();
 
     $('#insertItemButton').click(function(){
         if($('#typeDebtForm').valid()){
@@ -158,7 +180,7 @@
                     var description = item.description;
                     var id = item.id;
 
-                    $('#typeTableContent').append("<tr><td>" + name + "</td><td>" + description + "</td><td><button class='button button_default_dark'><i class='fa fa-eye'></i></button> <button class='button button_danger_dark' onclick='confirmDelete(" + id + ")'><i class='fa fa-trash'></i></button></td></tr>");
+                    $('#typeTableContent').append("<tr><td>" + name + "</td><td>" + description + "</td><td><button class='button button_success_dark' onclick='openEditForm(" + id + ")'><i class='fa fa-pencil'></i></button> <button class='button button_danger_dark' onclick='confirmDelete(" + id + ")'><i class='fa fa-trash'></i></button></td></tr>");
                     itemCount++;
                 });
 
@@ -182,6 +204,54 @@
             }
         })
     }
+
+    function openEditForm(n){
+        $.ajax({
+            url:'<?= site_url('Debt_type/getById') ?>',
+            data:{
+                id:n
+            },
+            success:function(response){
+                $('#editId').val(n);
+                $('#editName').val(response.name);
+                $('#editDescription').val(response.description);
+
+                $('#editTypeWrapper').fadeIn(300, function(){
+                    $('#editTypeWrapper .alert_box_slide').show("slide", { direction: "right" }, 250);
+                });
+            }
+        })
+    }
+
+    $('#editItemButton').click(function(){
+        if($('#editTypeDebtForm').valid()){
+            $.ajax({
+                url:'<?= site_url('Debt_type/updateById') ?>',
+                data:{
+                    id: $('#editId').val(),
+                    name: $('#editName').val(),
+                    description: $('#editDescription').val()
+                },
+                type:'POST',
+                beforeSend:function(){
+                    $('button').attr('disabled', true);
+                },
+                success:function(response){
+                    $('button').attr('disabled', false);
+                    refreshView();
+
+                    if(response == 1){
+                        $('#editTypeWrapper .slide_alert_close_button').click();
+                    } else {
+                        $('#failedEditNotification').fadeIn(250);
+                        setTimeout(function(){
+                            $('#failedEditNotification').fadeOut(250);
+                        }, 1000)
+                    }
+                }
+            })
+        }
+    })
 
     $('.slide_alert_close_button').click(function(){
 		$(this).siblings('.alert_box_slide').hide("slide", { direction: "right" }, 250, function(){

@@ -28,9 +28,13 @@
 		<label>Tax invoice</label>
 		<input type='text' class='form-control' id='taxInvoiceName'>
 		<script>
-			$("#taxInvoice").inputmask("999.999-99.99999999");
+			$("#taxInvoiceName").inputmask("999.999-99.99999999");
 		</script>
 	</div>
+
+	<label>Type</label>
+	<button type='button' class='form-control' id='debtTypePickButton' style='text-align:left!important'></button>
+	<input type='hidden' id='debtType' name='debtType' required>
 	
 	<br>
 	<button class='button button_default_dark' id='submitButton'><i class='fa fa-long-arrow-right'></i></button>
@@ -58,8 +62,30 @@
 	</div>
 </div>
 
+<div class='alert_wrapper' id='selectTypeWrapper'>
+	<div class='alert_box_full'>		
+		<button type='button' class='button alert_full_close_button' title='Close select type session'>&times;</button>
+		<h3 style='font-family:bebasneue'>Select debt type</h3>
+		<br>
+		<input type='text' class='form-control' id='searchTypeBar'>
+		<br>
+		<table class='table table-bordered'>
+			<tr>
+				<th>Name</th>
+				<th>Description</th>
+				<th>Action</th>
+			</tr>
+			<tbody id='debtTypeTableContent'></tbody>
+		</table>
+		
+		<select class='form-control' id='debtTypePage' style='width:100px'>
+			<option value='1'>1</option>
+		</select>
+	</div>
+</div>
+
 <div class='alert_wrapper' id='debtDocumentWrapper'>
-<button class='slide_alert_close_button'>&times;</button>
+	<button class='slide_alert_close_button'>&times;</button>
 	<div class='alert_box_slide'>
 		<h3 style='font-family:bebasneue'>Create debt document</h3>
 		<hr>
@@ -79,6 +105,9 @@
 		<label>Information</label>
 		<p id='information_p'></p>
 
+		<label>Type</label>
+		<p id='debtTypeText'></p>
+
 		<button class='button button_default_dark' id='submitFormButton'><i class='fa fa-long-arrow-right'></i></button>
 		<br>
 		<div class='notificationText danger' id='failedInsertNotification'><p>Failed to insert debt document.</p></div>
@@ -97,7 +126,13 @@
 	var invoiceName;
 	var date;
 
+	var debtType;
+
 	var taxing;
+
+	$(document).ready(function(){
+		refreshType();
+	})
 
 	$('#debt_document_form').validate({
 		ignore: '',
@@ -115,6 +150,11 @@
 	$('#supplierPickButton').click(function(){
 		refresh_view(1);
 		$('#selectSupplierWrapper').fadeIn();
+	})
+
+	$('#debtTypePickButton').click(function(){
+		refreshType(1);
+		$("#selectTypeWrapper").fadeIn();
 	})
 
 	$('#searchSupplierBar').change(function(){
@@ -182,6 +222,7 @@
 					value: value,
 					date: $('#date').val(),
 					supplier_id: $('#supplier_id').val(),
+					debtType: $('#debtType').val()
 				},
 				type:'POST',
 				beforeSend:function(){
@@ -263,6 +304,52 @@
 			}
 		});
 	}
+
+	function refreshType(page = $('#debtTypePage').val()){
+		$.ajax({
+			url:"<?= site_url('Debt_type/getItems') ?>",
+			data:{
+				page: page,
+				term: $('#searchTypeBar').val()
+			},
+			success:function(response){
+				$('#debtTypeTableContent').html("");
+				var items = response.items;
+				$.each(items, function(index, item){
+					var id = item.id;
+					var name = item.name;
+					var description = item.description;
+
+					$('#debtTypeTableContent').append("<tr><td>" + name + "</td><td>" + description + "</td><td><button class='button button_success_dark' id='typeButton-" + id + "'><i class='fa fa-check'></i></button></td></tr>");
+
+					$('#typeButton-' + id).click(function(){
+						$('#debtTypePickButton').text(name);
+						$('#debtType').val(id);
+						$('#debtTypeText').html(name);
+						$('#selectTypeWrapper').fadeOut();
+					})
+				})
+
+				var pages = response.pages;
+				$('#debtTypePage').html("");
+				for(i = 1; i <= pages; i++){
+					if(i == page){
+						$('#debtTypePage').append("<option value='" + i + "' selected>" + i + "</option>");
+					} else {
+						$('#debtTypePage').append("<option value='" + i + "'>" + i + "</option>")
+					}
+				}
+			}
+		})
+	}
+
+	$('#searchTypeBar').change(function(){
+		refreshType(1);
+	});
+
+	$('#debtTypePage').change(function(){
+		refreshType();
+	})
 
 	function selectSupplier(n){
 		$.ajax({
