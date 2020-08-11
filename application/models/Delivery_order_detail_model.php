@@ -140,7 +140,7 @@ class Delivery_order_detail_model extends CI_Model {
 		
 		public function getDeliveryOrderBatch($id)
 		{
-			$this->db->select('price_list.item_id, code_sales_order.customer_id, delivery_order.quantity, delivery_order.code_delivery_order_id');
+			$this->db->select('price_list.item_id, code_sales_order.customer_id, delivery_order.quantity, delivery_order.id as delivery_order_id');
 			$this->db->from('delivery_order');
 			$this->db->join('sales_order', 'delivery_order.sales_order_id = sales_order.id');
 			$this->db->join('price_list', 'sales_order.price_list_id = price_list.id');
@@ -160,11 +160,11 @@ class Delivery_order_detail_model extends CI_Model {
 				$quantity					= $result->quantity;
 				$item_id					= $result->item_id;
 				$customer_id				= $result->customer_id;
-				$code_delivery_order_id		= $result->code_delivery_order_id;
+				$delivery_order_id			= $result->delivery_order_id;
 				$batch[] = array(
 					'id' => '',
 					'quantity' => $quantity,
-					'code_delivery_order_id' => $code_delivery_order_id,
+					'delivery_order_id' => $delivery_order_id,
 					'customer_id' => $customer_id,
 					'item_id' => $item_id,
 				);

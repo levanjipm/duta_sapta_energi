@@ -108,7 +108,7 @@
 					$('#itemListTable').show();
 					$.each(item_array, function(index, item){
 						var reference		= item.reference;
-						var id				= item.id;
+						var id				= item.item_id;
 						var name			= item.name;
 						
 						$('#itemListTableContent').append("<tr><td>" + reference + "</td><td>" + name + "</td><td><button type='button' class='button button_default_dark' onclick='addToCart(" + id + ")' title='Add " + reference + " to list'><i class='fa fa-cart-plus'></i></button></td></tr>");

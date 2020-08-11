@@ -16,7 +16,7 @@
 <script>
 	function check_delivery_order(){
 		$.ajax({
-			url:'<?= site_url('Delivery_order/select_by_name') ?>',
+			url:'<?= site_url('Delivery_order/getByName') ?>',
 			data:{
 				name: $('#delivery_order_name').val()
 			},

@@ -1,26 +1,29 @@
 <?php
-	$complete_address = $general->address;
-	if($general->number != null){
-		$complete_address .= " No. " . $general->number;
+	$complete_address = $customer->address;
+	if($customer->number != null){
+		$complete_address .= " No. " . $customer->number;
 	}
 	
-	if($general->block != NULL){
-		$complete_address	.= ' Blok ' . $general->block;
+	if($customer->block != NULL){
+		$complete_address	.= ' Blok ' . $customer->block;
 	}
 	
-	if($general->rt != '000'){
+	if($customer->rt != '000'){
 		$complete_address	.= ' RT ' . $customer_rt;
 	}
 	
-	if($general->rw != '000' && $general->rt != '000'){
-		$complete_address	.= ' /RW ' . $general->rw;
+	if($customer->rw != '000' && $customer->rt != '000'){
+		$complete_address	.= ' /RW ' . $customer->rw;
 	}
 	
-	if($general->postal_code != NULL){
-		$complete_address	.= ', ' . $general->postal_code;
+	if($customer->postal_code != NULL){
+		$complete_address	.= ', ' . $customer->postal_code;
 	}
 	
 ?>
+<head>
+	<title>Sales return - Validate</title>
+</head>
 <div class='dashboard'>
 	<div class='dashboard_head'>
 		<p style='font-family:museo'><a href='<?= site_url('Sales') ?>' title='Sales'><i class='fa fa-briefcase'></i></a> /Sales return/ Create </p>
@@ -30,9 +33,9 @@
 		<div class='row'>
 			<div class='col-sm-12 col-xs-12'>
 				<label>Customer</label>
-				<p><?= $general->customer_name ?></p>
+				<p><?= $customer->name ?></p>
 				<p><?= $complete_address ?></p>
-				<p><?= $general->city ?></p>
+				<p><?= $customer->city ?></p>
 			</div>
 			<div class='col-sm-6 col-xs-12'>
 				<label>Delivery order</label>

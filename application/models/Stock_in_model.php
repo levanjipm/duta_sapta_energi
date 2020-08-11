@@ -215,12 +215,15 @@ class Stock_in_model extends CI_Model {
 		public function ViewCard($item_id)
 		{
 			$query = $this->db->query("
-				SELECT stock_in.* FROM stock_in
+				SELECT stock_in.quantity, stock_in.id, COALESCE(goodReceiptTable.name) as documentName, COALESCE(goodReceiptTable.date) as date,
+				COALESCE(customer.name, supplier.name) as name FROM stock_in
 				LEFT JOIN (
-					SELECT good_receipt.id, code_good_receipt.name FROM code_good_receipt
+					SELECT good_receipt.id, code_good_receipt.name, code_good_receipt.date FROM code_good_receipt
 					JOIN good_receipt ON good_receipt.code_good_receipt_id = code_good_receipt.id
 				) goodReceiptTable
 				ON stock_in.good_receipt_id = goodReceiptTable.id
+				LEFT JOIN customer ON stock_in.customer_id = customer.id
+				LEFT JOIN supplier ON stock_in.supplier_id = supplier.id
 				WHERE stock_in.item_id = '$item_id'
 			");
 			

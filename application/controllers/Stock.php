@@ -65,10 +65,10 @@ class Stock extends CI_Controller {
 	public function viewCard()
 	{
 		$itemId			= $this->input->get('id');
-		$page			= $this->input->get('page');
-		$offset			= ($page - 1) * 25;
 		$this->load->model('Stock_in_model');
 		$stock = $this->Stock_in_model->viewCard($itemId);
+
+		$data['stockIn'] = $stock;
 
 		$stockInArray = (array) $stock;
 		$stockInIdArray = array();
@@ -80,12 +80,9 @@ class Stock extends CI_Controller {
 		}
 
 		$this->load->model('Stock_out_model');
-		$stockOutArray = $this->Stock_out_model->getByInIdArray($stockInIdArray);
-		print_r($stockOutArray);
-
-		// $data['stock'] = $stock;
-
-		// header('Content-Type: application/json');
-		// echo json_encode($data);
+		$data['stockOut'] = $this->Stock_out_model->getByInIdArray($stockInIdArray);
+		
+		header('Content-Type: application/json');
+		echo json_encode($data);
 	}
 }

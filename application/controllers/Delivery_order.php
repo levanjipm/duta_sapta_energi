@@ -422,11 +422,11 @@ class Delivery_order extends CI_Controller {
 		}
 	}
 	
-	public function select_by_name()
+	public function getByName()
 	{
 		$name			= $this->input->post('name');
 		$this->load->model('Delivery_order_model');
-		$data	= $this->Delivery_order_model->select_by_name($name);
+		$data	= $this->Delivery_order_model->select_by_name("DO-DSE-" . $name);
 		
 		header('Content-Type: application/json');
 		echo json_encode($data);

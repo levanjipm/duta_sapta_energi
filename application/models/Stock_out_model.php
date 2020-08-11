@@ -135,7 +135,7 @@ class Stock_out_model extends CI_Model {
 
 				while($quantity > 0){
 					$stock_in				= $this->Stock_in_model->getResidueByItemId($item_id);
-					$residue				= $stock_in->quantity;
+					$residue				= $stock_in->residue;
 					$in_id					= $stock_in->id;
 					
 					if($residue	> $quantity){
@@ -170,11 +170,30 @@ class Stock_out_model extends CI_Model {
 		}
 
 		public function getByInIdArray($inIdArray){
-			foreach($inIdArray as $inId)
-			{
-				$query		= $this-db->query("
-					SELECT COALESCE(code_delivery_order.name, code_
-				")
-			}
+			$query	= $this->db->query("
+				SELECT COALESCE(deliveryOrderTable.name, eventTable.name) as documentName, COALESCE(customer.name, supplier.name, 'Internal Transaction') as name, COALESCE(deliveryOrderTable.date, eventTable.date) as date, COALESCE(deliveryOrderTable.quantity, eventTable.quantity) as quantity
+				FROM stock_out
+				LEFT JOIN (
+					SELECT stock_out.id, code_delivery_order.name, code_delivery_order.date, SUM(delivery_order.quantity) as quantity
+					FROM delivery_order
+					JOIN stock_out ON stock_out.delivery_order_id = delivery_order.id
+					JOIN code_delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order.id
+					GROUP BY delivery_order.code_delivery_order_id
+				) AS deliveryOrderTable
+				ON stock_out.id = deliveryOrderTable.id
+				LEFT JOIN (
+					SELECT stock_out.id, code_event.name, code_event.date, SUM(event.quantity) as quantity
+					FROM event
+					JOIN stock_out ON stock_out.event_id = event.id
+					JOIN code_event ON event.code_event_id = code_event.id
+					GROUP BY event.item_id, event.code_event_id
+				) AS eventTable
+				ON stock_out.id = eventTable.id
+				LEFT JOIN customer ON stock_out.customer_id = customer.id
+				LEFT JOIN supplier ON stock_out.supplier_id = supplier.id
+				
+			");
+			$result = $query->result();
+			return $result;
 		}
 }

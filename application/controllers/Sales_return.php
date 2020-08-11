@@ -10,7 +10,7 @@ class Sales_return extends CI_Controller {
 		}
 	}
 	
-	public function create()
+	public function createDashboard()
 	{
 		$user_id		= $this->session->userdata('user_id');
 		$this->load->model('User_model');
@@ -21,7 +21,7 @@ class Sales_return extends CI_Controller {
 		
 		$this->load->view('head');
 		$this->load->view('sales/header', $data);
-		$this->load->view('sales/return_dashboard');
+		$this->load->view('sales/return/createDashboard');
 	}
 	
 	public function authenticate()
@@ -40,13 +40,17 @@ class Sales_return extends CI_Controller {
 		
 		$delivery_order_id			= $this->input->post('id');
 		$this->load->model('Delivery_order_model');
-		$delivery_order = $this->Delivery_order_model->show_by_id($delivery_order_id);
+		$delivery_order = $this->Delivery_order_model->getById($delivery_order_id);
 		$data['general'] = $delivery_order;
+
+		$customerId = $delivery_order->customer_id;
+		$this->load->model('Customer_model');
+		$data['customer'] = $this->Customer_model->getById($customerId);
 		
 		$this->load->model('Delivery_order_detail_model');
 		$data['items'] = $this->Delivery_order_detail_model->getByCodeDeliveryOrderId($delivery_order_id);
 		
-		$this->load->view('sales/return_validation', $data);
+		$this->load->view('sales/return/validation', $data);
 	}
 	
 	public function input()
@@ -63,10 +67,10 @@ class Sales_return extends CI_Controller {
 			}
 		}
 		
-		redirect(site_url('Sales_return/create'));
+		redirect(site_url('Sales_return/createDashboard'));
 	}
 	
-	public function confirm()
+	public function confirmDashboard()
 	{
 		$user_id		= $this->session->userdata('user_id');
 		$this->load->model('User_model');
@@ -77,5 +81,19 @@ class Sales_return extends CI_Controller {
 		
 		$this->load->view('head');
 		$this->load->view('sales/header', $data);
+		$this->load->view('sales/return/confirmDashboard');
+	}
+
+	public function getUnconfirmedDocuments()
+	{
+		$page = $this->input->get('page');
+		$offset = ($page - 1) * 10;
+
+		$this->load->model('Sales_return_model');
+		$data['items'] = $this->Sales_return_model->getUnconfirmedDocuments($offset);
+		$data['pages'] = max(1, ceil($this->Sales_return_model->countUnconfirmedDocuments()/10));
+
+		header('Content-Type: application/json');
+		echo json_encode($data);
 	}
 }

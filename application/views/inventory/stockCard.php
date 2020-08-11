@@ -42,7 +42,17 @@
                 page: $("#page").val()
             },
             success:function(response){
-                console.log(response);
+                var stockInArray = response.stockIn;
+                $.each(stockInArray, function(index, stockIn){
+                    var date = stockIn.date;
+                    var name = stockIn.name;
+                    var quantity = stockIn.quantity;
+                    var documentName = stockIn.documentName;
+
+                    $('#stockTableContent').append("<tr><td>" + my_date_format(date) + "</td><td>" + documentName + "</td><td>" + name + "</td><td>+" + numeral(quantity).format("0,0") + "</td></tr>")
+                });
+                
+                var stockOutArray = response.stockOut;
             }
         })
     }

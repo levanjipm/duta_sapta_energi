@@ -65,13 +65,28 @@ class Inventory_case_model extends CI_Model {
 			}
 			return $result;
 		}
+
+		public function generateName($date)
+		{
+			$name		= "EVT-" . date('Ym', strtotime($date)) . "-" . rand(0,9) . rand(0,9) . rand(0,9) . rand(0,9) . rand(0,9) . rand(0,9) . rand(0,9) . rand(0,9);
+			$this->db->where('name', $name);
+			$query = $this->db->get($this->table_event);
+			$result = $query->num_rows();
+			if($result == 0){
+				return $name;
+			} else {
+				$this->Inventory_case_model->generateName($date);
+			}
+		}
 				
 		public function insertItem($created_by, $date, $type)
 		{
+			$name			= $this->Inventory_case_model->generateName($date);
 			switch($type){
 				case 1:
 					$db_item = array(
 						'id' => '',
+						'name' => $name,
 						'type' => $type,
 						'created_by' => $created_by,
 						'date' => $date,
@@ -82,6 +97,7 @@ class Inventory_case_model extends CI_Model {
 				case 2:
 					$db_item = array(
 						'id' => '',
+						'name' => $name,
 						'type' => $type,
 						'created_by' => $created_by,
 						'date' => $date,
@@ -92,6 +108,7 @@ class Inventory_case_model extends CI_Model {
 				case 3:
 					$db_item = array(
 						'id' => '',
+						'name' => $name,
 						'type' => $type,
 						'created_by' => $created_by,
 						'date' => $date,
@@ -102,6 +119,7 @@ class Inventory_case_model extends CI_Model {
 				case 4:
 					$db_item = array(
 						'id' => '',
+						'name' => $name,
 						'type' => $type,
 						'created_by' => $created_by,
 						'date' => $date,

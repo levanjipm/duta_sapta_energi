@@ -8,6 +8,7 @@ class Sales_return_model extends CI_Model {
 		public $created_by;
 		public $created_date;
 		public $is_confirm;
+		public $is_delete;
 		public $confirmed_by;
 
 		public function __construct()
@@ -22,6 +23,7 @@ class Sales_return_model extends CI_Model {
 			$this->created_date			= $db_item->created_date;
 			$this->is_confirm			= $db_item->is_confirm;
 			$this->confirmed_by			= $db_item->confirmed_by;
+			$this->is_delete			= $db_item->is_delete;
 			
 			return $this;
 		}
@@ -34,6 +36,7 @@ class Sales_return_model extends CI_Model {
 			$db_item->created_by			= $this->created_by;
 			$db_item->created_date			= $this->created_date;
 			$db_item->is_confirm			= $this->is_confirm;
+			$db_item->is_delete				= $this->is_delete;
 			$db_item->confirmed_by			= $this->confirmed_by;
 			
 			return $db_item;
@@ -47,17 +50,18 @@ class Sales_return_model extends CI_Model {
 			$stub->created_by			= $db_item->created_by;
 			$stub->created_date			= $db_item->created_date;
 			$stub->is_confirm			= $db_item->is_confirm;
+			$stub->is_delete			= $db_item->is_delete;
 			$stub->confirmed_by			= $db_item->confirmed_by;
 			
 			return $stub;
 		}
 		
-		public function map_list($customers)
+		public function map_list($items)
 		{
 			$result = array();
-			foreach ($customers as $customer)
+			foreach ($items as $item)
 			{
-				$result[] = $this->get_new_stub_from_db($customer);
+				$result[] = $this->get_new_stub_from_db($item);
 			}
 			return $result;
 		}
@@ -109,4 +113,25 @@ class Sales_return_model extends CI_Model {
 				}
 			}
 		}
+
+		public function getUnconfirmedDocuments($offset, $limit = 10)
+		{
+			$this->db->where('is_confirm', 0);
+			$this->db->where('is_delete', 0);
+			$this->db->limit($limit, $offset);
+			$query = $this->db->get($this->table_sales_return);
+			$result = $query->result();
+
+			return $result;
+		}
+
+		public function countUnconfirmedDocuments()
+		{
+			$this->db->where('is_confirm', 0);
+			$this->db->where('is_delete', 0);
+			$query = $this->db->get($this->table_sales_return);
+			$result = $query->num_rows();
+
+			return $result;
+		}  
 }
