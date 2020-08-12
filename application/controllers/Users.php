@@ -78,11 +78,10 @@ class Users extends CI_Controller {
 		$this->User_model->update_status($status, $user_id);
 	}
 	
-	public function insert_from_post()
+	public function insertItem()
 	{
 		$this->load->model('User_model');
-		$result = $result = $this->User_model->insert_from_post();
-		
+		$result = $result = $this->User_model->insertItem();
 		echo $result;
 	}
 }

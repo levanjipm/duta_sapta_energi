@@ -1,9 +1,12 @@
-<style>
-	.archive_row{
-		padding:10px;
-		border-bottom:1px solid #e2e2e2;
-	}
-</style>
+<head>
+	<title>Delivery order - Archive</title>
+	<style>
+		.archive_row{
+			padding:10px;
+			border-bottom:1px solid #e2e2e2;
+		}
+	</style>
+</head>
 <div class='dashboard'>
 	<div class='dashboard_head'>
 		<p style='font-family:museo'><a href='<?= site_url('Inventory') ?>' title='Inventory'><i class='fa fa-briefcase'></i></a> / <a href='<?= site_url('Delivery_order') ?>'>Delivery order</a> / Archive</p>
@@ -151,7 +154,7 @@
 						complete_address	+= ' No. ' + customer_number;
 					}
 					
-					if(customer_block != null){
+					if(customer_block != null && customer_block != "000"){
 						complete_address	+= ' Blok ' + customer_block;
 					}
 				
@@ -203,22 +206,24 @@
 				var general					= response.general;
 				var delivery_order_date		= general.date;
 				var delivery_order_name		= general.name;
+
+				var customer				= response.customer;
 				var complete_address		= '';
-				var customer_name			= general.customer_name;
-				complete_address			+= general.address;
-				var customer_city			= general.city;
-				var customer_number			= general.number;
-				var customer_rt				= general.rt;
-				var customer_rw				= general.rw;
-				var customer_postal			= general.postal_code;
-				var customer_block			= general.block;
-				var customer_id				= general.id;
+				var customer_name			= customer.name;
+				complete_address			+= customer.address;
+				var customer_city			= customer.city;
+				var customer_number			= customer.number;
+				var customer_rt				= customer.rt;
+				var customer_rw				= customer.rw;
+				var customer_postal			= customer.postal_code;
+				var customer_block			= customer.block;
+				var customer_id				= customer.id;
 	
 				if(customer_number != null){
 					complete_address	+= ' No. ' + customer_number;
 				}
 				
-				if(customer_block != null){
+				if(customer_block != null && customer_block != "000"){
 					complete_address	+= ' Blok ' + customer_block;
 				}
 			

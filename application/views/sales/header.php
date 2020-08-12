@@ -30,7 +30,9 @@
 		<div class='container_bar'>
 			<a href='<?= site_url('Customer') ?>'><button><p>Manage</p></button></a>
 			<a href='<?= site_url('Plafond') ?>'><button><p>Plafond</p></button></a>
-			<a href='<?= site_url('Plafond/confirm') ?>'><button><p>Plafond Submission status</p></button></a>
+			<?php if($user_login->access_level > 2){ ?>
+			<a href='<?= site_url('Plafond/confirmDashboard') ?>'><button><p>Plafond Submission status</p></button></a>
+			<?php } ?>
 		</div>
 		<a href='<?= site_url('Area') ?>'><button><p>Area</p></button></a>
 		<a href='<?= site_url('Item') ?>'><button><p>Item</p></button></a>
@@ -54,7 +56,7 @@
 			<a href='<?= site_url('Sales_return/confirmDashboard') ?>'><p>Confirm</p></a>	
 		</div>
 		<a href='<?= site_url('Stock/view/Sales') ?>'><button><p>Check stock</p></button></a>
-		<a href='<?= site_url('') ?>'><button><p>Analytic</p></button></a>
+		<a href='<?= site_url('SalesAnalytics') ?>'><button><p>Analytic</p></button></a>
 	</div>
 </div>
 <script>

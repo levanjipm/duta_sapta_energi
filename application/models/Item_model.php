@@ -144,16 +144,16 @@ class Item_model extends CI_Model {
 		{
 			$this->db->select('*');
 			$this->db->from($this->table_item);
-			$this->db->where('reference', $this->input->post('item_reference'));;
+			$this->db->where('reference', $this->input->post('reference'));;
 			$item = $this->db->count_all_results();
 			
 			if($item == 0){
 				$this->id					= '';
-				$this->reference			= $this->input->post('item_reference');
-				$this->name					= $this->input->post('item_name');
-				$this->type					= $this->input->post('class_id');
-				$this->is_notified_stock	= $this->input->post('is_notified');
-				$this->confidence_level		= $this->input->post('confidence_level');
+				$this->reference			= $this->input->post('reference');
+				$this->name					= $this->input->post('name');
+				$this->type					= $this->input->post('class');
+				$this->is_notified_stock	= $this->input->post('notify');
+				$this->confidence_level		= $this->input->post('confidenceLevel');
 				
 				$db_item 					= $this->get_db_from_stub();
 				$db_result 					= $this->db->insert($this->table_item, $db_item);
@@ -165,36 +165,7 @@ class Item_model extends CI_Model {
 				return null;
 			}
 		}
-		
-		public function show_cart($ids)
-		{
-			if(!empty($ids)){
-				$query = $this->db->query("
-					SELECT item.id, price_list.item_id, price_list.price_list, item.name, item.reference, item.type
-						FROM price_list
-						JOIN item ON item.id = price_list.item_id
-						WHERE price_list.id IN (
-							SELECT MAX(price_list.id)
-							FROM price_list
-							GROUP BY price_list.item_id
-						) AND price_list.item_id IN (" . implode (',',$ids) . ")
-						ORDER BY item.reference");
-				$item = $query->result();
-				
-				return $item;
-			}
-		}
-		
-		public function show_purchase_cart($ids)
-		{
-			if(!empty($ids)){
-				$this->db->where_in('id', $ids);
-				$query = $this->db->get($this->table_item);
-				$item = $query->result();
-				return $item;
-			}
-		}
-		
+
 		public function showById($item_id)
 		{
 			$query 				= $this->db->query("
@@ -211,7 +182,7 @@ class Item_model extends CI_Model {
 			return $item;
 		}
 		
-		public function select_by_price_list_id($price_list_id)
+		public function getByPriceListId($price_list_id)
 		{
 			$query 				= $this->db->query("
 				SELECT price_list.price_list, item.reference, item.name, item.type, item.id
@@ -227,15 +198,15 @@ class Item_model extends CI_Model {
 			return $item;
 		}
 		
-		public function update_from_post()
+		public function updateById()
 		{
-			$item_id 			= $this->input->post('id');
+			$id		 			= $this->input->post('id');
 			$reference			= $this->input->post('reference');
-			$updated_price_list = $this->input->post('price_list');
+			$priceList			= $this->input->post('priceList');
 			$name				= $this->input->post('name');
 			$type				= $this->input->post('type');
-			$confidence_level	= $this->input->post('confidence_level');
-			$is_notified_stock	= $this->input->post('is_notified');
+			$confidenceLevel	= $this->input->post('confidenceLevel');
+			$isNotified			= $this->input->post('isNotified');
 			
 			$query 				= $this->db->query("
 				SELECT price_list.price_list
@@ -245,31 +216,28 @@ class Item_model extends CI_Model {
 						SELECT MAX(price_list.id)
 						FROM price_list
 						GROUP BY item_id
-					) AND item_id = '$item_id'");
+					) AND item_id = '$id'");
 					
 			$item 				= $query->row();
-			$price_list 		= $item->price_list;
+			$prevPriceList 		= $item->price_list;
 			
 			$this->db->select('id');
 			$this->db->from($this->table_item);
-			$this->db->where('reference =', $this->input->post('item_reference'));;
-			$this->db->where('id <>',$this->input->post('item_id'));
+			$this->db->where('reference =', $reference);;
+			$this->db->where('id <>',$id);
 			$count = $this->db->count_all_results();
 			
 			if($count == 0){
-				$this->reference			= $reference;
-				$this->name					= $name;
-				$this->type					= $type;
-				$this->is_notified_stock	= $is_notified_stock;
-				$this->confidence_level		= $confidence_level;
-				
-				$db_item			= $this->update_db_from_stub();
-					
-				$this->db->where('id', $item_id);
-				$this->db->update($this->table_item, $db_item);
+				$this->db->set('reference', $reference);
+				$this->db->set('name', $name);
+				$this->db->set('type', $type);
+				$this->db->set('is_notified_stock', $isNotified);
+				$this->db->set('confidence_level', $confidenceLevel);					
+				$this->db->where('id', $id);
+				$this->db->update($this->table_item);
 			}
 			
-			if($updated_price_list != '' && $updated_price_list > 0 && $updated_price_list != $price_list){
+			if($priceList != '' && $priceList > 0 && $priceList != $prevPriceList){
 				$this->load->model('Price_list_model');
 				$this->Price_list_model->insert_from_post($item_id, $updated_price_list);
 			}

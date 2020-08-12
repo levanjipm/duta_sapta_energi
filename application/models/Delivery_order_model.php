@@ -373,6 +373,7 @@ class Delivery_order_model extends CI_Model {
 		{
 			if($status == 0){
 				$this->db->set('is_delete', 1);
+				$this->db->set('invoice_id', NULL);
 				$this->db->where('is_delete', 0);
 			} else if($status == 1){
 				$this->db->set('is_confirm', 1);
@@ -393,7 +394,7 @@ class Delivery_order_model extends CI_Model {
 			return sprintf('%04X%04X-%04X-%04X-%04X-%04X%04X%04X', mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(16384, 20479), mt_rand(32768, 49151), mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(0, 65535));
 		}
 		
-		public function select_by_name($name)
+		public function getByName($name)
 		{
 			$this->db->where("name", $name);
 			$this->db->where('is_confirm', 1);

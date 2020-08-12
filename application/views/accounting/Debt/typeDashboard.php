@@ -65,6 +65,12 @@
             <label>Description</label>
             <textarea class='form-control' id='editDescription' rows='3' style='resize:none'></textarea>
             <br>
+            <label>Operational</label>
+            <select class='form-control' id='editOperational'>
+                <option value='1'>Operational</option>
+                <option value='0'>Non operational</option>
+            </select>
+            <br>
             <button type='button' class='button button_default_dark' id='editItemButton'><i class='fa fa-long-arrow-right'></i></button>
 
             <div class='notificationText danger' id='failedEditNotification'><p>Failed to update item</p></div>
@@ -83,6 +89,12 @@
 
             <label>Description</label>
             <textarea class='form-control' id='description' rows='3' style='resize:none'></textarea>
+            <br>
+            <label>Operational</label>
+            <select class='form-control' id='operational'>
+                <option value='1'>Operational</option>
+                <option value='0'>Non operational</option>
+            </select>
             <br>
             <button type='button' class='button button_default_dark' id='insertItemButton'><i class='fa fa-long-arrow-right'></i></button>
 
@@ -104,7 +116,8 @@
                 url:"<?= site_url('Debt_type/insertItem') ?>",
                 data:{
                     name: $('#name').val(),
-                    description: $('#description').val()
+                    description: $('#description').val(),
+                    operational: $('#operational').val()
                 },
                 type:'POST',
                 beforeSend:function(){
@@ -215,6 +228,7 @@
                 $('#editId').val(n);
                 $('#editName').val(response.name);
                 $('#editDescription').val(response.description);
+                $('#editOperational').val(response.is_operational);
 
                 $('#editTypeWrapper').fadeIn(300, function(){
                     $('#editTypeWrapper .alert_box_slide').show("slide", { direction: "right" }, 250);
@@ -230,7 +244,8 @@
                 data:{
                     id: $('#editId').val(),
                     name: $('#editName').val(),
-                    description: $('#editDescription').val()
+                    description: $('#editDescription').val(),
+                    operational: $('#editOperational').val()
                 },
                 type:'POST',
                 beforeSend:function(){

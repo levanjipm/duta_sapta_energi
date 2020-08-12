@@ -11,17 +11,20 @@
 			</div>
 		</div>
 		<br>
-		<table class='table table-bordered'>
-			<tr>
-				<th>Area name</th>
-				<th>Action</th>
-			</tr>
-			<tbody id='area_table'></tbody>
-		</table>
-		
-		<select class='form-control' id='page' style='width:100px'>
-			<option value='1'>1<option>
-		</select>
+		<div id='areaTable'>
+			<table class='table table-bordered'>
+				<tr>
+					<th>Area name</th>
+					<th>Action</th>
+				</tr>
+				<tbody id='areaTableContent'></tbody>
+			</table>
+			
+			<select class='form-control' id='page' style='width:100px'>
+				<option value='1'>1<option>
+			</select>
+		</div>
+		<p id='areaTableText'>No area found.</p>
 	</div>
 </div>
 
@@ -97,12 +100,22 @@
 			},
 			success:function(response){
 				var areas = response.areas;
-				$('#area_table').html('');
+				var areaCount = 0;
+				$('#areaTableContent').html('');
 				$.each(areas, function(index, area){
 					var name = area.name;
 					var id = area.id;
-					$('#area_table').append("<tr id='area-" + id + "'><td>" + name + "</td><td><button class='button button_success_dark' onclick='open_edit_view(" + id + ")'><i class='fa fa-pencil'></i></button> <button class='button button_danger_dark' onclick='confirm_delete(" + id + ")'><i class='fa fa-trash'></i></button> <button class='button button_default_dark'><i class='fa fa-eye'></i></button></td></tr>");
+					$('#areaTableContent').append("<tr id='area-" + id + "'><td>" + name + "</td><td><button class='button button_success_dark' onclick='open_edit_view(" + id + ")'><i class='fa fa-pencil'></i></button> <button class='button button_danger_dark' onclick='confirm_delete(" + id + ")'><i class='fa fa-trash'></i></button> <button class='button button_default_dark'><i class='fa fa-eye'></i></button></td></tr>");
+					areaCount++;
 				});
+
+				if(areaCount > 0){
+					$('#areaTable').show();
+					$('#areaTableText').hide();
+				} else {
+					$('#areaTable').hide();
+					$('#areaTableText').show();
+				}
 				
 				var pages = response.pages;
 				$('#page').html('');

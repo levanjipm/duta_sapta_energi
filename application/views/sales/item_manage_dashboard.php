@@ -28,75 +28,20 @@
 	</div>
 </div>
 
-<div class='alert_wrapper' id='add_item_wrapper'>
-	<button class='slide_alert_close_button'>&times</button>
+<div class='alert_wrapper' id='addItemWrapper'>
+	<button class='slide_alert_close_button'>&times;</button>
 	<div class='alert_box_slide'>
-		<form action='<?= site_url('Item/insert_new_item/') ?>' method='POST'>
-		<h2 style='font-family:bebasneue'>Add item form</h2>
-		<hr>
-		
-		<label>Reference</label>
-		<input type='text' class='form-control' name='item_reference' required>
-		
-		<label>Name</label>
-		<textarea class='form-control' name='item_name' rows='3' style='resize:none' required></textarea>
-		
-		<label>Type</label>
-		<select class='form-control' name='class_id'>
-<?php
-	foreach($classes as $class){
-?>
-			<option value='<?= $class->id ?>'><?= $class->name ?></option>
-<?php
-	}
-?>
-		</select>
-		
-		<label>Pricelist</label>
-		<input type='number' class='form-control' name='price_list'>
-		<br>
-		<button class='button button_default_dark'><i class='fa fa-long-arrow-right'></i></button>
-		</form>
-	</div>
-</div>
-
-<div class='alert_wrapper' id='delete_item_wrapper'>
-	<div class='alert_box_confirm_wrapper'>
-		<div class='alert_box_confirm_icon'><i class='fa fa-trash'></i></div>
-		<div class='alert_box_confirm'>
-			<input type='hidden' id='delete_item_id'>
-			<h3>Delete confirmation</h3>
-			
-			<p>You are about to delete this data.</p>
-			<p>Are you sure?</p>
-			<button class='button button_default_dark' onclick="$('#delete_item_wrapper').fadeOut()">Cancel</button>
-			<button class='button button_danger_dark' onclick='delete_item()'>Delete</button>
-			
-			<br><br>
-			
-			<p style='font-family:museo;background-color:#f63e21;width:100%;padding:5px;color:white;position:relative;bottom:0;left:0;opacity:0' id='error_delete_item'>Deletation failed.</p>
-		</div>
-	</div>
-</div>
-
-<div class='alert_wrapper' id='edit_item_wrapper'>
-	<button type='button' class='slide_alert_close_button'>&times </button>
-	<div class='alert_box_slide'>
-		<form id='update_item_form'>
-			<h3 style='font-family:bebasneue'>Edit item</h3>
-			<hr>
-			<input type='hidden' id='item_id' name='id'>
+		<form id='addItemForm'>
+			<h3 style='font-family:bebasneue'>Add item form</h3>
+			<hr>		
 			<label>Reference</label>
-			<input type='text' class='form-control' id='reference_edit' name='reference' required>
+			<input type='text' class='form-control' id='itemReference' name='itemReference' required>
 			
-			<label>Description</label>
-			<textarea class='form-control' id='description_edit' name='name' required></textarea>
-			
-			<label>Price list</label>
-			<input type='number' class='form-control' id='price_list_edit' name='price_list' min='1'>
+			<label>Name</label>
+			<textarea class='form-control' id='itemName' name='itemName' rows='3' style='resize:none' required></textarea>
 			
 			<label>Type</label>
-			<select class='form-control' id='item_type' name='type' required>
+			<select class='form-control' id='itemClass' name='itemClass'>
 <?php
 	foreach($classes as $class){
 ?>
@@ -106,15 +51,73 @@
 ?>
 			</select>
 			
-			<input type='checkbox' id='is_notified'>
+			<label>Pricelist</label>
+			<input type='number' class='form-control' id='priceList' name='priceList' required min='0'>
+
+			<label>Confidence Level</label>
+			<input type='number' class='form-control' min='0' max='100' required id='confidenceLevel' name='confidenceLevel'>
+			<br>
+			<button type='button' class='button button_default_dark' id='submitAddItemButton'><i class='fa fa-long-arrow-right'></i></button>
+			<div class='notificationText danger' id='failedInsertItem'>Failed to insert item.</p></div>
+		</form>
+	</div>
+</div>
+
+<div class='alert_wrapper' id='deleteItemWrapper'>
+	<div class='alert_box_confirm_wrapper'>
+		<div class='alert_box_confirm_icon'><i class='fa fa-trash'></i></div>
+		<div class='alert_box_confirm'>
+			<input type='hidden' id='delete_item_id'>
+			<h3>Delete confirmation</h3>
+			
+			<p>You are about to delete this data.</p>
+			<p>Are you sure?</p>
+			<button class='button button_default_dark' onclick="$('#deleteItemWrapper').fadeOut()">Cancel</button>
+			<button class='button button_danger_dark' onclick='delete_item()'>Delete</button>
+			
+			<br><br>
+			
+			<p style='font-family:museo;background-color:#f63e21;width:100%;padding:5px;color:white;position:relative;bottom:0;left:0;opacity:0' id='error_delete_item'>Deletation failed.</p>
+		</div>
+	</div>
+</div>
+
+<div class='alert_wrapper' id='editItemWrapper'>
+	<button type='button' class='slide_alert_close_button'>&times;</button>
+	<div class='alert_box_slide'>
+		<form id='updateItemForm'>
+			<h3 style='font-family:bebasneue'>Edit item</h3>
+			<hr>
+			<input type='hidden' id='idEdit' name='id'>
+			<label>Reference</label>
+			<input type='text' class='form-control' id='referenceEdit' name='referenceEdit' required>
+			
+			<label>Description</label>
+			<textarea class='form-control' id='descriptionEdit' name='descriptionEdit' required></textarea>
+			
+			<label>Price list</label>
+			<input type='number' class='form-control' id='priceListEdit' name='priceListEdit' min='1'>
+			
+			<label>Type</label>
+			<select class='form-control' id='typeEdit' name='typeEdit' required>
+<?php
+	foreach($classes as $class){
+?>
+				<option value='<?= $class->id ?>'><?= $class->name ?></option>
+<?php
+	}
+?>
+			</select>
+			
+			<input type='checkbox' id='isNotifiedEdit'>
 			<label>Notify if stock reaches minimum</label>
 			
 			<br>
 			
 			<label>Confidence level</label>
-			<input type='number' class='form-control' min='0' max='99' id='confidence_level'>
+			<input type='number' class='form-control' min='0' max='100' id='confidenceLevelEdit'>
 			<br>
-			<button class='button button_default_dark' type='button' id='submit_update_item_button'><i class='fa fa-long-arrow-right'></i></button>
+			<button type='button' class='button button_default_dark' type='button' id='submitEditButton'><i class='fa fa-long-arrow-right'></i></button>
 		</form>
 	</div>
 </div>
@@ -131,121 +134,7 @@
 	$('#search_bar').change(function(){
 		refresh_view(1);
 	});
-	
-	$('#add_item_button').click(function(){
-		$('#add_item_wrapper').fadeIn(300, function(){
-			$('#add_item_wrapper .alert_box_slide').show("slide", { direction: "right" }, 250);
-		});
-	});
-	
-	$('#update_item_form').validate();
-	
-	$("#update_item_form").submit(function(e){
-		return false;
-	});
-	
-	$('#submit_update_item_button').click(function(){
-		if($('#update_item_form').valid()){
-			if($('#is_notified').attr('checked', true)){
-				var is_notified = 1;
-			} else {
-				var is_notified = 0;
-			}
-			$.ajax({
-				url:'<?= site_url('Item/update_item') ?>',
-				data:{
-					id: $('#item_id').val(),
-					reference: $('#reference_edit').val(),
-					name: $('#description_edit').val(),
-					price_list: $('#price_list_edit').val(),
-					type: $('#item_type').val(),
-					is_notified: is_notified,
-					confidence_level: $('#confidence_level').val()					
-				},
-				type:'POST',
-				success:function(response){
-					refresh_view();
-					$('#edit_item_wrapper .slide_alert_close_button').click();
-				}
-			});
-		};
-	});
-	
-	function open_edit_form(item_id){
-		$.ajax({
-			url:'<?= site_url('Item/showById') ?>',
-			type:'GET',
-			data:{
-				id: item_id
-			},
-			beforeSend:function(){
-				$('button').attr('disabled',true);
-			},
-			success:function(response){
-				$('button').attr('disabled',false);
-				$('#item_id').val(item_id);
-				var reference	= response.reference;
-				var name		= response.name;
-				var price_list	= response.price_list;
-				var type		= response.type;
-				var confidence_level = response.confidence_level;
-				var is_notified_stock = response.is_notified_stock;
-				
-				if(is_notified_stock == 1){
-					$('#is_notified').attr("checked", true);
-				} else {
-					$('#is_notified').attr('checked', false);
-				}
-				
-				$('#confidence_level').val(confidence_level);
-				
-				$('#reference_edit').val(reference);
-				$('#description_edit').val(name);
-				$('#price_list_edit').val(price_list);
-				$('#item_type').val(type);
-				
-				$('#edit_item_wrapper').fadeIn(300, function(){
-					$('#edit_item_wrapper .alert_box_slide').show("slide", { direction: "right" }, 250);
-				});
-			}
-		})
-	};
-	
-	$('.slide_alert_close_button').click(function(){
-		$(this).siblings('.alert_box_slide').hide("slide", { direction: "right" }, 250, function(){
-			$(this).parent().fadeOut();
-		});
-	});
-	
-	function confirm_delete(n){
-		$('#delete_item_id').val(n);
-		$('#delete_item_wrapper').fadeIn();
-	}
-	
-	function delete_item(){
-		$.ajax({
-			url:'<?= site_url('Item/deleteById') ?>',
-			data:{
-				id: $('#delete_item_id').val()
-			},
-			beforeSend:function(){
-				$('button').attr('disabled', true);
-			},
-			success:function(response){
-				$('button').attr('disabled', false);
-				if(response == 1){
-					refresh_view();
-					$('#delete_item_wrapper').fadeOut();
-				} else {
-					$('#error_delete_item').fadeTo(250, 1);
-					setTimeout(function(){
-						$('#error_delete_item').fadeTo(250, 0);
-					}, 1000);
-				}
-			}
-		});
-	}
-	
+
 	function refresh_view(page = $('#page').val()){
 		$.ajax({
 			url:'<?= site_url('Item/showItems') ?>',
@@ -263,7 +152,7 @@
 					var reference	= item.reference;
 					var description	= item.name;
 					var id			= item.item_id;
-					$('#item_table').append("<tr><td>" + reference + "</td><td>" + description + "</td><td><button type='button' class='button button_success_dark' onclick='open_edit_form(" + id + ")' title='Edit " + reference + "'><i class='fa fa-pencil'></i></button> <button type='button' class='button button_danger_dark' onclick='confirm_delete(" + id + ")' title='Delete " + reference + "'><i class='fa fa-trash'></i></button> <button type='button' class='button button_default_dark' title='View " + reference + "'><i class='fa fa-eye'></i></button>");
+					$('#item_table').append("<tr><td>" + reference + "</td><td>" + description + "</td><td><button type='button' class='button button_success_dark' onclick='viewItem(" + id + ")' title='Edit " + reference + "'><i class='fa fa-pencil'></i></button> <button type='button' class='button button_danger_dark' onclick='confirm_delete(" + id + ")' title='Delete " + reference + "'><i class='fa fa-trash'></i></button> <button type='button' class='button button_default_dark' title='View " + reference + "'><i class='fa fa-eye'></i></button>");
 				});
 				
 				
@@ -280,4 +169,164 @@
 			
 		});
 	};
+
+	$('#add_item_button').click(function(){
+		$('#addItemWrapper').fadeIn(300, function(){
+			$('#addItemWrapper .alert_box_slide').show("slide", { direction: "right" }, 250);
+		});
+	});
+
+	$('#addItemForm').validate();
+
+	$('#addItemForm input').on('keypress', function(e) {
+		return e.which !== 13;
+	});
+
+	$('#submitAddItemButton').click(function(){
+		if($('#addItemForm').valid()){
+			if($('#isNotifiedEdit').attr('checked') == true){
+				var isNotified = 1;
+			} else {
+				var isNotified = 0;
+			}
+			$.ajax({
+				url:'<?= site_url('Item/insertItem') ?>',
+				data:{
+					name: $('#itemName').val(),
+					reference: $('#itemReference').val(),
+					class: $('#itemClass').val(),
+					notify: isNotified,
+					priceList: $('#priceList').val(),
+					confidenceLevel: $('#confidenceLevel').val()
+				},
+				type:'POST',
+				beforeSend:function(){
+					$("button").attr('disabled', true);
+				},
+				success:function(response){
+					$("button").attr('disabled', false);
+					refresh_view();
+					if(response == 1){
+						$('#addItemWrapper .slide_alert_close_button').click();
+						$('#addItemForm').trigger("reset");
+					} else {
+						$('#failedInsertItem').fadeIn(250);
+						setTimeout(function(){
+							$('#failedInsertItem').fadeOut(250);
+						}, 1000)	
+					}
+				}
+			})
+		}
+	})
+
+	$('#updateItemForm').validate();
+	
+	$('#updateItemForm input').on('keypress', function(e) {
+		return e.which !== 13;
+	});
+	
+	$('#submitEditButton').click(function(){
+		if($('#updateItemForm').valid()){
+			if($('#isNotifiedEdit').attr('checked', true)){
+				var isNotified = 1;
+			} else {
+				var isNotified = 0;
+			}
+
+			$.ajax({
+				url:'<?= site_url('Item/updateById') ?>',
+				data:{
+					id: $('#idEdit').val(),
+					reference: $('#referenceEdit').val(),
+					name: $('#descriptionEdit').val(),
+					priceList: $('#priceListEdit').val(),
+					type: $('#typeEdit').val(),
+					isNotified: isNotified,
+					confidenceLevel: $('#confidenceLevelEdit').val()					
+				},
+				type:'POST',
+				success:function(response){
+					refresh_view();
+					$('#editItemWrapper .slide_alert_close_button').click();
+				}
+			});
+		};
+	});
+	
+	function viewItem(item_id){
+		$.ajax({
+			url:'<?= site_url('Item/showById') ?>',
+			type:'GET',
+			data:{
+				id: item_id
+			},
+			beforeSend:function(){
+				$('button').attr('disabled',true);
+			},
+			success:function(response){
+				$('button').attr('disabled',false);
+				$('#idEdit').val(item_id);
+				var reference				= response.reference;
+				var name					= response.name;
+				var price_list				= response.price_list;
+				var type					= response.type;
+				var confidenceLevelEdit 	= response.confidence_level;
+				var isNotifiedEdit_stock 	= response.is_notified_stock;
+				
+				if(isNotifiedEdit_stock == 1){
+					$('#isNotifiedEdit').attr("checked", true);
+				} else {
+					$('#isNotifiedEdit').attr('checked', false);
+				}
+				
+				$('#confidenceLevelEdit').val(confidenceLevelEdit);
+				
+				$('#referenceEdit').val(reference);
+				$('#descriptionEdit').val(name);
+				$('#priceListEdit').val(price_list);
+				$('#typeEdit').val(type);
+				
+				$('#editItemWrapper').fadeIn(300, function(){
+					$('#editItemWrapper .alert_box_slide').show("slide", { direction: "right" }, 250);
+				});
+			}
+		})
+	};
+	
+	$('.slide_alert_close_button').click(function(){
+		$(this).siblings('.alert_box_slide').hide("slide", { direction: "right" }, 250, function(){
+			$(this).parent().fadeOut();
+		});
+	});
+	
+	function confirm_delete(n){
+		$('#delete_item_id').val(n);
+		$('#deleteItemWrapper').fadeIn();
+	}
+	
+	function delete_item(){
+		$.ajax({
+			url:'<?= site_url('Item/deleteById') ?>',
+			data:{
+				id: $('#delete_item_id').val()
+			},
+			type:'POST',
+			beforeSend:function(){
+				$('button').attr('disabled', true);
+			},
+			success:function(response){
+				$('button').attr('disabled', false);
+				if(response == 1){
+					refresh_view();
+					$('#deleteItemWrapper').fadeOut();
+				} else {
+					$('#error_delete_item').fadeTo(250, 1);
+					setTimeout(function(){
+						$('#error_delete_item').fadeTo(250, 0);
+					}, 1000);
+				}
+			}
+		});
+	}
 </script>

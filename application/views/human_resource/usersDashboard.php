@@ -57,7 +57,7 @@
 	</div>
 </div>
 
-<div class='alert_wrapper' id='add_user_wrapper'>
+<div class='alert_wrapper' id='addUserWrapper'>
 	<button class='slide_alert_close_button'>&times;</button>
 	<div class='alert_box_slide'>
 		<h3 style='font-family:bebasneue'>Add user form</h3>
@@ -70,7 +70,7 @@
 			<input type='text' class='form-control' id='address' required><br>
 			
 			<label>Email</label>
-			<input type='text' class='form-control' id='email' required><br>
+			<input type='email' class='form-control' id='email' required><br>
 			
 			<label>Password</label>
 			<input type='password' class='form-control' id='password' minlength='8' required><br>
@@ -85,17 +85,17 @@
 			<?php } ?>
 			</select><br>
 			<br>
-			<button class='button button_success_dark'>Submit</button>
+			<button type='button' id='submitFormButton' class='button button_success_dark'>Submit</button>
 		</form>
 	</div>
 </div>
 <script>
 	$('#add_user_form').validate();
 	
-	$('#add_user_form').on('submit', function(){
+	$('#submitFormButton').click(function(){
 		if($('#add_user_form').valid()){
 			$.ajax({
-				url:'<?= site_url('Users/insert_from_post') ?>',
+				url:'<?= site_url('Users/insertItem') ?>',
 				data:{
 					name: $('#name').val(),
 					address: $('#address').val(),
@@ -109,11 +109,13 @@
 					$('button').attr('disabled', true);
 				},
 				success:function(response){
-					console.log(response);
+					refresh_view();
+					$('buton').attr('disabled', false);
+					$('#addUserWrapper .slide_alert_close_button').click();
 				}	
 			});
 		};
-	});
+	})
 	
 	$('#page').change(function(){
 		refresh_view();
@@ -201,8 +203,8 @@
 	}
 	
 	$('#add_new_user_button').click(function(){
-		$('#add_user_wrapper').fadeIn(300, function(){
-			$('#add_user_wrapper .alert_box_slide').show("slide", { direction: "right" }, 250);
+		$('#addUserWrapper').fadeIn(300, function(){
+			$('#addUserWrapper .alert_box_slide').show("slide", { direction: "right" }, 250);
 		});
 	})
 	

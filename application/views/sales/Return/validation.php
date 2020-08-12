@@ -48,7 +48,7 @@
 				<p><?= $general->sales_order_name ?></p>
 			</div>
 			<div class='col-sm-12 col-xs-12'>
-				<form action='<?= site_url('Sales_return/input') ?>' method='POST' id='return_form'>
+				<form action='<?= site_url('Sales_return/insertItem') ?>' method='POST' id='return_form'>
 					<table class='table table-bordered'>
 						<tr>
 							<th>Reference</th>

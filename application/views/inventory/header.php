@@ -35,8 +35,15 @@
 		<button class='container_button'><p style='font-family:museo'>Good receipt</p></button>
 		<div class='container_bar'>
 			<a href='<?= site_url('Good_receipt/createDashboard') ?>'><p>Create</p></a>
+			<?php if($user_login->access_level > 1){ ?>
 			<a href='<?= site_url('Good_receipt/confirmDashboard') ?>'><p>Confirm</p></a>
+			<?php } ?>
 			<a href='<?= site_url('Good_receipt/archiveDashboard') ?>'><p>Archive</p></a>	
+		</div>
+		<button class='container_button'><p style='font-family:museo'>Return</p></button>
+		<div class='container_bar'>
+			<a href='<?= site_url('Sales_return/receiveDashboard') ?>'><p>Sales</p></a>
+			<a href='<?= site_url('Purchase_return/receiveDashboard') ?>'><p>Purchase</p></a>
 		</div>
 		<a href='<?= site_url('Stock/view/Inventory') ?>'><button><p>Check stock</p></button></a>
 		<a href='<?= site_url('Inventory_case') ?>'><button><p>Cases</p></button></a>

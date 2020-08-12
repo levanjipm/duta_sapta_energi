@@ -75,8 +75,9 @@ class Item_class extends CI_Controller {
 	
 	public function deleteById()
 	{
+		$id			= $this->input->post('id');
 		$this->load->model('Item_class_model');
-		$result = $this->Item_class_model->delete_by_id();
+		$result = $this->Item_class_model->deleteById($id);
 		
 		echo $result;
 	}

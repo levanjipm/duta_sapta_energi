@@ -23,9 +23,9 @@
 			type:'POST',
 			success:function(response){
 				if(response == null){
-					$('#error_delivery_order').fadeIn(250);
+					$('#error_delivery_order').fadeTo(250, 1);
 					setTimeout(function(){
-						$('#error_delivery_order').fadeOut(250);
+						$('#error_delivery_order').fadeTo(250, 0);
 					}, 1000);
 				} else {
 					$('#delivery_order_id').val(response.id);

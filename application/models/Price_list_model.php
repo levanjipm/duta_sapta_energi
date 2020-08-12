@@ -64,11 +64,11 @@ class Price_list_model extends CI_Model {
 			return $result;
 		}
 		
-		public function insert_from_post($item_id, $updated_price_list)
+		public function insertItem($itemId, $priceList)
 		{
 			$this->id					= '';
-			$this->price_list			= $updated_price_list;
-			$this->item_id				= $item_id;
+			$this->price_list			= $priceList;
+			$this->item_id				= $itemId;
 			
 			$db_item 					= $this->get_db_from_stub();
 			$db_result 					= $this->db->insert($this->table_price_list, $db_item);
@@ -80,6 +80,14 @@ class Price_list_model extends CI_Model {
 			$query = $this->db->get($this->table_price_list);
 			$result = $query->row();
 
+			return $result;
+		}
+
+		public function deleteByItemId($itemId)
+		{
+			$this->db->db_debug = false;
+			$this->db->where('item_id', $itemId);
+			$result = $this->db->delete($this->table_price_list);
 			return $result;
 		}
 }

@@ -28,15 +28,19 @@ class Good_receipt extends CI_Controller {
 	{
 		$user_id		= $this->session->userdata('user_id');
 		$this->load->model('User_model');
-		$data['user_login'] = $this->User_model->getById($user_id);
-		
-		$this->load->model('Authorization_model');
-		$data['departments']	= $this->Authorization_model->getByUserId($user_id);
-		
-		$this->load->view('head');
-		$this->load->view('Inventory/header', $data);
+		$user = $this->User_model->getById($user_id);
+		$data['user_login'] = $user;
+		if($user->access_level > 1){
+			$this->load->model('Authorization_model');
+			$data['departments']	= $this->Authorization_model->getByUserId($user_id);
+			
+			$this->load->view('head');
+			$this->load->view('Inventory/header', $data);
 
-		$this->load->view('Inventory/goodReceipt/goodReceiptConfirm');
+			$this->load->view('Inventory/goodReceipt/goodReceiptConfirm');
+		} else {
+			redirect(site_url("Inventory"));
+		}		
 	}
 	
 	public function getIncompletePurchaseOrder()

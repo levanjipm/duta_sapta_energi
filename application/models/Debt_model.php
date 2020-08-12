@@ -222,19 +222,26 @@ class Debt_model extends CI_Model {
 		
 		public function getIncompletedTransaction($supplier_id)
 		{
-			$this->db->select('sum(good_receipt.quantity * good_receipt.billed_price) as value, purchase_invoice.id, purchase_invoice.date, purchase_invoice.invoice_document as name, purchase_invoice.tax_document, sum(payable.value) as paid');
-			$this->db->from('purchase_invoice');
-			$this->db->join('code_good_receipt', 'code_good_receipt.invoice_id = purchase_invoice.id');
-			$this->db->join('good_receipt', 'good_receipt.code_good_receipt_id = code_good_receipt.id', 'left');
-			$this->db->join('purchase_order', 'good_receipt.purchase_order_id = purchase_order.id');
-			$this->db->join('code_purchase_order', 'code_purchase_order.id = purchase_order.code_purchase_order_id');
-			$this->db->join('payable', 'purchase_invoice.id = payable.purchase_id', 'left');
-			$this->db->group_by('payable.purchase_id');
-			$this->db->where('code_purchase_order.supplier_id', $supplier_id);
-			$this->db->where('purchase_invoice.is_done', 0);
-			$this->db->order_by('purchase_invoice.date');
+			$query		= $this->db->query("
+				SELECT a.value as value, COALESCE(b.paid,0) as paid, purchase_invoice.id, purchase_invoice.date, purchase_invoice.invoice_document as name, purchase_invoice.tax_document
+				FROM (
+					SELECT SUM(good_receipt.quantity * good_receipt.billed_price) as value, code_good_receipt.invoice_id
+					FROM good_receipt
+					JOIN purchase_order ON good_receipt.purchase_order_id = purchase_order.id
+					JOIN code_purchase_order ON purchase_order.code_purchase_order_id = code_purchase_order.id
+					JOIN code_good_receipt ON good_receipt.code_good_receipt_id = code_good_receipt.id
+					WHERE code_purchase_order.supplier_id = '$supplier_id'
+					GROUP BY code_good_receipt.invoice_id
+				) AS a
+				JOIN purchase_invoice ON a.invoice_id = purchase_invoice.id
+				LEFT JOIN (
+					SELECT SUM(value) as paid, purchase_id FROM payable
+					GROUP BY purchase_id
+					) b
+				ON a.invoice_id = b.purchase_id
+				
+			");
 			
-			$query	= $this->db->get();
 			$result	= $query->result();
 			
 			return $result;

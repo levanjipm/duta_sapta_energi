@@ -385,6 +385,11 @@ class Delivery_order extends CI_Controller {
 	public function deleteById()
 	{
 		$deliveryOrderId				= $this->input->post('id');
+		$this->load->model("Delivery_order_model");
+		$deliveryOrder			= $this->Delivery_order_model->getById($deliveryOrderId);
+
+		$invoiceId				= $deliveryOrder->invoice_id;
+
 		$this->load->model('Delivery_order_detail_model');
 		$sales_order_array		= (array) $this->Delivery_order_detail_model->getByCodeDeliveryOrderId($deliveryOrderId);
 
@@ -408,6 +413,8 @@ class Delivery_order extends CI_Controller {
 				);
 
 				array_push($result, $salesOrderArray);
+
+				next($sales_order_array);
 			}
 
 			$this->load->model('Sales_order_detail_model');
@@ -415,6 +422,9 @@ class Delivery_order extends CI_Controller {
 			
 			$this->load->model('Delivery_order_model');
 			$this->Delivery_order_model->updateById(0, $deliveryOrderId);
+
+			$this->load->model('Invoice_model');
+			$this->Invoice_model->deleteById($invoiceId);
 
 			echo 1;
 		} else {
@@ -426,7 +436,7 @@ class Delivery_order extends CI_Controller {
 	{
 		$name			= $this->input->post('name');
 		$this->load->model('Delivery_order_model');
-		$data	= $this->Delivery_order_model->select_by_name("DO-DSE-" . $name);
+		$data	= $this->Delivery_order_model->getByName("DO-DSE-" . $name);
 		
 		header('Content-Type: application/json');
 		echo json_encode($data);

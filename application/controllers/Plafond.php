@@ -17,18 +17,23 @@ class Plafond extends CI_Controller {
 		$this->load->view('Sales/plafond/plafond_dashboard');
 	}
 
-	public function confirm()
+	public function confirmDashboard()
 	{
 		$user_id		= $this->session->userdata('user_id');
 		$this->load->model('User_model');
-		$data['user_login'] = $this->User_model->getById($user_id);
-		
-		$this->load->model('Authorization_model');
-		$data['departments']	= $this->Authorization_model->getByUserId($user_id);
-		
-		$this->load->view('head');
-		$this->load->view('sales/header', $data);
-		$this->load->view('Sales/plafond/plafond_status_dashboard');
+		$user = $this->User_model->getById($user_id);
+		$data['user_login'] = $user;
+
+		if($user->access_level <= 2){
+			redirect(site_url("Sales"));
+		} else {
+			$this->load->model('Authorization_model');
+			$data['departments']	= $this->Authorization_model->getByUserId($user_id);
+			
+			$this->load->view('head');
+			$this->load->view('sales/header', $data);
+			$this->load->view('Sales/plafond/plafond_status_dashboard');
+		}	
 	}
 	
 	public function submitPlafond()

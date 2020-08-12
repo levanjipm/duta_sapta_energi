@@ -160,16 +160,6 @@ class Sales_order_model extends CI_Model {
 			return $result;
 		}
 		
-		public function show_all()
-		{
-			$query 		= $this->db->get($this->table_user);
-			$items 		= $query->result();
-			
-			$result 	= $this->map_list($items);
-			
-			return $result;
-		}
-		
 		public function getById($id)
 		{
 			$this->db->select('DISTINCT(sales_order.code_sales_order_id) as id, code_sales_order.*, users.name as seller');

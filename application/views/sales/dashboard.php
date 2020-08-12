@@ -46,7 +46,7 @@
     <div class='dashboard_in'>
         <div class='row'>
             <div class='col-md-4 col-sm-12 col-xs-12'>
-                <div class='dashboardBox'>
+                <div class='dashboardBox clickable' onclick='viewPendingSalesOrders()' >
                     <div class='leftSide'>
                         <h4><b>Pending</b></h4>
                         <p>Sales order</p>
@@ -96,7 +96,8 @@
     var customerData = [];
     $(document).ready(function(){
         refreshView();
-    })
+    });
+
     function refreshView(){
         $.ajax({
             url:'<?= site_url('Sales/viewSalesByMonth') ?>',
@@ -178,5 +179,9 @@
 
         var customerChart = new google.visualization.BarChart(document.getElementById("customerChart"));
         customerChart.draw(view, options);
+    }
+
+    function viewPendingSalesOrders(){
+        
     }
 </script>

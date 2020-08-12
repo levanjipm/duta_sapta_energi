@@ -117,9 +117,9 @@ class Item_class_model extends CI_Model {
 			}
 		}
 		
-		public function deleteById()
+		public function deleteById($classId)
 		{
-			$this->db->where('id', $this->input->post('id'));
+			$this->db->where('id', $classId);
 			$this->db->delete($this->table_item_class);
 			
 			return $this->db->affected_rows();

@@ -177,8 +177,10 @@ class Inventory_case_detail_model extends CI_Model {
 
 		public function deleteByCodeId($id)
 		{
+			$this->db->db_debug = false;
 			$this->db->where('code_event_id', $id);
-			$this->db->delete($this->table_event);
+			$result = $this->db->delete($this->table_event);
+			return $result;
 		}
 		
 		public function getOutBatchByCodeEventId($id)

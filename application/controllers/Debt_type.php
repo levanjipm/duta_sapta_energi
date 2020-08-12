@@ -43,10 +43,11 @@ class Debt_type extends CI_Controller {
 	{
 		$name = $this->input->post('name');
 		$description = $this->input->post('description');
+		$operational	= $this->input->post('operational');
 
 		$this->load->model('Debt_type_model');
 
-		$result = $this->Debt_type_model->insertItem($name, $description);
+		$result = $this->Debt_type_model->insertItem($name, $description, $operational);
 		echo $result;
 	}
 
@@ -74,9 +75,10 @@ class Debt_type extends CI_Controller {
 		$typeId				= $this->input->post('id');
 		$name				= $this->input->post('name');
 		$description		= $this->input->post('description');
+		$operational		= $this->input->post('operational');
 
 		$this->load->model('Debt_type_model');
-		$result = $this->Debt_type_model->updateById($typeId, $name, $description);
+		$result = $this->Debt_type_model->updateById($typeId, $name, $description, $operational);
 		echo $result;
 	}
 

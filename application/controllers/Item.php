@@ -29,23 +29,25 @@ class Item extends CI_Controller {
 		$this->load->view('sales/item_manage_dashboard',$data);
 	}
 	
-	public function insert_new_item()
+	public function insertItem()
 	{
-		$price_list		= $this->input->post('price_list');
+		$priceList		= $this->input->post('priceList');
 		$this->load->model('Item_model');
-		$result = $this->Item_model->insert_from_post();
-		if($result != null){
+
+		$itemId = $this->Item_model->insertItem();
+		if($itemId != null){
 			$this->load->model('Price_list_model');
-			$this->Price_list_model->insert_from_post($result, $price_list);
+			$this->Price_list_model->insertItem($itemId, $priceList);
+			echo 1;
+		} else {
+			echo 0;
 		}
-		
-		redirect(site_url('Item'));
 	}
 	
-	public function update_item()
+	public function updateById()
 	{
 		$this->load->model('Item_model');
-		$this->Item_model->update_from_post();
+		$this->Item_model->updateById();
 	}
 	
 	public function shopping_cart_view_purchase()
@@ -85,7 +87,7 @@ class Item extends CI_Controller {
 	{
 		$item_id	= $this->input->post('price_list_id');
 		$this->load->model('Item_model');
-		$item = $this->Item_model->select_by_price_list_id($item_id);
+		$item = $this->Item_model->getByPriceListId($item_id);
 		
 		header('Content-Type: application/json');
 		echo json_encode($item);
@@ -94,9 +96,16 @@ class Item extends CI_Controller {
 	public function deleteById()
 	{
 		$id = $this->input->post('id');
-		$this->load->model('Item_model');
-		$result = $this->Item_model->deleteById($id);
-		
-		echo $result;
+
+		$this->load->model('Price_list_model');
+		$result = $this->Price_list_model->deleteByItemId($id);
+		if($result){
+			$this->load->model('Item_model');
+			$finalResult = $this->Item_model->deleteById($id);
+
+			echo $finalResult;
+		} else {
+			echo 0;
+		}		
 	}
 }

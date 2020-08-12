@@ -65,61 +65,52 @@ class Sales_return_model extends CI_Model {
 			}
 			return $result;
 		}
-		
-		public function insert_from_post()
+
+		public function generateName($date)
 		{
-			$check = true;
-			$quantity_array = $this->input->post('return_quantity');
-			$this->load->model('Sales_return_detail_model');
-			foreach($quantity_array as $return)
-			{
-				$delivery_order_id = key($quantity_array);
-				$quantity_return	= $quantity_array[$delivery_order_id];
-				
-				//Check for previous return//
-				$previous		= $this->Sales_return_detail_model->get_sum_quantity_by_delivery_order_id($delivery_order_id);
-				$returned		= $previous->returned;
-				$quantity		= $previous->quantity;
-				
-				if($quantity_return + $returned > $quantity)
-				{
-					$check = false;
-					break;
-				}
+			$name		= "SRS-" . date('Ym', strtotime($date)) . "-" . rand(0,9) . rand(0,9) . rand(0,9) . rand(0,9) . rand(0,9) . rand(0,9) . rand(0,9) . rand(0,9);
+			$this->db->where('name', $name);
+			$query = $this->db->get($this->table_sales_return);
+			$result = $query->num_rows();
+			if($result == 0){
+				return $name;
+			} else {
+				$this->Sales_return_model->generateName($date);
 			}
-			
-			if($check)
-			{
-				$this->id			= "";			
+		}
+		
+		public function insertItem()
+		{
+				$this->id			= "";
+				$this->name			= $this->Sales_return_model->generateName(date('Y-m-d'));
 				$this->created_by	= $this->session->userdata('user_id');	
 				$this->created_date	= date('Y-m-d');
 				$this->is_confirm	= 0;
+				$this->is_delete 	= 0;
 				$this->confirmed_by = null;
 
 				$db_item 		= $this->get_db_from_stub($this);
 				$db_result 		= $this->db->insert($this->table_sales_return, $db_item);
-				
-				$insert_id		= $this->db->insert_id();
-				
-				if($insert_id != null)
-				{
-					$quantity_array = $this->input->post('return_quantity');
-					foreach($quantity_array as $return)
-					{
-						$delivery_order_id 	= key($quantity_array);
-						$return_quantity	= $quantity_array[$delivery_order_id];
-						$this->Sales_return_detail_model->insert_return_data($delivery_order_id, $return_quantity, $insert_id);
-					}
-				}
-			}
+				$insertId		= $this->db->insert_id();
+
+				return $insertId;
 		}
 
 		public function getUnconfirmedDocuments($offset, $limit = 10)
 		{
-			$this->db->where('is_confirm', 0);
-			$this->db->where('is_delete', 0);
-			$this->db->limit($limit, $offset);
-			$query = $this->db->get($this->table_sales_return);
+			$query		= $this->db->query("
+				SELECT customer.*, code_sales_return.name as documentName, code_sales_return.created_date as date, users.name as created_by, code_sales_return.id
+				FROM code_sales_return
+				JOIN users ON code_sales_return.created_by = users.id
+				JOIN sales_return ON sales_return.code_sales_return_id = code_sales_return.id
+				JOIN delivery_order ON sales_return.delivery_order_id = delivery_order.id
+				JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
+				JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
+				JOIN customer ON code_sales_order.customer_id = customer.id
+				WHERE code_sales_return.is_confirm = '0' AND code_sales_return.is_delete = '0'
+				LIMIT $limit OFFSET $offset
+			");
+
 			$result = $query->result();
 
 			return $result;
@@ -133,5 +124,37 @@ class Sales_return_model extends CI_Model {
 			$result = $query->num_rows();
 
 			return $result;
-		}  
+		}
+
+		public function getById($id)
+		{
+			$query		= $this->db->query("
+				SELECT code_sales_order.customer_id, delivery_order.code_delivery_order_id as codeDeliveryOrderId, code_sales_return.name as documentName, code_sales_return.created_date as date, users.name as created_by
+				FROM code_sales_return
+				JOIN users ON code_sales_return.created_by = users.id
+				JOIN sales_return ON sales_return.code_sales_return_id = code_sales_return.id
+				JOIN delivery_order ON sales_return.delivery_order_id = delivery_order.id
+				JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
+				JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
+				JOIN customer ON code_sales_order.customer_id = customer.id
+				WHERE code_sales_return.id = '$id'
+			");
+
+			$result = $query->row();
+			return $result;
+		}
+
+		public function updateById($status, $salesReturnId)
+		{
+			if($status == 1){
+				$this->db->set('is_confirm', 1);
+				$this->db->where('id', $salesReturnId);
+			} else if($status == 0) {
+				$this->db->set('is_delete', 1);
+				$this->db->where('id', $salesReturnId);
+			}
+
+			$this->db->update($this->table_sales_return);
+			return $this->db->affected_rows();
+		}
 }

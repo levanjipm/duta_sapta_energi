@@ -14,18 +14,21 @@
 			</div>
 		</div>
 		<br>
-		<table class='table table-bordered'>
-			<tr>
-				<th>Name</th>
-				<th>Description</th>
-				<th>Action</th>
-			</tr>
-			<tbody id='item_class_table'></tbody>
-		</table>
-		
-		<select class='form-control' id='page' style='width:100px'>
-			<option value='1'>1</option>
-		</select>
+		<div id='itemClassTable'>
+			<table class='table table-bordered'>
+				<tr>
+					<th>Name</th>
+					<th>Description</th>
+					<th>Action</th>
+				</tr>
+				<tbody id='item_class_table'></tbody>
+			</table>
+			
+			<select class='form-control' id='page' style='width:100px'>
+				<option value='1'>1</option>
+			</select>
+		</div>
+		<p id='itemClassTableText'>There is no class found.</p>
 	</div>
 </div>
 
@@ -101,6 +104,7 @@
 	});
 	
 	function refresh_view(page = $('#page').val()){
+		var classCount = 0;
 		$.ajax({
 			url:'<?= site_url('Item_class/showItems') ?>',
 			data:{
@@ -127,7 +131,16 @@
 							"<button type='button' class='button button_danger_dark' disabled><i class='fa fa-trash'></i></button> " +
 							"<button type='button' class='button button_default_dark'><i class='fa fa-eye'></i></button></td></tr>");
 					}
+
+					classCount++;
 				});
+				if(classCount > 0){
+					$('#itemClassTableText').hide();
+					$('#itemClassTable').show();
+				} else {
+					$('#itemClassTableText').show();
+					$('#itemClassTable').hide();
+				}
 				
 				var pages		= response.pages;
 				$('#page').html('');

@@ -68,25 +68,159 @@ class Sales_return_detail_model extends CI_Model {
 			return $result;
 		}
 		
-		public function get_sum_quantity_by_delivery_order_id($delivery_order_id)
+		public function getQuantityByDeliveryOrderIdArray($deliveryOrderIdArray)
 		{
-			$query = $this->db->query("SELECT delivery_order.quantity, COALESCE(SUM(IF(sales_return.is_done = 1, sales_return.received, sales_return.quantity)), 0) AS returned FROM sales_return 
+			$formattedArray = "'" . implode(',', $deliveryOrderIdArray) . "'";
+
+			$query = $this->db->query("SELECT delivery_order.id, delivery_order.quantity, COALESCE(SUM(IF(sales_return.is_done = 1, sales_return.received, sales_return.quantity)), 0) AS returned 
+				FROM sales_return 
 				JOIN delivery_order ON sales_return.delivery_order_id = delivery_order.id
-				WHERE sales_return.delivery_order_id = '$delivery_order_id'");
-			$result = $query->row();
+				WHERE delivery_order.id IN ($formattedArray)");
+			$result = $query->result();
 			return $result;
 		}
-		
-		public function insert_return_data($delivery_order_id, $quantity, $code_sales_return_id)
+
+		public function insertItemArray($returnQuantityArray, $codeSalesReturnId)
 		{
-			$this->id		= "";
-			$this->delivery_order_id	= $delivery_order_id;
-			$this->quantity				= $quantity;
-			$this->received				= 0;
-			$this->is_done				= 0;
-			$this->code_sales_return_id	= $code_sales_return_id;
+			$batch		= array();
+			foreach($returnQuantityArray as $key => $returnQuantity)
+			{
+				$item		= array(
+					'id' => "",
+					'delivery_order_id' => $key,
+					'quantity' => $returnQuantity,
+					'received' => 0,
+					'is_done' => 0,
+					'code_sales_return_id' => $codeSalesReturnId
+				);
+				array_push($batch, $item);
+				next($returnQuantityArray);
+			}
+
+			$this->db->insert_batch($this->table_sales_return, $batch);
 			
-			$db_item 		= $this->get_db_from_stub($this);
-			$db_result 		= $this->db->insert($this->table_sales_return, $db_item);
 		}
-}
+
+		public function getByCodeSalesReturnId($codeSalesReturnId)
+		{
+			$query	= $this->db->query("
+				SELECT item.reference, item.name, sales_return.id, sales_return.quantity, sales_return.received, sales_return.is_done, price_list.price_list, sales_order.discount FROM
+				sales_return
+				JOIN delivery_order ON sales_return.delivery_order_id = delivery_order.id
+				JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
+				JOIN price_list ON sales_order.price_list_id = price_list.id
+				JOIN item ON price_list.item_id = item.id
+				WHERE sales_return.code_sales_return_id = '$codeSalesReturnId'
+			");
+			$result = $query->result();
+			return $result;
+		}
+
+		public function getIncompletedReturn($offset = 0, $term = "", $limit = 10)
+		{
+			$query		= $this->db->query("
+				SELECT code_sales_return.name, code_sales_return.created_date, customer.*, code_sales_return.id, delivery_order.code_delivery_order_id as deliveryOrderId, users.name as created_by
+				 FROM
+				(
+					SELECT DISTINCT(sales_return.code_sales_return_id) as id
+					FROM sales_return
+					WHERE sales_return.is_done = '0'
+				) AS a
+				JOIN code_sales_return ON a.id = code_sales_return.id
+				JOIN users ON code_sales_return.created_by = users.id
+				JOIN sales_return ON sales_return.code_sales_return_id = code_sales_return.id
+				JOIN delivery_order ON sales_return.delivery_order_id = delivery_order.id
+				JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
+				JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
+				JOIN customer ON code_sales_order.customer_id = customer.id
+				WHERE customer.name LIKE '%$term%' OR customer.address LIKE '%$term%'
+				ORDER BY code_sales_return.created_date
+			");
+			$result = $query->result();
+			return $result;
+		}
+
+		public function countIncompletedReturn($term = "")
+		{
+			$query		= $this->db->query("
+				SELECT code_sales_return.id
+				FROM
+				(
+					SELECT DISTINCT(sales_return.code_sales_return_id) as id
+					FROM sales_return
+					WHERE sales_return.is_done = '0'
+				) AS a
+				JOIN code_sales_return ON a.id = code_sales_return.id
+				JOIN sales_return ON sales_return.code_sales_return_id = code_sales_return.id
+				JOIN delivery_order ON sales_return.delivery_order_id = delivery_order.id
+				JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
+				JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
+				JOIN customer ON code_sales_order.customer_id = customer.id
+				WHERE customer.name LIKE '%$term%' OR customer.address LIKE '%$term%'
+			");
+			$result = $query->num_rows();
+			return $result;
+		}
+
+		public function quantityCheck($itemArray)
+		{
+			$this->db->select('sales_return.*');
+			$this->db->where_in('id', $itemArray);
+			$query		= $this->db->get($this->table_sales_return);
+			$result		= $query->result();
+
+			$data		= true;
+
+			foreach($result as $item){
+				$id			= $item->id;
+				$quantity	= $item->quantity;
+				$received	= $item->received;
+				$return		= $itemArray[$id];
+
+				if($received + $return > $quantity){
+					$data	= false;
+				}
+			}
+
+			return $result;
+		}
+
+		public function updateItems($itemArray)
+		{
+			$idArray		 = array_keys($itemArray);
+
+			$this->db->where_in('id', $idArray);
+			$query			= $this->db->get($this->table_sales_return);
+			$result			= $query->result();
+			$resultArray	= (array) $result;
+
+			$batch			= array();
+
+			foreach($resultArray as $result)
+			{
+				$received		= (int) $result->received;
+				$quantity		= (int) $result->quantity;
+				$id				= $result->id;
+				$return			= (int) $itemArray[$id];
+				
+				if($received + $return == $quantity){
+					$batchItem		= array(
+						'id' => $id,
+						'received' => ($received + $return),
+						'is_done' => 1
+					);
+				} else if($received + $return < $quantity) {
+					$batchItem		= array(
+						'id' => $id,
+						'received' => ($received + $return),
+						'is_done' => 0
+					);
+				}
+
+				array_push($batch, $batchItem);
+			}
+
+			$this->db->update_batch($this->table_sales_return, $batch, 'id');
+		}
+	}
+?>

@@ -409,15 +409,9 @@ class Invoice_model extends CI_Model {
 		public function getByMonthYear($month, $year, $offset)
 		{
 			$query = $this->db->query("
-				SELECT (a.value - a.paid) as value, a.name FROM (
-					SELECT SUM(invoice.value) as value, COALESCE(receivableTable.value,0) AS paid, customer.name
+				SELECT a.value, a.name FROM (
+					SELECT SUM(invoice.value) as value, customer.name
 					FROM invoice
-					LEFT JOIN (
-						SELECT SUM(receivable.value) as value, receivable.invoice_id 
-						FROM receivable
-						GROUP BY receivable.invoice_id
-					) receivableTable
-					ON receivableTable.invoice_id = invoice.id
 					JOIN code_delivery_order ON code_delivery_order.invoice_id = invoice.id
 					JOIN delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order.id
 					JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
@@ -427,7 +421,7 @@ class Invoice_model extends CI_Model {
 					AND YEAR(invoice.date) = '$year'
 					GROUP BY code_sales_order.customer_id
 				) a
-				ORDER BY value DESC
+				ORDER BY value ASC
 			");
 			$result = $query->result();
 			return $result;
@@ -510,5 +504,12 @@ class Invoice_model extends CI_Model {
 
 			$result = $query->result();
 			return $result;
+		}
+
+		public function deleteById($invoiceId)
+		{
+			$this->db->db_debug = false;
+			$this->db->where('id', $invoiceId);
+			$this->db->delete($this->table_invoice);
 		}
 }

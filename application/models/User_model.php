@@ -13,6 +13,7 @@ class User_model extends CI_Model {
 		public $password;
 		public $image_url;
 		public $access_level;
+		public $email;
 		
 		public function __construct()
 		{
@@ -30,6 +31,7 @@ class User_model extends CI_Model {
 			$this->password				= $db_item->password;
 			$this->image_url			= $db_item->image_url;
 			$this->access_level			= $db_item->access_level;
+			$this->email				= $db_item->email;
 			
 			return $this;
 		}
@@ -47,6 +49,7 @@ class User_model extends CI_Model {
 			$db_item->password				= $this->password;
 			$db_item->image_url				= $this->image_url;
 			$db_item->access_level			= $this->access_level;
+			$db_item->email					= $this->email;
 			
 			return $db_item;
 		}
@@ -64,6 +67,7 @@ class User_model extends CI_Model {
 			$stub->password				= $db_item->password;
 			$stub->image_url			= $db_item->image_url;
 			$stub->access_level			= $db_item->access_level;
+			$stub->email				= $db_item->email;
 			
 			return $stub;
 		}
@@ -149,7 +153,7 @@ class User_model extends CI_Model {
 			$this->db->update($this->table_user);
 		}
 		
-		public function insert_from_post()
+		public function insertItem()
 		{
 			$this->id					= "";
 			$this->name					= $this->input->post('name');
@@ -161,6 +165,7 @@ class User_model extends CI_Model {
 			$this->image_url			= null;
 			$this->access_level			= $this->input->post('access_level');
 			$this->email				= $this->input->post('email');
+
 			$db_item 					= $this->get_db_from_stub($this);
 			$db_result 					= $this->db->insert($this->table_user, $db_item);
 

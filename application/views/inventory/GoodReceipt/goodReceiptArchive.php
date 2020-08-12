@@ -1,9 +1,12 @@
-<style>
-	.archive_row{
-		padding:10px;
-		border-bottom:1px solid #e2e2e2;
-	}
-</style>
+<head>
+	<style>
+		.archive_row{
+			padding:10px;
+			border-bottom:1px solid #e2e2e2;
+		}
+	</style>
+	<title>Good receipt - archive</title>
+</head>
 <div class='dashboard'>
 	<div class='dashboard_head'>
 		<p style='font-family:museo'><a href='<?= site_url('Inventory') ?>' title='Inventory'><i class='fa fa-briefcase'></i></a> /<a href='<?= site_url('Good_receipt') ?>'>Good receipt</a> / Archive</p>

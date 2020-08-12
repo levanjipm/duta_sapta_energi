@@ -135,8 +135,17 @@ class Inventory_case_model extends CI_Model {
 
 		public function deleteById($id)
 		{
+			$this->db->db_debug = false;
+
 			$this->db->where('id', $id);
-			$this->db->delete($this->table_event);
+			$this->db->where('is_confirm', 0);
+			$result = $this->db->delete($this->table_event);
+
+			if($result){
+				return 1;
+			} else {
+				return 0;
+			}
 		}
 		
 		public function show_unconfirmed_cases($offset = 0, $limit = 25)

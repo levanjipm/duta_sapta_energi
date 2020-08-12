@@ -298,4 +298,26 @@ class Inventory_case extends CI_Controller {
 			echo 0;
 		}
 	}
+
+	public function deleteById()
+	{
+		$id			= $this->input->post('id');
+
+		$this->load->model("Inventory_case_model");
+		$this->load->model("Inventory_case_detail_model");
+		$result		= $this->Inventory_case_model->showById($id);
+		if($result->is_confirm == 0){
+			$deleteResult = $this->Inventory_case_detail_model->deleteByCodeId($id);
+			if($deleteResult){
+				$this->Inventory_case_model->deleteById($id);
+				echo 1;
+			} else {
+				echo 0;
+			}			
+		} else {
+			echo 0;
+		}
+
+		
+	}
 }

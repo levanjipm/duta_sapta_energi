@@ -1,17 +1,21 @@
 <h4><strong>Confirm case(s)</strong></h4>
-<table class='table table-bordered'>	
-	<tr>
-		<th>Date</th>
-		<th>Type</th>
-		<th>Created by</th>
-		<th>Action</th>
-	</tr>
-	<tbody id='case_tbody'></tbody>
-</table>
+<br>
+<div id='inventoryCaseTable'>
+	<table class='table table-bordered'>	
+		<tr>
+			<th>Date</th>
+			<th>Type</th>
+			<th>Created by</th>
+			<th>Action</th>
+		</tr>
+		<tbody id='inventoryCaseTableContent'></tbody>
+	</table>
 
-<select class='form-control' id='page' style='width:100px'>
-	<option value='1'>1</option>
-</select>
+	<select class='form-control' id='page' style='width:100px'>
+		<option value='1'>1</option>
+	</select>
+</div>
+<p id='inventoryCaseTableText'>There is no case to be confirmed.</p>
 
 <div class='alert_wrapper' id='view_inventory_case_wrapper'>
 	<button type='button' class='slide_alert_close_button'>&times;</button>
@@ -128,8 +132,8 @@
 				page:page
 			},
 			success:function(response){
-				$('#case_tbody').html('');
-				
+				$('#inventoryCaseTableContent').html('');
+				var caseCount = 0;
 				var cases		= response.cases;
 				$.each(cases, function(index, value){
 					var id 			= value.id;
@@ -146,7 +150,8 @@
 						var text = 'Materialized goods';
 					}
 					
-					$('#case_tbody').append("<tr><td>" + my_date_format(date) + "</td><td>" + text + "</td><td>" + created_by + "</td><td><button type='button' class='button button_default_dark' onclick='view_case(" + id + ")'><i class='fa fa-long-arrow-right'></i></button></td></tr>");
+					$('#inventoryCaseTableContent').append("<tr><td>" + my_date_format(date) + "</td><td>" + text + "</td><td>" + created_by + "</td><td><button type='button' class='button button_default_dark' onclick='view_case(" + id + ")'><i class='fa fa-long-arrow-right'></i></button></td></tr>");
+					caseCount++;
 				});
 				
 				var pages = response.pages;
@@ -158,13 +163,41 @@
 						$('#page').append("<option value='" + i + "'>" + i + "</option>");
 					}
 				}
+
+				if(caseCount > 0){
+					$('#inventoryCaseTable').show();
+					$('#inventoryCaseTableText').hide();
+				} else {
+					$('#inventoryCaseTable').hide();
+					$('#inventoryCaseTableText').show();
+				}
 			}
 		});
 	}
 
 	function deleteEvent(){
 		var eventId = $('#event_id').val();
-		alert(eventId);
+		$.ajax({
+			url:"<?= site_url('Inventory_case/deleteById') ?>",
+			data:{
+				id: eventId
+			},
+			type:'POST',
+			beforeSend:function(){
+				$("button").attr('disabled', true);
+			},
+			success:function(response){
+				$('button').attr('disabled', false);
+				refresh_view();
+				if(response == 1){
+					$('#view_inventory_case_wrapper .slide_alert_close_button').click();
+				} else {
+					$('#deleteFailedNotification').fadeIn(250, setTimeout(function(){
+						$('#deleteFailedNotification').fadeOut(250);
+					}));
+				}
+			}
+		})
 	}
 
 	function confirmEvent(){
