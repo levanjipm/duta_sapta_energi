@@ -114,18 +114,25 @@ class Debt_model extends CI_Model {
 		
 		public function showUnconfirmedDocuments($offset = 0, $term = '', $limit = 25)
 		{
-			$this->db->select('DISTINCT(purchase_invoice.id) as id, purchase_invoice.date, purchase_invoice.tax_document, purchase_invoice.invoice_document, supplier.name, supplier.address, supplier.city');
-			$this->db->from('purchase_invoice');
-			$this->db->join('code_good_receipt', 'code_good_receipt.invoice_id = purchase_invoice.id', 'left');
-			$this->db->join('good_receipt', 'code_good_receipt.id = good_receipt.code_good_receipt_id', 'inner');
-			$this->db->join('purchase_order', 'good_receipt.purchase_order_id = purchase_order.id', 'inner');
-			$this->db->join('code_purchase_order', 'purchase_order.code_purchase_order_id = code_purchase_order.id');
-			$this->db->join('supplier', 'code_purchase_order.supplier_id = supplier.id');
-			$this->db->where('purchase_invoice.is_confirm', 0);
-			$this->db->where('purchase_invoice.is_delete', 0);
-			$this->db->limit($limit, $offset);
-			
-			$query = $this->db->get();
+			$query		= $this->db->query("
+				SELECT DISTINCT(purchase_invoice.id) as id, purchase_invoice.date, purchase_invoice.tax_document, purchase_invoice.invoice_document, supplier.name, supplier.address, supplier.city, '' as information, '' as type, '' as class 
+				FROM purchase_invoice
+				LEFT JOIN code_good_receipt ON code_good_receipt.invoice_id = purchase_invoice.id
+				JOIN good_receipt ON good_receipt.code_good_receipt_id = code_good_receipt.id
+				JOIN purchase_order ON good_receipt.purchase_order_id = purchase_order.id
+				JOIN code_purchase_order ON purchase_order.code_purchase_order_id = code_purchase_order.id
+				JOIN supplier ON code_purchase_order.supplier_id = supplier.id
+				WHERE purchase_invoice.is_confirm = '0' AND purchase_invoice.is_delete = '0'
+				UNION (
+					SELECT purchase_invoice_other.id, purchase_invoice_other.date, purchase_invoice_other.tax_document, purchase_invoice_other.invoice_document, supplier.name, supplier.address, supplier.city, purchase_invoice_other.information, debt_type.name as type, 'Blank' as class
+					FROM purchase_invoice_other
+					JOIN debt_type ON purchase_invoice_other.type = debt_type.id
+					JOIN supplier ON purchase_invoice_other.supplier_id = supplier.id
+					WHERE purchase_invoice_other.is_confirm = '0' AND purchase_invoice_other.is_delete = '0'
+				)
+				LIMIT $limit OFFSET $offset
+			");
+
 			$result	= $query->result();
 			return $result;
 		}
@@ -239,7 +246,7 @@ class Debt_model extends CI_Model {
 					GROUP BY purchase_id
 					) b
 				ON a.invoice_id = b.purchase_id
-				
+				WHERE purchase_invoice.is_done = '0'				
 			");
 			
 			$result	= $query->result();

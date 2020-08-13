@@ -13,8 +13,8 @@
 			<table class='table table-bordered' id='debt_document_table'>
 				<tr>
 					<th>Date</th>
-					<th>Document</th>
 					<th>Supplier</th>
+					<th>Document</th>
 					<th>Action</th>
 				</tr>
 				<tbody id='debtTableContent'></tbody>
@@ -102,6 +102,7 @@
 				var debtCount = 0;
 				$('#debtTableContent').html('');
 				$.each(array, function(index, value){
+					console.log(value);
 					var id					= value.id;
 					var date				= value.date;
 					var tax_document		= value.tax_document;
@@ -114,8 +115,19 @@
 					var supplier_name		= value.name;
 					var supplier_address	= value.address;
 					var supplier_city		= value.city;
+
+					var debtType			= value.class;
+
+					if(debtType == "Blank"){
+						var type			= value.type;
+
+						$('#debtTableContent').append("<tr><td>" + my_date_format(date) + "</td><td><label>" + supplier_name + "</label><p>" + supplier_address + "</p><p>" + supplier_city + "</p></td><td><label>" + invoice_document + "</label><p>" + taxDocumentText + "</p><label>" + type + "</label><p>(Blank debt document)</p></td><td><button type='button' class='button button_default_dark' onclick='viewBlankDebtDocument(" + id + ")' title='View " + invoice_document + "'><i class='fa fa-eye'></i></button></td></tr>");
+					} else {
+						$('#debtTableContent').append("<tr><td>" + my_date_format(date) + "</td><td><label>" + supplier_name + "</label><p>" + supplier_address + "</p><p>" + supplier_city + "</p></td><td><label>" + invoice_document + "</label><p>" + taxDocumentText + "</p></td><td><button type='button' class='button button_default_dark' onclick='viewDebtDocument(" + id + ")' title='View " + invoice_document + "'><i class='fa fa-eye'></i></button></td></tr>");
+					}
+
 					debtCount++;
-					$('#debtTableContent').append("<tr><td>" + my_date_format(date) + "</td><td><p>" + supplier_name + "</p><p>" + supplier_address + "</p><p>" + supplier_city + "</p></td><td><p>" + invoice_document + "</p><p>" + taxDocumentText + "</p></td><td><button type='button' class='button button_default_dark' onclick='viewDebtDocument(" + id + ")' title='View " + invoice_document + "'><i class='fa fa-eye'></i></button></td></tr>");
+					
 				});
 
 				if(debtCount > 0){
@@ -202,6 +214,18 @@
 				});
 			}
 		});
+	}
+
+	function viewBlankDebtDocument(n){
+		$.ajax({
+			url:'<?= site_url('Debt_blank/getById') ?>',
+			data:{
+				id: n
+			},
+			success:function(response){
+				console.log(response);
+			}
+		})
 	}
 
 	function deleteDebt(){
