@@ -28,9 +28,9 @@
 	<div class='sidenav_bar_functions'>
 		<button class='container_button'><p style='font-family:museo'>Bank</p></button>
 		<div class='container_bar'>
-			<a href='<?= site_url('Bank/transaction') ?>'><button><p style='font-family:museo'>Transaction</p></button></a>
+			<a href='<?= site_url('Bank/transactionDashboard') ?>'><button><p style='font-family:museo'>Transaction</p></button></a>
 			<a href='<?= site_url('Bank/accountDashboard') ?>'><button><p style='font-family:museo'>Account</p></button></a>
-			<a href='<?= site_url('Bank/mutation') ?>'><button><p style='font-family:museo'>Mutation</p></button></a>
+			<a href='<?= site_url('Bank/mutationDashboard') ?>'><button><p style='font-family:museo'>Mutation</p></button></a>
 			<a href='<?= site_url('Bank/opponent') ?>'><button><p style='font-family:museo'>Opponent</p></button></a>
 		</div>
 		<button class='container_button'><p style='font-family:museo'>Petty cash</p></button>

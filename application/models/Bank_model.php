@@ -100,7 +100,7 @@ class Bank_model extends CI_Model {
 			return $result;
 		}
 		
-		public function input($date, $value, $transaction, $type, $opponent_id, $account)
+		public function insertItem($date, $value, $transaction, $type, $opponent_id, $account)
 		{				
 			switch($type){
 				case 'customer':
@@ -148,14 +148,14 @@ class Bank_model extends CI_Model {
 			if($department == 1){
 				$this->db->select('bank_transaction.*, COALESCE(`customer`.`name`, `supplier`.`name`) as name');
 			} else {
-				$this->db->select('bank_transaction.*, COALESCE(`customer`.`name`, `supplier`.`name`, `other_bank_account`.`name`) as name');
+				$this->db->select('bank_transaction.*, COALESCE(`customer`.`name`, `supplier`.`name`, `other_opponent`.`name`) as name');
 			}
 			
 			$this->db->join('customer', 'bank_transaction.customer_id = customer.id', 'left');
 			$this->db->join('supplier', 'bank_transaction.supplier_id = supplier.id', 'left');
 			
 			if($department != 1){
-				$this->db->join('other_bank_account', 'bank_transaction.other_id = other_bank_account.id', 'left');
+				$this->db->join('other_opponent', 'bank_transaction.other_id = other_opponent.id', 'left');
 			} else {
 				$this->db->where('bank_transaction.other_id', null);
 			}
@@ -186,11 +186,11 @@ class Bank_model extends CI_Model {
 		
 		public function show_by_id($id)
 		{
-			$this->db->select('bank_transaction.*, COALESCE(`customer`.`name`, supplier.name, `other_bank_account`.`name`) as name');
+			$this->db->select('bank_transaction.*, COALESCE(`customer`.`name`, supplier.name, `other_opponent`.`name`) as name');
 			$this->db->from('bank_transaction');
 			$this->db->join('customer', 'bank_transaction.customer_id = customer.id', 'left');
 			$this->db->join('supplier', 'bank_transaction.supplier_id = supplier.id', 'left');
-			$this->db->join('other_bank_account', 'bank_transaction.other_id = other_bank_account.id', 'left');
+			$this->db->join('other_opponent', 'bank_transaction.other_id = other_opponent.id', 'left');
 			$this->db->where('bank_transaction.id', $id);
 			$query = $this->db->get();
 			$result	= $query->row();
@@ -405,13 +405,13 @@ class Bank_model extends CI_Model {
 			}
 		}
 		
-		public function view_mutation($account, $start_date, $end_date, $offset = 0, $limit = 25)
+		public function getMutation($account, $start_date, $end_date, $offset = 0, $limit = 25)
 		{
-			$this->db->select('bank_transaction.*, COALESCE(`customer`.`name`, supplier.name, `other_bank_account`.`name`) as name');
+			$this->db->select('bank_transaction.*, COALESCE(`customer`.`name`, supplier.name, `other_opponent`.`name`, "PT Duta Sapta Energi") as name');
 			$this->db->from('bank_transaction');
 			$this->db->join('customer', 'bank_transaction.customer_id = customer.id', 'left');
 			$this->db->join('supplier', 'bank_transaction.supplier_id = supplier.id', 'left');
-			$this->db->join('other_bank_account', 'bank_transaction.other_id = other_bank_account.id', 'left');
+			$this->db->join('other_opponent', 'bank_transaction.other_id = other_opponent.id', 'left');
 			$this->db->where('bank_transaction.account_id', $account);
 			$this->db->where('bank_transaction.date >=', $start_date);
 			$this->db->where('bank_transaction.date <=', $end_date);
@@ -423,7 +423,7 @@ class Bank_model extends CI_Model {
 			return $result;
 		}
 		
-		public function count_mutation($account, $start_date, $end_date, $offset = 0, $limit = 25)
+		public function countMutation($account, $start_date, $end_date, $offset = 0, $limit = 25)
 		{
 			$this->db->select('bank_transaction.id');
 			$this->db->where('account_id', $account);
@@ -437,7 +437,7 @@ class Bank_model extends CI_Model {
 			return $result;
 		}
 		
-		public function calculate_balance($account, $date)
+		public function getBalance($account, $date)
 		{
 			$this->db->select_sum('value');
 			$this->db->select('transaction');

@@ -23,7 +23,7 @@ class Bank extends CI_Controller {
 		$this->load->view('finance/Bank/accountDashboard');
 	}
 	
-	public function transaction()
+	public function transactionDashboard()
 	{
 		$user_id		= $this->session->userdata('user_id');
 		$this->load->model('User_model');
@@ -34,10 +34,8 @@ class Bank extends CI_Controller {
 		
 		$this->load->view('head');
 		$this->load->view('finance/header', $data);
-		
-		$this->load->model('Internal_bank_account_model');
-		$data['accounts'] = $this->Internal_bank_account_model->show_all();
-		$this->load->view('finance/add_transaction_dashboard', $data);
+
+		$this->load->view('finance/Bank/transactionDashboard');
 	}
 	
 	public function assign()
@@ -126,11 +124,8 @@ class Bank extends CI_Controller {
 		redirect(site_url('Bank/assign'));
 	}
 	
-	public function mutation()
+	public function mutationDashboard()
 	{
-		$this->load->model('Internal_bank_account_model');
-		$data['accounts'] = $this->Internal_bank_account_model->show_all();
-		
 		$user_id		= $this->session->userdata('user_id');
 		$this->load->model('User_model');
 		$data['user_login'] = $this->User_model->getById($user_id);
@@ -140,10 +135,10 @@ class Bank extends CI_Controller {
 		
 		$this->load->view('head');
 		$this->load->view('finance/header', $data);
-		$this->load->view('finance/bank_mutation', $data);
+		$this->load->view('finance/Bank/mutationDashboard', $data);
 	}
 	
-	public function view_mutation()
+	public function getMutation()
 	{
 		$account_id		= $this->input->get('account');
 		$date_start		= $this->input->get('start');
@@ -152,9 +147,9 @@ class Bank extends CI_Controller {
 		$offset			= ($page - 1) * 25;
 		
 		$this->load->model('Bank_model');
-		$data['balance']	= $this->Bank_model->calculate_balance($account_id, $date_start);
-		$data['mutations'] 	= $this->Bank_model->view_mutation($account_id, $date_start, $date_end, $offset);
-		$data['pages'] 		= max(1, ceil($this->Bank_model->count_mutation($account_id, $date_start, $date_end, $offset)/25));
+		$data['balance']	= $this->Bank_model->getBalance($account_id, $date_start);
+		$data['mutations'] 	= $this->Bank_model->getMutation($account_id, $date_start, $date_end, $offset);
+		$data['pages'] 		= max(1, ceil($this->Bank_model->countMutation($account_id, $date_start, $date_end, $offset)/25));
 		
 		header('Content-Type: application/json');
 		echo json_encode($data);
@@ -236,7 +231,7 @@ class Bank extends CI_Controller {
 		echo json_encode($data);
 	}
 	
-	public function input()
+	public function insertItem()
 	{
 		$account		= $this->input->post('account');
 		$date			= $this->input->post('date');
@@ -246,18 +241,16 @@ class Bank extends CI_Controller {
 		$opponent_id	= $this->input->post('id');
 		$petty_cash		= $this->input->post('petty_cash_transfer');
 		if($petty_cash	== 'on'){
-			$opponent_id	= 1;
+			$opponent_id	= NULL;
 			$type			= 'other';
 		}
 		
 		$this->load->model('Bank_model');
-		$insert_id		= $this->Bank_model->input($date, $value, $transaction, $type, $opponent_id, $account);
+		$insert_id		= $this->Bank_model->insertItem($date, $value, $transaction, $type, $opponent_id, $account);
 		
 		if($petty_cash	== 'on'){
 			$this->load->model('Petty_cash_model');
 			$this->Petty_cash_model->insert_income($insert_id, $value, $date);
 		}
-		
-		redirect(site_url('Bank/transaction'));
 	}
 }
