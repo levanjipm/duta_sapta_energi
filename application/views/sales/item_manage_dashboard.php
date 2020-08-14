@@ -10,21 +10,25 @@
 		<div class='input_group'>
 			<input type='text' class='form-control' id='search_bar'>
 			<div class='input_group_append'>
-				<button type='button' class='button button_default_dark' id='add_item_button'>Add item</button>
+				<button type='button' class='button button_default_dark' id='add_item_button'><i class='fa fa-plus'></i> Add item</button>
 			</div>
 		</div>
 		<br>
-		<table class='table table-bordered'>
-			<tr>
-				<th>Reference</th>
-				<th>Name</th>
-				<th>Action</th>
-			</tr>
-			<tbody id='item_table'></tbody>
-		</table>
-		<select class='form-control' id='page' style='width:100px'>
-			<option value='1' selected>1</option>
-		</select>
+		<div id='itemTable'>
+			<table class='table table-bordered'>
+				<tr>
+					<th>Reference</th>
+					<th>Name</th>
+					<th>Action</th>
+				</tr>
+				<tbody id='itemTableContent'></tbody>
+			</table>
+			<select class='form-control' id='page' style='width:100px'>
+				<option value='1' selected>1</option>
+			</select>
+		</div>
+
+		<p id='itemTableText'>There is no item found.</p>
 	</div>
 </div>
 
@@ -144,16 +148,26 @@
 			},
 			type:'GET',
 			beforeSend:function(){
-				$('#item_table').html('');
+				$('#itemTableContent').html('');
 			},
 			success:function(response){
+				var itemCount = 0;
 				var item_array	= response.items;
 				$.each(item_array, function(index, item){
 					var reference	= item.reference;
 					var description	= item.name;
 					var id			= item.item_id;
-					$('#item_table').append("<tr><td>" + reference + "</td><td>" + description + "</td><td><button type='button' class='button button_success_dark' onclick='viewItem(" + id + ")' title='Edit " + reference + "'><i class='fa fa-pencil'></i></button> <button type='button' class='button button_danger_dark' onclick='confirm_delete(" + id + ")' title='Delete " + reference + "'><i class='fa fa-trash'></i></button> <button type='button' class='button button_default_dark' title='View " + reference + "'><i class='fa fa-eye'></i></button>");
+					$('#itemTableContent').append("<tr><td>" + reference + "</td><td>" + description + "</td><td><button type='button' class='button button_success_dark' onclick='viewItem(" + id + ")' title='Edit " + reference + "'><i class='fa fa-pencil'></i></button> <button type='button' class='button button_danger_dark' onclick='confirm_delete(" + id + ")' title='Delete " + reference + "'><i class='fa fa-trash'></i></button> <button type='button' class='button button_default_dark' title='View " + reference + "'><i class='fa fa-eye'></i></button>");
+					itemCount++;
 				});
+
+				if(itemCount > 0){
+					$('#itemTableText').hide();
+					$('#itemTable').show();
+				} else {
+					$('#itemTableText').show();
+					$('#itemTable').hide();
+				}
 				
 				
 				$('#page').html('');
@@ -294,11 +308,7 @@
 		})
 	};
 	
-	$('.slide_alert_close_button').click(function(){
-		$(this).siblings('.alert_box_slide').hide("slide", { direction: "right" }, 250, function(){
-			$(this).parent().fadeOut();
-		});
-	});
+	
 	
 	function confirm_delete(n){
 		$('#delete_item_id').val(n);

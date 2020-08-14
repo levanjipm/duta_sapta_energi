@@ -161,9 +161,9 @@
 						refresh_view();
 						$('#add_benefit_wrapper .slide_alert_close_button').click();
 					} else {
-						$('#warning_text').fadeIn();
+						$('#warning_text').fadeTo(250, 1);
 						setTimeout(function(){
-							$('#warning_text').fadeOut();
+							$('#warning_text').fadeTo(250, 0);
 						}, 1000);
 					}
 				}
@@ -176,12 +176,6 @@
 			$('#add_benefit_wrapper .alert_box_slide').show("slide", { direction: "right" }, 250);
 		});
 	})
-	
-	$('.slide_alert_close_button').click(function(){
-		$(this).siblings('.alert_box_slide').hide("slide", { direction: "right" }, 250, function(){
-			$(this).parent().fadeOut();
-		});
-	});
 	
 	function confirmDelete(id){
 		$('#delete_benefit_id').val(id);

@@ -21,16 +21,14 @@ class Receivable extends CI_Controller {
 		
 		$this->load->view('head');
 		$this->load->view('accounting/header', $data);
-		$this->load->view('accounting/receivable_dashboard');
+		$this->load->view('accounting/receivableDashboard');
 	}
 	
 	public function viewReceivable()
 	{	
-		$date_1		= $this->input->get('date_1');
-		$date_2		= $this->input->get('date_2');
-		
+		$category		= $this->input->get('category');
 		$this->load->model('Invoice_model');
-		$data	= $this->Invoice_model->viewReceivableChart($date_1, $date_2);
+		$data	= $this->Invoice_model->viewReceivableChart($category);
 		
 		header('Content-Type: application/json');
 		echo json_encode($data);

@@ -1,3 +1,6 @@
+<head>
+	<title>Customer</title>
+</head>
 <div class='dashboard'>
 	<div class='dashboard_head'>
 		<p style='font-family:museo'><a href='<?= site_url('Sales') ?>' title='Sales'><i class='fa fa-briefcase'></i></a> /Customer</p>
@@ -7,22 +10,25 @@
 		<div class='input_group input-group-lg'>
 			<input for="customer" type='text' class='form-control' id='search_bar' style='border-radius:0' placeholder="Search customer">
 			<div class='input_group_append'>
-				<button type='button' class='button button_default_dark' id='add_customer_button'>Add customer</button>
+				<button type='button' class='button button_default_dark' id='add_customer_button'><i class='fa fa-plus'></i> Add customer</button>
 			</div>
 		</div>
 		<br><br>
-		<table class='table table-bordered'>
-			<tr>
-				<th>Customer name</th>
-				<th>Address</th>
-				<th>Action</th>
-			</tr>
-			<tbody id='customer_table'></tbody>
-		</table>
-		
-		<select class='form-control' id='page' style='width:100px'>
-			<option value='1'>1</option>
-		</select>
+		<div id='customerTable'>
+			<table class='table table-bordered'>
+				<tr>
+					<th>Customer name</th>
+					<th>Address</th>
+					<th>Action</th>
+				</tr>
+				<tbody id='customerTableContent'></tbody>
+			</table>
+			
+			<select class='form-control' id='page' style='width:100px'>
+				<option value='1'>1</option>
+			</select>
+		</div>
+		<p id='customerTableText'>No customer found.</p>
 	</div>
 </div>
 
@@ -30,7 +36,7 @@
 	<button class='slide_alert_close_button'>&times</button>
 	<div class='alert_box_slide'>
 		<form id='add_customer_form'>
-			<h2 style='font-family:bebasneue'>Add customer form</h2>
+			<h3 style='font-family:bebasneue'>Add customer form</h3>
 			<hr>
 			
 			<label>Customer name</label>
@@ -97,7 +103,7 @@
 	<button class='slide_alert_close_button'>&times</button>
 	<div class='alert_box_slide'>
 		<form id='edit_customer_form'>
-			<h2 style='font-family:bebasneue'>Edit customer form</h2>
+			<h3 style='font-family:bebasneue'>Update customer form</h3>
 			<hr>
 			<input type='hidden' id='customer_id_edit'>
 			
@@ -358,11 +364,7 @@
 		});
 	});
 	
-	$('.slide_alert_close_button').click(function(){
-		$(this).siblings('.alert_box_slide').hide("slide", { direction: "right" }, 250, function(){
-			$(this).parent().fadeOut();
-		});
-	});
+	
 	
 	function refresh_view(page = $('#page').val()){
 		$.ajax({
@@ -373,13 +375,14 @@
 			},
 			type:'GET',
 			beforeSend:function(){
-				$('#customer_table_view_pane').html('');
+				$('#customerTableContent_view_pane').html('');
 			},
 			success:function(response){
+				var customerCount = 0;
 				var customers	= response.customers;
 				var pages		= response.pages;
 				$('#page').html('');
-				$('#customer_table').html('');
+				$('#customerTableContent').html('');
 				
 				$.each(customers, function(index, customer){
 					var complete_address		= '';
@@ -397,7 +400,7 @@
 						complete_address	+= ' No. ' + customer_number;
 					}
 					
-					if(customer_block != null){
+					if(customer_block != null && customer_block != "000"){
 						complete_address	+= ' Blok ' + customer_block;
 					}
 				
@@ -413,8 +416,17 @@
 						complete_address	+= ', ' + customer_postal;
 					}
 					
-					$('#customer_table').append("<tr><td>" + customer_name + "</td><td><p>" + complete_address + "</p><p>" + customer_city + "</p></td><td><button type='button' class='button button_success_dark' onclick='open_edit_form(" + customer_id + ")'><i class='fa fa-pencil'></i></button> <button type='button' class='button button_danger_dark' onclick='confirm_delete(" + customer_id + ")'><i class='fa fa-trash'></i></button> <button type='button' class='button button_default_dark'><i class='fa fa-eye'></i></button></tr>");
+					$('#customerTableContent').append("<tr><td>" + customer_name + "</td><td><p>" + complete_address + "</p><p>" + customer_city + "</p></td><td><button type='button' class='button button_success_dark' onclick='open_edit_form(" + customer_id + ")'><i class='fa fa-pencil'></i></button> <button type='button' class='button button_danger_dark' onclick='confirm_delete(" + customer_id + ")'><i class='fa fa-trash'></i></button> <button type='button' class='button button_default_dark'><i class='fa fa-eye'></i></button></tr>");
+					customerCount++;
 				});
+
+				if(customerCount > 0){
+					$('#customerTableText').hide();
+					$('#customerTable').show();
+				} else {
+					$('#customerTableText').show();
+					$('#customerTable').hide();
+				}
 				
 				for(i = 1; i <= pages; i++){
 					if(page == i){

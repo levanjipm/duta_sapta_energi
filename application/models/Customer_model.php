@@ -23,6 +23,7 @@ class Customer_model extends CI_Model {
 		public $term_of_payment;
 		public $latitude;
 		public $longitude;
+		public $plafond;
 		
 		public $complete_address;
 		
@@ -49,6 +50,7 @@ class Customer_model extends CI_Model {
 			$this->date_created			= $db_item->date_created;
 			$this->created_by			= $db_item->created_by;
 			$this->is_black_list		= $db_item->is_black_list;
+			$this->plafond				= $db_item->plafond;
 			$this->latitude				= $db_item->latitude;
 			$this->longitude			= $db_item->longitude;
 			$this->term_of_payment		= $db_item->term_of_payment;
@@ -76,6 +78,7 @@ class Customer_model extends CI_Model {
 			$db_item->date_created			= $this->date_created;
 			$db_item->created_by			= $this->created_by;
 			$db_item->latitude				= $this->latitude;
+			$db_item->plafond				= $this->plafond;
 			$db_item->longitude				= $this->longitude;
 			$db_item->is_black_list			= $this->is_black_list;
 			$db_item->term_of_payment		= $this->term_of_payment;
@@ -105,6 +108,7 @@ class Customer_model extends CI_Model {
 			$stub->latitude				= $db_item->latitude;
 			$stub->longitude			= $db_item->longitude;
 			$stub->is_black_list		= $db_item->is_black_list;
+			$stub->plafond				= $db_item->plafond;
 			$stub->term_of_payment		= $db_item->term_of_payment;
 			
 			return $stub;

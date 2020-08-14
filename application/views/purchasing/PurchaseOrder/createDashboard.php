@@ -365,12 +365,9 @@
 	};
 	
 	$('.slide_alert_close_button').click(function(){
-		$('#validate_purchase_order_wrapper .alert_box_slide').hide("slide", { direction: "right" }, 250, function(){
-			$('#validate_purchase_order_wrapper').fadeOut();
-			$('input').attr('readonly',false);
-			$('select').attr('readonly',false);
-			$('textarea').attr('readonly', false);
-		});
+		$('input').attr('readonly',false);
+		$('select').attr('readonly',false);
+		$('textarea').attr('readonly', false);
 	});
 	
 	function submit_form(){
@@ -464,4 +461,8 @@
 			$('#purchase_order_status_detail input').attr('required', false);
 		}
 	});
+
+	$('.alert_full_close_button').click(function(){
+		$(this).parent().parent().fadeOut();
+	})
 </script>

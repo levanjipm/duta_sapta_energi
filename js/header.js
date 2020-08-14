@@ -6,7 +6,19 @@ var my_date_format = function(date_string){
 }
 
 $(window).on('load', function(){
-	$('.loader_wrapper').fadeOut(400, function(){
-		// $('.loader_wrapper').remove();
-	});
+	$('.loader_wrapper').fadeOut(400);
 });
+
+window.addEventListener('load', function () {
+	var elements = document.getElementsByClassName("slide_alert_close_button");
+	for (var i = 0; i < elements.length; i++) {
+		elements[i].addEventListener('click', closeSlideAlert, false);
+	}
+});
+
+function closeSlideAlert(){
+	$(this).siblings('.alert_box_slide').hide("slide", { direction: "right" }, 250, function(){
+		$(this).parent().fadeOut();
+	});
+}
+// document.getElementsByClassName("slide_alert_close_button").addEventListener("click", closeSlideAlert());

@@ -345,5 +345,5 @@
 		$(this).siblings('.alert_box_slide').hide("slide", { direction: "right" }, 250, function(){
 			$(this).parent().fadeOut();
 		});
-	});
+	})	
 </script>

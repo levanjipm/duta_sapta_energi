@@ -1,9 +1,12 @@
-<style>
-	.archive_row{
-		padding:10px;
-		border-bottom:1px solid #e2e2e2;
-	}
-</style>
+<head>
+	<title>Purchase order - Archive</title>
+	<style>
+		.archive_row{
+			padding:10px;
+			border-bottom:1px solid #e2e2e2;
+		}
+	</style>
+</head>
 <div class='dashboard'>
 	<div class='dashboard_head'>
 		<p style='font-family:museo'><a href='<?= site_url('Purchasing') ?>' title='Purchasing'><i class='fa fa-briefcase'></i></a> /<a href='<?= site_url('Purchase_order') ?>'>Purchase order</a> / Archive</p>
@@ -55,9 +58,18 @@
 <div class='alert_wrapper' id='view_good_receipt_wrapper'>
 	<button type='button' class='slide_alert_close_button'>&times </button>
 	<div class='alert_box_slide'>
+		<h3 style='font-family:bebasneue'>Purchase order archive</h3>
+		<hr>
 		<label>Purchase order</label>
-		<p style='font-family:museo' id=purchase_order_name_p'></p>
-		<p style='font-family:museo' id=purchase_order_date_p'></p>
+		<p style='font-family:museo' id='purchase_order_name_p'></p>
+		<p style='font-family:museo' id='purchase_order_date_p'></p>
+		<p style='font-family:museo' id='purchase_order_status_p'></p>
+		<p style='font-family:museo' id='purchase_order_taxing_p'></p>
+
+		<label>Delivery address</label>
+		<p style='font-family:museo' id='delivery_address_p'></p>
+		<p style='font-family:museo' id='delivery_city_p'></p>
+		<p style='font-family:museo' id='delivery_contact_p'></p>
 		
 		<label>Supplier</label>
 		<p style='font-family:museo' id='supplier_name_p'></p>
@@ -76,6 +88,8 @@
 			</tr>
 			<tbody id='good_receipt_table'></tbody>
 		</table>
+
+		<p style='font-family:museo;text-align:right;color:#333;font-size:10px'>Created by <span id='purchase_order_creator_p'></span>, Confirmed by <span id='purchase_order_confirm_p'></p>
 	</div>
 </div>
 
@@ -88,7 +102,9 @@
 		refresh_view();
 	});
 	
-	refresh_view();
+	$(document).ready(function(){
+		refresh_view();
+	})
 	
 	function refresh_view(page = $('#page').val()){
 		$.ajax({
@@ -100,6 +116,7 @@
 				term:$('#search_bar').val()
 			},
 			success:function(response){
+				var archiveCount = 0;
 				$('#page').html('');
 				var pages		= response.pages;
 				for(i = 1; i <= pages; i++){
@@ -149,11 +166,17 @@
 					}
 					var is_confirm		= purchase_order.is_confirm;
 					if(is_confirm == 0){
-						$('#archive_table').append("<div class='row archive_row'><div class='col-md-3 col-sm-3 col-xs-4'><p><strong>" + purchase_order_name + "</strong></p></div><div class='col-md-3 col-sm-3 col-xs-3'><p><strong>" + supplier_name + "</strong></p><p>" + complete_address + "</p><p>" + supplier_city + "</p></div><div class='col-md-4 col-sm-5 col-xs-5 col-md-offset-2 col-sm-offset-1 col-xs-offset-2'><p style='display:inline-block'>" + my_date_format(purchase_order_date) + " <strong>|</strong> </p> <button type='button' class='button button_transparent' onclick='open_view(" + purchase_order_id + ")' title='View " + purchase_order_name + "'><i class='fa fa-eye'></i></button></div>");
+						$('#archive_table').append("<div class='row archive_row'><div class='col-md-3 col-sm-3 col-xs-4'><p><strong>" + purchase_order_name + "</strong></p></div><div class='col-md-3 col-sm-4 col-xs-4'><p><strong>" + supplier_name + "</strong></p><p>" + complete_address + "</p><p>" + supplier_city + "</p></div><div class='col-md-4 col-sm-5 col-xs-4 col-md-offset-2 col-sm-offset-1 col-xs-offset-0'><p style='display:inline-block'>" + my_date_format(purchase_order_date) + " <strong>|</strong> </p> <button type='button' class='button button_transparent' onclick='open_view(" + purchase_order_id + ")' title='View " + purchase_order_name + "'><i class='fa fa-eye'></i></button></div>");
 					} else {
-						$('#archive_table').append("<div class='row archive_row'><div class='col-md-3 col-sm-3 col-xs-4'><p><strong>" + purchase_order_name + "</strong></p></div><div class='col-md-3 col-sm-3 col-xs-3'><p><strong>" + supplier_name + "</strong></p><p>" + complete_address + "</p><p>" + supplier_city + "</p></div><div class='col-md-4 col-sm-5 col-xs-5 col-md-offset-2 col-sm-offset-1 col-xs-offset-2'><p style='display:inline-block'>" + my_date_format(purchase_order_date) + " <strong>|</strong> </p> <button type='button' class='button button_transparent' onclick='open_view(" + purchase_order_id + ")' title='View " + purchase_order_name + "'><i class='fa fa-eye'></i></button> <button type='button' class='button button_verified' title='Confirmed'><i class='fa fa-check'></i></button></div>");
+						$('#archive_table').append("<div class='row archive_row'><div class='col-md-3 col-sm-3 col-xs-4'><p><strong>" + purchase_order_name + "</strong></p></div><div class='col-md-3 col-sm-3 col-xs-3'><p><strong>" + supplier_name + "</strong></p><p>" + complete_address + "</p><p>" + supplier_city + "</p></div><div class='col-md-4 col-sm-5 col-xs-5 col-md-offset-2 col-sm-offset-1 col-xs-offset-0'><p style='display:inline-block'>" + my_date_format(purchase_order_date) + " <strong>|</strong> </p> <button type='button' class='button button_transparent' onclick='open_view(" + purchase_order_id + ")' title='View " + purchase_order_name + "'><i class='fa fa-eye'></i></button> <button type='button' class='button button_verified' title='Confirmed'><i class='fa fa-check'></i></button></div>");
 					}
+
+					archiveCount++;
 				});
+
+				if(archiveCount == 0){
+					$('#archive_table').html("There is no purchase order found.")
+				}
 				
 				var button_width		= $('.button_verified').height();
 				$('.button_verified').width(button_width);
@@ -166,13 +189,34 @@
 			url:'<?= site_url('Purchase_order/getDetailById/') ?>' + n,
 			success:function(response){
 				var general					= response.general;
-				var good_receipt_date		= general.date;
-				var good_receipt_name		= general.name;
+				var purchaseOrderDate		= general.date;
+				var purchaseOrderName		= general.name;
+
+				$('#purchase_order_name_p').html(purchaseOrderName);
+				$('#purchase_order_date_p').html(my_date_format(purchaseOrderDate));
+
+				var createdBy				= general.created_by;
+				var confirmedBy				= general.confirmed_by;
+				$('#purchase_order_creator_p').html(createdBy);
+				$('#purchase_order_confirm_p').html(confirmedBy);
+
+				var deliveryAddress			= general.dropship_address != null ? general.dropship_address : "PT Duta Sapta Energi";
+				var deliveryCity			= general.dropship_address != null ? general.dropship_city: "Bandung";
+				var deliveryContact			= general.dropship_address != null ? (general.dropship_contact_person + "(" + general.dropship_contact + ")"): "";
+
+				$('#delivery_address_p').html(deliveryAddress);
+				$('#delivery_city_p').html(deliveryCity);
+				$("#delivery_contact_p").html(deliveryContact);
+
+				var status					= general.status;
+				$('#purchase_order_status_p').html(status);
+
+				var taxing					= general.taxing == 1 ? "Taxable purchase" : "Non-taxable purchase";
+				$('#purchase_order_taxing_p').html(taxing);
+
 				var complete_address		= '';
 				var supplier_name			= general.supplier_name;
-				var complete_address		= '';
-				var supplier_name			= general.supplier_name;
-				complete_address			+= general.address;
+				complete_address			+= general.supplier_address;
 				var supplier_city			= general.city;
 				var supplier_number			= general.number;
 				var supplier_rt				= general.rt;
@@ -198,10 +242,7 @@
 				
 				if(supplier_postal != null){
 					complete_address	+= ', ' + supplier_postal;
-				}
-				
-				$('#purchase_order_name_p').html(good_receipt_name);
-				$('#purchase_order_date_p').html(my_date_format(good_receipt_date));
+				};
 				
 				$('#supplier_name_p').html(supplier_name);
 				$('#supplier_address_p').html(complete_address);
@@ -232,10 +273,4 @@
 			}
 		});
 	}
-	
-	$('.slide_alert_close_button').click(function(){
-		$('#view_good_receipt_wrapper .alert_box_slide').hide("slide", { direction: "right" }, 250, function(){
-			$('#view_good_receipt_wrapper').fadeOut();
-		});
-	});
 </script>

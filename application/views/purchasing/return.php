@@ -190,12 +190,6 @@
 		};
 	});
 	
-	$('.slide_alert_close_button').click(function(){
-		$('#purchase_return_validation .alert_box_slide').hide("slide", { direction: "right" }, 250, function(){
-			$('#purchase_return_validation').fadeOut();
-		});
-	});
-	
 	$('#add_item_button').click(function(){
 		$('#search_bar').val('');
 		refresh_view();

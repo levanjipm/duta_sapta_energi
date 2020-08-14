@@ -342,19 +342,6 @@ class Sales_order extends CI_Controller {
 		echo json_encode($data);
 	}
 
-	public function getById()
-	{
-		$id			= $this->input->get('id');
-		$this->load->model('Sales_order_model');
-		$data['general']	= $this->Sales_order_model->getById($id);
-
-		$this->load->model('Sales_order_detail_model');
-		$data['items']		= $this->Sales_order_detail_model->show_by_code_sales_order_id($id);
-
-		header('Content-Type: application/json');
-		echo json_encode($data);
-	}
-
 	public function closeSalesOrderDashboard()
 	{
 		$user_id		= $this->session->userdata('user_id');

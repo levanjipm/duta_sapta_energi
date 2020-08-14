@@ -45,11 +45,16 @@
 		<a href='<?= site_url('Receivable') ?>'><button><p style='font-family:museo'>Receivable</p></button></a>
 		<a href='<?= site_url('Payable') ?>'><button><p style='font-family:museo'>Payable</p></button></a>
 		<a href='<?= site_url('Bank/assign') ?>'><button><p style='font-family:museo'>Assign bank</p></button></a>
-		<button class='container_button'>Asset</button>
+		<button class='container_button'><p>Asset</p></button>
 		<div class='container_bar'>
 			<a href='<?= site_url('Asset') ?>'><button><p style='font-family:museo'>List</p></button></a>
 			<a href='<?= site_url('Asset/calculateValue') ?>'><button><p style='font-family:museo'>Value</p></button></a>
-			<a href='<?= site_url('Asset/class_dashboard') ?>'><button><p style='font-family:museo'>Class</p></button></a>
+			<a href='<?= site_url('Asset/classDashboard') ?>'><button><p style='font-family:museo'>Class</p></button></a>
+		</div>
+		<button class='container_button'><p>Opponent</p></button>
+		<div class='container_bar'>
+			<a href='<?= site_url('Opponent') ?>'><button><p>Manage</p></button></a>
+			<a href='<?= site_url('Opponent_type') ?>'><button><p>Type</p></button></a>
 		</div>
 	</div>
 </div>

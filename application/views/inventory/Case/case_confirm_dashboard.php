@@ -119,12 +119,6 @@
 		});
 	}
 	
-	$('.slide_alert_close_button').click(function(){
-		$('#view_inventory_case_wrapper .alert_box_slide').hide("slide", { direction: "right" }, 250, function(){
-			$('#view_inventory_case_wrapper').fadeOut();
-		});
-	});
-	
 	function refresh_view(page = $('#page').val()){
 		$.ajax({
 			url:'<?= site_url('Inventory_case/view_unconfirmed_case') ?>',

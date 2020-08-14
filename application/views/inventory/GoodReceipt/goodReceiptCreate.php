@@ -168,10 +168,4 @@
 		});
 		$('#total_good_receipt').val(total);
 	}
-	
-	$('.slide_alert_close_button').click(function(){
-		$('#validate_good_receipt_wrapper .alert_box_slide').hide("slide", { direction: "right" }, 250, function(){
-			$('#validate_good_receipt_wrapper').fadeOut();
-		});
-	});
 </script>

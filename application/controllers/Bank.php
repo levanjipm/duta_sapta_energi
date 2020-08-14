@@ -9,7 +9,7 @@ class Bank extends CI_Controller {
 
 		}
 	}
-	public function account()
+	public function accountDashboard()
 	{
 		$user_id		= $this->session->userdata('user_id');
 		$this->load->model('User_model');
@@ -20,18 +20,7 @@ class Bank extends CI_Controller {
 		
 		$this->load->view('head');
 		$this->load->view('finance/header', $data);
-		$this->load->model('Internal_bank_account_model');
-		
-		$data['accounts'] = $this->Internal_bank_account_model->show_all();
-		$this->load->view('finance/bank_account', $data);
-	}
-	
-	public function create()
-	{
-		$this->load->model('Internal_bank_account_model');
-		$this->Internal_bank_account_model->create();
-		
-		redirect(site_url('Bank/account'));
+		$this->load->view('finance/Bank/accountDashboard');
 	}
 	
 	public function transaction()
@@ -270,14 +259,5 @@ class Bank extends CI_Controller {
 		}
 		
 		redirect(site_url('Bank/transaction'));
-	}
-	
-	public function delete_account()
-	{
-		$id		= $this->input->post('id');
-		$this->load->model('Internal_bank_account_model');
-		
-		$result = $this->Internal_bank_account_model->delete_by_id($id);
-		echo $result;
 	}
 }

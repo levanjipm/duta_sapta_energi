@@ -298,9 +298,15 @@ class Debt_model extends CI_Model {
 
 		public function getYears()
 		{
-			$this->db->select("DISTINCT(YEAR(date)) as years");
-			$this->db->order_by('date');
-			$query = $this->db->get($this->table_purchase_invoice);
+			$query	= $this->db->query("
+				SELECT DISTINCT(a.years) as years FROM
+				(
+					SELECT DISTINCT(YEAR(purchase_invoice.date)) as years FROM purchase_invoice
+					UNION (SELECT DISTINCT(YEAR(purchase_invoice_other.date)) AS years FROM purchase_invoice_other)
+				) a
+				ORDER BY a.years ASC
+			");
+
 			$result = $query->result();
 
 			return $result;

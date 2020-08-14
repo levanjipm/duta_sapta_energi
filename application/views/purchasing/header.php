@@ -30,7 +30,7 @@
 		<div class='container_bar'>
 			<a href='<?= site_url('Purchase_order') ?>'><p>Create</p></a>
 			<a href='<?= site_url('Purchase_order/pending') ?>'><p>Pending</p></a>	
-			<a href='<?= site_url('Purchase_order/archive') ?>'><p>Archive</p></a>	
+			<a href='<?= site_url('Purchase_order/archiveDashboard') ?>'><p>Archive</p></a>	
 		</div>
 		<a href='<?= site_url('Supplier') ?>'><button><p>Supplier</p></button></a>
 		<button class='container_button'><p style='font-family:museo'>Return</p></button>

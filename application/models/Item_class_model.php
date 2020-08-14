@@ -65,6 +65,7 @@ class Item_class_model extends CI_Model {
 				) as a
 				ON a.type = item_class.id
 				WHERE item_class.name LIKE '%$term%' OR item_class.description LIKE '%$term%'
+				ORDER BY name
 				LIMIT $limit OFFSET $offset");
 			$result		= $query->result();
 			

@@ -236,12 +236,6 @@
 		});
 	}
 	
-	$('.slide_alert_close_button').click(function(){
-		$('#view_sales_order_wrapper .alert_box_slide').hide("slide", { direction: "right" }, 250, function(){
-			$('#view_sales_order_wrapper').fadeOut();
-		});
-	});
-	
 	$('#delivery_order_form').validate({
 		ignore: '',
 		rules: {"hidden_field": {min:1}}

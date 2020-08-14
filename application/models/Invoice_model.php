@@ -170,47 +170,158 @@ class Invoice_model extends CI_Model {
 			return $result;
 		}
 		
-		public function viewReceivableChart($date_1, $date_2)
+		public function viewReceivableChart($category)
 		{
-			$this->db->select('sum(invoice.value) as value, customer.name, customer.city, code_sales_order.customer_id as id, COALESCE(SUM(receivable.value),0) as paid', FALSE);
-			$this->db->from('invoice');
-			$this->db->join('receivable', 'invoice.id = receivable.invoice_id', 'left');
-			$this->db->join('code_delivery_order', 'code_delivery_order.invoice_id = invoice.id');
-			$this->db->join('delivery_order', 'delivery_order.code_delivery_order_id = code_delivery_order.id', 'left');
-			$this->db->join('sales_order', 'delivery_order.sales_order_id = sales_order.id');
-			$this->db->join('code_sales_order', 'code_sales_order.id = sales_order.code_sales_order_id');
-			$this->db->join('customer', 'code_sales_order.customer_id = customer.id');
-			$this->db->group_by('code_sales_order.customer_id');
-			$this->db->where('invoice.is_done', 0);
-			$this->db->where('invoice.is_confirm', 1);
-			
-			if($date_2 > 0){
-				$this->db->where('invoice.date >=', date('Y-m-d', strtotime('-' . $date_2 . ' days')));
-				$this->db->where('invoice.date <', date('Y-m-d', strtotime('-' . $date_1 . ' days')));
+			switch($category){
+				case 1:
+					$query	= $this->db->query("
+						SELECT (SUM(invoice.value) - COALESCE(a.value, 0)) as value, customer.name, customer.city, code_sales_order.customer_id as id
+						FROM invoice
+						LEFT JOIN (
+							SELECT SUM(receivable.value) as value, invoice_id FROM receivable
+							JOIN invoice ON receivable.invoice_id = invoice.id
+							WHERE invoice.is_done = '0' AND invoice.is_confirm = '1'
+							GROUP BY invoice_id
+							) a
+						ON invoice.id = a.invoice_id
+						JOIN code_delivery_order ON code_delivery_order.invoice_id = invoice.id
+						JOIN delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order.id
+						JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
+						JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
+						JOIN customer ON code_sales_order.customer_id = customer.id
+						GROUP BY code_sales_order.customer_id
+					");
+					break;
+				case 2:
+					$query	= $this->db->query("
+						SELECT (SUM(invoice.value) - COALESCE(a.value, 0)) as value, customer.name, customer.city, code_sales_order.customer_id as id, MIN(a.difference) as difference
+						FROM invoice
+						LEFT JOIN (
+							SELECT SUM(receivable.value) as value, invoice_id, invoice.date, DATEDIFF(NOW(), invoice.date) as difference
+							FROM receivable
+							JOIN invoice ON receivable.invoice_id = invoice.id
+							WHERE invoice.is_done = '0' AND invoice.is_confirm = '1'
+							GROUP BY invoice_id
+							) a
+						ON invoice.id = a.invoice_id
+						JOIN code_delivery_order ON code_delivery_order.invoice_id = invoice.id
+						JOIN delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order.id
+						JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
+						JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
+						JOIN customer ON code_sales_order.customer_id = customer.id
+						WHERE difference > customer.term_of_payment
+						GROUP BY code_sales_order.customer_id
+					");
+					break;
+				case 3:
+					$query	= $this->db->query("
+						SELECT (SUM(invoice.value) - COALESCE(a.value, 0)) as value, customer.name, customer.city, code_sales_order.customer_id as id, MIN(a.difference) as difference
+						FROM invoice
+						LEFT JOIN (
+							SELECT SUM(receivable.value) as value, invoice_id, invoice.date, DATEDIFF(NOW(), invoice.date) as difference
+							FROM receivable
+							JOIN invoice ON receivable.invoice_id = invoice.id
+							WHERE invoice.is_done = '0' AND invoice.is_confirm = '1'
+							GROUP BY invoice_id
+							) a
+						ON invoice.id = a.invoice_id
+						JOIN code_delivery_order ON code_delivery_order.invoice_id = invoice.id
+						JOIN delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order.id
+						JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
+						JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
+						JOIN customer ON code_sales_order.customer_id = customer.id
+						WHERE DATEDIFF(NOW(), invoice.date) <= 30
+						GROUP BY code_sales_order.customer_id
+					");
+					break;
+				case 4:
+					$query	= $this->db->query("
+						SELECT (SUM(invoice.value) - COALESCE(a.value, 0)) as value, customer.name, customer.city, code_sales_order.customer_id as id, MIN(a.difference) as difference
+						FROM invoice
+						LEFT JOIN (
+							SELECT SUM(receivable.value) as value, invoice_id, invoice.date, DATEDIFF(NOW(), invoice.date) as difference
+							FROM receivable
+							JOIN invoice ON receivable.invoice_id = invoice.id
+							WHERE invoice.is_done = '0' AND invoice.is_confirm = '1'
+							GROUP BY invoice_id
+							) a
+						ON invoice.id = a.invoice_id
+						JOIN code_delivery_order ON code_delivery_order.invoice_id = invoice.id
+						JOIN delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order.id
+						JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
+						JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
+						JOIN customer ON code_sales_order.customer_id = customer.id
+						WHERE DATEDIFF(NOW(), invoice.date) > 30 AND DATEDIFF(NOW(), invoice.date) <= 45
+						GROUP BY code_sales_order.customer_id
+					");
+					break;
+				case 5:
+					$query	= $this->db->query("
+						SELECT (SUM(invoice.value) - COALESCE(a.value, 0)) as value, customer.name, customer.city, code_sales_order.customer_id as id, MIN(a.difference) as difference
+						FROM invoice
+						LEFT JOIN (
+							SELECT SUM(receivable.value) as value, invoice_id, invoice.date, DATEDIFF(NOW(), invoice.date) as difference
+							FROM receivable
+							JOIN invoice ON receivable.invoice_id = invoice.id
+							WHERE invoice.is_done = '0' AND invoice.is_confirm = '1'
+							GROUP BY invoice_id
+							) a
+						ON invoice.id = a.invoice_id
+						JOIN code_delivery_order ON code_delivery_order.invoice_id = invoice.id
+						JOIN delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order.id
+						JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
+						JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
+						JOIN customer ON code_sales_order.customer_id = customer.id
+						WHERE DATEDIFF(NOW(), invoice.date) > 45 AND DATEDIFF(NOW(), invoice.date) <= 60
+						GROUP BY code_sales_order.customer_id
+					");
+					break;
+				case 6:
+					$query	= $this->db->query("
+						SELECT (SUM(invoice.value) - COALESCE(a.value, 0)) as value, customer.name, customer.city, code_sales_order.customer_id as id, MIN(a.difference) as difference
+						FROM invoice
+						LEFT JOIN (
+							SELECT SUM(receivable.value) as value, invoice_id, invoice.date, DATEDIFF(NOW(), invoice.date) as difference
+							FROM receivable
+							JOIN invoice ON receivable.invoice_id = invoice.id
+							WHERE invoice.is_done = '0' AND invoice.is_confirm = '1'
+							GROUP BY invoice_id
+							) a
+						ON invoice.id = a.invoice_id
+						JOIN code_delivery_order ON code_delivery_order.invoice_id = invoice.id
+						JOIN delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order.id
+						JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
+						JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
+						JOIN customer ON code_sales_order.customer_id = customer.id
+						WHERE DATEDIFF(NOW(), invoice.date) > 60
+						GROUP BY code_sales_order.customer_id
+					");
+					break;
 			}
-			
-			$query	= $this->db->get();
+
 			$result	= $query->result();
-
-			foreach($result as $receivable){
-				$customer_id		= $receivable->id;
-				$customer_name		= $receivable->name;
-				$customer_city		= $receivable->city;
-				$invoice_value		= $receivable->value;
-				$paid				= $receivable->paid;
-				$chart_array[] = array(
-					'id' => $customer_id,
-					'name' => $customer_name,
-					'city' => $customer_city,
-					'value' => $invoice_value - $paid
-				);
+			if($result != null){
+				foreach($result as $receivable){
+					$customer_id		= $receivable->id;
+					$customer_name		= $receivable->name;
+					$customer_city		= $receivable->city;
+					$invoice_value		= $receivable->value;
+					$chart_array[] = array(
+						'id' => $customer_id,
+						'name' => $customer_name,
+						'city' => $customer_city,
+						'value' => $invoice_value
+					);
+				}
+	
+				usort($chart_array, function($a, $b) {
+					return $a['value'] - $b['value'];
+				});
+	
+				$data = $chart_array;
+			} else {
+				$data = array();
 			}
-
-			usort($chart_array, function($a, $b) {
-				return $a['value'] - $b['value'];
-			});
-
-			$data = $chart_array;
 			
 			return $data;
 		}

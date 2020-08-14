@@ -230,10 +230,4 @@
 			}
 		})
 	}
-	
-	$('.slide_alert_close_button').click(function(){
-		$('#good_receipt_validation_wrapper .alert_box_slide').hide("slide", { direction: "right" }, 250, function(){
-			$('#good_receipt_validation_wrapper').fadeOut();
-		});
-	});
 </script>

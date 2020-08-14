@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Waktu pembuatan: 10 Agu 2020 pada 04.04
+-- Waktu pembuatan: 14 Agu 2020 pada 09.39
 -- Versi server: 10.4.13-MariaDB
 -- Versi PHP: 7.2.32
 
@@ -47,6 +47,13 @@ CREATE TABLE `attendance_status` (
   `description` text NOT NULL,
   `point` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data untuk tabel `attendance_status`
+--
+
+INSERT INTO `attendance_status` (`id`, `name`, `description`, `point`) VALUES
+(1, 'Sick', 'This status is created to compensate sick employee. Employee will not receive any benefit on that day.', 1);
 
 -- --------------------------------------------------------
 
@@ -145,6 +152,7 @@ CREATE TABLE `code_delivery_order` (
 CREATE TABLE `code_event` (
   `id` int(255) NOT NULL,
   `type` int(255) NOT NULL,
+  `name` varchar(50) NOT NULL,
   `created_by` int(255) NOT NULL,
   `date` date NOT NULL,
   `is_confirm` tinyint(1) NOT NULL DEFAULT 0,
@@ -259,9 +267,11 @@ CREATE TABLE `code_sales_order_close_request` (
 
 CREATE TABLE `code_sales_return` (
   `id` int(255) NOT NULL,
+  `name` varchar(50) NOT NULL,
   `created_by` int(255) NOT NULL,
   `created_date` date NOT NULL,
   `is_confirm` tinyint(1) NOT NULL DEFAULT 0,
+  `is_delete` tinyint(1) NOT NULL DEFAULT 0,
   `confirmed_by` int(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -276,9 +286,10 @@ CREATE TABLE `code_sales_return_received` (
   `created_by` int(255) NOT NULL,
   `created_date` date NOT NULL,
   `is_confirm` tinyint(1) NOT NULL DEFAULT 0,
-  `confirmed_by` int(255) NOT NULL,
+  `confirmed_by` int(255) DEFAULT NULL,
   `name` varchar(100) NOT NULL,
-  `date` date NOT NULL
+  `date` date NOT NULL,
+  `is_done` tinyint(1) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -376,7 +387,7 @@ INSERT INTO `customer` (`id`, `name`, `address`, `number`, `rt`, `rw`, `city`, `
 (66, 'Toko 8', 'Jalan Baladewa', '008', '000', '000', 'Bandung', '40173', 2, 0, '000', '', '022-6034875', 'Mr. Thomas', '2020-02-03', 1, NULL, NULL, 45, '3000000.00'),
 (67, 'Toko Glory Electric', 'Jalan Komud Supadio', '36A', '000', '000', 'Bandung', '40174', 2, 0, '000', '', '085974901894', 'Mr. Anton', '2020-02-03', 1, NULL, NULL, 45, '3000000.00'),
 (68, 'Toko Lestari', 'Jalan Rajawali Barat', '99A', '000', '000', 'Bandung', '40184', 2, 0, '000', '', '022-6044308', 'Mr. Dedi', '2020-02-03', 1, NULL, NULL, 45, '3000000.00'),
-(69, 'Toko 23', 'Jalan Kebon Kopi', '128', '000', '000', 'Cimahi', '40535', 2, 0, '000', '', '022-6018073', 'Mr. Nanan', '2020-02-03', 1, NULL, NULL, 45, '3000000.00'),
+(69, 'Toko 23', 'Jalan Kebon Kopi', '128', '000', '000', 'Cimahi', '40535', 2, 0, '000', '', '022-6018073', 'Mr. Nanan', '2020-02-03', 1, NULL, NULL, 45, '5000000.00'),
 (70, 'Toko Abadi', 'Jalan Gegerkalong Hilir', '073', '000', '000', 'Bandung', '40153', 4, 0, '000', '', '022-2010185', 'Mr. Arifin', '2020-02-03', 1, NULL, NULL, 45, '3000000.00'),
 (71, 'Toko Graha Electronic', 'Jalan Melong Asih', '071', '000', '000', 'Bandung', '40213', 2, 0, '000', '', '085722237789', 'Mr. Hendra', '2020-02-03', 1, NULL, NULL, 45, '3000000.00'),
 (72, 'Toko Asih', 'Jalan Melong Asih', '015', '000', '000', 'Cimahi', '40213', 2, 0, '000', '', '022-6016764', '', '2020-02-03', 1, NULL, NULL, 45, '3000000.00'),
@@ -389,7 +400,7 @@ INSERT INTO `customer` (`id`, `name`, `address`, `number`, `rt`, `rw`, `city`, `
 (80, 'Toko 487', 'Jalan Terusan Gatot Subroto', '487', '000', '000', 'Bandung', '40284', 3, 0, '000', '', '08112143030', 'Mr. Udin', '2020-02-04', 1, NULL, NULL, 45, '3000000.00'),
 (81, 'Toko Agung Jaya', 'Jalan Kebon Jati', '264', '000', '000', 'Bandung', '40182', 2, 0, '000', '', '022-20564092', 'Mrs. Shirly', '2020-02-04', 1, NULL, NULL, 45, '3000000.00'),
 (82, 'Toko Alam Ria', 'Jalan Kopo Sayati', '122-124', '000', '000', 'Bandung', '40228', 3, 0, '000', '', '022-54413432', 'Mr. Mukian', '2020-02-04', 1, NULL, NULL, 45, '3000000.00'),
-(83, 'Toko Alka', 'Jalan Caringin', '002', '000', '000', 'Bandung', '40223', 2, 0, '000', '', '022-5408473', 'Mr. Mila Suryantini', '2020-02-04', 1, NULL, NULL, 45, '3000000.00'),
+(83, 'Toko Alka', 'Jalan Caringin', '002', '000', '000', 'Bandung', '40223', 2, 0, '000', '', '022-5408473', 'Mr. Mila Suryantini', '2020-02-04', 1, NULL, NULL, 0, '3000000.00'),
 (84, 'Toko Alvina Elektronik', 'Jalan Terusan Gatot Subroto', '487', '000', '000', 'Bandung', '40284', 3, 0, '000', '', '081222556066', 'Mr. Dedi', '2020-02-04', 1, NULL, NULL, 45, '3000000.00'),
 (85, 'Toko Aneka Teknik', 'Jalan Jamika', '121', '000', '000', 'Bandung', '40221', 2, 0, '000', '', '022-6024485', 'Mr. Akwet', '2020-02-04', 1, NULL, NULL, 45, '3000000.00'),
 (86, 'Toko Anugerah', 'Jalan Kopo', '356', '000', '000', 'Bandung', '40233', 2, 0, '000', '', '022-6016845', 'Mr. Acen', '2020-02-04', 1, NULL, NULL, 45, '3000000.00'),
@@ -444,7 +455,8 @@ INSERT INTO `customer` (`id`, `name`, `address`, `number`, `rt`, `rw`, `city`, `
 (135, 'Toko Prima Elektrik', 'Jalan ABC Komplek Cikapundung Electronic Center lt.1', '003', '000', '000', 'Bandung', '40111', 4, 0, 'EE', '', '085227160748', 'Mr. Endhi', '2020-02-07', 1, NULL, NULL, 45, '3000000.00'),
 (136, 'Toko Purnama Jaya Electronic', 'Jalan Cibodas Raya', '006', '000', '000', 'Bandung', '40291', 1, 0, '000', '', '081224798744', 'Mr. Nurzaki', '2020-02-07', 1, NULL, NULL, 45, '3000000.00'),
 (137, 'Toko Echi El', 'Jalan Logam', '7', '000', '000', 'Bandung', '40287', 3, 0, '000', '', '082129554478', 'Bapak Hendar', '2020-03-30', 1, NULL, NULL, 45, '3000000.00'),
-(261, 'Toko Sinar Agung', 'Jalan Caringin', '258', '000', '000', 'Bandung', '40223', 2, 0, '000', '', '022-6026321', 'Mr. Miming', '2020-01-24', 0, NULL, NULL, 45, '2500000.00');
+(261, 'Toko Sinar Agung', 'Jalan Caringin', '258', '000', '000', 'Bandung', '40223', 2, 0, '000', '', '022-6026321', 'Mr. Miming', '2020-01-24', 0, NULL, NULL, 45, '2500000.00'),
+(262, 'Toko Bangunan Sinar Sekelimus', 'Jalan Soekarno Hatta', '569', '000', '000', 'Bandung', '40275', 1, 0, '000', '', '(022) 7300317', 'Bapak Hendra', '2020-08-14', 1, NULL, NULL, 30, '3000000.00');
 
 -- --------------------------------------------------------
 
@@ -477,15 +489,17 @@ INSERT INTO `customer_area` (`id`, `name`, `major_id`) VALUES
 CREATE TABLE `debt_type` (
   `id` int(255) NOT NULL,
   `name` varchar(50) NOT NULL,
-  `description` text NOT NULL
+  `description` text NOT NULL,
+  `is_operational` tinyint(1) NOT NULL DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data untuk tabel `debt_type`
 --
 
-INSERT INTO `debt_type` (`id`, `name`, `description`) VALUES
-(2, 'Pembelian Jasa', 'Akun ini digunakan untuk penagihan pembelian jasa.');
+INSERT INTO `debt_type` (`id`, `name`, `description`, `is_operational`) VALUES
+(2, 'Service', 'This account is used for service debt.', 1),
+(3, 'Service ( Non-operational)', 'This account is used for non-operational service debt.', 0);
 
 -- --------------------------------------------------------
 
@@ -537,8 +551,21 @@ CREATE TABLE `event` (
   `quantity` int(11) NOT NULL,
   `transaction` varchar(3) NOT NULL,
   `code_event_id` int(255) NOT NULL,
-  `price` decimal(50,4) DEFAULT 0.0000
+  `price` decimal(50,4) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data untuk tabel `event`
+--
+
+INSERT INTO `event` (`id`, `item_id`, `quantity`, `transaction`, `code_event_id`, `price`) VALUES
+(1, 1, 2, 'OUT', 1, '0.0000'),
+(2, 2, 1, 'IN', 1, '0.0000'),
+(3, 1, 2, 'OUT', 2, '0.0000'),
+(4, 2, 1, 'IN', 2, '0.0000'),
+(6, 2, 1, 'OUT', 4, '0.0000'),
+(7, 1, 1, 'OUT', 5, '0.0000'),
+(8, 1, 1, 'IN', 6, '268520.0000');
 
 -- --------------------------------------------------------
 
@@ -579,7 +606,11 @@ INSERT INTO `expense_class` (`id`, `name`, `parent_id`, `description`, `created_
 (17, 'Tax penalties', 3, 'Account for tax penalties payment', 1, '2020-03-24'),
 (18, 'Office operational', NULL, 'This class is used for office operational expenses, such as document delivery or office equipment purchases', 1, '2020-03-24'),
 (19, 'Document delivery', 18, 'Account for document delivery (invoices, counter-invoices, guarantee letter, and other important documents) expense', 1, '2020-03-24'),
-(20, 'Office equipment', 18, 'Account for office stationary expense', 1, '2020-03-24');
+(20, 'Office equipment', 18, 'Account for office stationary expense', 1, '2020-03-24'),
+(21, 'Marketing Cost', NULL, 'This class is used for marketing expenses including transportation, marketing fee, and telecommunication.', 1, '2020-08-12'),
+(22, 'Marketing fee', 21, 'Account for marketing fee', 1, '2020-08-12'),
+(23, 'Transportation', 21, 'Account for transportation due to marketing', 1, '2020-08-12'),
+(24, 'Telecomunication', 21, 'Account for transportation due to marketing', 1, '2020-08-12');
 
 -- --------------------------------------------------------
 
@@ -610,15 +641,6 @@ CREATE TABLE `fixed_asset_type` (
   `name` varchar(50) NOT NULL,
   `description` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
---
--- Dumping data untuk tabel `fixed_asset_type`
---
-
-INSERT INTO `fixed_asset_type` (`id`, `name`, `description`) VALUES
-(1, 'Property', 'This account is used for property assets including land and building.'),
-(2, 'Computer equipment', 'This account is used for computer equipment including printer, scanner, CPU, monitor, etc.'),
-(3, 'Furniture and fixtures', 'This account is used for furniture and fixtures assets.');
 
 -- --------------------------------------------------------
 
@@ -728,7 +750,7 @@ INSERT INTO `item` (`id`, `reference`, `name`, `type`, `is_notified_stock`, `con
 (6, 'NYM22_100_EXT', 'Kabel NYM 2 x 2,5mm<sup>2</sup> kemasan 100 meter (Extrana)', 2, 0, 90.00),
 (7, 'NYM22_250_EXT', 'Kabel NYM 2 x 2,5mm<sup>2</sup> kemasan 250 meter (Extrana)', 2, 0, 90.00),
 (8, 'NYM22_500_EXT', 'Kabel NYM 2 x 2,5mm<sup>2</sup> kemasan 500 meter (Extrana)', 2, 0, 90.00),
-(9, 'NYM21_1000_EXT', 'Kabel NYM 2 x 1,5mm<sup>2</sup> kemasan 1.000 meter (Extrana)', 2, 1, 90.00),
+(9, 'NYM21_1000_EXT', 'Kabel NYM 2 x 1,5mm<sup>2</sup> kemasan 1.000 meter (Extrana)', 2, 1, 70.00),
 (10, 'NYM22_1000_EXT', 'Kabel NYM 2 x 2,5mm<sup>2</sup> kemasan 1.000 meter (Extrana)', 2, 0, 90.00),
 (11, 'NYM31_50_EXT', 'Kabel NYM 3 x 1,5mm<sup>2</sup> kemasan 50 meter (Extrana)', 2, 0, 90.00),
 (12, 'NYM31_100_EXT', 'Kabel NYM 3 x 1,5mm<sup>2</sup> kemasan 100 meter (Extrana)', 2, 0, 90.00),
@@ -740,7 +762,7 @@ INSERT INTO `item` (`id`, `reference`, `name`, `type`, `is_notified_stock`, `con
 (18, 'NYM32_250_EXT', 'Kabel NYM 3 x 2,5mm<sup>2</sup> kemasan 250 meter (Extrana)', 2, 0, 90.00),
 (19, 'NYM32_500_EXT', 'Kabel NYM 3 x 2,5mm<sup>2</sup> kemasan 500 meter (Extrana)', 2, 0, 90.00),
 (20, 'NYM32_1000_EXT', 'Kabel NYM 3 x 2,5mm<sup>2</sup> kemasan 1.000 meter (Extrana)', 2, 0, 90.00),
-(21, 'NYM41_50_EXT', 'Kabel NYM 4 x 1,5mm<sup>2</sup> kemasan 50 meter (Extrana)', 2, 0, 90.00),
+(21, 'NYM41_50_EXT', 'Kabel NYM 4 x 1,5mm<sup>2</sup> kemasan 50 meter (Extrana)', 2, 1, 90.00),
 (22, 'NYM41_100_EXT', 'Kabel NYM 4 x 1,5mm<sup>2</sup> kemasan 100 meter (Extrana)', 2, 0, 90.00),
 (23, 'NYM41_250_EXT', 'Kabel NYM 4 x 1,5mm<sup>2</sup> kemasan 250 meter (Extrana)', 2, 0, 90.00),
 (24, 'NYM41_500_EXT', 'Kabel NYM 4 x 1,5mm<sup>2</sup> kemasan 500 meter (Extrana)', 2, 0, 90.00),
@@ -779,7 +801,9 @@ INSERT INTO `item` (`id`, `reference`, `name`, `type`, `is_notified_stock`, `con
 (60, 'NYY42_100_EXT', 'Kabel NYY 4 x 2,5mm<sup>2</sup> kemasan 100 meter (Extrana)', 3, 0, 90.00),
 (61, 'NYY42_250_EXT', 'Kabel NYY 4 x 2,5mm<sup>2</sup> kemasan 250 meter (Extrana)', 3, 0, 90.00),
 (62, 'NYY42_500_EXT', 'Kabel NYY 4 x 2,5mm<sup>2</sup> kemasan 500 meter (Extrana)', 3, 0, 90.00),
-(63, 'NYY42_1000_EXT', 'Kabel NYY 4 x 2,5mm<sup>2</sup> kemasan 1.000 meter (Extrana)', 3, 0, 90.00);
+(63, 'NYY42_1000_EXT', 'Kabel NYY 4 x 2,5mm<sup>2</sup> kemasan 1.000 meter (Extrana)', 3, 0, 90.00),
+(64, 'NYMHY2075_50_EXT', 'Kabel NYMHY 2 x 0,75mm<sup>2</sup> kemasan 50 meter (Extrana)', 13, 0, 95.00),
+(65, 'NYMHY21_50_EXT', 'Kabel NYMHY 2 x 1,5mm<sup>2</sup> kemasan 50 meter (Extrana)', 13, 0, 90.00);
 
 -- --------------------------------------------------------
 
@@ -804,18 +828,42 @@ INSERT INTO `item_class` (`id`, `name`, `description`, `created_by`) VALUES
 (5, 'Kabel NYM retail ukuran besar', 'Kabel NYM dengan ukuran per core lebih besar dari 4mm<sup>2</sup> dan lebih kecil dari 10mm<sup>2</sup>', 1),
 (10, 'Kabel NYY retail ukuran besar', 'Kabel NYM dengan ukuran per core lebih besar dari 4mm<sup>2</sup> dan lebih kecil dari 10mm<sup>2</sup>', 1),
 (11, 'Kabel NYA retail ukuran kecil', 'Kabel NYA dengan ukuran per core lebih kecil dari 4mm<sup>2</sup>', 1),
-(12, 'Kabel NYA retail ukuran besar', 'Kabel NYA dengan ukuran per core lebih besar dari 4mm<sup>2</sup> dan lebih kecil dari 10mm<sup>2</sup>', 1);
+(12, 'Kabel NYA retail ukuran besar', 'Kabel NYA dengan ukuran per core lebih besar dari 4mm<sup>2</sup> dan lebih kecil dari 10mm<sup>2</sup>', 1),
+(13, 'Kabel NYMHY retail ukuran kecil', 'Kabel NYMHY dengan ukuran per core lebih kecil dari 4mm<sup>2</sup>', 1),
+(14, 'Kabel NYYHY retail ukuran kecil', 'Kabel NYYHY dengan ukuran per core lebih kecil dari 4mm<sup>2</sup>', 1),
+(15, 'Kabel NYAF retail ukuran kecil', 'Kabel NYAF dengan ukuran per core lebih kecil dari 4mm<sup>2</sup>', 1);
 
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `other_bank_account`
+-- Struktur dari tabel `other_opponent`
 --
 
-CREATE TABLE `other_bank_account` (
+CREATE TABLE `other_opponent` (
   `id` int(255) NOT NULL,
-  `name` varchar(500) NOT NULL
+  `name` varchar(500) NOT NULL,
+  `description` text DEFAULT NULL,
+  `type` int(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Struktur dari tabel `other_opponent_type`
+--
+
+CREATE TABLE `other_opponent_type` (
+  `id` int(255) NOT NULL,
+  `name` varchar(50) NOT NULL,
+  `description` text NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data untuk tabel `other_opponent_type`
+--
+
+INSERT INTO `other_opponent_type` (`id`, `name`, `description`) VALUES
+(3, 'Service supplier', 'This opponent is used to accommodate supplier which supplies services.');
 
 -- --------------------------------------------------------
 
@@ -830,6 +878,14 @@ CREATE TABLE `payable` (
   `date` date NOT NULL,
   `purchase_id` int(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data untuk tabel `payable`
+--
+
+INSERT INTO `payable` (`id`, `value`, `bank_id`, `date`, `purchase_id`) VALUES
+(1, '500000000.00', 5, '2020-08-12', 1),
+(2, '80769920.00', 8, '2020-08-12', 1);
 
 -- --------------------------------------------------------
 
@@ -944,7 +1000,9 @@ INSERT INTO `price_list` (`id`, `item_id`, `price_list`) VALUES
 (64, 60, '1846400.000'),
 (65, 61, '4616000.000'),
 (66, 62, '9232000.000'),
-(67, 63, '18464000.000');
+(67, 63, '18464000.000'),
+(68, 64, '224000.000'),
+(69, 65, '384000.000');
 
 -- --------------------------------------------------------
 
@@ -976,6 +1034,7 @@ CREATE TABLE `purchase_invoice_other` (
   `tax_document` varchar(50) DEFAULT NULL,
   `invoice_document` varchar(50) NOT NULL,
   `supplier_id` int(255) NOT NULL,
+  `other_opponent_id` int(255) DEFAULT NULL,
   `value` decimal(50,2) NOT NULL,
   `taxing` tinyint(1) NOT NULL,
   `information` text NOT NULL,
@@ -1140,9 +1199,9 @@ CREATE TABLE `stock_out` (
   `quantity` int(255) DEFAULT NULL,
   `customer_id` int(255) DEFAULT NULL,
   `supplier_id` int(255) DEFAULT NULL,
-  `code_delivery_order_id` int(255) DEFAULT NULL,
+  `delivery_order_id` int(255) DEFAULT NULL,
   `event_id` int(255) DEFAULT NULL,
-  `code_purchase_return_id` int(255) DEFAULT NULL
+  `purchase_return_id` int(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -1201,7 +1260,8 @@ CREATE TABLE `users` (
 
 INSERT INTO `users` (`id`, `name`, `address`, `bank_account`, `is_active`, `entry_date`, `password`, `email`, `image_url`, `access_level`) VALUES
 (1, 'Daniel Tri', 'Jalan Jamuju no. 18, Bandung', '8090175441', 1, '2020-01-01', '27a9dc715a8e1b472ba494313425de62', 'danielrudianto12@gmail.com', NULL, 5),
-(2, 'Andrew Bambang Rudianto', 'Jalan Jamuju no. 18, Bandung', '8090175441', 1, '2020-07-08', 'df68de1228db0edd7590b6c89f8dab7e', 'andrewbambang@gmail.com', NULL, 5);
+(2, 'Andrew Bambang Rudianto', 'Jalan Jamuju no. 18, Bandung', '8090175441', 1, '2020-07-08', 'df68de1228db0edd7590b6c89f8dab7e', 'andrewbambang@gmail.com', NULL, 5),
+(3, 'Martin', 'teuing', '123123', 0, '2020-08-12', '6a204bd89f3c8348afd5c77c717a097a', 'abc@gmail.com', NULL, 1);
 
 -- --------------------------------------------------------
 
@@ -1225,7 +1285,12 @@ INSERT INTO `user_authorization` (`id`, `user_id`, `department_id`) VALUES
 (3, 1, 3),
 (4, 1, 4),
 (5, 1, 5),
-(6, 1, 6);
+(6, 1, 6),
+(7, 3, 2),
+(8, 3, 1),
+(9, 3, 3),
+(10, 3, 4),
+(11, 3, 5);
 
 --
 -- Indexes for dumped tables
@@ -1390,7 +1455,8 @@ ALTER TABLE `expense_class`
 -- Indeks untuk tabel `fixed_asset`
 --
 ALTER TABLE `fixed_asset`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `type` (`type`);
 
 --
 -- Indeks untuk tabel `fixed_asset_type`
@@ -1417,7 +1483,8 @@ ALTER TABLE `income_class`
 -- Indeks untuk tabel `internal_bank_account`
 --
 ALTER TABLE `internal_bank_account`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `number` (`number`);
 
 --
 -- Indeks untuk tabel `invoice`
@@ -1439,12 +1506,19 @@ ALTER TABLE `item_class`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indeks untuk tabel `other_bank_account`
+-- Indeks untuk tabel `other_opponent`
 --
-ALTER TABLE `other_bank_account`
+ALTER TABLE `other_opponent`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `name` (`name`),
-  ADD KEY `id` (`id`) USING BTREE;
+  ADD KEY `id` (`id`) USING BTREE,
+  ADD KEY `type` (`type`);
+
+--
+-- Indeks untuk tabel `other_opponent_type`
+--
+ALTER TABLE `other_opponent_type`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indeks untuk tabel `payable`
@@ -1565,7 +1639,9 @@ ALTER TABLE `stock_in`
 ALTER TABLE `stock_out`
   ADD PRIMARY KEY (`id`),
   ADD KEY `in_id` (`in_id`),
-  ADD KEY `event_id` (`event_id`);
+  ADD KEY `event_id` (`event_id`),
+  ADD KEY `customer_id` (`customer_id`),
+  ADD KEY `supplier_id` (`supplier_id`);
 
 --
 -- Indeks untuk tabel `supplier`
@@ -1584,7 +1660,9 @@ ALTER TABLE `users`
 -- Indeks untuk tabel `user_authorization`
 --
 ALTER TABLE `user_authorization`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `user_id` (`user_id`),
+  ADD KEY `department_id` (`department_id`);
 
 --
 -- AUTO_INCREMENT untuk tabel yang dibuang
@@ -1600,7 +1678,7 @@ ALTER TABLE `attendance_list`
 -- AUTO_INCREMENT untuk tabel `attendance_status`
 --
 ALTER TABLE `attendance_status`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT untuk tabel `bank_transaction`
@@ -1684,7 +1762,7 @@ ALTER TABLE `code_sales_return_received`
 -- AUTO_INCREMENT untuk tabel `customer`
 --
 ALTER TABLE `customer`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=391;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=263;
 
 --
 -- AUTO_INCREMENT untuk tabel `customer_area`
@@ -1696,7 +1774,7 @@ ALTER TABLE `customer_area`
 -- AUTO_INCREMENT untuk tabel `debt_type`
 --
 ALTER TABLE `debt_type`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT untuk tabel `delivery_order`
@@ -1714,13 +1792,13 @@ ALTER TABLE `department`
 -- AUTO_INCREMENT untuk tabel `event`
 --
 ALTER TABLE `event`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT untuk tabel `expense_class`
 --
 ALTER TABLE `expense_class`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
 
 --
 -- AUTO_INCREMENT untuk tabel `fixed_asset`
@@ -1732,7 +1810,7 @@ ALTER TABLE `fixed_asset`
 -- AUTO_INCREMENT untuk tabel `fixed_asset_type`
 --
 ALTER TABLE `fixed_asset_type`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT untuk tabel `good_receipt`
@@ -1762,25 +1840,31 @@ ALTER TABLE `invoice`
 -- AUTO_INCREMENT untuk tabel `item`
 --
 ALTER TABLE `item`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=64;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=66;
 
 --
 -- AUTO_INCREMENT untuk tabel `item_class`
 --
 ALTER TABLE `item_class`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
--- AUTO_INCREMENT untuk tabel `other_bank_account`
+-- AUTO_INCREMENT untuk tabel `other_opponent`
 --
-ALTER TABLE `other_bank_account`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT;
+ALTER TABLE `other_opponent`
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT untuk tabel `other_opponent_type`
+--
+ALTER TABLE `other_opponent_type`
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT untuk tabel `payable`
 --
 ALTER TABLE `payable`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT untuk tabel `petty_cash`
@@ -1798,7 +1882,7 @@ ALTER TABLE `plafond_submission`
 -- AUTO_INCREMENT untuk tabel `price_list`
 --
 ALTER TABLE `price_list`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=68;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=70;
 
 --
 -- AUTO_INCREMENT untuk tabel `purchase_invoice`
@@ -1882,13 +1966,13 @@ ALTER TABLE `supplier`
 -- AUTO_INCREMENT untuk tabel `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT untuk tabel `user_authorization`
 --
 ALTER TABLE `user_authorization`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- Ketidakleluasaan untuk tabel pelimpahan (Dumped Tables)
@@ -1975,6 +2059,12 @@ ALTER TABLE `event`
   ADD CONSTRAINT `event_ibfk_2` FOREIGN KEY (`item_id`) REFERENCES `item` (`id`);
 
 --
+-- Ketidakleluasaan untuk tabel `fixed_asset`
+--
+ALTER TABLE `fixed_asset`
+  ADD CONSTRAINT `fixed_asset_ibfk_1` FOREIGN KEY (`type`) REFERENCES `fixed_asset_type` (`id`);
+
+--
 -- Ketidakleluasaan untuk tabel `good_receipt`
 --
 ALTER TABLE `good_receipt`
@@ -1986,6 +2076,12 @@ ALTER TABLE `good_receipt`
 --
 ALTER TABLE `item`
   ADD CONSTRAINT `item_ibfk_1` FOREIGN KEY (`type`) REFERENCES `item_class` (`id`);
+
+--
+-- Ketidakleluasaan untuk tabel `other_opponent`
+--
+ALTER TABLE `other_opponent`
+  ADD CONSTRAINT `other_opponent_ibfk_1` FOREIGN KEY (`type`) REFERENCES `other_opponent_type` (`id`);
 
 --
 -- Ketidakleluasaan untuk tabel `petty_cash`
@@ -2075,7 +2171,16 @@ ALTER TABLE `stock_in`
 --
 ALTER TABLE `stock_out`
   ADD CONSTRAINT `stock_out_ibfk_1` FOREIGN KEY (`in_id`) REFERENCES `stock_in` (`id`),
-  ADD CONSTRAINT `stock_out_ibfk_2` FOREIGN KEY (`event_id`) REFERENCES `event` (`id`);
+  ADD CONSTRAINT `stock_out_ibfk_2` FOREIGN KEY (`event_id`) REFERENCES `event` (`id`),
+  ADD CONSTRAINT `stock_out_ibfk_3` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`id`),
+  ADD CONSTRAINT `stock_out_ibfk_4` FOREIGN KEY (`supplier_id`) REFERENCES `supplier` (`id`);
+
+--
+-- Ketidakleluasaan untuk tabel `user_authorization`
+--
+ALTER TABLE `user_authorization`
+  ADD CONSTRAINT `user_authorization_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
+  ADD CONSTRAINT `user_authorization_ibfk_2` FOREIGN KEY (`department_id`) REFERENCES `department` (`id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

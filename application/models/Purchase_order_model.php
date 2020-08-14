@@ -372,7 +372,7 @@ class Purchase_order_model extends CI_Model {
 			return $result;
 		}
 		
-		public function show_items($year, $month, $offset = 0, $term = '', $limit = 25)
+		public function getItems($year, $month, $offset = 0, $term = '', $limit = 25)
 		{
 			$this->db->select('code_purchase_order.*, supplier.name as supplier_name, supplier.address as address, supplier.city as city, supplier.number, supplier.rt, supplier.rw, supplier.postal_code, supplier.npwp, supplier.phone_number, supplier.block');
 			$this->db->from('code_purchase_order');

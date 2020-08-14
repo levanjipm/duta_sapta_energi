@@ -1,9 +1,12 @@
-<style>
-	.archive_row{
-		padding:10px;
-		border-bottom:1px solid #e2e2e2;
-	}
-</style>
+<head>
+	<title>Sales order - Archive</title>
+	<style>
+		.archive_row{
+			padding:10px;
+			border-bottom:1px solid #e2e2e2;
+		}
+	</style>
+</head>
 <div class='dashboard'>
 	<div class='dashboard_head'>
 		<p style='font-family:museo'><a href='<?= site_url('Sales') ?>' title='Sales'><i class='fa fa-briefcase'></i></a> /<a href='<?= site_url('Sales order') ?>'>Sales order</a> / Archive</p>
@@ -182,7 +185,7 @@
 	
 	function open_view(n){
 		$.ajax({
-			url:'<?= site_url('Sales_order/getById') ?>',
+			url:'<?= site_url('Sales_order/showById') ?>',
 			data:{
 				id:n
 			},
@@ -191,16 +194,18 @@
 				var sales_order_date		= general.date;
 				var sales_order_name		= general.name;
 				var complete_address		= '';
-				var customer_name			= general.customer_name;
-				complete_address			+= general.address;
-				var customer_city			= general.city;
-				var customer_number			= general.number;
-				var customer_rt				= general.rt;
-				var customer_rw				= general.rw;
-				var customer_postal			= general.postal_code;
-				var customer_block			= general.block;
-				var taxing					= general.taxing;
-				var invoicing_method		= general.invoicing_method;
+
+				var customer				= response.customer;
+				var customer_name			= customer.name;
+				complete_address			+= customer.address;
+				var customer_city			= customer.city;
+				var customer_number			= customer.number;
+				var customer_rt				= customer.rt;
+				var customer_rw				= customer.rw;
+				var customer_postal			= customer.postal_code;
+				var customer_block			= customer.block;
+				var taxing					= customer.taxing;
+				var invoicing_method		= customer.invoicing_method;
 				
 				if(taxing		== 0){
 					var taxing_p	= 'Non taxable sales';
@@ -247,7 +252,7 @@
 				
 				$('#sales_order_table').html('');
 				
-				var items		= response.items;
+				var items		= response.detail;
 				var sales_order_value		= 0;
 				$.each(items, function(index, item){
 					var reference		= item.reference;
@@ -270,10 +275,4 @@
 			}
 		});
 	}
-	
-	$('.slide_alert_close_button').click(function(){
-		$('#view_good_receipt_wrapper .alert_box_slide').hide("slide", { direction: "right" }, 250, function(){
-			$('#view_good_receipt_wrapper').fadeOut();
-		});
-	});
 </script>

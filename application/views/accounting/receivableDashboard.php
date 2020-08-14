@@ -75,11 +75,11 @@
 			<div class='col-xs-4'>
 				<select class='form-control' id='category'>
 					<option value='1'>Show all</option>
-					<option value='1'>Past due date</option>
-					<option value='2'>Less than 30 days</option>
-					<option value='3'>30 - 45 days</option>
-					<option value='4'>45 - 60 days</option>
-					<option value='5'>More than 60 days</option>
+					<option value='2'>Past due date</option>
+					<option value='3'>Less than 30 days</option>
+					<option value='4'>30 - 45 days</option>
+					<option value='5'>45 - 60 days</option>
+					<option value='6'>More than 60 days</option>
 				</select>
 			</div>
 			<div class='col-xs-12'>
@@ -137,14 +137,6 @@
 		$('#grid_wrapper').fadeTo(500, 1);
 	}
 	
-	function calculate_receivable(){
-		if($('#date_1').val() != '' && $('#date_2').val() != '' && ($('#date_2').val() > $('#date_1').val()) && ($('#date_1').val() >= 0 && $('#date_2').val() >= 0)){
-			var date_1	= $('#date_1').val();
-			var date_2	= $('#date_2').val();
-			refresh_view(date_1, date_2);
-		};
-	};
-	
 	$(document).ready(function(){
 		refresh_view();
 	});
@@ -153,12 +145,15 @@
 		adjust_grid();
 	});
 
-	function refresh_view(date_1 = 0, date_2 = 0){
+	$('#category').change(function(){
+		refresh_view();
+	})
+
+	function refresh_view(){
 		$.ajax({
 			url:'<?= site_url('Receivable/viewReceivable') ?>',
 			data:{
-				date_1:date_1,
-				date_2:date_2
+				category: $('#category').val()
 			},
 			success:function(response){
 				$('#receivable_chart').html('');
@@ -166,7 +161,7 @@
 				$.each(response, function(index,value){
 					var id			= value.id;
 					var name 		= value.name;
-					var receivable	= value.value;
+					var receivable	= parseFloat(value.value);
 					var city		= value.city;
 					if(receivable > max_receivable){
 						max_receivable = receivable;
@@ -179,7 +174,7 @@
 				$.each(response, function(index,value){
 					var id			= value.id;
 					var receivable	= value.value;
-					var percentage	= receivable * 100 / max_receivable;
+					var percentage	= Math.max(3, receivable * 100 / max_receivable);
 					$('#receive-' + id).animate({
 						'width': percentage + "%"
 					},300);
@@ -255,9 +250,5 @@
 		});
 	}
 	
-	$('.slide_alert_close_button').click(function(){
-		$(this).siblings('.alert_box_slide').hide("slide", { direction: "right" }, 250, function(){
-			$(this).parent().fadeOut();
-		});
-	});
+	
 </script>

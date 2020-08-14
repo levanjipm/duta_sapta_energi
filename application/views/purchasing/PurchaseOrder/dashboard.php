@@ -1,10 +1,13 @@
+<head>
+	<title>Purchase order</title>
+</head>
 <div class='dashboard'>
 	<div class='dashboard_head'>
 		<p style='font-family:museo'><a href='<?= site_url('Purchasing') ?>' title='Purchasing'><i class='fa fa-briefcase'></i></a> /Purchase order</p>
 	</div>
 	<br>
 	<div class='dashboard_in'>
-		<a href='<?= site_url('Purchase_order/create') ?>'>
+		<a href='<?= site_url('Purchase_order/createDashboard') ?>'>
 			<button type='button' class='button button_default_dark'>Create purchase order</button>
 		</a>
 		<br><br>
@@ -227,10 +230,4 @@
 			}
 		});
 	};
-	
-	$('.slide_alert_close_button').click(function(){
-		$('#purchase_order_detail_wrapper .alert_box_slide').hide("slide", { direction: "right" }, 250, function(){
-			$('#purchase_order_detail_wrapper').fadeOut();
-		});
-	});
 </script>

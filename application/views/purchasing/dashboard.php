@@ -6,6 +6,7 @@
             box-shadow:3px 3px 3px 3px rgba(50,50,50,0.3);
             border-radius:5px;
             margin-bottom:10px;
+            cursor:pointer;
         }
 
         .dashboardBox .leftSide{
@@ -44,8 +45,8 @@
 	<br>
 	<div class='dashboard_in'>
 		<div class='row'>
-            <div class='col-md-4 col-sm-12 col-xs-12'>
-                <div class='dashboardBox'>
+            <div class='col-lg-4 col-md-6 col-sm-12 col-xs-12'>
+                <div class='dashboardBox' onclick='viewPendingItems()'>
                     <div class='leftSide'>
                         <h4><b>Pending</b></h4>
                         <p>Items</p>
@@ -56,7 +57,7 @@
                     </div>
                 </div>
             </div>
-            <div class='col-md-4 col-sm-12 col-xs-12'>
+            <div class='col-lg-4 col-md-6 col-sm-12 col-xs-12'>
                 <div class='dashboardBox'>
                     <div class='leftSide'>
                         <h4><b>Pending</b></h4>
@@ -72,6 +73,31 @@
 	</div>
 </div>
 
+<div class='alert_wrapper' id='pendingItemsWraper'>
+    <button class='slide_alert_close_button'>&times;</button>
+    <div class='alert_box_slide'>
+        <h3 style='font-family:bebasneue'>Items needed.</h3>
+        <hr>
+        <form action='<?= site_url('Purchase_order/createDashboard') ?>' method="POST">
+            <div id='itemTable'>
+                <table class='table table-bordered'>
+                    <tr>
+                        <th>Reference</th>
+                        <th>Name</th>
+                        <th>Quantity</th>
+                        <th>Action</th>
+                    </tr>
+                    <tbody id='itemTableContent'></tbody>
+                </table>
+            </div>
+            <p id='itemTableText'>No items need to be bought.</p>
+
+            <input type='hidden' id='totalItem' min='1'>
+            <button type='button' id='createPurchaseOrderButton' class='button button_default_dark'><i class='fa fa-long-arrow-right'></i></button>
+        </form>
+    </div>
+</div>
+
 <script>
     $(document).ready(function(){
         calculateNeeds();
@@ -83,10 +109,49 @@
 			url:'<?= site_url('Purchasing/calculateNeeds') ?>',
 			success:function(response){
 				var needs		= response.length;
-				$('#needs').text(needs);
+                $('#needs').text(needs);
+
+                if(needs > 0){
+                    $.each(response, function(index, item){
+                        var name = item.name;
+                        var reference = item.reference;
+                        var quantity = item.quantity;
+                        var itemId = item.id;
+
+                        $("#itemTableContent").append("<tr><td>" + reference + "</td><td>" + name + "</td><td>" + numeral(quantity).format('0,0') + "</td><td><input type='checkbox' name='items[" + itemId + "]' onchange='updateCheck()' value='" + quantity + "'></td></tr>");
+
+                        $('#itemTable').show();
+                        $('#itemTableText').hide();
+                    })
+                } else {
+                    $('#itemTable').hide();
+                    $('#itemTableText').show();
+                }
+
+                $("#createPurchaseOrderButton").hide();
 			}
 		});
-	};
+    };
+    
+    function updateCheck(){
+        var totalItemCount = 0;
+        $("input[name^='items[']").each(function(){
+            if($(this).is(':checked')){
+                var value = $(this).val();
+                totalItemCount += parseInt(value);
+            }
+        });
+
+        if(totalItemCount > 0){
+            $("#createPurchaseOrderButton").show();
+        } else {
+            $("#createPurchaseOrderButton").hide();
+        }
+    }
+
+    $('#createPurchaseOrderButton').click(function(){
+        
+    })
 
     function calculatePendingOrders(){
         $.ajax({
@@ -95,5 +160,12 @@
                 $('#orders').text(response);
             }
         })
+    }
+
+    function viewPendingItems()
+    {
+        $('#pendingItemsWraper').fadeIn(300, function(){
+            $('#pendingItemsWraper .alert_box_slide').show("slide", { direction: "right" }, 250);
+        });
     }
 </script>

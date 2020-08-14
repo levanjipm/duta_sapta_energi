@@ -132,12 +132,6 @@
             $('#addStatusWrapper .alert_box_slide').show("slide", { direction: "right" }, 250);
         });
     });
-
-    $('.slide_alert_close_button').click(function(){
-		$(this).siblings('.alert_box_slide').hide("slide", { direction: "right" }, 250, function(){
-			$(this).parent().fadeOut();
-		});
-    });
     
     $('#addStatusSubmitButton').click(function(){
         if($('#createNewStatusForm').valid()){

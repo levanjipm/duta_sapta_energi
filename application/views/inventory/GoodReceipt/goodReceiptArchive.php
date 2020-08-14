@@ -261,10 +261,4 @@
 			}
 		});
 	}
-	
-	$('.slide_alert_close_button').click(function(){
-		$('#view_good_receipt_wrapper .alert_box_slide').hide("slide", { direction: "right" }, 250, function(){
-			$('#view_good_receipt_wrapper').fadeOut();
-		});
-	});
 </script>

@@ -65,11 +65,7 @@
 		});
 	}
 	
-	$('.slide_alert_close_button').click(function(){
-		$(this).siblings('.alert_box_slide').hide("slide", { direction: "right" }, 250, function(){
-			$(this).parent().fadeOut();
-		});
-	});
+	
 
 	$('#search_bar').change(function(){
 		refresh_view(1);

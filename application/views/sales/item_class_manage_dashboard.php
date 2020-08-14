@@ -8,9 +8,9 @@
 	<br>
 	<div class='dashboard_in'>
 		<div class='input_group'>
-			<input type='text' class='form-control input-lg' id='search_bar' placeholder="Search item class">
+			<input type='text' class='form-control' id='search_bar' placeholder="Search item class">
 			<div class='input_group_append'>
-				<button type='button' class='button button_default_dark' id='add_item_class_button'>Add item class</button>
+				<button type='button' class='button button_default_dark' id='add_item_class_button'><i class='fa fa-plus'></i> Add class</button>
 			</div>
 		</div>
 		<br>
@@ -274,9 +274,5 @@
 		}
 	}
 	
-	$('.slide_alert_close_button').click(function(){
-		$(this).siblings('.alert_box_slide').hide("slide", { direction: "right" }, 250, function(){
-			$(this).parent().fadeOut();
-		});
-	});
+	
 </script>

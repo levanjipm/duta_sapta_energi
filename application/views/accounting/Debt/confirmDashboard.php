@@ -30,52 +30,100 @@
 <div class='alert_wrapper' id='view_debt_wrapper'>
 	<button type='button' class='slide_alert_close_button'>&times;</button>
 	<div class='alert_box_slide'>
-		<form action='<?= site_url('Debt/confirm') ?>' method='POST'>
-			<h3 style='font-family:bebasneue'>Debt document</h3>
-			
-			<input type='hidden' id='purchase_invoice_id' name='id'>
-			<hr>
-			<label>Purchase invoice</label>
-			<p style='font-family:museo' id='invoice_date_p'></p>
-			<p style='font-family:museo' id='invoice_document_p'></p>
-			<p style='font-family:museo' id='invoice_tax_document_p'></p>
-			
-			<label>Supplier</label>
-			<p style='font-family:museo' id='supplier_name_p'></p>
-			<p style='font-family:museo' id='supplier_address_p'></p>
-			<p style='font-family:museo' id='supplier_city_p'></p>
+		<h3 style='font-family:bebasneue'>Debt document</h3>
+		
+		<input type='hidden' id='purchase_invoice_id' name='id'>
+		<hr>
+		<label>Purchase invoice</label>
+		<p style='font-family:museo' id='invoice_date_p'></p>
+		<p style='font-family:museo' id='invoice_document_p'></p>
+		<p style='font-family:museo' id='invoice_tax_document_p'></p>
+		
+		<label>Supplier</label>
+		<p style='font-family:museo' id='supplier_name_p'></p>
+		<p style='font-family:museo' id='supplier_address_p'></p>
+		<p style='font-family:museo' id='supplier_city_p'></p>
 
-			<label>Good receipts</label>
+		<label>Good receipts</label>
+		<table class='table table-bordered'>
+			<tr>
+				<th>Date</th>
+				<th>Name</th>
+				<th>Received date</th>
+			</tr>
+			<tbody id='goodReceiptInformation'></tbody>
+		</table>
+		<hr>
+
+		<div class='table-responsive-md'>
 			<table class='table table-bordered'>
 				<tr>
-					<th>Date</th>
+					<th>Reference</th>
 					<th>Name</th>
-					<th>Received date</th>
+					<th>Unit price</th>
+					<th>Quantity</th>
+					<th>Total price</th>
 				</tr>
-				<tbody id='goodReceiptInformation'></tbody>
+				<tbody id='good_receipt_table'></tbody>
 			</table>
-			<hr>
+		</div>
+		<button type='button' class='button button_default_dark' onclick='confirmDebt()'><i class='fa fa-long-arrow-right'></i></button>
+		<button type='button' class='button button_danger_dark' onclick='deleteDebt()'><i class='fa fa-trash'></i></button>
 
-			<div class='table-responsive-md'>
-				<table class='table table-bordered'>
-					<tr>
-						<th>Reference</th>
-						<th>Name</th>
-						<th>Unit price</th>
-						<th>Quantity</th>
-						<th>Total price</th>
-					</tr>
-					<tbody id='good_receipt_table'></tbody>
-				</table>
-			</div>
-			<button type='button' class='button button_default_dark' onclick='confirmDebt()'><i class='fa fa-long-arrow-right'></i></button>
-			<button type='button' class='button button_danger_dark' onclick='deleteDebt()'><i class='fa fa-trash'></i></button>
-
-			<div class='notificationText danger' id='failedDeleteNotification'><p>Failed to delete debt documnet.</p></div>
-			<div class='notificationText danger' id='failedConfirmNotification'><p>Failed to confirm debt document.</p></div>
-		</form>
+		<div class='notificationText danger' id='failedDeleteNotification'><p>Failed to delete debt documnet.</p></div>
+		<div class='notificationText danger' id='failedConfirmNotification'><p>Failed to confirm debt document.</p></div>
 	</div>
 </div>
+
+<div class='alert_wrapper' id='viewBlankDebtWrapper'>
+	<button type='button' class='slide_alert_close_button'>&times;</button>
+		<div class='alert_box_slide'>
+		<h3 style='font-family:bebasneue'>Blank debt document</h3>
+		
+		<input type='hidden' id='blankPurchaseInvoiceId'>
+		<hr>
+		<label>Purchase invoice</label>
+		<p style='font-family:museo' id='blankInvoiceDate_p'></p>
+		<p style='font-family:museo' id='blankInvoiceDocument_p'></p>
+		<p style='font-family:museo' id='blankTaxInvoiceDocument_p'></p>
+		<p style='font-family:museo' id='blankInvoiceTaxing_p'></p>
+		<br>
+
+		<table class='table'>
+			<tr>
+				<td><label>Supplier</label></td>
+				<td>
+					<p style='font-family:museo' id='blankSupplierName_p'></p>
+					<p style='font-family:museo' id='blankSupplierAddress_p'></p>
+					<p style='font-family:museo' id='blankSupplierCity_p'></p>
+				</td>
+			</tr>
+			<tr>
+				<td><label>Type</label></td>
+				<td><p style='font-family:museo' id='blankInvoiceType_p'></p></td>
+			</tr>
+			<tr>
+				<td><label>Information</label></td>
+				<td><p style='font-family:museo' id='blankInvoiceInformation_p'></p></td>
+			</tr>
+			<tr>
+				<td><label>Value</label></td>
+				<td>Rp. <span id='blankInvoiceValue_p'></span></td>
+			</tr>
+		</table>
+
+		<p style='font-family:museo;float:right'>Created by <span id='blankInvoiceCreator_p'></span></p><br><br>
+		
+
+		<button type='button' class='button button_default_dark' onclick='confirmBlankDebt()'><i class='fa fa-long-arrow-right'></i></button>
+		<button type='button' class='button button_danger_dark' onclick='deleteBlankDebt()'><i class='fa fa-trash'></i></button>
+
+		<div class='notificationText danger' id='failedDeleteBlankNotification'><p>Failed to delete debt documnet.</p></div>
+		<div class='notificationText danger' id='failedConfirmBlankNotification'><p>Failed to confirm debt document.</p></div>
+	</div>
+</div>
+
+
 <script>
 	$(document).ready(function(){
 		refresh_view();
@@ -102,7 +150,6 @@
 				var debtCount = 0;
 				$('#debtTableContent').html('');
 				$.each(array, function(index, value){
-					console.log(value);
 					var id					= value.id;
 					var date				= value.date;
 					var tax_document		= value.tax_document;
@@ -218,12 +265,84 @@
 
 	function viewBlankDebtDocument(n){
 		$.ajax({
-			url:'<?= site_url('Debt_blank/getById') ?>',
+			url:'<?= site_url('Debt/getBlankById') ?>',
 			data:{
 				id: n
 			},
 			success:function(response){
-				console.log(response);
+				$('#blankPurchaseInvoiceId').val(n);
+
+				var supplier 				= response.supplier;
+				var supplierName 			= supplier.name;
+				var complete_address		= '';
+				complete_address			+= supplier.address;
+				var supplier_city			= supplier.city;
+				var supplier_number			= supplier.number;
+				var supplier_rt				= supplier.rt;
+				var supplier_rw				= supplier.rw;
+				var supplier_postal			= supplier.postal_code;
+				var supplier_block			= supplier.block;
+	
+				if(supplier_number != null){
+					complete_address	+= ' No. ' + supplier_number;
+				}
+				
+				if(supplier_block != null){
+					complete_address	+= ' Blok ' + supplier_block;
+				}
+			
+				if(supplier_rt != '000'){
+					complete_address	+= ' RT ' + supplier_rt;
+				}
+				
+				if(supplier_rw != '000' && supplier_rt != '000'){
+					complete_address	+= ' /RW ' + supplier_rw;
+				}
+				
+				if(supplier_postal != null){
+					complete_address	+= ', ' + supplier_postal;
+				}
+				$('#blankSupplierName_p').html(supplierName);
+				$('#blankSupplierAddress_p').html(complete_address);
+				$('#blankSupplierCity_p').html(supplier_city);
+
+				var debt = response.debt;
+				var taxDocumentName = debt.tax_document;
+				var documentName	= debt.invoice_document;
+
+				var taxing			= debt.taxing;
+				if(taxing == 1){
+					var taxingText = "Taxable purchase";
+				} else {
+					var taxingText = "Non-taxable purchase";
+				}
+
+				var createdBy 		= debt.created_by;
+				var information 	= debt.information;
+				var type			= debt.type;
+
+				if(information != "" && information != null){
+					var informationText = information;
+				} else {
+					var informationText = "<i>Not available</i>"
+				}
+
+				var value = debt.value;
+				var date = debt.date;
+
+				$('#blankInvoiceDate_p').html(my_date_format(date));
+				$('#blankInvoiceDocument_p').html(documentName);
+				$("#blankTaxInvoiceDocument_p").html(taxDocumentName);
+
+				$('#blankInvoiceCreator_p').html(createdBy);
+				$('#blankInvoiceInformation_p').html(informationText);
+				$('#blankInvoiceType_p').html(type);
+				$('#blankInvoiceTaxing_p').html(taxingText);
+				$('#blankInvoiceValue_p').html(numeral(value).format('0,0.00'));
+
+				$('#viewBlankDebtWrapper').fadeIn(300, function(){
+					$('#viewBlankDebtWrapper .alert_box_slide').show("slide", { direction: "right" }, 250);
+				});
 			}
 		})
 	}
@@ -277,10 +396,56 @@
 			}
 		});
 	}
-	
-	$('.slide_alert_close_button').click(function(){
-		$(this).siblings('.alert_box_slide').hide("slide", { direction: "right" }, 250, function(){
-			$(this).parent().fadeOut();
+
+	function confirmBlankDebt(){
+		$.ajax({
+			url:'<?= site_url('Debt/confirmBlankById') ?>',
+			data:{
+				id:$('#blankPurchaseInvoiceId').val()
+			},
+			type:'POST',
+			beforeSend:function(){
+				$('button').attr('disabled', true);
+			}, success:function(response){
+				$('button').attr('disabled', false);
+				if(response == 0){
+					refresh_view();
+					$('#failedConfirmBlankNotification').fadeIn(250);
+					setTimeout(function(){
+						$('#failedConfirmBlankNotification').fadeOut(250);
+					}, 1000);
+				} else {
+					refresh_view();
+					$('#viewBlankDebtWrapper .slide_alert_close_button').click();
+				}
+			}
+		})
+	}
+
+	function deleteBlankDebt(){
+		$.ajax({
+			url:'<?= site_url('Debt/deleteBlankById') ?>',
+			data:{
+				id:$('#blankPurchaseInvoiceId').val()
+			},
+			type:'POST',
+			beforeSend:function(){
+				$('button').attr('disabled', true);
+			}, success:function(response){
+				$('button').attr('disabled', false);
+				if(response == 0){
+					refresh_view();
+					$('#failedDeleteBlankNotification').fadeTo(250, 1);
+					setTimeout(function(){
+						$('#failedDeleteBlankNotification').fadeTo(250, 0);
+					}, 1000);
+				} else {
+					refresh_view();
+					$('#viewBlankDebtWrapper .slide_alert_close_button').click();
+				}
+			}
 		});
-	});
+	}
+	
+	
 </script>	

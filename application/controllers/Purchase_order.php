@@ -11,9 +11,6 @@ class Purchase_order extends CI_Controller {
 	
 	public function index()
 	{
-		$this->load->model('Internal_bank_account_model');
-		$data['accounts'] = $this->Internal_bank_account_model->show_all();
-		
 		$user_id		= $this->session->userdata('user_id');
 		$this->load->model('User_model');
 		$data['user_login'] = $this->User_model->getById($user_id);
@@ -23,14 +20,11 @@ class Purchase_order extends CI_Controller {
 		
 		$this->load->view('head');
 		$this->load->view('purchasing/header', $data);
-		$this->load->view('Purchasing/purchase_order');
+		$this->load->view('Purchasing/PurchaseOrder/dashboard');
 	}
 	
-	public function create()
+	public function createDashboard()
 	{
-		$this->load->model('Internal_bank_account_model');
-		$data['accounts'] = $this->Internal_bank_account_model->show_all();
-		
 		$user_id		= $this->session->userdata('user_id');
 		$this->load->model('User_model');
 		$data['user_login'] = $this->User_model->getById($user_id);
@@ -49,7 +43,7 @@ class Purchase_order extends CI_Controller {
 		$guid	= $this->Purchase_order_model->create_guid();
 		
 		$data['guid'] = $guid;
-		$this->load->view('Purchasing/purchase_order_create_dashboard', $data);
+		$this->load->view('Purchasing/PurchaseOrder/createDashboard', $data);
 	}
 	
 	public function addItemToCart()
@@ -126,11 +120,8 @@ class Purchase_order extends CI_Controller {
 		$this->load->view('purchasing/purchase_order_print', $data);
 	}
 	
-	public function archive()
+	public function archiveDashboard()
 	{
-		$this->load->model('Internal_bank_account_model');
-		$data['accounts'] = $this->Internal_bank_account_model->show_all();
-		
 		$user_id		= $this->session->userdata('user_id');
 		$this->load->model('User_model');
 		$data['user_login'] = $this->User_model->getById($user_id);
@@ -144,20 +135,20 @@ class Purchase_order extends CI_Controller {
 		$this->load->model('Purchase_order_model');
 		$data['years']	= $this->Purchase_order_model->show_years();
 		
-		$this->load->view('purchasing/purchase_order_archive', $data);
+		$this->load->view('purchasing/PurchaseOrder/archiveDashboard', $data);
 	}
 	
 	public function showArchive()
 	{
 		$page			= $this->input->get('page');
 		$term			= $this->input->get('term');
-		$offset			= ($page - 1) * 25;
+		$offset			= ($page - 1) * 10;
 		$year			= $this->input->get('year');
 		$month			= $this->input->get('month');
 		
 		$this->load->model('Purchase_order_model');
-		$data['purchase_orders'] 	= $this->Purchase_order_model->show_items($year, $month, $offset, $term);
-		$data['pages']				= max(1, ceil($this->Purchase_order_model->count_items($year, $month, $term)/25));
+		$data['purchase_orders'] 	= $this->Purchase_order_model->getItems($year, $month, $offset, $term);
+		$data['pages']				= max(1, ceil($this->Purchase_order_model->count_items($year, $month, $term)/10));
 		
 		header('Content-Type: application/json');
 		echo json_encode($data);

@@ -29,7 +29,7 @@
 		<button class='container_button'><p style='font-family:museo'>Bank</p></button>
 		<div class='container_bar'>
 			<a href='<?= site_url('Bank/transaction') ?>'><button><p style='font-family:museo'>Transaction</p></button></a>
-			<a href='<?= site_url('Bank/account') ?>'><button><p style='font-family:museo'>Account</p></button></a>
+			<a href='<?= site_url('Bank/accountDashboard') ?>'><button><p style='font-family:museo'>Account</p></button></a>
 			<a href='<?= site_url('Bank/mutation') ?>'><button><p style='font-family:museo'>Mutation</p></button></a>
 			<a href='<?= site_url('Bank/opponent') ?>'><button><p style='font-family:museo'>Opponent</p></button></a>
 		</div>

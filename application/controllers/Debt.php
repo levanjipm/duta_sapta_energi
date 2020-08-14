@@ -138,6 +138,21 @@ class Debt extends CI_Controller {
 		header('Content-Type: application/json');
 		echo json_encode($data);
 	}
+
+	public function getBlankById()
+	{
+		$id				= $this->input->get('id');
+		$this->load->model('Debt_other_model');
+		$debt			= $this->Debt_other_model->getById($id);
+		$data['debt']	= $debt;
+
+		$supplierId		= $debt->supplier_id;
+		$this->load->model('Supplier_model');
+		$data['supplier'] = $this->Supplier_model->getById($supplierId);
+
+		header('Content-Type: application/json');
+		echo json_encode($data);
+	}
 	
 	public function deleteById()
 	{
@@ -154,11 +169,30 @@ class Debt extends CI_Controller {
 		}
 	}
 
+	public function deleteBlankById()
+	{
+		$invoiceId			= $this->input->post('id');
+
+		$this->load->model('Debt_other_model');
+		$result 			= $this->Debt_other_model->updateById(0, $invoiceId);
+
+		echo $result;
+	}
+
 	public function confirmById()
 	{
 		$invoiceId		= $this->input->post('id');
 		$this->load->model('Debt_model');
 		$result 		= $this->Debt_model->updateById(1, $invoiceId);
+
+		echo $result;
+	}
+
+	public function confirmBlankById()
+	{
+		$invoiceId		= $this->input->post('id');
+		$this->load->model('Debt_other_model');
+		$result 		= $this->Debt_other_model->updateById(1, $invoiceId);
 
 		echo $result;
 	}
