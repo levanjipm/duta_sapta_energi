@@ -44,21 +44,48 @@
 	<div class='alert_box_full'>		
 		<button type='button' class='button alert_full_close_button' title='Close select supplier session'>&times;</button>
 		<h3 style='font-family:bebasneue'>Select supplier</h3>
-		<br>
-		<input type='text' class='form-control' id='searchSupplierBar'>
-		<br>
-		<table class='table table-bordered'>
-			<tr>
-				<th>Name</th>
-				<th>Address</th>
-				<th>Action</th>
-			</tr>
-			<tbody id='supplierTableContent'></tbody>
-		</table>
-		
-		<select class='form-control' id='supplierPage' style='width:100px'>
-			<option value='1'>1</option>
-		</select>
+		<hr>
+		<button class='button button_mini_tab' id='supplierTabButton'>Supplier</button>
+		<button class='button button_mini_tab' id='opponentTabButton'>Opponents</button>
+		<hr>
+		<div id='supplierView'>
+			<input type='text' class='form-control' id='searchSupplierBar'>
+			<br>
+			<div id='supplierTable'>
+				<table class='table table-bordered'>
+					<tr>
+						<th>Name</th>
+						<th>Address</th>
+						<th>Action</th>
+					</tr>
+					<tbody id='supplierTableContent'></tbody>
+				</table>
+				
+				<select class='form-control' id='supplierPage' style='width:100px'>
+					<option value='1'>1</option>
+				</select>
+			</div>
+			<p id='supplierTableText'>There is no supplier found.</p>
+		</div>
+		<div id='opponentView'>
+			<input type='text' class='form-control' id='searchOpponentBar'>
+			<br>
+			<div id='opponentTable'>
+				<table class='table table-bordered'>
+					<tr>
+						<th>Name</th>
+						<th>Type</th>
+						<th>Action</th>
+					</tr>
+					<tbody id='opponentTableContent'></tbody>
+				</table>
+				
+				<select class='form-control' id='opponentPage' style='width:100px'>
+					<option value='1'>1</option>
+				</select>
+			</div>
+			<p id='opponentTableText'>There is no opponent found.</p>
+		</div>
 	</div>
 </div>
 
@@ -148,21 +175,22 @@
 	})
 
 	$('#supplierPickButton').click(function(){
-		refresh_view(1);
+		$('#supplierTabButton').click();
+		refreshSupplier(1);
 		$('#selectSupplierWrapper').fadeIn();
 	})
 
 	$('#debtTypePickButton').click(function(){
-		refreshType(1);
+		refreshSupplier(1);
 		$("#selectTypeWrapper").fadeIn();
 	})
 
 	$('#searchSupplierBar').change(function(){
-		refresh_view(1);
+		refreshSupplier(1);
 	});
 
 	$('#supplierPage').change(function(){
-		refresh_view();
+		refreshSupplier();
 	})
 
 	$('#taxing').change(function(){
@@ -247,7 +275,7 @@
 		};
 	})
 	
-	function refresh_view(page = $('#supplierPage').val()){
+	function refreshSupplier(page = $('#supplierPage').val()){
 		$.ajax({
 			url:'<?= site_url('Supplier/showItems') ?>',
 			data:{
@@ -303,6 +331,10 @@
 				}
 			}
 		});
+	}
+
+	function refreshOpponent(page = $('#opponentPage').val()){
+
 	}
 
 	function refreshType(page = $('#debtTypePage').val()){
@@ -397,6 +429,30 @@
 			}
 		})
 	}
+
+	$('#supplierTabButton').click(function(){
+		$('.button_mini_tab').attr('disabled', true);
+		$('.button_mini_tab').removeClass('active');
+		$('#supplierTabButton').addClass('active');
+		$('#opponentTabButton').attr('disabled', false);
+
+		$('#opponentView').fadeOut(250);
+		setTimeout(function(){
+			$('#supplierView').fadeIn(250);
+		}, 250);		
+	});
+
+	$('#opponentTabButton').click(function(){
+		$('.button_mini_tab').attr('disabled', true);
+		$('.button_mini_tab').removeClass('active');
+		$('#opponentTabButton').addClass('active');
+		$('#supplierTabButton').attr('disabled', false);
+
+		$('#supplierView').fadeOut(250);
+		setTimeout(function(){
+			$('#opponentView').fadeIn(250);
+		}, 250);	
+	})
 
 	$('.slide_alert_close_button').click(function(){
 		$(this).siblings('.alert_box_slide').hide("slide", { direction: "right" }, 250, function(){

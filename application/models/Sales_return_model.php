@@ -10,6 +10,7 @@ class Sales_return_model extends CI_Model {
 		public $is_confirm;
 		public $is_delete;
 		public $confirmed_by;
+		public $name;
 
 		public function __construct()
 		{
@@ -19,6 +20,7 @@ class Sales_return_model extends CI_Model {
 		public function get_stub_from_db($db_item)
 		{
 			$this->id					= $db_item->id;
+			$this->name					= $db_item->name;
 			$this->created_by			= $db_item->created_by;
 			$this->created_date			= $db_item->created_date;
 			$this->is_confirm			= $db_item->is_confirm;
@@ -33,6 +35,7 @@ class Sales_return_model extends CI_Model {
 			$db_item = new class{};
 			
 			$db_item->id					= $this->id;
+			$db_item->name					= $this->name;
 			$db_item->created_by			= $this->created_by;
 			$db_item->created_date			= $this->created_date;
 			$db_item->is_confirm			= $this->is_confirm;
@@ -47,6 +50,7 @@ class Sales_return_model extends CI_Model {
 			$stub = new Customer_model();
 			
 			$stub->id					= $db_item->id;
+			$stub->name					= $db_item->name;
 			$stub->created_by			= $db_item->created_by;
 			$stub->created_date			= $db_item->created_date;
 			$stub->is_confirm			= $db_item->is_confirm;
@@ -69,6 +73,7 @@ class Sales_return_model extends CI_Model {
 		public function generateName($date)
 		{
 			$name		= "SRS-" . date('Ym', strtotime($date)) . "-" . rand(0,9) . rand(0,9) . rand(0,9) . rand(0,9) . rand(0,9) . rand(0,9) . rand(0,9) . rand(0,9);
+
 			$this->db->where('name', $name);
 			$query = $this->db->get($this->table_sales_return);
 			$result = $query->num_rows();
@@ -102,11 +107,14 @@ class Sales_return_model extends CI_Model {
 				SELECT customer.*, code_sales_return.name as documentName, code_sales_return.created_date as date, users.name as created_by, code_sales_return.id
 				FROM code_sales_return
 				JOIN users ON code_sales_return.created_by = users.id
-				JOIN sales_return ON sales_return.code_sales_return_id = code_sales_return.id
-				JOIN delivery_order ON sales_return.delivery_order_id = delivery_order.id
-				JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
-				JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
-				JOIN customer ON code_sales_order.customer_id = customer.id
+				JOIN (
+					SELECT DISTINCT(sales_return.code_sales_return_id) as id, code_sales_order.customer_id FROM sales_return
+					JOIN delivery_order ON sales_return.delivery_order_id = delivery_order.id
+					JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
+					JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
+				) AS a
+				ON code_sales_return.id = a.id
+				JOIN customer ON a.customer_id = customer.id
 				WHERE code_sales_return.is_confirm = '0' AND code_sales_return.is_delete = '0'
 				LIMIT $limit OFFSET $offset
 			");

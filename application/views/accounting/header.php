@@ -44,7 +44,12 @@
 		</div>
 		<a href='<?= site_url('Receivable') ?>'><button><p style='font-family:museo'>Receivable</p></button></a>
 		<a href='<?= site_url('Payable') ?>'><button><p style='font-family:museo'>Payable</p></button></a>
-		<a href='<?= site_url('Bank/assign') ?>'><button><p style='font-family:museo'>Assign bank</p></button></a>
+		<a href='<?= site_url('Bank/assignDashboard') ?>'><button><p style='font-family:museo'>Assign bank</p></button></a>
+		<button class='container_button'><p>Return</p></button>
+		<div class='container_bar'>
+			<a href='<?= site_url('Accounting/salesReturn') ?>'><button><p style='font-family:museo'>Sales</p></button></a>
+			<a href='<?= site_url('Accounting/purchaseReturn') ?>'><button><p style='font-family:museo'>Purchasing</p></button></a>
+		</div>
 		<button class='container_button'><p>Asset</p></button>
 		<div class='container_bar'>
 			<a href='<?= site_url('Asset') ?>'><button><p style='font-family:museo'>List</p></button></a>

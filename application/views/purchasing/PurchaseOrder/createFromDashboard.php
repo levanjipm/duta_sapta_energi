@@ -408,6 +408,39 @@
 			}
 		})
 	}
+
+	function addToCartWithQuantity(n, quantity)
+	{
+		$.ajax({
+			url:'<?= site_url('Item/showById') ?>',
+			data:{
+				id:n
+			},
+			beforeSend:function(){
+				$('button').attr('disabled',true);
+			},
+			success:function(response){
+				var reference	= response.reference;
+				var name		= response.name;
+				var price_list	= response.price_list;
+				
+				if($('#item_row-' + n).length == 0){
+					$('#cart_products').append("<tr id='item_row-" + n + "'><td id='reference-" + n + "'>" + reference + "</td><td id='name-" + n + "'>" + name + "</td>" + 
+						"<td><input type='number' class='form-control' min='1' required name='price_list[" + n + "]' id='price_list-" + n + "'><br><label>" + numeral(price_list).format('0,0.00') + "</label> <button type='button' class='button button_default_dark' onclick='copy_price_list(" + n + "," + price_list + ")'><i class='fa fa-copy'></i></button></td>" +
+						"<td><input type='number' class='form-control' min='0' max='100' required name='discount[" + n + "]' id='discount-" + n + "'></td>" +
+						"<td><input type='number' class='form-control' min='1' required name='quantity[" + n + "]' id='quantity-" + n + "' value='" + quantity + "'></td>" + 
+						"<td><button type='button' class='button button_danger_dark' onclick='remove_item(" + n + ")'><i class='fa fa-trash'></i></button></td>");
+				}
+				$('button').attr('disabled',false);
+				$('#add_item_wrapper').fadeOut();
+				
+				if($('#cart_products tr').length > 0){
+					$('#cart_products_table').show();
+					$('#submit_button').show();
+				}
+			}
+		});
+	}
 	
 	function add_to_cart_as_bonus(n){
 		$.ajax({
@@ -468,4 +501,15 @@
 	$('.alert_full_close_button').click(function(){
 		$(this).parent().parent().fadeOut();
 	})
+</script>
+
+<script>
+<?php
+	foreach($items as $itemId => $quantity){
+?>
+	addToCartWithQuantity(<?= $itemId ?>, <?= $quantity ?>);
+<?php
+	next($items);
+	}
+?>
 </script>

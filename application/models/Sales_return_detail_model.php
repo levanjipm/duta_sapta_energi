@@ -73,9 +73,10 @@ class Sales_return_detail_model extends CI_Model {
 			$formattedArray = "'" . implode(',', $deliveryOrderIdArray) . "'";
 
 			$query = $this->db->query("SELECT delivery_order.id, delivery_order.quantity, COALESCE(SUM(IF(sales_return.is_done = 1, sales_return.received, sales_return.quantity)), 0) AS returned 
-				FROM sales_return 
+				FROM sales_return
+				LEFT JOIN code_sales_return ON sales_return.code_sales_return_id = code_sales_return.id
 				JOIN delivery_order ON sales_return.delivery_order_id = delivery_order.id
-				WHERE delivery_order.id IN ($formattedArray)");
+				WHERE delivery_order.id IN ($formattedArray)  AND code_sales_return.is_delete = '0'");
 			$result = $query->result();
 			return $result;
 		}
@@ -85,15 +86,17 @@ class Sales_return_detail_model extends CI_Model {
 			$batch		= array();
 			foreach($returnQuantityArray as $key => $returnQuantity)
 			{
-				$item		= array(
-					'id' => "",
-					'delivery_order_id' => $key,
-					'quantity' => $returnQuantity,
-					'received' => 0,
-					'is_done' => 0,
-					'code_sales_return_id' => $codeSalesReturnId
-				);
-				array_push($batch, $item);
+				if($returnQuantity > 0){
+					$item		= array(
+						'id' => "",
+						'delivery_order_id' => $key,
+						'quantity' => $returnQuantity,
+						'received' => 0,
+						'is_done' => 0,
+						'code_sales_return_id' => $codeSalesReturnId
+					);
+					array_push($batch, $item);	
+				}
 				next($returnQuantityArray);
 			}
 
@@ -124,7 +127,8 @@ class Sales_return_detail_model extends CI_Model {
 				(
 					SELECT DISTINCT(sales_return.code_sales_return_id) as id
 					FROM sales_return
-					WHERE sales_return.is_done = '0'
+					LEFT JOIN code_sales_return ON sales_return.code_sales_return_id = code_sales_return.id
+					WHERE sales_return.is_done = '0' AND code_sales_return.is_confirm = '1'
 				) AS a
 				JOIN code_sales_return ON a.id = code_sales_return.id
 				JOIN users ON code_sales_return.created_by = users.id
@@ -164,8 +168,10 @@ class Sales_return_detail_model extends CI_Model {
 
 		public function quantityCheck($itemArray)
 		{
+			$itemArrayKeys		= array_keys($itemArray);
+
 			$this->db->select('sales_return.*');
-			$this->db->where_in('id', $itemArray);
+			$this->db->where_in('id', $itemArrayKeys);
 			$query		= $this->db->get($this->table_sales_return);
 			$result		= $query->result();
 

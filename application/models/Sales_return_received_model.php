@@ -12,7 +12,9 @@ class Sales_return_received_model extends CI_Model {
 		public $is_confirm;	
 		public $confirmed_by;
 		public $is_done;
-		
+		public $is_delete;
+		public $bank_id;
+
 		public function __construct()
 		{
 			parent::__construct();
@@ -28,6 +30,8 @@ class Sales_return_received_model extends CI_Model {
 			$this->is_confirm			= $db_item->is_confirm;
 			$this->confirmed_by			= $db_item->confirmed_by;
 			$this->is_done				= $db_item->is_done;
+			$this->is_delete			= $db_item->is_delete;
+			$this->bank_id				= $db_item->bank_id;
 			
 			return $this;
 		}
@@ -44,6 +48,9 @@ class Sales_return_received_model extends CI_Model {
 			$db_item->is_confirm			= $this->is_confirm;
 			$db_item->confirmed_by			= $this->confirmed_by;
 			$db_item->is_done				= $this->is_done;
+			$db_item->is_delete				= $this->is_delete;
+			$db_item->bank_id				= $this->bank_id;
+			
 			
 			return $db_item;
 		}
@@ -60,6 +67,8 @@ class Sales_return_received_model extends CI_Model {
 			$stub->is_confirm			= $db_item->is_confirm;
 			$stub->confirmed_by			= $db_item->confirmed_by;
 			$stub->is_done				= $db_item->is_done;
+			$stub->is_delete			= $db_item->is_delete;
+			$stub->bank_id				= $db_item->bank_id;
 			
 			return $stub;
 		}
@@ -84,12 +93,116 @@ class Sales_return_received_model extends CI_Model {
 			$this->is_confirm			= 0;
 			$this->confirmed_by			= null;
 			$this->is_done				= 0;
+			$this->is_delete			= 0;
+			$this->bank_id				= null;
 
 			$db_item 				= $this->get_db_from_stub();
 			$db_result 				= $this->db->insert($this->table_sales_return, $db_item);
 			
 			$insert_id				= $this->db->insert_id();
 			return $insert_id;
+		}
+
+		public function getUnconfirmedSalesreturn($offset = 0, $limit = 10)
+		{
+			$query = $this->db->query("
+				SELECT code_sales_return_received.name as salesReturnName, customer.*, code_sales_return_received.id
+				FROM code_sales_return_received
+				JOIN sales_return_received ON sales_return_received.code_sales_return_received_id = code_sales_return_received.id
+				JOIN sales_return ON sales_return_received.sales_return_id = sales_return.id
+				JOIN delivery_order ON sales_return.delivery_order_id = delivery_order.id
+				JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
+				JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
+				JOIN customer ON code_sales_order.customer_id = customer.id
+				WHERE code_sales_return_received.is_confirm = '0' AND code_sales_return_received.is_delete = '0'
+			");
+
+			$result		= $query->result();
+			return $result;
+		}
+
+		public function countUnconfirmedSalesReturn()
+		{
+			$this->db->where('is_confirm', 0);
+			$this->db->where("is_delete", 0);
+			$query		= $this->db->get($this->table_sales_return);
+			$result		= $query->num_rows();
+			return $result;
+		}
+
+		public function getById($id)
+		{
+			$query = $this->db->query("
+				SELECT code_sales_return_received.*, code_sales_order.customer_id, code_sales_order.id as salesOrderId, code_delivery_order.id as deliveryOrderId
+				FROM code_sales_return_received
+				JOIN sales_return_received ON sales_return_received.code_sales_return_received_id = code_sales_return_received.id
+				JOIN sales_return ON sales_return_received.sales_return_id = sales_return.id
+				JOIN delivery_order ON sales_return.delivery_order_id = delivery_order.id
+				JOIN code_delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order.id
+				JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
+				JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
+				WHERE code_sales_return_received.id = '$id'
+			");
+
+			$result = $query->row();
+			return $result;
+		}
+
+		public function updateById($status, $id)
+		{
+			if($status == 1){
+				$this->db->set('is_confirm', 1);
+				$this->db->set('confirmed_by', $this->session->userdata('user_id'));
+				$this->db->where('is_confirm', 0);
+				$this->db->where('is_delete', 0);
+			} else if($status == 0){
+				$this->db->set('is_delete', 1);
+				$this->db->set('confirmed_by', $this->session->userdata('user_id'));
+				$this->db->where('is_delete', 0);
+				$this->db->where('is_confirm', 0);
+			}
+
+			$this->db->where('id', $id);
+			$this->db->update($this->table_sales_return);
+			return $this->db->affected_rows();
+		}
+
+		
+		public function getUnassignedItems($offset = 0, $limit = 10)
+		{
+			$query = $this->db->query("
+				SELECT code_sales_return_received.*, code_sales_order.id as salesOrderId, code_delivery_order.id as deliveryOrderId, customer.name as customerName, customer.address, customer.number, customer.block, customer.rw, customer.rt, customer.postal_code, customer.city
+				FROM code_sales_return_received
+				JOIN sales_return_received ON sales_return_received.code_sales_return_received_id = code_sales_return_received.id
+				JOIN sales_return ON sales_return_received.sales_return_id = sales_return.id
+				JOIN delivery_order ON sales_return.delivery_order_id = delivery_order.id
+				JOIN code_delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order.id
+				JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
+				JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
+				JOIN customer ON code_sales_order.customer_id = customer.id
+				WHERE code_sales_return_received.is_done = '0' AND code_sales_return_received.is_confirm = '1'
+				LIMIT $limit OFFSET $offset
+			");
+
+			$result = $query->result();
+			return $result;
+		}
+
+		public function countUnassignedItems()
+		{
+			$this->db->where('is_done', 0);
+			$query = $this->db->get($this->table_sales_return);
+			
+			$result = $query->num_rows();
+			return $result;
+		}
+
+		public function updateFinanceStatusById($id, $bankTransactionId)
+		{
+			$this->db->set('bank_id', $bankTransactionId);
+			$this->db->set('is_done', 1);
+			$this->db->where('id', $id);
+			$this->db->update($this->table_sales_return);
 		}
 	}
 ?>

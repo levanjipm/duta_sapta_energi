@@ -78,7 +78,7 @@
     <div class='alert_box_slide'>
         <h3 style='font-family:bebasneue'>Items needed.</h3>
         <hr>
-        <form action='<?= site_url('Purchase_order/createDashboard') ?>' method="POST">
+        <form action='<?= site_url('Purchase_order/createFromDashboard') ?>' method="POST" id='purchaseOrderForm'>
             <div id='itemTable'>
                 <table class='table table-bordered'>
                     <tr>
@@ -162,10 +162,13 @@
         })
     }
 
-    function viewPendingItems()
-    {
+    function viewPendingItems(){
         $('#pendingItemsWraper').fadeIn(300, function(){
             $('#pendingItemsWraper .alert_box_slide').show("slide", { direction: "right" }, 250);
         });
     }
+
+    $('#createPurchaseOrderButton').click(function(){
+        $('#purchaseOrderForm').submit();
+    })
 </script>

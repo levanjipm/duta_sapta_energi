@@ -214,17 +214,55 @@ class Stock_in_model extends CI_Model {
 		
 		public function ViewCard($item_id)
 		{
+
 			$query = $this->db->query("
-				SELECT stock_in.quantity, stock_in.id, COALESCE(goodReceiptTable.name) as documentName, COALESCE(goodReceiptTable.date) as date,
-				COALESCE(customer.name, supplier.name) as name FROM stock_in
+				SELECT COALESCE(customer.name, supplier.name, 'Internal Transaction') as name, COALESCE(deliveryOrderTable.date, eventTable.date) as date, COALESCE(deliveryOrderTable.quantity, eventTable.quantity) * (-1) as quantity, COALESCE(deliveryOrderTable.name, eventTable.name) as documentName 
+				FROM stock_out
 				LEFT JOIN (
-					SELECT good_receipt.id, code_good_receipt.name, code_good_receipt.date FROM code_good_receipt
-					JOIN good_receipt ON good_receipt.code_good_receipt_id = code_good_receipt.id
-				) goodReceiptTable
-				ON stock_in.good_receipt_id = goodReceiptTable.id
-				LEFT JOIN customer ON stock_in.customer_id = customer.id
-				LEFT JOIN supplier ON stock_in.supplier_id = supplier.id
-				WHERE stock_in.item_id = '$item_id'
+					SELECT stock_out.id, code_delivery_order.name, code_delivery_order.date, SUM(delivery_order.quantity) as quantity
+					FROM delivery_order
+					JOIN stock_out ON stock_out.delivery_order_id = delivery_order.id
+					JOIN code_delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order.id
+					GROUP BY delivery_order.code_delivery_order_id
+				) AS deliveryOrderTable
+				ON stock_out.id = deliveryOrderTable.id
+				LEFT JOIN (
+					SELECT stock_out.id, code_event.name, code_event.date, SUM(event.quantity) as quantity
+					FROM event
+					JOIN stock_out ON stock_out.event_id = event.id
+					JOIN code_event ON event.code_event_id = code_event.id
+					GROUP BY event.item_id, event.code_event_id
+				) AS eventTable
+				ON stock_out.id = eventTable.id
+				LEFT JOIN customer ON stock_out.customer_id = customer.id
+				LEFT JOIN supplier ON stock_out.supplier_id = supplier.id
+				WHERE stock_out.in_id IN(
+					SELECT stock_in.id 
+					FROM stock_in
+					LEFT JOIN (
+						SELECT good_receipt.id, code_good_receipt.name, code_good_receipt.date FROM code_good_receipt
+						JOIN good_receipt ON good_receipt.code_good_receipt_id = code_good_receipt.id
+					) goodReceiptTable
+					ON stock_in.good_receipt_id = goodReceiptTable.id
+					LEFT JOIN customer ON stock_in.customer_id = customer.id
+					LEFT JOIN supplier ON stock_in.supplier_id = supplier.id
+					WHERE stock_in.item_id = '$item_id'
+				)
+				UNION
+				(
+					SELECT stock_in.quantity, COALESCE(goodReceiptTable.name) as documentName, COALESCE(goodReceiptTable.date) as date,
+					COALESCE(customer.name, supplier.name) as name FROM stock_in
+					LEFT JOIN (
+						SELECT good_receipt.id, code_good_receipt.name, code_good_receipt.date FROM code_good_receipt
+						JOIN good_receipt ON good_receipt.code_good_receipt_id = code_good_receipt.id
+					) goodReceiptTable
+					ON stock_in.good_receipt_id = goodReceiptTable.id
+					LEFT JOIN customer ON stock_in.customer_id = customer.id
+					LEFT JOIN supplier ON stock_in.supplier_id = supplier.id
+					WHERE stock_in.item_id = '$item_id'
+				)
+
+				ORDER BY date ASC, quantity DESC
 			");
 			
 			$result		= $query->result();

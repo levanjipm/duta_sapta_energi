@@ -135,7 +135,7 @@
 				var deliveryOrderCount	= 0;
 				
 				$.each(delivery_orders, function(index, delivery_order){
-					var sales_order_name		= delivery_order.sales_order_name;
+					var sales_order_name		= delivery_order.salesOrderName;
 					var delivery_order_name		= delivery_order.name;
 					var delivery_order_id		= delivery_order.id;
 					var delivery_order_date		= delivery_order.date;

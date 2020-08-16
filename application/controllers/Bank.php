@@ -38,7 +38,7 @@ class Bank extends CI_Controller {
 		$this->load->view('finance/Bank/transactionDashboard');
 	}
 	
-	public function assign()
+	public function assignDashboard()
 	{
 		$user_id		= $this->session->userdata('user_id');
 		$this->load->model('User_model');
@@ -49,9 +49,6 @@ class Bank extends CI_Controller {
 		
 		$this->load->view('head');
 		$this->load->view('accounting/header', $data);
-		
-		$this->load->model('Internal_bank_account_model');
-		$data['accounts'] = $this->Internal_bank_account_model->show_all();
 		
 		$this->load->view('accounting/Bank/assignBankDashboard', $data);
 	}
@@ -104,7 +101,7 @@ class Bank extends CI_Controller {
 		$this->load->view('accounting/Bank/assignBank', $data);
 	}
 	
-	public function assign_input()
+	public function insertAssign()
 	{
 		$bank_id		= $this->input->post('bank_id');
 		
@@ -121,7 +118,7 @@ class Bank extends CI_Controller {
 			$this->Bank_model->assign_payable($result);
 		}
 		
-		redirect(site_url('Bank/assign'));
+		redirect(site_url('Bank/assignDashboard'));
 	}
 	
 	public function mutationDashboard()

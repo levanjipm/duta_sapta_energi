@@ -233,4 +233,106 @@ class Sales_return extends CI_Controller {
 			echo 0;
 		}
 	}
+	public function getUnconfirmedSalesReturn()
+	{
+		$page			= $this->input->get('page');
+		$this->load->model("Sales_return_received_model");
+		$offset			= ($page - 1) * 10;
+		$data['items']			= $this->Sales_return_received_model->getUnconfirmedSalesreturn($offset);
+		$data['pages']			= max(1, ceil($this->Sales_return_received_model->countUnconfirmedSalesReturn()));
+
+		header('Content-Type: application/json');
+		echo json_encode($data);
+	}
+
+	public function getReceivedById()
+	{
+		$id			= $this->input->get('id');
+		$this->load->model('Sales_return_received_model');
+		$salesReturnReceived = $this->Sales_return_received_model->getById($id);
+
+		$customerId = $salesReturnReceived->customer_id;
+
+		$data['general'] = $salesReturnReceived;
+
+		$this->load->model('Customer_model');
+		$data['customer'] = $this->Customer_model->getById($customerId);
+
+		$this->load->model('Sales_return_received_detail_model');
+		$data['items'] = $this->Sales_return_received_detail_model->getByCodeId($id);
+
+		header('Content-Type: application/json');
+		echo json_encode($data);
+	}
+
+	public function confirmReceivedById()
+	{
+		$id			= $this->input->post('id');
+		$this->load->model('Sales_return_received_model');
+		$result = $this->Sales_return_received_model->updateById(1, $id);
+
+		echo $result;
+	}
+
+	public function deleteReceivedById()
+	{
+		$id			= $this->input->post('id');
+		$this->load->model('Sales_return_received_model');
+		$result = $this->Sales_return_received_model->updateById(0, $id);
+
+		echo $result;
+	}
+
+	public function getUnassignedSalesReturn()
+	{
+		$page			= $this->input->get('page');
+		$offset			= ($page - 1) * 10;
+		$this->load->model('Sales_return_received_model');
+		$data['items']	= $this->Sales_return_received_model->getUnassignedItems($offset);
+		$data['pages']	= max(1, ceil($this->Sales_return_received_model->countUnassignedItems()/10));
+
+		header('Content-Type: application/json');
+		echo json_encode($data);
+	}
+
+	public function updateBankDateById()
+	{
+		$salesReturnReceivedId			= $this->input->post('id');
+		$date							= $this->input->post('date');
+		$account						= $this->input->post('account');
+
+		if($date > "2020-01-01"){
+			$this->load->model("Sales_return_received_model");
+			$salesReturn		= $this->Sales_return_received_model->getById($salesReturnReceivedId);
+			$customer_id		= $salesReturn->customer_id;
+
+			$this->load->model("Sales_return_received_detail_model");
+			$salesReturnDetail	= $this->Sales_return_received_detail_model->getByCodeId($salesReturnReceivedId);
+
+			$salesReturnValue	= 0;
+			$items				= (array) $salesReturnDetail;
+			foreach($items as $item){
+				$quantity		= $item->quantity;
+				$price_list		= $item->price_list;
+				$discount		= $item->discount;
+				$netPrice		= $price_list * (100 - $discount) / 100;
+				$totalPrice		= $netPrice * $quantity;
+
+				$salesReturnValue	+= $totalPrice;
+			}
+
+			$this->load->model("Bank_model");
+			$result = $this->Bank_model->insertItem($date, $salesReturnValue, 1, 'customer', $customer_id, $account);
+			if($result != NULL){
+				$this->Sales_return_received_model->updateFinanceStatusById($salesReturnReceivedId, $result);
+				$this->Bank_model->insertItem($date, $salesReturnValue, 2, 'customer', $customer_id, $account, $result, 1);
+
+				echo 1;
+			} else {
+				echo 0;
+			}
+		} else {
+			echo 0;
+		}
+	}
 }

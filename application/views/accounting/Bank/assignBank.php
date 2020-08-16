@@ -4,7 +4,7 @@
 	</div>
 	<br>
 	<div class='dashboard_in'>
-		<form action='<?= site_url('Bank/assign_input') ?>' method='POST'>
+		<form action='<?= site_url('Bank/insertAssign') ?>' method='POST'>
 			<label>Bank data</label>
 			<p style='font-family:museo'><?= date('d M Y',strtotime($bank->date)) ?></p>
 			<p style='font-family:museo'><?= $bank->name ?> ( <?= $opponent ?> )</p>
@@ -65,7 +65,7 @@
 			var remaining_bank_value	= $('#bank_value').val();
 			var remaining_invoice_value	= $('#remaining-' + id).val();
 			var difference				= Math.abs(remaining_bank_value - remaining_invoice_value);
-			if(remaining_bank_value < remaining_invoice_value){
+			if(remaining_bank_value > remaining_invoice_value){
 				$('#bank_value').val(difference);
 				$('#remaining-' + id).val(0);
 				$('#bank_value_p').html(numeral(difference).format('0,0.00'));

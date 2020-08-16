@@ -100,7 +100,7 @@ class Bank_model extends CI_Model {
 			return $result;
 		}
 		
-		public function insertItem($date, $value, $transaction, $type, $opponent_id, $account)
+		public function insertItem($date, $value, $transaction, $type, $opponent_id, $account, $major_id = null, $isDone = 0, $isDelete = 0)
 		{				
 			switch($type){
 				case 'customer':
@@ -111,7 +111,10 @@ class Bank_model extends CI_Model {
 						'customer_id' => $opponent_id,
 						'supplier_id' => NULL,
 						'other_id' => NULL,
-						'account_id' => $account
+						'account_id' => $account,
+						'bank_transaction_major' => $major_id,
+						'is_done' => $isDone,
+						'is_delete' => $isDelete
 					);
 				break;
 				case 'supplier':
@@ -122,7 +125,10 @@ class Bank_model extends CI_Model {
 						'supplier_id' => $opponent_id,
 						'customer_id' => NULL,
 						'other_id' => NULL,
-						'account_id' => $account
+						'account_id' => $account,
+						'bank_transaction_major' => $major_id,
+						'is_done' => $isDone,
+						'is_delete' => $isDelete
 					);
 				break;
 				case 'other':
@@ -133,7 +139,10 @@ class Bank_model extends CI_Model {
 						'supplier_id' => NULL,
 						'customer_id' => NULL,
 						'other_id' => $opponent_id,
-						'account_id' => $account
+						'account_id' => $account,
+						'bank_transaction_major' => $major_id,
+						'is_done' => $isDone,
+						'is_delete' => $isDelete
 					);
 				break;
 			}
