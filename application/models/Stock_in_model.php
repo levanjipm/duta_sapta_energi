@@ -11,7 +11,7 @@ class Stock_in_model extends CI_Model {
 		public $supplier_id;
 		public $customer_id;
 		public $good_receipt_id;
-		public $sales_return_id;
+		public $sales_return_received_id;
 		public $event_id;
 		public $price;
 		
@@ -26,7 +26,7 @@ class Stock_in_model extends CI_Model {
 			$this->supplier_id				='';
 			$this->customer_id				='';
 			$this->good_receipt_id			='';
-			$this->sales_return_id			='';
+			$this->sales_return_received_id			='';
 			$this->event_id					='';
 			$this->price					='';
 		}
@@ -40,7 +40,7 @@ class Stock_in_model extends CI_Model {
 			$this->supplier_id				= $db_item->supplier_id;
 			$this->customer_id				= $db_item->customer_id;
 			$this->good_receipt_id			= $db_item->good_receipt_id;
-			$this->sales_return_id			= $db_item->sales_return_id;
+			$this->sales_return_received_id	= $db_item->sales_return_id;
 			$this->event_id					= $db_item->event_id;
 			$this->price					= $db_item->price;
 			
@@ -58,7 +58,7 @@ class Stock_in_model extends CI_Model {
 			$db_item->supplier_id				= $this->supplier_id;
 			$db_item->customer_id				= $this->customer_id;
 			$db_item->good_receipt_id			= $this->good_receipt_id;
-			$db_item->sales_return_id			= $this->sales_return_id;
+			$db_item->sales_return_received_id	= $this->sales_return_id;
 			$db_item->event_id					= $this->event_id;
 			$db_item->price						= $this->price;
 			
@@ -76,7 +76,7 @@ class Stock_in_model extends CI_Model {
 			$stub->supplier_id				= $db_item->supplier_id;
 			$stub->customer_id				= $db_item->customer_id;
 			$stub->good_receipt_id			= $db_item->good_receipt_id;
-			$stub->sales_return_id			= $db_item->sales_return_id;
+			$stub->sales_return_received_id	= $db_item->sales_return_id;
 			$stub->event_id					= $db_item->event_id;
 			$stub->price					= $db_item->price;
 			
@@ -93,15 +93,10 @@ class Stock_in_model extends CI_Model {
 			return $result;
 		}
 		
-		public function insertItemFromGoodReceipt($good_receipt_array)
+		public function insertItem($stockInArray)
 		{
-			$this->db->insert_batch($this->table_stock_in, $good_receipt_array);
-			return $this->db->affected_rows();
-		}
-		
-		public function input_from_code_event($event_array)
-		{
-			$this->db->insert_batch($this->table_stock_in, $event_array);
+			$result = $this->db->insert_batch($this->table_stock_in, $stockInArray);
+			return $result;
 		}
 		
 		public function getResidueByItemId($item_id)
@@ -214,16 +209,17 @@ class Stock_in_model extends CI_Model {
 		
 		public function ViewCard($item_id)
 		{
-
 			$query = $this->db->query("
 				SELECT COALESCE(customer.name, supplier.name, 'Internal Transaction') as name, COALESCE(deliveryOrderTable.date, eventTable.date) as date, COALESCE(deliveryOrderTable.quantity, eventTable.quantity) * (-1) as quantity, COALESCE(deliveryOrderTable.name, eventTable.name) as documentName 
 				FROM stock_out
 				LEFT JOIN (
 					SELECT stock_out.id, code_delivery_order.name, code_delivery_order.date, SUM(delivery_order.quantity) as quantity
 					FROM delivery_order
+					JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
+					JOIN price_list ON sales_order.price_list_id = price_list.id
 					JOIN stock_out ON stock_out.delivery_order_id = delivery_order.id
 					JOIN code_delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order.id
-					GROUP BY delivery_order.code_delivery_order_id
+					GROUP BY delivery_order.code_delivery_order_id, price_list.item_id
 				) AS deliveryOrderTable
 				ON stock_out.id = deliveryOrderTable.id
 				LEFT JOIN (
@@ -250,8 +246,8 @@ class Stock_in_model extends CI_Model {
 				)
 				UNION
 				(
-					SELECT stock_in.quantity, COALESCE(goodReceiptTable.name) as documentName, COALESCE(goodReceiptTable.date) as date,
-					COALESCE(customer.name, supplier.name) as name FROM stock_in
+					SELECT COALESCE(customer.name, supplier.name) as name, COALESCE(goodReceiptTable.date) as date, stock_in.quantity, COALESCE(goodReceiptTable.name) as documentName
+					 FROM stock_in
 					LEFT JOIN (
 						SELECT good_receipt.id, code_good_receipt.name, code_good_receipt.date FROM code_good_receipt
 						JOIN good_receipt ON good_receipt.code_good_receipt_id = code_good_receipt.id
@@ -261,7 +257,6 @@ class Stock_in_model extends CI_Model {
 					LEFT JOIN supplier ON stock_in.supplier_id = supplier.id
 					WHERE stock_in.item_id = '$item_id'
 				)
-
 				ORDER BY date ASC, quantity DESC
 			");
 			

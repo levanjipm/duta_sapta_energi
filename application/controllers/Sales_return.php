@@ -223,9 +223,7 @@ class Sales_return extends CI_Controller {
 				$this->load->model('Sales_return_received_detail_model');
 				$this->Sales_return_received_detail_model->insertItem($itemArray, $codeSalesReturnId);
 				$this->Sales_return_detail_model->updateItems($itemArray);
-
 				echo 1;
-
 			} else {
 				echo 0;
 			}
@@ -257,7 +255,6 @@ class Sales_return extends CI_Controller {
 
 		$this->load->model('Customer_model');
 		$data['customer'] = $this->Customer_model->getById($customerId);
-
 		$this->load->model('Sales_return_received_detail_model');
 		$data['items'] = $this->Sales_return_received_detail_model->getByCodeId($id);
 
@@ -270,6 +267,31 @@ class Sales_return extends CI_Controller {
 		$id			= $this->input->post('id');
 		$this->load->model('Sales_return_received_model');
 		$result = $this->Sales_return_received_model->updateById(1, $id);
+		if($result == 1){
+			$salesReturn			= $this->Sales_return_received_model->getById($id);
+			$this->load->model("Sales_return_received_detail_model");
+			// $salesReturnItems		= $this->Sales_return_received_detail_model->getByCodeId($id);
+			// $salesReturnArray = array();
+			// foreach($salesReturnItems as $salesReturnItem)
+			// {
+			// 	$array = array(
+			// 		'id' => '',
+			// 		'supplier_id' => null,
+			// 		'customer_id' => $salesReturn->customer_id,
+			// 		'sales_return_received_id' => $salesReturnItem->id,
+			// 		'quantity' => $salesReturnItem->quantity,
+			// 		'residue' => $salesReturnItem->quantity,
+			// 		'good_receipt_id' => null,
+			// 		'event_id' => null,
+			// 		'price' => $salesReturnItem->value
+			// 	);
+
+			// 	array_push($salesReturnArray, $array);
+			// };
+
+			$this->load->model('Stock_in_model');
+			$this->Stock_in_model->insertItem($salesReturnArray);
+		}
 
 		echo $result;
 	}
@@ -278,9 +300,15 @@ class Sales_return extends CI_Controller {
 	{
 		$id			= $this->input->post('id');
 		$this->load->model('Sales_return_received_model');
-		$result = $this->Sales_return_received_model->updateById(0, $id);
-
-		echo $result;
+		// $result = $this->Sales_return_received_model->updateById(0, $id);
+		// if($result == 1){
+			$this->load->model('Sales_return_received_detail_model');
+			$receivedItem = $this->Sales_return_received_detail_model->getByCodeId($id);
+			print_r($receivedItem);
+			echo 1;
+		// } else {
+		// 	echo 0;
+		// }
 	}
 
 	public function getUnassignedSalesReturn()

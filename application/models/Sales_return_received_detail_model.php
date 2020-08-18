@@ -78,16 +78,28 @@ class Sales_return_received_detail_model extends CI_Model {
 
 		public function getByCodeId($id)
 		{
-			$this->db->select('item.reference, item.name, sales_return_received.quantity, sales_order.discount, price_list.price_list');
-			$this->db->from('sales_return_received');
-			$this->db->join('sales_return', 'sales_return_received.sales_return_id = sales_return.id');
-			$this->db->join('delivery_order', 'delivery_order.id = sales_return.delivery_order_id');
-			$this->db->join('sales_order', 'delivery_order.sales_order_id = sales_order.id');
-			$this->db->join('price_list', 'price_list.id = sales_order.price_list_id');
-			$this->db->join('item', 'price_list.item_id = item.id');
-			$this->db->where('sales_return_received.code_sales_return_received_id', $id);
+			$query			= $this->db->query("
+				SELECT sales_return_received.id, item.reference, item.name, sales_return_received.quantity, salesReturnTable.value, sales_order.discount, price_list.price_list FROM sales_return_received
+				JOIN sales_return ON sales_return_received.sales_return_id = sales_return.id
+				JOIN delivery_order ON delivery_order.id = sales_return.delivery_order_id
+				JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
+				JOIN stock_out ON stock_out.delivery_order_id = delivery_order.id
+				JOIN price_list ON price_list.id = sales_order.price_list_id
+				JOIN item ON price_list.item_id = item.id
+				LEFT JOIN (
+					SELECT (SUM(a.quantity * a.price) / SUM(a.quantity)) as value, a.id FROM (
+						SELECT SUM(stock_out.quantity) as quantity, stock_in.price, stock_in.id FROM sales_return_received
+						JOIN sales_return ON sales_return_received.sales_return_id = sales_return.id
+						JOIN delivery_order ON sales_return.delivery_order_id = delivery_order.id
+						JOIN stock_out ON stock_out.delivery_order_id = delivery_order.id
+						JOIN stock_in ON stock_out.in_id = stock_in.id
+						GROUP BY stock_out.in_id
+					) as a
+				) salesReturnTable
+				ON stock_out.in_id = salesReturnTable.id
+				WHERE sales_return_received.code_sales_return_received_id = '$id'
+			");
 
-			$query = $this->db->get();
 			$result = $query->result();
 			return $result;
 		}

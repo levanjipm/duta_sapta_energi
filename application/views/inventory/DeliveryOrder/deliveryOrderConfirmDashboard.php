@@ -76,17 +76,17 @@
 			<tbody id='deliveryOrderConfirmTableContent'>
 			</tbody>
 		</table>
-		
-		<div class='notificationText warning' id='warning_text'><p style='font-family:museo'><i class='fa fa-exclamation-triangle'></i> Warning! Insufficient stock detected.</p></div><br>
-
-		<div class='notificationText danger' id='failedConfirmDeliveryOrder'><i class='fa fa-exclamation-triangle'></i> Failed to confirm delivery order.</p></div><br>
-
-		<div class='notificationText danger' id='failedDeleteDeliveryOrder'><i class='fa fa-exclamation-triangle'></i> Failed to delete delivery order.</p></div><br>
+		<br>
 
 		<input type='hidden' id='delivery_order_id' name='id'>
 		<button type='button' class='button button_default_dark' id='confirmDeliveryOrderButton'><i class='fa fa-long-arrow-right'></i></button>
 		<button type='button' class='button button_danger_dark' id='cancelDeliveryOrderButton'><i class='fa fa-trash'></i></button>
+		<br><br>
+		<div class='notificationText warning' id='warning_text'><p style='font-family:museo'><i class='fa fa-exclamation-triangle'></i> Warning! Insufficient stock detected.</p></div>
+		<br>
+		<div class='notificationText danger' id='failedConfirmDeliveryOrder'><i class='fa fa-exclamation-triangle'></i> Failed to confirm delivery order.</p></div>
 
+		<div class='notificationText danger' id='failedDeleteDeliveryOrder'><i class='fa fa-exclamation-triangle'></i> Failed to delete delivery order.</p></div>
 	</div>
 </div>
 
@@ -114,15 +114,15 @@
 			<tbody id='deliveryOrderTableSentContent'>
 			</tbody>
 		</table>
-		
-		<div class='notificationText warning' id='StockWarningTextSent'><p style='font-family:museo'><i class='fa fa-exclamation-triangle'></i> Warning! Insufficient stock detected.</p></div><br>
-		
-		<div class='notificationText danger' id='InvoiceWarningTextSent'><p style='font-family:museo'><i class='fa fa-exclamation-triangle'></i> Delivery order cannot be proceed. Please ask accounting department to create invoice first.</p></div><br>
+		<br>
 
 		<input type='hidden' id='sentDeliveryOrderId' name='id'>
 		<button class='button button_default_dark' id='sentConfirmDeliveryOrderButton'><i class='fa fa-long-arrow-right'></i></button>
 		<button type='button' class='button button_danger_dark' id='sentDeleteDeliveryOrderButton'><i class='fa fa-trash'></i></button>
-
+		<br><br>
+		<div class='notificationText warning' id='StockWarningTextSent'><p style='font-family:museo'><i class='fa fa-exclamation-triangle'></i> Warning! Insufficient stock detected.</p></div>
+		<div class='notificationText danger' id='InvoiceWarningTextSent'><p style='font-family:museo'><i class='fa fa-exclamation-triangle'></i> Delivery order cannot be proceed. Please ask accounting department to create invoice first.</p></div>
+		
 		<div class='notificationText danger' id='sentConfirmDeliveryOrderNotification'><i class='fa fa-exclamation-triangle'></i> Failed to send delivery order.</p></div>
 		<div class='notificationText danger' id='sentCancelDeliveryOrderNotification'><i class='fa fa-exclamation-triangle'></i> Failed to send delivery order.</p></div>
 	</div>

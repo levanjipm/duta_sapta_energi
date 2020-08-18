@@ -42,17 +42,34 @@
                 page: $("#page").val()
             },
             success:function(response){
-                var stockInArray = response.stockIn;
-                $.each(stockInArray, function(index, stockIn){
-                    var date = stockIn.date;
-                    var name = stockIn.name;
-                    var quantity = stockIn.quantity;
-                    var documentName = stockIn.documentName;
+                var finalStock = 0;
+                var itemCount = 0;
+                $.each(response, function(index, item){
+                    var name = item.name;
+                    var quantity = parseInt(item.quantity);
+                    var documentName = item.documentName;
+                    var date = item.date;
 
-                    $('#stockTableContent').append("<tr><td>" + my_date_format(date) + "</td><td>" + documentName + "</td><td>" + name + "</td><td>+" + numeral(quantity).format("0,0") + "</td></tr>")
+                    finalStock += quantity;
+
+                    $('#stockTableContent').append("<tr><td>" + my_date_format(date) + "</td><td>" + documentName + "</td><td>" + name + "</td><td>" + numeral(quantity).format('0,0') + "</td><td>" + numeral(finalStock).format('0,0') + "</td></tr>");
+
+                    itemCount++;
                 });
-                
-                var stockOutArray = response.stockOut;
+
+                var pages = Math.max(Math.ceil(itemCount/20),1);
+                $('#page').html("");
+                for(i = 1; i <= pages; i++){
+                    $('#page').append("<option value='" + i + "'>" + i + "</option>");
+                }
+
+                if(itemCount > 0){
+                    $('#stockTable').show();
+                    $('#stockTableText').hide();
+                } else {
+                    $('#stockTable').hide();
+                    $('#stockTableText').show();
+                }
             }
         })
     }

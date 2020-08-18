@@ -334,7 +334,32 @@
 	}
 
 	function refreshOpponent(page = $('#opponentPage').val()){
+		$.ajax({
+			url:'<?= site_url("Opponent/getItems") ?>',
+			data:{
+				page:page,
+				term: $('#searchOpponentBar').val()
+			},
+			success:function(response){
+				var opponentCount = 0;
+				var items = response.items;
+				$('#opponentTableContent').html("");
+				$.each(items, function(index, item){
+					console.log(item);
+					opponentCount++;
+				});
 
+				$('#opponentPage').html("");
+				for(i = 1; i <= page; i++){
+					if(i == page){
+						$("#opponentPage").append("<option value='" + i + "' selected>" + i + "</option>");
+					} else {
+						$("#opponentPage").append("<option value='" + i + "'>" + i + "</option>");
+					}
+				}
+				console.log(response);
+			}
+		})
 	}
 
 	function refreshType(page = $('#debtTypePage').val()){
@@ -436,6 +461,9 @@
 		$('#supplierTabButton').addClass('active');
 		$('#opponentTabButton').attr('disabled', false);
 
+		$('#searchSupplierBar').val("");
+		refreshSupplier(1);
+
 		$('#opponentView').fadeOut(250);
 		setTimeout(function(){
 			$('#supplierView').fadeIn(250);
@@ -447,6 +475,9 @@
 		$('.button_mini_tab').removeClass('active');
 		$('#opponentTabButton').addClass('active');
 		$('#supplierTabButton').attr('disabled', false);
+
+		$('#searchOpponentBar').val("");
+		refreshOpponent(1);
 
 		$('#supplierView').fadeOut(250);
 		setTimeout(function(){

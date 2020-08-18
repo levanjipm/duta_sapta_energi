@@ -66,36 +66,8 @@ class Stock extends CI_Controller {
 	{
 		$itemId			= $this->input->get('id');
 		$this->load->model('Stock_in_model');
-		$stockIn = $this->Stock_in_model->viewCard($itemId);
-
-		print_r($stockIn);
-		// $stockInArray = (array) $stockIn;
-
-		// $stockInArray = (array) $stockIn;
-		// $stockInIdArray = array();
-		// foreach($stockInArray as $stockIn){
-		// 	$id = $stockIn->id;
-		// 	if(!in_array($id, $stockInIdArray)){
-		// 		array_push($stockInIdArray, $id);	
-		// 	}
-		// }
-
-		// $this->load->model('Stock_out_model');
-		// $stockOut = $this->Stock_out_model->getByInIdArray($stockInIdArray);
-
-		// $stockOutArray = (array) $stockOut;
-
-		// $items = array_merge($stockOutArray, $stockInArray);
-
-		// $date = array_column($items, 'date');
-		// array_multisort($date, SORT_ASC, $items);
-
-		// $quantity = array_column($items, 'quantity');
-		// array_multisort($quantity, SORT_DESC, $items);
-
-		// $data = $items;
-		
-		// header('Content-Type: application/json');
-		// echo json_encode($data);
+		$data = $this->Stock_in_model->viewCard($itemId);
+		header('Content-Type: application/json');
+		echo json_encode($data);
 	}
 }

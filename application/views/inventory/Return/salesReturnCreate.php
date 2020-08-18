@@ -54,6 +54,11 @@
 	</div>
 </div>
 <script>
+	$("#salesReturnForm").validate({
+		ignore:"",
+		rules: {"hidden_field": {required: true}}
+	});
+	
     $(document).ready(function(){
         refreshView();
     });
@@ -223,11 +228,6 @@
     }
 
 	function confirmSalesReturn(){
-		$("#salesReturnForm").validate({
-			ignore:"",
-			rules: {"hidden_field": {required: true}}
-		});
-
 		if($('#salesReturnForm').valid()){
 			$.ajax({
 				url:"<?= site_url('Sales_return/receiveItem') ?>",

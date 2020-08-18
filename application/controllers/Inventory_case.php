@@ -287,7 +287,7 @@ class Inventory_case extends CI_Controller {
 		
 			if(!empty($stockInArray)){
 				$this->load->model('Stock_in_model');
-				$this->Stock_in_model->input_from_code_event($stockInArray);
+				$this->Stock_in_model->insertItem($stockInArray);
 			}
 
 			$this->load->model('Inventory_case_model');

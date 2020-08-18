@@ -128,7 +128,7 @@ class Good_receipt extends CI_Controller {
 			$expectedInput = count($batch);
 
 			$this->load->model('Stock_in_model');
-			$result = $this->Stock_in_model->insertItemFromGoodReceipt($batch);
+			$result = $this->Stock_in_model->insertItem($batch);
 
 			if($result == $expectedInput){
 				echo 1;
