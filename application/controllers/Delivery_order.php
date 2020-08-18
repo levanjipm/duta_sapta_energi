@@ -291,15 +291,10 @@ class Delivery_order extends CI_Controller {
 			$this->load->model('Stock_in_model');
 			$result					= $this->Stock_in_model->checkStock($deliveryOrderArray);
 			
-			if($result){
-				$check 				= $this->Delivery_order_model->sendById($deliveryOrderId);
-				if($check){			
-					$this->load->model('Stock_out_model');
-					$this->Stock_out_model->sendDeliveryOrder($deliveryOrderArray);
-					echo 1;
-				} else {
-					echo 0;
-				}
+			if($result){	
+				$this->load->model('Stock_out_model');
+				$this->Stock_out_model->sendDeliveryOrder($deliveryOrderArray);
+				echo 1;
 			} else {
 				echo 0;
 			}

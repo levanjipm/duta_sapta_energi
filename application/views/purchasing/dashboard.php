@@ -98,6 +98,24 @@
     </div>
 </div>
 
+<div class='alert_wrapper' id='pendingOrdersWrapper'>
+    <button class='slide_alert_close_button'>&times;</button>
+    <div class='alert_box_slide'>
+    <h3 style='font-family:bebasneue'>Pending purchase orders</h3>
+    <hr>
+    <div id='pendingPurchaseOrderTable'>
+        <table class='table table-bordered'>
+            <tr>
+                <th>Date</th>
+                <th>Name</th>
+                <th>Supplier</th>
+                <th>Progress</th>
+            </tr>
+            <tbody id='pendingPurchaseOrderTableContent'></tbody>
+        </table>
+    </div>
+    <p id='pendingPurchaseOrderTableText'>There is no pending purchase order.</p>
+
 <script>
     $(document).ready(function(){
         calculateNeeds();
@@ -150,7 +168,9 @@
     }
 
     $('#createPurchaseOrderButton').click(function(){
-        
+        $('#payableDetailWrapper').fadeIn(300, function(){
+            $('#payableDetailWrapper .alert_box_slide').show("slide", { direction: "right" }, 250);
+        });
     })
 
     function calculatePendingOrders(){
@@ -167,8 +187,4 @@
             $('#pendingItemsWraper .alert_box_slide').show("slide", { direction: "right" }, 250);
         });
     }
-
-    $('#createPurchaseOrderButton').click(function(){
-        $('#purchaseOrderForm').submit();
-    })
 </script>

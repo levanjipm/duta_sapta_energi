@@ -35,10 +35,6 @@ class Purchase_order extends CI_Controller {
 		$this->load->view('head');
 		$this->load->view('purchasing/header', $data);
 		
-		$this->load->model('Supplier_model');
-		$result = $this->Supplier_model->showItems();
-		$data['suppliers'] = $result;
-		
 		$this->load->model('Purchase_order_model');
 		$guid	= $this->Purchase_order_model->create_guid();
 		
@@ -117,7 +113,7 @@ class Purchase_order extends CI_Controller {
 		$data['detail']		= $this->Purchase_order_detail_model->getByCodeId($purchase_order_id);
 		
 		$this->load->view('head');
-		$this->load->view('purchasing/purchase_order_print', $data);
+		$this->load->view('purchasing/PurchaseOrder/print', $data);
 	}
 	
 	public function archiveDashboard()

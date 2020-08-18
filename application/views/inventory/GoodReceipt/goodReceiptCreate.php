@@ -96,6 +96,8 @@
 					} else {
 						$('#delivery_address_p').html("<p style='font-family:museo'>" + dropship_address + "</p><p style='font-family:museo'>" + dropship_address + "</p><p style='font-family:museo'>" + dropship_city + "</p><p style='font-family:museo'>" + dropship_contact_person + "</p>");
 					}
+
+					$('#goodReceiptTableContent').html("");
 					
 					$.each(purchase_orders, function(index, purchase_order){
 						var purchase_order_id	= purchase_order.id;

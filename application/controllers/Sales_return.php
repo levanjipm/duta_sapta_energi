@@ -270,24 +270,24 @@ class Sales_return extends CI_Controller {
 		if($result == 1){
 			$salesReturn			= $this->Sales_return_received_model->getById($id);
 			$this->load->model("Sales_return_received_detail_model");
-			// $salesReturnItems		= $this->Sales_return_received_detail_model->getByCodeId($id);
-			// $salesReturnArray = array();
-			// foreach($salesReturnItems as $salesReturnItem)
-			// {
-			// 	$array = array(
-			// 		'id' => '',
-			// 		'supplier_id' => null,
-			// 		'customer_id' => $salesReturn->customer_id,
-			// 		'sales_return_received_id' => $salesReturnItem->id,
-			// 		'quantity' => $salesReturnItem->quantity,
-			// 		'residue' => $salesReturnItem->quantity,
-			// 		'good_receipt_id' => null,
-			// 		'event_id' => null,
-			// 		'price' => $salesReturnItem->value
-			// 	);
+			$salesReturnItems		= $this->Sales_return_received_detail_model->getByCodeId($id);
+			$salesReturnArray = array();
+			foreach($salesReturnItems as $salesReturnItem)
+			{
+				$array = array(
+					'id' => '',
+					'supplier_id' => null,
+					'customer_id' => $salesReturn->customer_id,
+					'sales_return_received_id' => $salesReturnItem->id,
+					'quantity' => $salesReturnItem->quantity,
+					'residue' => $salesReturnItem->quantity,
+					'good_receipt_id' => null,
+					'event_id' => null,
+					'price' => $salesReturnItem->value
+				);
 
-			// 	array_push($salesReturnArray, $array);
-			// };
+				array_push($salesReturnArray, $array);
+			};
 
 			$this->load->model('Stock_in_model');
 			$this->Stock_in_model->insertItem($salesReturnArray);
@@ -305,7 +305,7 @@ class Sales_return extends CI_Controller {
 			$this->load->model('Sales_return_received_detail_model');
 			$receivedItem = $this->Sales_return_received_detail_model->getByCodeId($id);
 			print_r($receivedItem);
-			echo 1;
+			// echo 1;
 		// } else {
 		// 	echo 0;
 		// }

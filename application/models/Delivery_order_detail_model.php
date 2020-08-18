@@ -144,7 +144,7 @@ class Delivery_order_detail_model extends CI_Model {
 			$this->db->from('delivery_order');
 			$this->db->join('sales_order', 'delivery_order.sales_order_id = sales_order.id');
 			$this->db->join('price_list', 'sales_order.price_list_id = price_list.id');
-			$this->db->join('code_sales_order', 'code_sales_order.id = sales_order.code_sales_order_id', 'inner');
+			$this->db->join('code_sales_order', 'code_sales_order.id = sales_order.code_sales_order_id', 'left');
 			$this->db->where('delivery_order.code_delivery_order_id', $id);
 			
 			$query 	= $this->db->get();

@@ -26,15 +26,8 @@
 			</div>
 			
 			<label>Supplier</label>
-			<select class='form-control' name='supplier' id='supplier'>
-<?php
-	foreach($suppliers as $supplier){
-?>
-				<option value='<?= $supplier->id ?>'><?= $supplier->name ?></option>
-<?php
-	}
-?>
-			</select>
+			<button type='button' class='form-control' id='supplierButton' onclick='openSupplierView()' style='text-align:left!important'></button>
+			<input type='hidden' id='supplier' name='supplier' required>
 	
 			<label>Taxing</label>
 			<select class='form-control' name='taxing' id='taxing'>
@@ -89,8 +82,32 @@
 				<tbody id='bonus_cart_products'></tbody>
 			</table>
 	
-			<button type='button' class='button button_success_dark' id='submit_button' onclick='show_purchase_order()' style='display:none'><i class='fa fa-long-arrow-right'></i></button>
+			<button type='button' class='button button_default_dark' id='submit_button' onclick='show_purchase_order()' style='display:none'><i class='fa fa-long-arrow-right'></i></button>
 		</form>
+	</div>
+</div>
+
+<div class='alert_wrapper' id='supplier_wrapper'>
+	<div class='alert_box_full'>
+		<button type='button' class='button alert_full_close_button' title='Close select supplier session'>&times;</button>
+		<h3 style='font-family:bebasneue'>Supplier</h3>
+		<hr>
+		<input type='text' class='form-control' id='supplierSearchBar'><br>
+		<div id='supplierTable'>
+			<table class='table table-bordered'>	
+				<tr>
+					<th>Name</th>
+					<th>Information</th>
+					<th>Action</th>
+				</tr>
+				<tbody id='supplierTableContent'></tbody>
+			</table>
+
+			<select class='form-control' id='supplierPage' style='width:100px'>
+				<option value='1'>1</option>
+			</select>
+		</div>
+		<p id='supplierTableText'>There is no supplier found.</p>
 	</div>
 </div>
 
@@ -164,6 +181,11 @@
 			$('#dropship_detail').fadeOut();
 			$('#dropship_detail input').attr('required',false);
 		}
+	});
+
+	$('#purchase_order_form').validate({
+		ignore:"",
+		rules: {"hidden_field": {required: true}}
 	});
 
 	$('#add_item_button').click(function(){
@@ -464,6 +486,103 @@
 			$('#purchase_order_status_detail input').attr('required', false);
 		}
 	});
+
+	function openSupplierView(){
+		$('#supplierSearchBar').val("");
+		$('#supplier_wrapper').fadeIn();
+		refreshSupplier(1);
+	}
+
+	$('#supplierSearchBar').change(function(){
+		refreshSupplier(1);
+	})
+	
+	$('#supplierPage').change(function(){
+		refreshSupplier();
+	})
+
+	function refreshSupplier(page = $('#supplierPage').val()){
+		$.ajax({
+			url:"<?= site_url('Supplier/showItems') ?>",
+			data:{
+				page: page,
+				term: $('#supplierSearchBar').val()
+			},
+			success:function(response){
+				var supplierCount = 0;
+				var items = response.suppliers;
+				$('#supplierTableContent').html("");
+				$.each(items, function(index, item){
+					var name = item.name;
+					var complete_address		= "";
+					complete_address			+= item.address;
+					var supplier_city			= item.city;
+					var supplier_number			= item.number;
+					var supplier_rt				= item.rt;
+					var supplier_rw				= item.rw;
+					var supplier_postal			= item.postal_code;
+					var supplier_block			= item.block;
+					var id						= item.id;
+					if(supplier_number != null){
+						complete_address	+= ' No. ' + supplier_number;
+					}
+					
+					if(supplier_block != null){
+						complete_address	+= ' Blok ' + supplier_block;
+					}
+				
+					if(supplier_rt != '000'){
+						complete_address	+= ' RT ' + supplier_rt;
+					}
+					
+					if(supplier_rw != '000' && supplier_rt != '000'){
+						complete_address	+= ' /RW ' + supplier_rw;
+					}
+					
+					if(supplier_postal != null){
+						complete_address	+= ', ' + supplier_postal;
+					}
+
+					$('#supplierTableContent').append("<tr><td>" + name + "</td><td><p>" + complete_address + "</p><p>" + supplier_city + "</p></td><td><button class='button button_default_dark' onclick='selectSupplier(" + id + ")'><i class='fa fa-long-arrow-right'></i></button></td></tr>");
+					supplierCount++;
+				});
+
+				if(supplierCount > 0){
+					$('#supplierTable').show();
+					$('#supplierTableText').hide();
+				} else {
+					$('#supplierTable').hide();
+					$('#supplierTableText').show();
+				}
+
+				var pages = response.pages;
+				$('#supplierPage').html("");
+				for(i = 1; i <= pages; i++){
+					if(i == page){
+						$('#supplierPage').append("<option value='" + i + "' selected>" + i + "</option>");
+					} else {
+						$('#supplierPage').append("<option value='" + i + "'>" + i + "</option>");
+					}				
+				}
+			}
+		});
+	}
+
+	function selectSupplier(n){
+		$.ajax({
+			url:'<?= site_url('Supplier/getById') ?>',
+			data:{
+				id:n
+			},
+			success:function(response){
+				var name = response.name;
+				var city = response.city;
+				$('#supplier').val(n);
+				$('#supplierButton').html(name + " - " + city);
+				$('#supplier_wrapper').fadeOut();
+			}
+		})
+	}
 
 	$('.alert_full_close_button').click(function(){
 		$(this).parent().parent().fadeOut();

@@ -1,3 +1,6 @@
+<head>
+	<title>Good receipt - Confirm</title>
+</head>
 <div class='dashboard'>
 	<div class='dashboard_head'>
 		<p style='font-family:museo'><a href='<?= site_url('Inventory') ?>' title='Inventory'><i class='fa fa-briefcase'></i></a> /Good receipt/ Confirm</p>
@@ -7,8 +10,8 @@
 		<div id='goodReceiptTable'>
 			<table class='table table-bordered'>
 				<tr>
-					<th>Name</th>
 					<th>Date</th>
+					<th>Name</th>
 					<th>Action</th>
 				</tr>
 				<tbody id='goodReceiptTableContent'></tbody>
@@ -88,7 +91,7 @@
 					var date = item.date;
 					var name = item.name;
 
-					$('#goodReceiptTableContent').append("<tr><td>" + name + "</td><td>" + my_date_format(date) + "</td><td><button class='button button_default_dark' onclick='viewGoodReceipt(" + id + ")'><i class='fa fa-eye'></i></button>");
+					$('#goodReceiptTableContent').append("<tr><td>" + my_date_format(date) + "</td><td>" + name + "</td><td><button class='button button_default_dark' onclick='viewGoodReceipt(" + id + ")'><i class='fa fa-eye'></i></button>");
 					goodReceiptCount++;
 				})
 

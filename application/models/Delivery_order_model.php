@@ -321,11 +321,11 @@ class Delivery_order_model extends CI_Model {
 				WHERE MONTH(code_delivery_order.date) = '$month'
 				AND YEAR(code_delivery_order.date) = '$year'
 				AND code_delivery_order.is_delete = '0'
-				AND code_delivery_order.name LIKE '%$term%'
+				AND (code_delivery_order.name LIKE '%$term%'
 				OR customer.name LIKE '%$term%'
 				OR customer.address LIKE '%$term%'
 				OR customer.city LIKE '%$term%'
-				OR a.salesOrderName	LIKE '%$term%'
+				OR a.salesOrderName	LIKE '%$term%')
 				LIMIT $limit OFFSET $offset	
 			");
 			

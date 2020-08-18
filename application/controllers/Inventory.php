@@ -21,5 +21,10 @@ class Inventory extends CI_Controller {
 		
 		$this->load->view('head');
 		$this->load->view('inventory/header', $data);
+
+		// $this->load->model('Sales_order_model');
+		// $data['incompleteSalesOrder'] = $this->Sales_order_model->countIncompletedSalesOrder();
+
+		// $this->load->view('inventory/dashboard', $data);
 	}
 }
