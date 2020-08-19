@@ -174,14 +174,14 @@ class Sales_order_model extends CI_Model {
 			return $items;
 		}
 		
-		public function show_invoicing_method_by_id($delivery_order_id)
+		public function getByDeliveryOrderId($deliveryOrderId)
 		{
 			$this->db->select('DISTINCT(sales_order.code_sales_order_id) as id, code_sales_order.*');
 			$this->db->from('code_sales_order');
 			$this->db->join('sales_order', 'code_sales_order.id = sales_order.code_sales_order_id','inner');
 			$this->db->join('delivery_order', 'delivery_order.sales_order_id = sales_order.id');
 			$this->db->join('code_delivery_order', 'delivery_order.code_delivery_order_id = code_delivery_order.id', 'inner');
-			$this->db->where('code_delivery_order.id =',$delivery_order_id);
+			$this->db->where('code_delivery_order.id =',$deliveryOrderId);
 			
 			$query 		= $this->db->get();
 			

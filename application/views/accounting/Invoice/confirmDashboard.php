@@ -26,49 +26,55 @@
     <div class='alert_box_slide'>
         <h3 style='font-family:bebasneue'>Confirm invoice</h3>
         <hr>
+        <form id='invoiceForm'>
+            <div id='taxInvoiceWrapper'>
+                <label>Tax invoice</label>
+                <input type='text' class='form-control' id='taxInvoice'>
+            </div>
+            <script>
+                $('#taxInvoice').inputmask("999.999-99.99999999");
+            </script>
 
-        <div id='taxInvoiceWrapper'>
-            <label>Tax invoice</label>
-            <input type='text' class='form-control' id='taxInvoice'>
-        </div>
+            <label>Customer</label>
+            <p id='customer_name_p'></p>
+            <p id='customer_address_p'></p>
+            <p id='customer_city_p'></p>
 
-        <label>Customer</label>
-        <p id='customer_name_p'></p>
-        <p id='customer_address_p'></p>
-        <p id='customer_city_p'></p>
+            <label>Invoice</label>
+            <p id='invoice_name_p'></p>
+            <p id='invoice_date_p'></p>
 
-        <label>Invoice</label>
-        <p id='invoice_name_p'></p>
-        <p id='invoice_date_p'></p>
+            <label>Delivery order</label>
+            <p id='delivery_order_name_p'></p>
 
-        <label>Delivery order</label>
-        <p id='delivery_order_name_p'></p>
+            <label>Other</label>
+            <p id='invoicing_method_p'></p>
+            <p id='taxing_p'></p>
 
-        <label>Other</label>
-        <p id='invoicing_method_p'></p>
-        <p id='taxing_p'></p>
+            <label>Items</label>
+            <table class='table table-bordered'>
+                <tr>
+                    <th>Reference</th>
+                    <th>Name</th>
+                    <th>Price list</th>
+                    <th>Discount</th>
+                    <th>Net price</th>
+                    <th>Quantity</th>
+                    <th>Total price</th>
+                </tr>
+                <tbody id='deliveryOrderTableContent'></tbody>
+            </table>
 
-        <label>Items</label>
-        <table class='table table-bordered'>
-            <tr>
-                <th>Reference</th>
-                <th>Name</th>
-                <th>Price list</th>
-                <th>Discount</th>
-                <th>Net price</th>
-                <th>Quantity</th>
-                <th>Total price</th>
-            </tr>
-            <tbody id='deliveryOrderTableContent'></tbody>
-        </table>
-
-        <input type='hidden' id='invoice_id'>
-        <button class='button button_default_dark' title='Confirm invoice' onclick='confirmInvoice()'><i class='fa fa-long-arrow-right'></i></button>
-   
+            <input type='hidden' id='invoice_id'>
+            <button type='button' class='button button_default_dark' title='Confirm invoice' onclick='confirmInvoice()'><i class='fa fa-long-arrow-right'></i></button>
+            <button type='button' class='button button_danger_dark' title='Delete invoice' onclick='deleteInvoice()'><i class='fa fa-trash'></i></button>
+        </form>
         <div class='notificationText danger' id='confirmFailedNotification'><p>Failed to confirm invoice.</p></div>
     </div>
 </div>
 <script>
+    $('#invoiceForm').validate();
+
     $(document).ready(function(){
         refresh_view();
     });
@@ -236,11 +242,39 @@
     }
 
     function confirmInvoice(){
+        if($('#invoiceForm').valid()){
+            $.ajax({
+                url:"<?= site_url('Invoice/confirmById') ?>",
+                data:{
+                    id: $('#invoice_id').val(),
+                    taxInvoice: $('#taxInvoice').val()
+                },
+                type:'POST',
+                beforeSend:function(){
+                    $('button').attr('disabled', true);
+                },
+                success:function(response){
+                    $('button').attr('disabled', false);
+                    if(response == 1){
+                        refresh_view();
+                        $('#invoice_alert .slide_alert_close_button').click();
+                    } else {
+                        refresh_view();
+                        $('#confirmFailedNotification').fadeTo(250, 1);
+                        setTimeout(function(){
+                            $('#confirmFailedNotification').fadeTo(250, 0);
+                        }, 1000)
+                    }
+                }
+            })
+        }
+    }
+
+    function deleteInvoice(){
         $.ajax({
-            url:"<?= site_url('Invoice/confirmById') ?>",
+            url:"<?= site_url('Invoice/deleteById') ?>",
             data:{
                 id: $('#invoice_id').val(),
-                taxInvoice: $('#taxInvoice').val()
             },
             type:'POST',
             beforeSend:function(){
@@ -253,14 +287,12 @@
                     $('#invoice_alert .slide_alert_close_button').click();
                 } else {
                     refresh_view();
-                    $('#confirmFailedNotification').fadeTo(250, 1);
+                    $('#deleteFailedNotification').fadeTo(250, 1);
                     setTimeout(function(){
-                        $('#confirmFailedNotification').fadeTo(250, 0);
+                        $('#deleteFailedNotification').fadeTo(250, 0);
                     }, 1000)
                 }
             }
         })
-    }
-
-    
+    }    
 </script>

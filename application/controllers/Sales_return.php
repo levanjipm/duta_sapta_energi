@@ -38,9 +38,9 @@ class Sales_return extends CI_Controller {
 		
 		$data = array();
 		
-		$delivery_order_id			= $this->input->post('id');
+		$deliveryOrderId			= $this->input->post('id');
 		$this->load->model('Delivery_order_model');
-		$delivery_order = $this->Delivery_order_model->getById($delivery_order_id);
+		$delivery_order = $this->Delivery_order_model->getById($deliveryOrderId);
 		$data['general'] = $delivery_order;
 
 		$customerId = $delivery_order->customer_id;
@@ -48,9 +48,31 @@ class Sales_return extends CI_Controller {
 		$data['customer'] = $this->Customer_model->getById($customerId);
 		
 		$this->load->model('Delivery_order_detail_model');
-		$data['items'] = $this->Delivery_order_detail_model->getByCodeDeliveryOrderId($delivery_order_id);
+		$deliveryOrder = (array) $this->Delivery_order_detail_model->getByCodeDeliveryOrderId($deliveryOrderId);
+
+		$this->load->model('Sales_return_detail_model');
+		$returnDeliveryOrder = (array)$this->Sales_return_detail_model->getByCodeDeliveryOrderId($deliveryOrderId);
+
+		$returnDeliveryOrderArray = array();
+		foreach($returnDeliveryOrder as $returnItem)
+		{
+			$returnDeliveryOrderArray[$returnItem->id] = $returnItem->quantity;
+			next($returnDeliveryOrder);
+		}
+
+		$resultArray = array();
+
+		foreach($deliveryOrder as $item){
+			$batchArray = (array) $item;
+			$batchArray['returned'] = array_key_exists($item->id,$returnDeliveryOrder)? $returnDeliveryOrder[$item->id]: 0;
+
+			array_push($resultArray, $batchArray);
+			next($deliveryOrder);
+		}
 		
-		$this->load->view('sales/return/validation', $data);
+		$data['items'] = $resultArray;
+		
+		$this->load->view('sales/Return/validation', $data);
 	}
 	
 	public function insertItem()
@@ -269,28 +291,32 @@ class Sales_return extends CI_Controller {
 		$result = $this->Sales_return_received_model->updateById(1, $id);
 		if($result == 1){
 			$salesReturn			= $this->Sales_return_received_model->getById($id);
+			$codeDeliveryOrderId	= $salesReturn->deliveryOrderId;
 			$this->load->model("Sales_return_received_detail_model");
+			$previousReturnItems	= $this->Sales_return_received_detail_model->getPreviousByCodeDeliveryOrderId($codeDeliveryOrderId);
+
 			$salesReturnItems		= $this->Sales_return_received_detail_model->getByCodeId($id);
-			$salesReturnArray = array();
-			foreach($salesReturnItems as $salesReturnItem)
-			{
-				$array = array(
-					'id' => '',
-					'supplier_id' => null,
-					'customer_id' => $salesReturn->customer_id,
-					'sales_return_received_id' => $salesReturnItem->id,
-					'quantity' => $salesReturnItem->quantity,
-					'residue' => $salesReturnItem->quantity,
-					'good_receipt_id' => null,
-					'event_id' => null,
-					'price' => $salesReturnItem->value
-				);
+			print_r($previousReturnItems);
+			// $salesReturnArray = array();
+			// foreach($salesReturnItems as $salesReturnItem)
+			// {
+			// 	$array = array(
+			// 		'id' => '',
+			// 		'supplier_id' => null,
+			// 		'customer_id' => $salesReturn->customer_id,
+			// 		'sales_return_received_id' => $salesReturnItem->id,
+			// 		'quantity' => $salesReturnItem->quantity,
+			// 		'residue' => $salesReturnItem->quantity,
+			// 		'good_receipt_id' => null,
+			// 		'event_id' => null,
+			// 		'price' => $salesReturnItem->value
+			// 	);
 
-				array_push($salesReturnArray, $array);
-			};
+			// 	array_push($salesReturnArray, $array);
+			// };
 
-			$this->load->model('Stock_in_model');
-			$this->Stock_in_model->insertItem($salesReturnArray);
+			// $this->load->model('Stock_in_model');
+			// $this->Stock_in_model->insertItem($salesReturnArray);
 		}
 
 		echo $result;

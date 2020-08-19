@@ -169,7 +169,7 @@
 					complete_address	+= ', ' + customer_postal;
 				}
 
-                $("#customerName_p").val(customer_name);
+                $("#customerName_p").html(customer_name);
                 $('#customerAddress_p').html(complete_address);
                 $('#customerCity_p').html(customer_city);
 

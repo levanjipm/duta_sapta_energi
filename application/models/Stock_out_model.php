@@ -90,6 +90,7 @@ class Stock_out_model extends CI_Model {
 				$quantity				= $delivery_order['quantity'];
 				$delivery_order_id		= $delivery_order['delivery_order_id'];
 				$customer_id			= $delivery_order['customer_id'];
+
 				$stock_in				= $this->Stock_in_model->getResidueByItemId($item_id);
 				$residue				= $stock_in->residue;
 				$in_id					= $stock_in->id;
@@ -107,6 +108,8 @@ class Stock_out_model extends CI_Model {
 						$quantity = $quantity - $residue;
 					}
 				}
+
+				next($delivery_order_array);
 			}
 		}
 		

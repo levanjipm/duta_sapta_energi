@@ -381,12 +381,24 @@ class Delivery_order_model extends CI_Model {
 			} else if($status == -1){
 				$this->db->set('is_confirm', 0);
 				$this->db->where('is_delete', 0);
+			} else if($status == 2){
+				$this->db->set('is_sent', 1);
+				$this->db->where('is_sent', 0);
 			}
 
 			$this->db->where('id', $id);
 			$this->db->update($this->table_delivery_order);
 
 			return ($this->db->affected_rows() == 1) ? true: false;
+		}
+
+		public function unassignInvoiceById($invoiceId)
+		{
+			$this->db->set('invoice_id', null);
+			$this->db->where('invoice_id', $invoiceId);
+			$this->db->update($this->table_delivery_order);
+
+			return $this->db->affected_rows();
 		}
 		
 		public function create_guid()

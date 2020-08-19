@@ -265,7 +265,21 @@ class Invoice extends CI_Controller {
 		}
 
 		echo $result;
-		
+	}
+
+	public function deleteById()
+	{
+		$invoiceId = $this->input->post('id');
+		$this->load->model('Delivery_order_model');
+		$result = $this->Delivery_order_model->unassignInvoiceById($invoiceId);
+		if($result == 1){
+			$this->load->model('Invoice_model');
+			$invoiceResult = $this->Invoice_model->deleteById($invoiceId);
+			
+			echo $invoiceResult;
+		} else {
+			echo 0;
+		}
 	}
 
 	public function getItems(){

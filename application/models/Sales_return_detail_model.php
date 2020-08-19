@@ -228,5 +228,19 @@ class Sales_return_detail_model extends CI_Model {
 
 			$this->db->update_batch($this->table_sales_return, $batch, 'id');
 		}
+
+		public function getByCodeDeliveryOrderId($deliveryOrderId)
+		{
+			$query			= $this->db->query("
+				SELECT delivery_order.id, COALESCE(IF(sales_return.is_done = 1, sales_return.received, sales_return.quantity),0) as quantity FROM sales_return
+				JOIN delivery_order ON sales_return.delivery_order_id = delivery_order.id
+				JOIN code_delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order.id
+				JOIN code_sales_return ON sales_return.code_sales_return_id = code_sales_return.id
+				WHERE code_delivery_order.id = '$deliveryOrderId' AND code_sales_return.is_confirm = '1'
+			");
+
+			$result = $query->result();
+			return $result;
+		}
 	}
 ?>

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Waktu pembuatan: 18 Agu 2020 pada 12.05
+-- Waktu pembuatan: 19 Agu 2020 pada 04.10
 -- Versi server: 10.1.38-MariaDB
 -- Versi PHP: 7.3.2
 
@@ -149,7 +149,9 @@ CREATE TABLE `code_delivery_order` (
 --
 
 INSERT INTO `code_delivery_order` (`id`, `date`, `name`, `is_confirm`, `is_delete`, `is_sent`, `guid`, `invoice_id`) VALUES
-(1, '2020-08-19', 'DO-DSE-202008-00010', 1, 0, 1, '8D1E0AF7-A735-4D8F-911A-0D79C7EDBE34', 1);
+(1, '2020-08-19', 'DO-DSE-202008-00010', 1, 0, 1, '8D1E0AF7-A735-4D8F-911A-0D79C7EDBE34', 1),
+(2, '2020-08-19', 'DO-DSE-202008-00021', 1, 0, 1, 'BB04DD16-F817-4EFB-AABF-FF08E45CBBD6', 2),
+(3, '2020-08-19', 'DO-DSE-202008-00031', 1, 0, 1, 'AE917BE2-726F-4EE6-9192-B97B7F39B05A', NULL);
 
 -- --------------------------------------------------------
 
@@ -314,7 +316,8 @@ CREATE TABLE `code_sales_return` (
 --
 
 INSERT INTO `code_sales_return` (`id`, `name`, `created_by`, `created_date`, `is_confirm`, `is_delete`, `confirmed_by`) VALUES
-(1, 'SRS-202008-68932985', 1, '2020-08-18', 1, 0, NULL);
+(1, 'SRS-202008-68932985', 1, '2020-08-18', 1, 0, NULL),
+(2, 'SRS-202008-29632063', 1, '2020-08-19', 1, 0, NULL);
 
 -- --------------------------------------------------------
 
@@ -340,7 +343,8 @@ CREATE TABLE `code_sales_return_received` (
 --
 
 INSERT INTO `code_sales_return_received` (`id`, `created_by`, `created_date`, `is_confirm`, `is_delete`, `confirmed_by`, `name`, `date`, `is_done`, `bank_id`) VALUES
-(1, 1, '2020-08-18', 0, 0, NULL, '202008-00010-RT', '2020-08-18', 0, NULL);
+(1, 1, '2020-08-18', 1, 0, 1, '202008-00010-RT', '2020-08-18', 0, NULL),
+(2, 1, '2020-08-19', 1, 0, 1, 'DO-DSE-202008-00021-RT', '2020-08-19', 0, NULL);
 
 -- --------------------------------------------------------
 
@@ -571,7 +575,9 @@ CREATE TABLE `delivery_order` (
 --
 
 INSERT INTO `delivery_order` (`id`, `sales_order_id`, `code_delivery_order_id`, `quantity`) VALUES
-(1, 2, 1, 1);
+(1, 2, 1, 1),
+(2, 1, 2, 2),
+(3, 1, 3, 2);
 
 -- --------------------------------------------------------
 
@@ -784,7 +790,8 @@ CREATE TABLE `invoice` (
 --
 
 INSERT INTO `invoice` (`id`, `name`, `value`, `date`, `information`, `is_done`, `is_confirm`, `taxInvoice`, `lastBillingDate`, `nextBillingDate`, `is_billed`) VALUES
-(1, 'INV.DSE202008-00010', '2689600.00', '2020-08-19', 'DO-DSE-202008-00010', 0, 1, NULL, NULL, NULL, 0);
+(1, 'INV.DSE202008-00010', '2689600.00', '2020-08-19', 'DO-DSE-202008-00010', 0, 1, NULL, NULL, NULL, 0),
+(2, 'INV.DSE202008-00021', '537920.00', '2020-08-19', 'DO-DSE-202008-00021', 0, 1, '', NULL, NULL, 0);
 
 -- --------------------------------------------------------
 
@@ -1214,7 +1221,7 @@ CREATE TABLE `sales_order` (
 --
 
 INSERT INTO `sales_order` (`id`, `price_list_id`, `discount`, `quantity`, `sent`, `status`, `code_sales_order_id`) VALUES
-(1, 57, '18.0000', 10, 0, 0, 1),
+(1, 57, '18.0000', 10, 4, 0, 1),
 (2, 8, '18.0000', 1, 1, 1, 2);
 
 -- --------------------------------------------------------
@@ -1237,7 +1244,8 @@ CREATE TABLE `sales_return` (
 --
 
 INSERT INTO `sales_return` (`id`, `delivery_order_id`, `quantity`, `received`, `is_done`, `code_sales_return_id`) VALUES
-(1, 1, 1, 1, 1, 1);
+(1, 1, 1, 1, 1, 1),
+(2, 2, 1, 1, 1, 2);
 
 -- --------------------------------------------------------
 
@@ -1257,7 +1265,8 @@ CREATE TABLE `sales_return_received` (
 --
 
 INSERT INTO `sales_return_received` (`id`, `code_sales_return_received_id`, `sales_return_id`, `quantity`) VALUES
-(1, 1, 1, 1);
+(1, 1, 1, 1),
+(2, 2, 2, 1);
 
 -- --------------------------------------------------------
 
@@ -1283,7 +1292,7 @@ CREATE TABLE `stock_in` (
 --
 
 INSERT INTO `stock_in` (`id`, `item_id`, `quantity`, `residue`, `supplier_id`, `customer_id`, `good_receipt_id`, `sales_return_received_id`, `event_id`, `price`) VALUES
-(1, 1, 300, 300, 1, NULL, 1, NULL, NULL, '268960.0000'),
+(1, 1, 300, 296, 1, NULL, 1, NULL, NULL, '268960.0000'),
 (2, 14, 100, 100, 1, NULL, 2, NULL, NULL, '3450560.0000'),
 (3, 16, 50, 50, 1, NULL, 3, NULL, NULL, '492000.0000'),
 (4, 9, 1, 1, 1, NULL, 4, NULL, NULL, '5379200.0000'),
@@ -1311,7 +1320,9 @@ CREATE TABLE `stock_out` (
 --
 
 INSERT INTO `stock_out` (`id`, `in_id`, `quantity`, `customer_id`, `supplier_id`, `delivery_order_id`, `event_id`, `purchase_return_id`) VALUES
-(1, 5, 1, 116, NULL, 1, NULL, NULL);
+(1, 5, 1, 116, NULL, 1, NULL, NULL),
+(2, 1, 2, 116, NULL, 2, NULL, NULL),
+(7, 1, 2, 116, NULL, 3, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -1823,7 +1834,7 @@ ALTER TABLE `code_billing`
 -- AUTO_INCREMENT untuk tabel `code_delivery_order`
 --
 ALTER TABLE `code_delivery_order`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT untuk tabel `code_event`
@@ -1865,13 +1876,13 @@ ALTER TABLE `code_sales_order_close_request`
 -- AUTO_INCREMENT untuk tabel `code_sales_return`
 --
 ALTER TABLE `code_sales_return`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT untuk tabel `code_sales_return_received`
 --
 ALTER TABLE `code_sales_return_received`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT untuk tabel `customer`
@@ -1895,7 +1906,7 @@ ALTER TABLE `debt_type`
 -- AUTO_INCREMENT untuk tabel `delivery_order`
 --
 ALTER TABLE `delivery_order`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT untuk tabel `department`
@@ -1949,7 +1960,7 @@ ALTER TABLE `internal_bank_account`
 -- AUTO_INCREMENT untuk tabel `invoice`
 --
 ALTER TABLE `invoice`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT untuk tabel `item`
@@ -1967,7 +1978,7 @@ ALTER TABLE `item_class`
 -- AUTO_INCREMENT untuk tabel `other_opponent`
 --
 ALTER TABLE `other_opponent`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT untuk tabel `other_opponent_type`
@@ -1979,7 +1990,7 @@ ALTER TABLE `other_opponent_type`
 -- AUTO_INCREMENT untuk tabel `payable`
 --
 ALTER TABLE `payable`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT untuk tabel `petty_cash`
@@ -2051,13 +2062,13 @@ ALTER TABLE `sales_order`
 -- AUTO_INCREMENT untuk tabel `sales_return`
 --
 ALTER TABLE `sales_return`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT untuk tabel `sales_return_received`
 --
 ALTER TABLE `sales_return_received`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT untuk tabel `stock_in`
@@ -2069,7 +2080,7 @@ ALTER TABLE `stock_in`
 -- AUTO_INCREMENT untuk tabel `stock_out`
 --
 ALTER TABLE `stock_out`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT untuk tabel `supplier`

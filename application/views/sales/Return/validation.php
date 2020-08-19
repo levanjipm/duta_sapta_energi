@@ -54,21 +54,23 @@
 							<th>Reference</th>
 							<th>Name</th>
 							<th>Quantity</th>
+							<th>Returned</th>
 							<th>Unit price</th>
 							<th>Action</th>
 						</tr>
 						<?php
 							foreach($items as $item){
-								$price_list = $item->price_list;
-								$discount = $item->discount;
+								$price_list = $item['price_list'];
+								$discount = $item['discount'];
 								$net_price = $price_list * (100 - $discount) / 100;
 						?>
 							<tr>
-								<td><?= $item->reference ?></td>
-								<td><?= $item->name ?></td>
-								<td><?= number_format($item->quantity, 0) ?></td>
+								<td><?= $item['reference'] ?></td>
+								<td><?= $item['name'] ?></td>
+								<td><?= number_format($item['quantity'], 0) ?></td>
+								<td><?= number_format($item['returned']) ?></td>
 								<td>Rp. <?= number_format($net_price,2) ?></td>
-								<td><input type='number' class='form-control' name='return_quantity[<?= $item->id ?>]' max='<?= $item->quantity ?>' value='0' min='0' onchange='calculate_total()'></td>
+								<td><input type='number' class='form-control' name='return_quantity[<?= $item['id'] ?>]' max='<?= $item['quantity'] - $item['returned'] ?>' value='0' min='0' onchange='calculate_total()'></td>
 							</tr>
 						<?php } ?>
 					</table>

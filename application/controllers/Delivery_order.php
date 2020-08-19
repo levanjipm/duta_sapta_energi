@@ -249,7 +249,7 @@ class Delivery_order extends CI_Controller {
 		$result = $this->Delivery_order_model->updateById(1, $delivery_order_id);
 		if($result){
 			$this->load->model('Sales_order_model');
-			$sales_order = $this->Sales_order_model->show_invoicing_method_by_id($delivery_order_id);
+			$sales_order = $this->Sales_order_model->getByDeliveryOrderId($delivery_order_id);
 			
 			if($sales_order[0]->invoicing_method == 2){
 				$resultArray = array(
@@ -291,7 +291,8 @@ class Delivery_order extends CI_Controller {
 			$this->load->model('Stock_in_model');
 			$result					= $this->Stock_in_model->checkStock($deliveryOrderArray);
 			
-			if($result){	
+			if($result){
+				$this->Delivery_order_model->updateById(2, $deliveryOrderId);
 				$this->load->model('Stock_out_model');
 				$this->Stock_out_model->sendDeliveryOrder($deliveryOrderArray);
 				echo 1;

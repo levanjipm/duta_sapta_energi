@@ -517,6 +517,14 @@ class Invoice_model extends CI_Model {
 			return $result;
 		}
 
+		public function deleteById($invoiceId)
+		{
+			$this->db->db_debug = false;
+			$this->db->where('id', $invoiceId);
+			$result = $this->db->delete($this->table_invoice);
+			return $result;
+		}
+
 		public function getByMonthYear($month, $year, $offset)
 		{
 			$query = $this->db->query("
@@ -615,12 +623,5 @@ class Invoice_model extends CI_Model {
 
 			$result = $query->result();
 			return $result;
-		}
-
-		public function deleteById($invoiceId)
-		{
-			$this->db->db_debug = false;
-			$this->db->where('id', $invoiceId);
-			$this->db->delete($this->table_invoice);
 		}
 }

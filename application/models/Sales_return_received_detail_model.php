@@ -86,13 +86,28 @@ class Sales_return_received_detail_model extends CI_Model {
 				JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
 				JOIN price_list ON price_list.id = sales_order.price_list_id
 				JOIN item ON price_list.item_id = item.id
-				JOIN stock_out ON stock_out.delivery_order_id = delivery_order.id
-				ON b.in_id = stock_out.in_id
+				JOIN stock_out ON stock_out.delivery_order_id = delivery_order.id 
 				WHERE sales_return_received.code_sales_return_received_id = '$id'
 			");
 
 			$result = $query->result();
 			
+			return $result;
+		}
+
+		public function getPreviousByCodeDeliveryOrderId($codeDeliveryOrderId)
+		{
+			$query		= $this->db->query("
+				SELECT IF(sales_return.is_done = 1, sales_return.received, sales_return.quantity) AS quantity 
+				FROM sales_return_received
+				JOIN code_sales_return_received ON sales_return_received.code_sales_return_received_id = code_sales_return_received.id
+				JOIN sales_return ON sales_return.id = sales_return_received.sales_return_id
+				JOIN delivery_order ON sales_return.delivery_order_id = delivery_order.id
+				JOIN code_delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order.id
+				WHERE code_delivery_order.id = '$codeDeliveryOrderId' AND code_sales_return_received.is_confirm = '1';
+			");
+
+			$result	 = $query->result();
 			return $result;
 		}
 	}
