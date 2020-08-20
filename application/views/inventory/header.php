@@ -46,7 +46,11 @@
 			<a href='<?= site_url('Purchase_return/receiveDashboard') ?>'><p>Purchase</p></a>
 		</div>
 		<a href='<?= site_url('Stock/view/Inventory') ?>'><button><p>Check stock</p></button></a>
-		<a href='<?= site_url('Inventory_case') ?>'><button><p>Cases</p></button></a>
+		<button class='container_button'><p style='font-family:museo'>Cases</p></button>
+		<div class='container_bar'>
+			<a href='<?= site_url('Inventory_case') ?>'><p>Create</p></a>
+			<a href='<?= site_url('Inventory_case/archiveDashboard') ?>'><p>Archive</p></a>
+		</div>
 	</div>
 </div>
 <script>

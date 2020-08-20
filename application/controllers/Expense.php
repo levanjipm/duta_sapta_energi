@@ -10,7 +10,7 @@ class Expense extends CI_Controller {
 		}
 	}
 	
-	public function class()
+	public function index()
 	{
 		$user_id		= $this->session->userdata('user_id');
 		$this->load->model('User_model');
@@ -25,24 +25,24 @@ class Expense extends CI_Controller {
 		$this->load->view('finance/expense/classDashboard');
 	}
 	
-	public function view_class()
+	public function getItems()
 	{
 		$this->load->model('Expense_class_model');
 		
-		$data['classes'] = $this->Expense_class_model->show_all();
+		$data['classes'] = $this->Expense_class_model->getItems();
 		
 		header('Content-Type: application/json');
 		echo json_encode($data);
 	}
 	
-	public function add_class()
+	public function insertItem()
 	{
 		$this->load->model('Expense_class_model');
-		$this->Expense_class_model->insert_from_post();
-		redirect(site_url('Expense/class'));
+		$result = $this->Expense_class_model->insertItem();
+		echo $result;
 	}
 	
-	public function report()
+	public function reportDashboard()
 	{
 		$user_id		= $this->session->userdata('user_id');
 		$this->load->model('User_model');
@@ -60,27 +60,28 @@ class Expense extends CI_Controller {
 		$this->load->view('finance/expense/reportDashboard', $data);
 	}
 	
-	public function view_update_form($id)
+	public function getById()
 	{
+		$id			= $this->input->get('id');
 		$this->load->model('Expense_class_model');
-		$data = $this->Expense_class_model->view_by_id($id);
+		$data = $this->Expense_class_model->getById($id);
 		
 		header('Content-Type: application/json');
 		echo json_encode($data);
 	}
 	
-	public function update_class()
+	public function updateById()
 	{
 		$class_id	= $this->input->post('id');
 		$this->load->model('Expense_class_model');
-		$data = $this->Expense_class_model->view_by_id($class_id);
+		$data = $this->Expense_class_model->getById($class_id);
 		
 		if($data->parent_id == null){
 			$name		= $this->input->post('name');
 			$information	= $this->input->post('information');
 			$type			= $this->input->post('type');
 			
-			$this->Expense_class_model->update_from_post($name, $information, $type, $class_id);
+			$result = $this->Expense_class_model->updateById($name, $information, null, $class_id);
 		} else {
 			$name		= $this->input->post('name');
 			$information	= $this->input->post('information');
@@ -90,13 +91,12 @@ class Expense extends CI_Controller {
 			$null_check		= $this->input->post('null_check');
 			
 			if($null_check	== 'on'){
-				$this->Expense_class_model->update_from_post($name, $information, $type, $class_id);
-				echo 'itu';
+				$result = $this->Expense_class_model->updateById($name, $information, null, $class_id);
 			} else {
-				$this->Expense_class_model->update_from_post($name, $information, $type, $class_id, $parent_id);
+				$result = $this->Expense_class_model->updateById($name, $information, $type, $class_id, $parent_id);
 			}
 		}
-		
-		redirect(site_url('Expense/class'));
+
+		echo $result;
 	}
 }

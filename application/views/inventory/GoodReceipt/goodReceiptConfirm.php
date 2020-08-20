@@ -121,6 +121,8 @@
 				$('#good_receipt_id').val(n);
 
 				var receivedDate = general.received_date;
+				var name = general.name;
+				$('#good_receipt_document').html(name);
 
 				$('#good_receipt_received_date').html(my_date_format(receivedDate));
 

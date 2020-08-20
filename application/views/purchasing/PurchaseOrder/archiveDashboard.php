@@ -186,7 +186,7 @@
 	
 	function open_view(n){
 		$.ajax({
-			url:'<?= site_url('Purchase_order/getDetailById/') ?>' + n,
+			url:'<?= site_url('Purchase_order/getById/') ?>' + n,
 			success:function(response){
 				var general					= response.general;
 				var purchaseOrderDate		= general.date;
@@ -214,15 +214,17 @@
 				var taxing					= general.taxing == 1 ? "Taxable purchase" : "Non-taxable purchase";
 				$('#purchase_order_taxing_p').html(taxing);
 
+				var supplier = response.supplier;
+
 				var complete_address		= '';
-				var supplier_name			= general.supplier_name;
-				complete_address			+= general.supplier_address;
-				var supplier_city			= general.city;
-				var supplier_number			= general.number;
-				var supplier_rt				= general.rt;
-				var supplier_rw				= general.rw;
-				var supplier_postal			= general.postal_code;
-				var supplier_block			= general.block;
+				var supplier_name			= supplier.name;
+				complete_address			+= supplier.address;
+				var supplier_city			= supplier.city;
+				var supplier_number			= supplier.number;
+				var supplier_rt				= supplier.rt;
+				var supplier_rw				= supplier.rw;
+				var supplier_postal			= supplier.postal_code;
+				var supplier_block			= supplier.block;
 	
 				if(supplier_number != null){
 					complete_address	+= ' No. ' + supplier_number;

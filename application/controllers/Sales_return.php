@@ -288,15 +288,15 @@ class Sales_return extends CI_Controller {
 	{
 		$id			= $this->input->post('id');
 		$this->load->model('Sales_return_received_model');
-		$result = $this->Sales_return_received_model->updateById(1, $id);
-		if($result == 1){
+		// $result = $this->Sales_return_received_model->updateById(1, $id);
+		// if($result == 1){
 			$salesReturn			= $this->Sales_return_received_model->getById($id);
 			$codeDeliveryOrderId	= $salesReturn->deliveryOrderId;
 			$this->load->model("Sales_return_received_detail_model");
-			$previousReturnItems	= $this->Sales_return_received_detail_model->getPreviousByCodeDeliveryOrderId($codeDeliveryOrderId);
+			// $previousReturnItems	= $this->Sales_return_received_detail_model->getPreviousByCodeDeliveryOrderId($codeDeliveryOrderId);
 
 			$salesReturnItems		= $this->Sales_return_received_detail_model->getByCodeId($id);
-			print_r($previousReturnItems);
+			print_r($salesReturnItems);
 			// $salesReturnArray = array();
 			// foreach($salesReturnItems as $salesReturnItem)
 			// {
@@ -317,9 +317,9 @@ class Sales_return extends CI_Controller {
 
 			// $this->load->model('Stock_in_model');
 			// $this->Stock_in_model->insertItem($salesReturnArray);
-		}
+		// }
 
-		echo $result;
+		// echo $result;
 	}
 
 	public function deleteReceivedById()

@@ -62,10 +62,10 @@ class Purchase_order extends CI_Controller {
 		echo json_encode($item);
 	}
 	
-	public function inputItem()
+	public function insertItem()
 	{
 		$this->load->model('Purchase_order_model');
-		$purchase_order_id = $this->Purchase_order_model->inputItem();
+		$purchase_order_id = $this->Purchase_order_model->insertItem();
 		
 		if($purchase_order_id != null){
 			$this->load->model('Purchase_order_detail_model');
@@ -75,10 +75,16 @@ class Purchase_order extends CI_Controller {
 		redirect(site_url('Purchase_order'));
 	}
 	
-	public function getDetailById($id)
+	public function getById($id)
 	{
 		$this->load->model('Purchase_order_model');
-		$data['general']	= $this->Purchase_order_model->showById($id);
+		$purchaseOrder	= $this->Purchase_order_model->showById($id);
+		$data['general'] = $purchaseOrder;
+		$supplierId = $purchaseOrder->supplier_id;
+
+		$this->load->model("Supplier_model");
+		$data['supplier'] = $this->Supplier_model->getById($supplierId);
+		
 		
 		$this->load->model('Purchase_order_detail_model');
 		$data['detail']		= $this->Purchase_order_detail_model->getByCodeId($id);

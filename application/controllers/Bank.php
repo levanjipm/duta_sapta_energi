@@ -53,16 +53,16 @@ class Bank extends CI_Controller {
 		$this->load->view('accounting/Bank/assignBankDashboard', $data);
 	}
 	
-	public function view_unassigned_data($department)
+	public function getUnassignedTransactions($department)
 	{
 		if($department == 'accounting'){
 			$type		= $this->input->get('type');
 			$account	= $this->input->get('account');
 			$page		= $this->input->get('page');
-			$offset		= ($page - 1) * 25;
+			$offset		= ($page - 1) * 10;
 			$this->load->model('Bank_model');
-			$data['banks'] = $this->Bank_model->view_unassigned_data(1, $account, $type, $offset);
-			$data['pages'] = max(1, ceil($this->Bank_model->count_unassigned_data($account, $type)/25));
+			$data['banks'] = $this->Bank_model->getUnassignedTransactions($account, $type, $offset);
+			$data['pages'] = max(1, ceil($this->Bank_model->countUnassignedTransactions($account, $type)/10));
 		}
 		
 		header('Content-Type: application/json');
@@ -78,6 +78,7 @@ class Bank extends CI_Controller {
 		$type			= $result->transaction;
 		$customer_id	= $result->customer_id;
 		$supplier_id	= $result->supplier_id;
+		$other_id		= $result->other_id;
 		
 		if($type == 1 && $customer_id != null){
 			$this->load->model('Invoice_model');
@@ -86,6 +87,10 @@ class Bank extends CI_Controller {
 		} else  if($type == 2 && $supplier_id != null){
 			$this->load->model('Debt_model');
 			$data['invoices'] = $this->Debt_model->getIncompletedTransaction($supplier_id);
+			$data['opponent'] = 'Supplier';
+		} else if($type == 2 && $other_id != null){
+			$this->load->model('Debt_other_model');
+			$data['invoices'] = $this->Debt_other_model->getIncompletedTransaction($other_id);
 			$data['opponent'] = 'Supplier';
 		}
 		
@@ -163,21 +168,21 @@ class Bank extends CI_Controller {
 	{
 		$page		= $this->input->get('page');
 		$term		= $this->input->get('term');
-		$offset		= ($page - 1) * 25;
+		$offset		= ($page - 1) * 10;
 		
 		$type		= $this->input->get('type');
 		if($type == 'customer'){ //customer
 			$this->load->model('Customer_model');
 			$data['opponents']			= $this->Customer_model->showItems($offset, $term);
-			$data['pages']				= max(1, ceil($this->Customer_model->countItems($term)/25));
+			$data['pages']				= max(1, ceil($this->Customer_model->countItems($term)/10));
 		} else if($type == 'supplier'){
 			$this->load->model('Supplier_model');
 			$data['opponents']			= $this->Supplier_model->showItems($offset, $term);
-			$data['pages']				= max(1, ceil($this->Supplier_model->countItems($term)/25));
+			$data['pages']				= max(1, ceil($this->Supplier_model->countItems($term)/10));
 		} else if($type == 'other'){
-			$this->load->model('Other_bank_account_model');
-			$data['opponents']			= $this->Other_bank_account_model->show_items($offset, $term);
-			$data['pages']				= max(1, ceil($this->Other_bank_account_model->count_items($term)/25));
+			$this->load->model('Opponent_model');
+			$data['opponents']			= $this->Opponent_model->getItems($offset, $term);
+			$data['pages']				= max(1, ceil($this->Opponent_model->countItems($term)/10));
 		}
 		
 		header('Content-Type: application/json');

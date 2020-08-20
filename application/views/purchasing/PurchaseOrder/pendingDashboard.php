@@ -43,18 +43,19 @@
 		<h3 style='font-family:bebasneue'>Purchase order</h3>
 		<hr>
 		<label>Supplier</label>
-		<p id='supplier_name_p'></p>
-		<p id='supplier_address_p'></p>
+		<p style='font-family:museo' id='supplier_name_p'></p>
+		<p style='font-family:museo' id='supplier_address_p'></p>
 
 		<label>Purchase order</label>
-		<p id='purchase_order_name_p'></p>
-		<p id='purchase_order_date_p'></p>
+		<p style='font-family:museo' id='purchase_order_name_p'></p>
+		<p style='font-family:museo' id='purchase_order_date_p'></p>
+		<p style='font-family:museo' id='purchase_order_status_p'></p>
 
 		<label>Delivery address</label>
-		<p id='delivery_address_p'></p>
-		<p id='delivery_city_p'></p>
-		<p id='delivery_contact_person_p'></p>
-		<p id='delivery_contact_p'></p>
+		<p style='font-family:museo' id='delivery_address_p'></p>
+		<p style='font-family:museo' id='delivery_city_p'></p>
+		<p style='font-family:museo' id='delivery_contact_person_p'></p>
+		<p style='font-family:museo' id='delivery_contact_p'></p>
 
 		<div class='table-responsive-lg'>
 			<table class='table table-bordered'>
@@ -135,19 +136,18 @@
 
 	function viewPurchaseOrder(n){
 		$.ajax({
-			url:'<?= site_url('Purchase_order/getDetailById/') ?>' + n,
+			url:'<?= site_url('Purchase_order/getById/') ?>' + n,
 			success:function(response){
-				var general = response.general;
-				var supplier_name = general.supplier_name;
+				var supplier = response.supplier;
+				var supplier_name = supplier.name;
 
-				var supplier_address		= general.supplier_address;
-				var supplier_number			= general.number;
-				var supplier_block			= general.block;
-				var supplier_rt				= general.rt;
-				var supplier_rw				= general.rw;
-				var supplier_city			= general.city;
-				var supplier_postal_code	= general.postal_code;
-				var complete_address		= supplier_address;
+				var complete_address		= supplier.address;
+				var supplier_number			= supplier.number;
+				var supplier_block			= supplier.block;
+				var supplier_rt				= supplier.rt;
+				var supplier_rw				= supplier.rw;
+				var supplier_city			= supplier.city;
+				var supplier_postal_code	= supplier.postal_code;
 
 				if(supplier_number != null && supplier_number != ''){
 					complete_address	+= ' no. ' + supplier_number;
@@ -167,14 +167,18 @@
 				
 				complete_address += ', ' + supplier_city;
 
-				$('#supplier_name_p').text(supplier_name);
-				$('#supplier_address_p').text(complete_address);
+				$('#supplier_name_p').html(supplier_name);
+				$('#supplier_address_p').html(complete_address);
 
+				var general = response.general;
+				
+				var purchaseOrderStatus = general.status;
 				var purchase_order_name = general.name;
 				var purchase_order_date = general.date;
 
-				$('#purchase_order_name_p').text(purchase_order_name);
-				$('#purchase_order_date_p').text(my_date_format(purchase_order_date));
+				$('#purchase_order_name_p').html(purchase_order_name);
+				$('#purchase_order_date_p').html(my_date_format(purchase_order_date));
+				$('#purchase_order_status_p').html(purchaseOrderStatus);
 
 				var address = general.dropship_address;
 				var city = general.dropship_city;

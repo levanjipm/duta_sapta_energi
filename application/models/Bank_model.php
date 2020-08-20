@@ -152,22 +152,13 @@ class Bank_model extends CI_Model {
 			return $this->db->insert_id();
 		}
 		
-		public function view_unassigned_data($department, $account, $type, $offset = 0, $limit = 25)
+		public function getUnassignedTransactions($account, $type, $offset = 0, $limit = 10)
 		{
-			if($department == 1){
-				$this->db->select('bank_transaction.*, COALESCE(`customer`.`name`, `supplier`.`name`) as name');
-			} else {
-				$this->db->select('bank_transaction.*, COALESCE(`customer`.`name`, `supplier`.`name`, `other_opponent`.`name`) as name');
-			}
+			$this->db->select('bank_transaction.*, COALESCE(`customer`.`name`, `supplier`.`name`, `other_opponent`.`name`) as name');
 			
 			$this->db->join('customer', 'bank_transaction.customer_id = customer.id', 'left');
 			$this->db->join('supplier', 'bank_transaction.supplier_id = supplier.id', 'left');
-			
-			if($department != 1){
-				$this->db->join('other_opponent', 'bank_transaction.other_id = other_opponent.id', 'left');
-			} else {
-				$this->db->where('bank_transaction.other_id', null);
-			}
+			$this->db->join('other_opponent', 'bank_transaction.other_id = other_opponent.id', 'left');
 			
 			$this->db->where('bank_transaction.account_id', $account);
 			$this->db->where('bank_transaction.transaction', $type);
@@ -180,7 +171,7 @@ class Bank_model extends CI_Model {
 			return $result;
 		}
 		
-		public function count_unassigned_data($account, $type)
+		public function countUnassignedTransactions($account, $type)
 		{
 			$this->db->where('account_id', $account);
 			$this->db->where('transaction', $type);

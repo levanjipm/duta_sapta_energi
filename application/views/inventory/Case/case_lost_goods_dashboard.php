@@ -4,7 +4,7 @@
 	}
 </style>
 <h4><strong>Lost</strong></h4>
-<form action='<?= site_url('Inventory_case/input/lost') ?>' method='POST' id='lostGoodsForm'>
+<form action='<?= site_url('Inventory_case/insertItem/lost') ?>' method='POST' id='lostGoodsForm'>
 	<label>Date</label>
 	<input type='date' class='form-control' name='date' id='case_date' required><br>
 	

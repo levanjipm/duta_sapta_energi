@@ -32,7 +32,9 @@
 		refresh_view(1);
 	});
 	
-	refresh_view();
+	$(document).ready(function(){
+		refresh_view(1);
+	})
 	
 	function refresh_view(page = $('#page').val()){
 		$.ajax({

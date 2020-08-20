@@ -4,7 +4,7 @@
     }
 </style>
 <h4><strong>Dematerialized</strong></h4>
-<form action='<?= site_url('Inventory_case/input/dematerialized') ?>' method="POST" id='dematerializedForm'>
+<form action='<?= site_url('Inventory_case/insertItem/dematerialized') ?>' method="POST" id='dematerializedForm'>
     <div class='row'>
         <div class='col-sm-12 col-xs-12'>
             <label>Date</label>
@@ -22,9 +22,6 @@
                 <p id='itemDemName'></p>
                 <label>Quantity</label>
                 <input type='number' class='form-control' id='quantityDem' min='1' required value='0' name='quantityDem'>
-
-                <label>Price</label>
-                <input type='number' class='form-control' id='priceDem' min='0' required value='0' name='priceDem'>
             </div>
         </div>
         <div class='col-sm-8 col-xs-12'>

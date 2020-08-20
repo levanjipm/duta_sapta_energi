@@ -4,7 +4,7 @@
 	}
 </style>
 <h4><strong>Materialized</strong></h4>
-<form action='<?= site_url('Inventory_case/input/materialized') ?>' method="POST" id='materializedForm'>
+<form action='<?= site_url('Inventory_case/insertItem/materialized') ?>' method="POST" id='materializedForm'>
     <div class='row'>
         <div class='col-sm-12 col-xs-12'>
             <label>Date</label>

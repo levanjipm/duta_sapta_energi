@@ -13,6 +13,7 @@ class Debt_other_model extends CI_Model {
 		public $is_done;
 		public $tax_document;
 		public $invoice_document;
+		public $other_opponent_id;
 		public $supplier_id;
 		public $taxing;
 		public $information;
@@ -35,6 +36,7 @@ class Debt_other_model extends CI_Model {
 			$this->tax_document			= $db_item->tax_document;
 			$this->invoice_document		= $db_item->invoice_document;
 			$this->supplier_id			= $db_item->supplier_id;
+			$this->other_opponent_id	= $db_item->other_opponent_id;
 			$this->taxing				= $db_item->taxing;
 			$this->information			= $db_item->information;
 			$this->value				= $db_item->value;
@@ -56,6 +58,7 @@ class Debt_other_model extends CI_Model {
 			$db_item->tax_document			= $this->tax_document;
 			$db_item->invoice_document		= $this->invoice_document;
 			$db_item->supplier_id			= $this->supplier_id;
+			$db_item->other_opponent_id		= $this->other_opponent_id;
 			$db_item->taxing				= $this->taxing;
 			$db_item->information			= $this->information;
 			$db_item->value					= $this->value;
@@ -77,6 +80,7 @@ class Debt_other_model extends CI_Model {
 			$stub->tax_document			= $db_item->tax_document;
 			$stub->invoice_document		= $db_item->invoice_document;
 			$stub->supplier_id			= $db_item->supplier_id;
+			$stub->other_opponent_id	= $db_item->other_opponent_id;
 			$stub->taxing				= $db_item->taxing;
 			$stub->information			= $db_item->information;
 			$stub->value				= $db_item->value;
@@ -127,5 +131,44 @@ class Debt_other_model extends CI_Model {
 			$this->db->update($this->table_purchase_invoice);
 
 			return $this->db->affected_rows();
+		}
+
+		public function insertItem()
+		{
+			$this->id					= "";
+			$this->date					= $this->input->post('date');
+			$this->created_by			= $this->session->userdata('user_id');
+			$this->is_confirm			= 0;
+			$this->is_delete			= 0;
+			$this->confirmed_by			= null;
+			$this->is_done				= 0;
+			$this->tax_document			= $this->input->post('taxInvoiceName');
+			$this->invoice_document		= $this->input->post('invoiceName');
+
+			if($this->input->post('supplierType') == 1){
+				$this->supplier_id			= $this->input->post('supplier_id');
+				$this->other_opponent_id	= null;
+			} else {
+				$this->other_opponent_id	= $this->input->post('supplier_id');
+				$this->supplier_id			= null;
+			}
+			
+			$this->taxing				= $this->input->post('taxing');
+			$this->information			= $this->input->post('information');
+			$this->value				= $this->input->post('value');
+
+			$db_item 					= $this->get_db_from_stub($this);
+			$this->db->insert($this->table_purchase_invoice, $db_item);
+
+			return $this->db->affected_rows();
+		}
+
+		public function getIncompletedTransaction($otherOpponentId)
+		{
+			$this->db->where('other_opponent_id', $otherOpponentId);
+			$this->db->where('is_done', 0);
+			$query	= $this->db->get($this->table_purchase_invoice);
+			$result	= $query->result();
+			return $result;
 		}
 }

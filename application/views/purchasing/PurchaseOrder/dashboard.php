@@ -54,7 +54,7 @@
 			<tbody id='purchase_order_table'></tbody>
 		</table>
 
-		<label>Purchase order note</label>
+		<label>Note</label>
 		<p id='note'></p>
 
 		<input type='hidden' id='purchase_order_id'>
@@ -130,20 +130,54 @@
 
 	function viewPurchaseOrder(n){
 		$.ajax({
-			url:'<?= site_url('Purchase_order/getDetailById/') ?>' + n,
+			url:'<?= site_url('Purchase_order/getById/') ?>' + n,
 			dataType:'json',
 			success:function(response){
 				var general_data		= response.general;
 				var purchase_order_id	= general_data.id;
-				var supplier_name 		= general_data.supplier_name;
-				var supplier_address 	= general_data.supplier_address;
-				var supplier_city 		= general_data.supplier_city;
 				var note				= general_data.note;
 
-				$('#note').html(note);
+				if(note == ""){
+					var noteText = "<i>Not availble</i>";
+				} else {
+					var noteText = note;
+				}
+
+				$('#note').html(noteText);
+
+				var supplier 				= response.supplier;
+				var supplierName 			= supplier.name;
+				var complete_address		= '';
+				complete_address			+= supplier.address;
+				var supplier_city			= supplier.city;
+				var supplier_number			= supplier.number;
+				var supplier_rt				= supplier.rt;
+				var supplier_rw				= supplier.rw;
+				var supplier_postal			= supplier.postal_code;
+				var supplier_block			= supplier.block;
+	
+				if(supplier_number != null){
+					complete_address	+= ' No. ' + supplier_number;
+				}
 				
-				$('#supplier_name_p').html(supplier_name);
-				$('#supplier_address_p').html(supplier_address);
+				if(supplier_block != null){
+					complete_address	+= ' Blok ' + supplier_block;
+				}
+			
+				if(supplier_rt != '000'){
+					complete_address	+= ' RT ' + supplier_rt;
+				}
+				
+				if(supplier_rw != '000' && supplier_rt != '000'){
+					complete_address	+= ' /RW ' + supplier_rw;
+				}
+				
+				if(supplier_postal != null){
+					complete_address	+= ', ' + supplier_postal;
+				}
+				
+				$('#supplier_name_p').html(supplierName);
+				$('#supplier_address_p').html(complete_address);
 				$('#supplier_city_p').html(supplier_city);
 				
 				$('#purchase_order_id').val(purchase_order_id);

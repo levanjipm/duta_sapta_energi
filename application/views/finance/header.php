@@ -40,8 +40,8 @@
 		</div>
 		<button class='container_button'><p style='font-family:museo'>Expense</p></button>
 		<div class='container_bar'>
-			<a href='<?= site_url('Expense/class') ?>'><button><p style='font-family:museo'>Class</p></button></a>
-			<a href='<?= site_url('Expense/report') ?>'><button><p style='font-family:museo'>Report</p></button></a>
+			<a href='<?= site_url('Expense') ?>'><button><p style='font-family:museo'>Class</p></button></a>
+			<a href='<?= site_url('Expense/reportDashboard') ?>'><button><p style='font-family:museo'>Report</p></button></a>
 		</div>
 		<button class='container_button'><p style='font-family:museo'>Income</p></button>
 		<div class='container_bar'>

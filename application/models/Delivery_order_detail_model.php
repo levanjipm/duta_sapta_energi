@@ -150,11 +150,11 @@ class Delivery_order_detail_model extends CI_Model {
 			$query 	= $this->db->get();
 			$items	= $query->result();
 			
-			$batch = $this->Delivery_order_detail_model->create_stock_batch($items);
+			$batch = $this->Delivery_order_detail_model->createStockBatch($items);
 			return ($batch !== null) ? $batch : null;
 		}
 		
-		public function create_stock_batch($results)
+		private function createStockBatch($results)
 		{
 			foreach($results as $result){
 				$quantity					= $result->quantity;
@@ -168,6 +168,8 @@ class Delivery_order_detail_model extends CI_Model {
 					'customer_id' => $customer_id,
 					'item_id' => $item_id,
 				);
+
+				next($results);
 			}
 			
 			return $batch;

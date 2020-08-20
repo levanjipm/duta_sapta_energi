@@ -10,6 +10,7 @@ class Expense_class_model extends CI_Model {
 		public $description;
 		public $created_by;
 		public $created_date;
+		public $type;
 
 		public function __construct()
 		{
@@ -24,6 +25,7 @@ class Expense_class_model extends CI_Model {
 			$this->description				= $db_item->description;
 			$this->created_by				= $db_item->created_by;
 			$this->created_date				= $db_item->created_date;
+			$this->type						= $db_item->type;
 			
 			return $this;
 		}
@@ -38,6 +40,7 @@ class Expense_class_model extends CI_Model {
 			$db_item->description			= $this->description;
 			$db_item->created_by			= $this->created_by;
 			$db_item->created_date			= $this->created_date;
+			$db_item->type					= $this->type;
 			
 			return $db_item;
 		}
@@ -52,6 +55,7 @@ class Expense_class_model extends CI_Model {
 			$db_item->description			= $this->description;
 			$db_item->created_by			= $this->created_by;
 			$db_item->created_date			= $this->created_date;
+			$db_item->type					= $this->type;
 			
 			return $db_item;
 		}
@@ -66,6 +70,7 @@ class Expense_class_model extends CI_Model {
 			$stub->description				= $db_item->description;
 			$stub->created_by				= $db_item->created_by;
 			$stub->created_date				= $db_item->created_date;
+			$stub->type						= $db_item->type;
 			
 			return $stub;
 		}
@@ -80,7 +85,7 @@ class Expense_class_model extends CI_Model {
 			return $result;
 		}
 		
-		public function show_all()
+		public function getItems()
 		{			
 			$query	= $this->db->get($this->table_expense);
 			$result	= $query->result();
@@ -88,9 +93,9 @@ class Expense_class_model extends CI_Model {
 			return $result;
 		}
 		
-		public function insert_from_post()
+		public function insertItem()
 		{
-			$name		= $this->input->post('name');
+			$name			= $this->input->post('name');
 			$information	= $this->input->post('information');
 			
 			if($this->input->post('null_check') == 'on'){				
@@ -101,6 +106,7 @@ class Expense_class_model extends CI_Model {
 					'description' => $information,
 					'created_by' => $this->session->userdata('user_id'),
 					'created_date' => date('Y-m-d'),
+					'type' => null
 				);
 			} else {
 				$parent_id	= $this->input->post('parent_id');
@@ -111,12 +117,14 @@ class Expense_class_model extends CI_Model {
 					'description' => $information,
 					'created_by' => $this->session->userdata('user_id'),
 					'created_date' => date('Y-m-d'),
+					'type' => $this->input->post('type')
 				);
 			}
 			$this->db->insert($this->table_expense, $db_item);
+			return $this->db->affected_rows();
 		}
 		
-		public function view_by_id($id)
+		public function getById($id)
 		{
 			$this->db->where('id', $id);
 			$query	= $this->db->get($this->table_expense);
@@ -125,13 +133,16 @@ class Expense_class_model extends CI_Model {
 			return $result;
 		}
 		
-		public function update_from_post($name, $information, $type, $id, $parent_id = null)
+		public function updateById($name, $information, $type, $id, $parent_id = null)
 		{
 			$this->db->set('name', $name);
 			$this->db->set('description', $information);
 			$this->db->set('parent_id', $parent_id);
+			$this->db->set('type', $type);
 			
 			$this->db->where('id', $id);
 			$this->db->update($this->table_expense);
+
+			return $this->db->affected_rows();
 		}
 }

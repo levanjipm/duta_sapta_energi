@@ -50,11 +50,11 @@
                     var documentName = item.documentName;
                     var date = item.date;
 
-                    finalStock += quantity;
-
-                    $('#stockTableContent').append("<tr><td>" + my_date_format(date) + "</td><td>" + documentName + "</td><td>" + name + "</td><td>" + numeral(quantity).format('0,0') + "</td><td>" + numeral(finalStock).format('0,0') + "</td></tr>");
-
-                    itemCount++;
+                    if(date != null){
+                        finalStock += quantity;
+                        $('#stockTableContent').append("<tr><td>" + my_date_format(date) + "</td><td>" + documentName + "</td><td>" + name + "</td><td>" + numeral(quantity).format('0,0') + "</td><td>" + numeral(finalStock).format('0,0') + "</td></tr>");
+                        itemCount++;
+                    }
                 });
 
                 var pages = Math.max(Math.ceil(itemCount/20),1);

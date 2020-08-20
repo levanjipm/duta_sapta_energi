@@ -3,7 +3,7 @@
 		float:right;
 	}
 </style>
-<form action='<?= site_url('Inventory_case/input/found') ?>' method='POST' id='foundGoodsForm'>
+<form action='<?= site_url('Inventory_case/insertItem/found') ?>' method='POST' id='foundGoodsForm'>
 	<label>Date</label>
 	<input type='date' class='form-control' name='date' id='case_date' required><br>
 	

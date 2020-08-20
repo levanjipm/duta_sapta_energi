@@ -75,7 +75,7 @@
                 term: $('#search_bar').val()
             },
             success:function(response){
-                $('#returnTableContent').html("");
+                $('#returnCreateTableContent').html("");
 				var items = response.items;
 				var itemCount = 0;
 				$.each(items, function(index, item){

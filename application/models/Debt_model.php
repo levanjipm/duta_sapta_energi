@@ -124,10 +124,12 @@ class Debt_model extends CI_Model {
 				JOIN supplier ON code_purchase_order.supplier_id = supplier.id
 				WHERE purchase_invoice.is_confirm = '0' AND purchase_invoice.is_delete = '0'
 				UNION (
-					SELECT purchase_invoice_other.id, purchase_invoice_other.date, purchase_invoice_other.tax_document, purchase_invoice_other.invoice_document, supplier.name, supplier.address, supplier.city, purchase_invoice_other.information, debt_type.name as type, 'Blank' as class
+					SELECT purchase_invoice_other.id, purchase_invoice_other.date, purchase_invoice_other.tax_document, purchase_invoice_other.invoice_document, COALESCE(supplier.name, other_opponent.name) as name, COALESCE(supplier.address, other_opponent.description) as address, COALESCE(supplier.city, other_opponent_type.name) as city, purchase_invoice_other.information, debt_type.name as type, 'Blank' as class
 					FROM purchase_invoice_other
 					JOIN debt_type ON purchase_invoice_other.type = debt_type.id
-					JOIN supplier ON purchase_invoice_other.supplier_id = supplier.id
+					LEFT JOIN supplier ON purchase_invoice_other.supplier_id = supplier.id
+					LEFT JOIN other_opponent ON purchase_invoice_other.other_opponent_id = other_opponent.id
+					LEFT JOIN other_opponent_type ON other_opponent.type = other_opponent_type.id
 					WHERE purchase_invoice_other.is_confirm = '0' AND purchase_invoice_other.is_delete = '0'
 				)
 				LIMIT $limit OFFSET $offset

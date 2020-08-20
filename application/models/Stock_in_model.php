@@ -170,40 +170,33 @@ class Stock_in_model extends CI_Model {
 			return $sufficient_stock;
 		}
 		
-		public function showItems($offset = 0, $term = '', $limit = 25)
+		public function showItems($offset = 0, $term = "", $limit = 10)
 		{
-			$this->db->select('item.reference, item.name, item.id');
-			$this->db->select_sum('stock_in.residue', 'stock');
-			$this->db->from('stock_in');
-			$this->db->join('item', 'stock_in.item_id = item.id');
-			
-			if($term != ''){
-				$this->db->like('reference', $term, 'both');
-				$this->db->or_like('name', $term, 'both');
-			};
-			
-			$this->db->group_by('stock_in.item_id');
-			$this->db->order_by('item.reference');
-			$this->db->limit($limit, $offset);
-			
-			$query		= $this->db->get();
+			$query		= $this->db->query("
+				SELECT item.reference, item.name, item.id, SUM(stock_in.residue) as stock
+				FROM stock_in
+				JOIN item ON stock_in.item_id = item.id
+				WHERE item.reference LIKE '%$term%' OR item.name LIKE '%$term%'
+				GROUP BY stock_in.item_id
+				ORDER BY item.reference ASC
+				LIMIT $limit OFFSET $offset
+			");
+
 			$result		= $query->result();
-			
 			return $result;
 		}
 		
 		public function countItems($offset = 0, $term = '', $limit = 25)
 		{
-			if($term != ''){
-				$this->db->like('reference', $term, 'both');
-				$this->db->or_like('name', $term, 'both');
-			};
-			$this->db->select_sum('stock_in.residue', 'stock');
-			$this->db->group_by('stock_in.item_id');
-			
-			$query		= $this->db->get($this->table_stock_in);
+			$query		= $this->db->query("
+				SELECT item.reference, item.name, item.id, SUM(stock_in.residue) as stock
+				FROM stock_in
+				JOIN item ON stock_in.item_id = item.id
+				WHERE item.reference LIKE '%$term%' OR item.name LIKE '%$term%'
+				GROUP BY stock_in.item_id
+			");
+
 			$result		= $query->num_rows();
-			
 			return $result;
 		}
 		
@@ -213,7 +206,7 @@ class Stock_in_model extends CI_Model {
 				SELECT COALESCE(customer.name, supplier.name, 'Internal Transaction') as name, COALESCE(deliveryOrderTable.date, eventTable.date) as date, COALESCE(deliveryOrderTable.quantity, eventTable.quantity) * (-1) as quantity, COALESCE(deliveryOrderTable.name, eventTable.name) as documentName 
 				FROM stock_out
 				LEFT JOIN (
-					SELECT stock_out.id, code_delivery_order.name, code_delivery_order.date, SUM(delivery_order.quantity) as quantity
+					SELECT stock_out.id, code_delivery_order.name, code_delivery_order.date, delivery_order.quantity
 					FROM delivery_order
 					JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
 					JOIN price_list ON sales_order.price_list_id = price_list.id

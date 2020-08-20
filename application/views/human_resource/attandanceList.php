@@ -13,7 +13,6 @@
                 <tbody id='attendanceListTableContent'></tbody>
             </table>
         </div>
-        <p id='attendanceListTableText'>There is no one left to be listed.</p>
     </div>
 </div>
 <script>
@@ -36,7 +35,7 @@
                     var attendanceId = attendance.id;
                     var status = attendance.status;
 
-                    $('#attendanceListTableContent').append("<tr><td>" + name + "</td><td><button class='button button_success_dark'>OK</button> <button class='button button_danger_dark'>No</button>");
+                    $('#attendanceListTableContent').append("<tr><td>" + name + "</td><td><div class='btn-group'><button class='button button_success_dark'><i class='fa fa-check'></i> Present</button><button class='button button_danger_dark'><i class='fa fa-times'></i> Absent</button></div></td></tr>");
                     attendanceCount++;
                 })
 

@@ -44,7 +44,7 @@ class Inventory_case extends CI_Controller {
 		}
 	}
 
-	public function input($event)
+	public function insertItem($event)
 	{
 		$user_id		= $this->session->userdata('user_id');
 		switch($event){
@@ -98,7 +98,6 @@ class Inventory_case extends CI_Controller {
 				$date			= $this->input->post('date');
 				$itemIdDem		= $this->input->post('itemIdDem');
 				$quantityDem	= $this->input->post('quantityDem');
-				$priceDem		= $this->input->post('priceDem');
 
 				$type			= 3;
 
@@ -119,7 +118,7 @@ class Inventory_case extends CI_Controller {
 					$this->load->model('Inventory_case_detail_model');
 					$result = $this->Inventory_case_detail_model->insertBatchItem($eventId, $quantity_array, $type);
 
-					$batchResult = $this->Inventory_case_detail_model->insertItem($eventId, $itemIdDem, $quantityDem, 'OUT', $priceDem);
+					$batchResult = $this->Inventory_case_detail_model->insertItem($eventId, $itemIdDem, $quantityDem, 'OUT');
 					if($result == 1 && $batchResult == $expectedInput){
 						redirect(site_url('Inventory_case/successSubmission/') . $eventId);
 					} else {
@@ -223,12 +222,21 @@ class Inventory_case extends CI_Controller {
 
 	public function failedSubmission()
 	{
-
+		$user_id		= $this->session->userdata('user_id');
+		$this->load->model('User_model');
+		$data['user_login'] = $this->User_model->getById($user_id);
+		
+		$this->load->model('Authorization_model');
+		$data['departments']	= $this->Authorization_model->getByUserId($user_id);
+		
+		$this->load->view('head');
+		$this->load->view('inventory/header', $data);
+		$this->load->view('inventory/Case/ResultSubmission/failedSubmission');
 	}
 	
 	public function confirmDashboard()
 	{
-		$this->load->view('inventory/case/case_confirm_dashboard');
+		$this->load->view('inventory/Case/case_confirm_dashboard');
 	}
 	
 	public function view_unconfirmed_case()
@@ -317,7 +325,37 @@ class Inventory_case extends CI_Controller {
 		} else {
 			echo 0;
 		}
+	}
 
+	public function archiveDashboard()
+	{
+		$user_id		= $this->session->userdata('user_id');
+		$this->load->model('User_model');
+		$data['user_login'] = $this->User_model->getById($user_id);
 		
+		$this->load->model('Authorization_model');
+		$data['departments']	= $this->Authorization_model->getByUserId($user_id);
+		
+		$this->load->view('head');
+		$this->load->view('inventory/header', $data);
+
+		$this->load->model('Inventory_case_model');
+		$data['years'] = $this->Inventory_case_model->getYears();
+		$this->load->view('inventory/Case/archiveDashboard', $data);
+	}
+
+	public function viewArchives()
+	{
+		$month		= $this->input->get('month');
+		$year		= $this->input->get('year');
+		$page		= $this->input->get('page');
+		$offset		= ($page - 1) * 10;
+
+		$this->load->model('Inventory_case_model');
+		$data['items'] = $this->Inventory_case_model->getItems($month, $year, $offset);
+		$data['pages'] = max(1, ceil($this->Inventory_case_model->countItems($month, $year)/10));
+
+		header('Content-Type: application/json');
+		echo json_encode($data);
 	}
 }

@@ -202,7 +202,7 @@ class Purchase_order_model extends CI_Model {
 			return $name;
 		}
 		
-		public function inputItem()
+		public function insertItem()
 		{
 			$guid			= $this->input->post('guid');
 			$date			= $this->input->post('date');
@@ -328,7 +328,7 @@ class Purchase_order_model extends CI_Model {
 		
 		public function showById($id)
 		{
-			$this->db->select('code_purchase_order.*, supplier.name as supplier_name, supplier.address as supplier_address, supplier.city as supplier_city, supplier.number, supplier.rt, supplier.rw, supplier.postal_code, supplier.npwp, supplier.phone_number, supplier.block, x.name as created_by, y.name as confirmed_by');
+			$this->db->select('code_purchase_order.*, x.name as created_by, y.name as confirmed_by');
 			$this->db->from('code_purchase_order');
 			$this->db->join('supplier', 'code_purchase_order.supplier_id = supplier.id');
 			$this->db->join('users as x', 'code_purchase_order.created_by = x.id');

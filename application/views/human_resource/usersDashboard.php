@@ -85,7 +85,7 @@
 			<?php } ?>
 			</select><br>
 			<br>
-			<button type='button' id='submitFormButton' class='button button_success_dark'>Submit</button>
+			<button type='button' id='submitFormButton' class='button button_default_dark'><i class='fa fa-long-arrow-right'></i></button>
 		</form>
 	</div>
 </div>

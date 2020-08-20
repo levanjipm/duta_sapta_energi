@@ -33,11 +33,11 @@ class Stock extends CI_Controller {
 	{
 		$page		= $this->input->get('page');
 		$term		= $this->input->get('term');
-		$offset		= ($page - 1 ) * 25;
+		$offset		= ($page - 1 ) * 10;
 		
 		$this->load->model('Stock_in_model');
 		$data['stocks'] = $this->Stock_in_model->showItems($offset, $term);
-		$data['pages']	= max(1, ceil($this->Stock_in_model->countItems($offset, $term)/25));
+		$data['pages']	= max(1, ceil($this->Stock_in_model->countItems($offset, $term)/10));
 		
 		header('Content-Type: application/json');
 		echo json_encode($data);

@@ -174,7 +174,7 @@ class Inventory_case_model extends CI_Model {
 		
 		public function showById($id)
 		{
-			$this->db->select('code_event.id, code_event.type, code_event.date, code_event.is_confirm, code_event.confirmed_by, users.name as created_by');
+			$this->db->select('code_event.name, code_event.id, code_event.type, code_event.date, code_event.is_confirm, code_event.confirmed_by, users.name as created_by');
 			$this->db->from('code_event');
 			$this->db->join('users', 'code_event.created_by = users.id', 'left');
 			$this->db->where('code_event.id', $id);
@@ -197,5 +197,36 @@ class Inventory_case_model extends CI_Model {
 
 			return $this->db->affected_rows();
 		}
-			
-}
+
+		public function getYears()
+		{
+			$query		= $this->db->query("
+				SELECT DISTINCT(YEAR(date)) as year FROM
+				code_event
+				ORDER BY date ASC
+			");
+			$result = $query->result();
+
+			return $result;
+		}
+
+		public function getItems($month, $year, $offset = 0, $limit = 10)
+		{
+			$this->db->where('MONTH(date)', $month);
+			$this->db->where('YEAR(date)', $year);
+			$this->db->limit($limit, $offset);
+			$query	= $this->db->get($this->table_event);
+			$result = $query->result();
+			return $result;
+		}
+
+		public function countItems($month, $year)
+		{
+			$this->db->where('MONTH(date)', $month);
+			$this->db->where('YEAR(date)', $year);
+			$query	= $this->db->get($this->table_event);
+			$result = $query->num_rows();
+			return $result;
+		}	
+	}
+?>

@@ -90,22 +90,20 @@ class Stock_out_model extends CI_Model {
 				$quantity				= $delivery_order['quantity'];
 				$delivery_order_id		= $delivery_order['delivery_order_id'];
 				$customer_id			= $delivery_order['customer_id'];
-
-				$stock_in				= $this->Stock_in_model->getResidueByItemId($item_id);
-				$residue				= $stock_in->residue;
-				$in_id					= $stock_in->id;
 				while($quantity > 0){
-					if($residue		> $quantity){
+					$stock_in				= $this->Stock_in_model->getResidueByItemId($item_id);
+					$residue				= $stock_in->residue;
+					$in_id					= $stock_in->id;
+					if($residue > $quantity){
 						$current_residue	= $residue - $quantity;
 						$this->Stock_in_model->updateById($in_id, $current_residue);
 						$this->Stock_out_model->insertStockDeliveryOrder($in_id, $quantity, $delivery_order_id, $customer_id); 
 						break;
 					} else {
-						$current_residue		= $quantity - $residue;
 						$this->Stock_in_model->updateById($in_id, 0);
-						$this->Stock_out_model->insertStockDeliveryOrder($in_id, $current_residue, $delivery_order_id, $customer_id);
+						$this->Stock_out_model->insertStockDeliveryOrder($in_id, $residue, $delivery_order_id, $customer_id);
 						
-						$quantity = $quantity - $residue;
+						$quantity -= $residue;
 					}
 				}
 

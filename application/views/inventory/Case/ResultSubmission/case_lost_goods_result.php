@@ -107,8 +107,8 @@
 </div>
 <script>
 	$(document).ready(function(){
-		var window_width	= $(document).width() - 200;
-		var difference		= window_width * 0.5 - 200;		
+		var window_width	= $('.dashboard_in').width() - 200;
+		var difference		= window_width * 0.5;		
 		$('.logo_wrapper').css('margin-left', difference, 'important');
 	});
 </script>

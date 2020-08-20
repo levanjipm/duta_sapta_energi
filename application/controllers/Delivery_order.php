@@ -286,8 +286,7 @@ class Delivery_order extends CI_Controller {
 
 		if(($invoicingMethod == 1 && $invoiceId != null) || ($invoicingMethod == 2 && $invoiceId == null)){
 			$this->load->model('Delivery_order_detail_model');
-			$deliveryOrderArray 	= $this->Delivery_order_detail_model->getDeliveryOrderBatch($deliveryOrderId);
-			
+			$deliveryOrderArray 	= $this->Delivery_order_detail_model->getDeliveryOrderBatch($deliveryOrderId);			
 			$this->load->model('Stock_in_model');
 			$result					= $this->Stock_in_model->checkStock($deliveryOrderArray);
 			

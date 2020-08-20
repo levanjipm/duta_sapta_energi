@@ -7,9 +7,8 @@
 	</div>
 	<br>
 	<div class='dashboard_in'>
-		<form action='<?= site_url('Purchase_order/inputItem') ?>' method='POST' id='purchase_order_form'>
+		<form action='<?= site_url('Purchase_order/insertItem') ?>' method='POST' id='purchase_order_form'>
 			<input type='hidden' value='<?= $guid ?>'name='guid'>
-	
 			<label>Date</label>
 			<input type='date' class='form-control' name='date' required min='2020-01-01' id='purchase_order_date'>
 			
@@ -139,9 +138,12 @@
 		</div>
 	</div>
 </div>
+
 <div class='alert_wrapper' id='validate_purchase_order_wrapper'>
 	<button type='button' class='slide_alert_close_button'>&times </button>
 	<div class='alert_box_slide'>
+		<h3 style='font-family:bebasneue'>Create purchase order</h3>
+		<hr>
 		<label>Date</label>
 		<p id='date'></p>
 		
@@ -270,6 +272,11 @@
 			var date 		= $("#purchase_order_date").val();
 			var supplier	= $("#supplier").val();
 			var note		= $('#note').val();
+			if(note == ""){
+				var noteText = "<i>Not available</i>";
+			} else {
+				var noteText = note;
+			}
 			
 			$.ajax({
 				url:'<?= site_url('Supplier/getById') ?>',
@@ -316,7 +323,7 @@
 			$('#date').html(my_date_format(date));
 			$('#taxing_p').html(taxing_p);
 			
-			$('#purchases_order_note').html(note);
+			$('#purchases_order_note').html(noteText);
 			
 			var purchase_order_value = 0;
 			

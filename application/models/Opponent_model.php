@@ -125,8 +125,11 @@ class Opponent_model extends CI_Model {
 
 		public function getById($id)
 		{
-			$this->db->where('id', $id);
-			$query		= $this->db->get($this->table_opponent);
+			$this->db->select('other_opponent.*, other_opponent_type.name as type');
+			$this->db->from('other_opponent');
+			$this->db->join('other_opponent_type', 'other_opponent.type = other_opponent_type.id');
+			$this->db->where('other_opponent.id', $id);
+			$query		= $this->db->get();
 			$result		= $query->row();
 			return $result;
 		}

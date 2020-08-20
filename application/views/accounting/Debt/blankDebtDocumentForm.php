@@ -156,6 +156,7 @@
 	var debtType;
 
 	var taxing;
+	var supplierType;
 
 	$(document).ready(function(){
 		refreshType();
@@ -210,6 +211,7 @@
 			information = $('#information').val();
 
 			invoiceName = $('#invoiceName').val();
+			supplierType = supplierType;
 
 			$('#supplier_name_p').html(supplier_name);
 			$('#supplier_address_p').html(complete_address);
@@ -250,7 +252,8 @@
 					value: value,
 					date: $('#date').val(),
 					supplier_id: $('#supplier_id').val(),
-					debtType: $('#debtType').val()
+					debtType: $('#debtType').val(),
+					supplierType: supplierType
 				},
 				type:'POST',
 				beforeSend:function(){
@@ -284,6 +287,7 @@
 			},
 			success:function(response){
 				var suppliers = response.suppliers;
+				var supplierCount = 0;
 				$('#supplierTableContent').html("");
 				$.each(suppliers, function(index, supplier){
 					var id						= supplier.id;
@@ -317,21 +321,38 @@
 						complete_address	+= ', ' + supplier_postal;
 					}
 
-					$('#supplierTableContent').append("<tr><td>" + name + "</td><td>" + complete_address + "</td><td><button class='button button_success_dark' onclick='selectSupplier(" + id + ")'><i class='fa fa-check'></i></button>");
+					$('#supplierTableContent').append("<tr><td>" + name + "</td><td>" + complete_address + "</td><td><button class='button button_default_dark' onclick='selectSupplier(" + id + ")'><i class='fa fa-long-arrow-right'></i></button>");
+					supplierCount++;
 				})
 
 				$('#supplierPage').html("");
 				var pages = response.pages;
 				for(i = 1; i <= pages; i++){
 					if(i == page){
-						$('#page').append("<option value='" + i + "' selected>" + i + "</option>");
+						$('#supplierPage').append("<option value='" + i + "' selected>" + i + "</option>");
 					} else {
-						$('#page').append("<option value='" + i + "'>" + i + "</option>");
+						$('#supplierPage').append("<option value='" + i + "'>" + i + "</option>");
 					}
+				}
+
+				if(supplierCount > 0){
+					$('#supplierTable').show();
+					$('#supplierTableText').hide();
+				} else {
+					$('#supplierTable').hide();
+					$('#supplierTableText').show();
 				}
 			}
 		});
 	}
+
+	$('#searchOpponentBar').change(function(){
+		refreshOpponent(1);
+	});
+
+	$('#opponentPage').change(function(){
+		refreshOpponent();
+	})
 
 	function refreshOpponent(page = $('#opponentPage').val()){
 		$.ajax({
@@ -344,8 +365,13 @@
 				var opponentCount = 0;
 				var items = response.items;
 				$('#opponentTableContent').html("");
+				$('#opponentTableContent').html("");
 				$.each(items, function(index, item){
-					console.log(item);
+					var name = item.name;
+					var type = item.type;
+					var id = item.id;
+
+					$('#opponentTableContent').append("<tr><td>" + name + "</td><td>" + type + "</td><td><button class='button button_default_dark' onclick='selectOpponent(" + id + ")'><i class='fa fa-long-arrow-right'></i></td></tr>");
 					opponentCount++;
 				});
 
@@ -357,7 +383,14 @@
 						$("#opponentPage").append("<option value='" + i + "'>" + i + "</option>");
 					}
 				}
-				console.log(response);
+				
+				if(opponentCount > 0){
+					$('#opponentTable').show();
+					$('#opponentTableText').hide();
+				} else {
+					$('#opponentTable').hide();
+					$('#opponentTableText').show();
+				}
 			}
 		})
 	}
@@ -373,8 +406,8 @@
 				$('#debtTypeTableContent').html("");
 				var items = response.items;
 				$.each(items, function(index, item){
-					var id = item.id;
-					var name = item.name;
+					var id 			= item.id;
+					var name 		= item.name;
 					var description = item.description;
 
 					$('#debtTypeTableContent').append("<tr><td>" + name + "</td><td>" + description + "</td><td><button class='button button_success_dark' id='typeButton-" + id + "'><i class='fa fa-check'></i></button></td></tr>");
@@ -415,15 +448,16 @@
 				id: n
 			},
 			success:function(response){
-				supplier_name 					= response.name;
+				supplierType			= 1;
+				supplier_name 			= response.name;
 				complete_address		= '';
-				complete_address			+= response.address;
+				complete_address		+= response.address;
 				supplier_city			= response.city;
-				var supplier_number			= response.number;
-				var supplier_rt				= response.rt;
-				var supplier_rw				= response.rw;
-				var supplier_postal			= response.postal_code;
-				var supplier_block			= response.block;
+				var supplier_number		= response.number;
+				var supplier_rt			= response.rt;
+				var supplier_rw			= response.rw;
+				var supplier_postal		= response.postal_code;
+				var supplier_block		= response.block;
 	
 				if(supplier_number != null){
 					complete_address	+= ' No. ' + supplier_number;
@@ -449,6 +483,29 @@
 				$('#supplier_id').val(n);
 
 				$('#supplierDetail').html("<label>Name</label><p>" + supplier_name + "</p><label>Address</label><p>" + complete_address + "</p><p>" + supplier_city + "</p>");
+
+				$('#selectSupplierWrapper').fadeOut();
+			}
+		})
+	}
+
+	function selectOpponent(n){
+		$.ajax({
+			url:'<?= site_url("Opponent/getById") ?>',
+			data:{
+				id: n
+			},
+			success:function(response){
+				supplierType = 2;
+				supplier_name = response.name;
+				complete_address = response.type;
+				supplier_city = response.description;
+
+				$("#supplier_id").val(n);
+
+				$('#supplierPickButton').text(name);
+
+				$('#supplierDetail').html("<label>Name</label><p>" + supplier_name + "</p><label>Type</label><p>" + complete_address + "</p><label>Description</label><p>" + supplier_city + "</p>");
 
 				$('#selectSupplierWrapper').fadeOut();
 			}

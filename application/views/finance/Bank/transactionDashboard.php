@@ -164,14 +164,25 @@
 				var opponents	= response.opponents;
 				var pages		= response.pages;
 				var opponentCount = 0;
-				$.each(opponents, function(index, opponent){
-					var name		= opponent.name;
-					var address		= opponent.address;
-					var city		= opponent.city;
-					var id			= opponent.id;
-					$('#opponentTableContent').append("<tr><td><p id='opponent_name-" + id + "'>" + name + "</p><p>" + address + "</p><p>" + city + "</p></td><td><button type='button' class='button button_default_dark' onclick='add_opponent(" + id + ")' title='Choose " + name + "'><i class='fa fa-long-arrow-right'></i></button></td></tr>");
-					opponentCount++;
-				});
+				if($('#opponent_type').val() != "other"){
+					$.each(opponents, function(index, opponent){
+						var name		= opponent.name;
+						var address		= opponent.address;
+						var city		= opponent.city;
+						var id			= opponent.id;
+						$('#opponentTableContent').append("<tr><td><p id='opponent_name-" + id + "'>" + name + "</p><p>" + address + "</p><p>" + city + "</p></td><td><button type='button' class='button button_default_dark' onclick='add_opponent(" + id + ")' title='Choose " + name + "'><i class='fa fa-long-arrow-right'></i></button></td></tr>");
+						opponentCount++;
+					});
+				} else {
+					$.each(opponents, function(index, opponent){
+						var name		= opponent.name;
+						var type		= opponent.type;
+						var description	= opponent.description;
+						var id			= opponent.id;
+						$('#opponentTableContent').append("<tr><td><p id='opponent_name-" + id + "'>" + name + "</p><p>" + description + "</p><p>" + type + "</p></td><td><button type='button' class='button button_default_dark' onclick='add_opponent(" + id + ")' title='Choose " + name + "'><i class='fa fa-long-arrow-right'></i></button></td></tr>");
+						opponentCount++;
+					});
+				}
 
 				if(opponentCount > 0){
 					$('#opponentTable').show();
