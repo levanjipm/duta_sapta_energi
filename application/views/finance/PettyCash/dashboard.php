@@ -1,3 +1,6 @@
+<head>
+	<title>Petty cash - Transaction</title>
+</head>
 <div class='dashboard'>
 	<div class='dashboard_head'>
 		<p style='font-family:museo'><a href='<?= site_url('Finance') ?>' title='Finance'><i class='fa fa-briefcase'></i></a> /Petty cash/ Transaction</p>

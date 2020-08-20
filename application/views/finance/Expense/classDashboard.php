@@ -87,6 +87,26 @@
 		</form>
 	</div>
 </div>
+
+<div class='alert_wrapper' id='delete_class_wrapper'>
+	<div class='alert_box_confirm_wrapper'>
+		<div class='alert_box_confirm_icon'><i class='fa fa-trash'></i></div>
+		<div class='alert_box_confirm'>
+			<input type='hidden' id='delete_class_id'>
+			<h3>Delete confirmation</h3>
+			
+			<p>You are about to delete this data.</p>
+			<p>Are you sure?</p>
+			<button class='button button_default_dark' onclick="$('#delete_class_wrapper').fadeOut()">Cancel</button>
+			<button class='button button_danger_dark' onclick='delete_class()'>Delete</button>
+			
+			<br><br>
+			
+			<p style='font-family:museo;background-color:#f63e21;width:100%;padding:5px;color:white;position:relative;bottom:0;left:0;opacity:0' id='error_delete_class'>Deletation failed.</p>
+		</div>
+	</div>
+</div>
+
 <script>
 	$('#create_account_button').click(function(){
 		$('#addClassWrapper').fadeIn(300, function(){
@@ -147,12 +167,12 @@
 					}
 					
 					if(parent_id == null){
-						$('#pettyTableContent').append("<tr id='parent_tr-" + id + "'><td><strong>" + name + "</strong></td><td>" + description + "</td><td>" + typeText + "</td><td><button type='button' class='button button_success_dark' title='Edit " + name + " class' onclick='open_edit_form(" + id + ")'><i class='fa fa-pencil'></i></button> <button class='button button_danger_dark'><i class='fa fa-trash'></i></button></td></tr>");
+						$('#pettyTableContent').append("<tr id='parent_tr-" + id + "'><td><strong>" + name + "</strong></td><td>" + description + "</td><td>" + typeText + "</td><td><button type='button' class='button button_success_dark' title='Edit " + name + " class' onclick='open_edit_form(" + id + ")'><i class='fa fa-pencil'></i></button> <button class='button button_danger_dark' onclick='confirmDelete(" + id + ")'><i class='fa fa-trash'></i></button></td></tr>");
 						
 						$('#parent_id').append("<option value='" + id + "'>" + name + "</option>");
 						$('#parent_update_id').append("<option value='" + id + "'>" + name + "</option>");
 					} else {
-						$('#parent_tr-' + parent_id).after("<tr><td style='padding-left:25px'>" + name + "</td><td>" + description + "</td><td>" + typeText + "</td><td><button type='button' class='button button_success_dark' title='Edit " + name + " class' onclick='open_edit_form(" + id + ")'><i class='fa fa-pencil'></i></button> <button class='button button_danger_dark'><i class='fa fa-trash'></i></button></td></tr>");
+						$('#parent_tr-' + parent_id).after("<tr><td style='padding-left:25px'>" + name + "</td><td>" + description + "</td><td>" + typeText + "</td><td><button type='button' class='button button_success_dark' title='Edit " + name + " class' onclick='open_edit_form(" + id + ")'><i class='fa fa-pencil'></i></button> <button class='button button_danger_dark' onclick='confirmDelete(" + id + ")'><i class='fa fa-trash'></i></button></td></tr>");
 					}
 
 					countClass++;
@@ -255,5 +275,34 @@
 				}
 			})
 		}
-	})
+	});
+
+	function confirmDelete(n){
+		$('#delete_class_id').val(n);
+		$('#delete_class_wrapper').fadeIn();
+	}
+
+	function delete_class(){
+		$.ajax({
+			url:"<?= site_urul('Expense/deleteClassById') ?>",
+			data:{
+				id: $('#delete_class_id').val()
+			},
+			beforeSend:function(){
+				$('button').attr('disabled', true);
+			},
+			success:function(response){
+				$('button').attr('disabled', false);
+				refresh_view();
+				if(response == 1){
+					$('#delete_class_wrapper').fadeOut();
+				} else {
+					$('#error_delete_class').fadeTo(250, 1);
+					setTimeout(function(){
+						$('#error_delete_class').fadeTo(250, 0);
+					}, 1000);
+				}
+			}
+		})
+	};
 </script>

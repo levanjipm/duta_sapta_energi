@@ -22,7 +22,7 @@ class Expense extends CI_Controller {
 		$this->load->view('head');
 		$this->load->view('finance/header', $data);
 		
-		$this->load->view('finance/expense/classDashboard');
+		$this->load->view('finance/Expense/classDashboard');
 	}
 	
 	public function getItems()

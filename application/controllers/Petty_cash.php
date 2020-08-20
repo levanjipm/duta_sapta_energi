@@ -22,7 +22,7 @@ class Petty_cash extends CI_Controller {
 		$this->load->view('head');
 		$this->load->view('finance/header', $data);
 		
-		$this->load->view('finance/petty_cash_dashboard');
+		$this->load->view('finance/PettyCash/dashboard');
 	}
 	
 	public function insertItem()
@@ -47,7 +47,7 @@ class Petty_cash extends CI_Controller {
 		$this->load->model('Petty_cash_model');
 		$data['currentBalance']	= $this->Petty_cash_model->getCurrentBalance();
 		
-		$this->load->view('finance/petty_cash_mutation', $data);
+		$this->load->view('finance/PettyCash/mutationDashboard', $data);
 	}
 	
 	public function getMutation()

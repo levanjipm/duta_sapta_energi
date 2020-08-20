@@ -113,7 +113,12 @@ class Purchase_order extends CI_Controller {
 	public function print($purchase_order_id)
 	{
 		$this->load->model('Purchase_order_model');
-		$data['general']	= $this->Purchase_order_model->showById($purchase_order_id);
+		$purchaseOrder	= $this->Purchase_order_model->showById($purchase_order_id);
+		$data['general']	= $purchaseOrder;
+
+		$this->load->model("Supplier_model");
+		$supplierId			= $purchaseOrder->supplier_id;
+		$data['supplier']	= $this->Supplier_model->getById($supplierId);
 		
 		$this->load->model('Purchase_order_detail_model');
 		$data['detail']		= $this->Purchase_order_detail_model->getByCodeId($purchase_order_id);

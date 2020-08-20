@@ -239,13 +239,19 @@ class Stock_in_model extends CI_Model {
 				)
 				UNION
 				(
-					SELECT COALESCE(customer.name, supplier.name) as name, COALESCE(goodReceiptTable.date) as date, stock_in.quantity, COALESCE(goodReceiptTable.name) as documentName
+					SELECT COALESCE(customer.name, supplier.name) as name, COALESCE(goodReceiptTable.date, salesReturnTable.date) as date, stock_in.quantity, COALESCE(goodReceiptTable.name, salesReturnTable.name) as documentName
 					 FROM stock_in
 					LEFT JOIN (
 						SELECT good_receipt.id, code_good_receipt.name, code_good_receipt.date FROM code_good_receipt
 						JOIN good_receipt ON good_receipt.code_good_receipt_id = code_good_receipt.id
 					) goodReceiptTable
 					ON stock_in.good_receipt_id = goodReceiptTable.id
+					LEFT JOIN(
+						SELECT code_sales_return_received.name, code_sales_return_received.date, sales_return_received.quantity, sales_return_received.id
+						FROM sales_return_received
+						JOIN code_sales_return_received ON sales_return_received.code_sales_return_received_id = code_sales_return_received.id
+					) salesReturnTable
+					ON stock_in.sales_return_received_id = salesReturnTable.id
 					LEFT JOIN customer ON stock_in.customer_id = customer.id
 					LEFT JOIN supplier ON stock_in.supplier_id = supplier.id
 					WHERE stock_in.item_id = '$item_id'

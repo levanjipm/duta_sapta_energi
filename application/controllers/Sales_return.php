@@ -288,38 +288,36 @@ class Sales_return extends CI_Controller {
 	{
 		$id			= $this->input->post('id');
 		$this->load->model('Sales_return_received_model');
-		// $result = $this->Sales_return_received_model->updateById(1, $id);
-		// if($result == 1){
+		$result = $this->Sales_return_received_model->updateById(1, $id);
+		if($result == 1){
 			$salesReturn			= $this->Sales_return_received_model->getById($id);
 			$codeDeliveryOrderId	= $salesReturn->deliveryOrderId;
 			$this->load->model("Sales_return_received_detail_model");
-			// $previousReturnItems	= $this->Sales_return_received_detail_model->getPreviousByCodeDeliveryOrderId($codeDeliveryOrderId);
-
 			$salesReturnItems		= $this->Sales_return_received_detail_model->getByCodeId($id);
-			print_r($salesReturnItems);
-			// $salesReturnArray = array();
-			// foreach($salesReturnItems as $salesReturnItem)
-			// {
-			// 	$array = array(
-			// 		'id' => '',
-			// 		'supplier_id' => null,
-			// 		'customer_id' => $salesReturn->customer_id,
-			// 		'sales_return_received_id' => $salesReturnItem->id,
-			// 		'quantity' => $salesReturnItem->quantity,
-			// 		'residue' => $salesReturnItem->quantity,
-			// 		'good_receipt_id' => null,
-			// 		'event_id' => null,
-			// 		'price' => $salesReturnItem->value
-			// 	);
+			$salesReturnArray = array();
+			foreach($salesReturnItems as $salesReturnItem)
+			{
+				$array = array(
+					'id' => '',
+					'supplier_id' => null,
+					'customer_id' => $salesReturn->customer_id,
+					'sales_return_received_id' => $salesReturnItem->id,
+					'quantity' => $salesReturnItem->quantity,
+					'residue' => $salesReturnItem->quantity,
+					'good_receipt_id' => null,
+					'event_id' => null,
+					'price' => $salesReturnItem->value,
+					'item_id' => $salesReturnItem->item_id
+				);
 
-			// 	array_push($salesReturnArray, $array);
-			// };
+				array_push($salesReturnArray, $array);
+			};
 
-			// $this->load->model('Stock_in_model');
-			// $this->Stock_in_model->insertItem($salesReturnArray);
-		// }
+			$this->load->model('Stock_in_model');
+			$this->Stock_in_model->insertItem($salesReturnArray);
+		}
 
-		// echo $result;
+		echo $result;
 	}
 
 	public function deleteReceivedById()

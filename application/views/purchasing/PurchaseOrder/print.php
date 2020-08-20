@@ -1,77 +1,77 @@
-<style>
-@media print {
-	body * {
-		visibility: hidden;
-	}
-	
-	#printable, #printable *{
-		visibility:visible!important;
-	}
-	
-	#printable{
-		position: absolute;
-		left: 0;
-		top: 0;
-	}
-	
-	@page {
-	  size: 29.7cm, 21cm;
-	}
-}
-</style>
-<?php
-	$complete_address		= '';
-	$complete_address		.= $general->supplier_address;
-	$supplier_number		= $general->number;
-	$supplier_block			= $general->block;
-	$supplier_rt			= $general->rt;
-	$supplier_rw			= $general->rw;
-	$supplier_postal_code	= $general->postal_code;
-	
-	$created_by				= $general->created_by;
-	$confirmed_by			= $general->confirmed_by;
-	
-	$complete_address		.= 'No. ' . $supplier_number;
-	
-	if($supplier_block		== '' && $supplier_block == '000'){
-		$complete_address	.= 'Block ' . $supplier_block;
-	};
-	
-	if($supplier_rt != '' && $supplier_rt != '000'){
-		$complete_address	.= 'RT ' . $supplier_rt . '/ RW ' . $supplier_rw;
-	}
-	
-	if($supplier_postal_code != ''){
-		$complete_address	.= ', ' . $supplier_postal_code;
-	}
-	
-	$delivery_address			= $general->dropship_address;
-	$delivery_city				= $general->dropship_city;
-	$delivery_contact_person	= $general->dropship_contact_person;
-	$delivery_contact			= $general->dropship_contact;
-	
-	if($delivery_address ==  null){
-		$delivery_address		= "<strong>PT Duta Sapta Energi</strong>";
-		$delivery_city			= "Jalan Babakan Hantap no. 23";
-		$delivery_contact_person	= 'Bandung';
-		$delivery_contact			= '';
-	}
-	
-	$purchase_order_name		= $general->name;
-	$purchase_order_date		= $general->date;
-	
-	$send_date					= $general->date_send_request;
-	$status						= $general->status;
-	if($send_date != null){
-		$request				= $send_date;
-	} else if($send_date == null && $status != null){
-		$request				= $status;
-	} else {
-		$request				= '';
-	}
-?>
 <head>
-	<title><?= $purchase_order_name . ' ' . $general->supplier_name ?></title>
+	<style>
+	@media print {
+		body * {
+			visibility: hidden;
+		}
+		
+		#printable, #printable *{
+			visibility:visible!important;
+		}
+		
+		#printable{
+			position: absolute;
+			left: 0;
+			top: 0;
+		}
+		
+		@page {
+		size: 29.7cm, 21cm;
+		}
+	}
+	</style>
+	<?php
+		$complete_address		= '';
+		$complete_address		.= $supplier->address;
+		$supplier_number		= $supplier->number;
+		$supplier_block			= $supplier->block;
+		$supplier_rt			= $supplier->rt;
+		$supplier_rw			= $supplier->rw;
+		$supplier_postal_code	= $supplier->postal_code;
+		
+		$created_by				= $general->created_by;
+		$confirmed_by			= $general->confirmed_by;
+		
+		$complete_address		.= 'No. ' . $supplier_number;
+		
+		if($supplier_block		== '' && $supplier_block == '000'){
+			$complete_address	.= 'Block ' . $supplier_block;
+		};
+		
+		if($supplier_rt != '' && $supplier_rt != '000'){
+			$complete_address	.= 'RT ' . $supplier_rt . '/ RW ' . $supplier_rw;
+		}
+		
+		if($supplier_postal_code != ''){
+			$complete_address	.= ', ' . $supplier_postal_code;
+		}
+		
+		$delivery_address			= $general->dropship_address;
+		$delivery_city				= $general->dropship_city;
+		$delivery_contact_person	= $general->dropship_contact_person;
+		$delivery_contact			= $general->dropship_contact;
+		
+		if($delivery_address ==  null){
+			$delivery_address		= "<strong>PT Duta Sapta Energi</strong>";
+			$delivery_city			= "Jalan Babakan Hantap no. 23";
+			$delivery_contact_person	= 'Bandung';
+			$delivery_contact			= '';
+		}
+		
+		$purchase_order_name		= $general->name;
+		$purchase_order_date		= $general->date;
+		
+		$send_date					= $general->date_send_request;
+		$status						= $general->status;
+		if($send_date != null){
+			$request				= $send_date;
+		} else if($send_date == null && $status != null){
+			$request				= $status;
+		} else {
+			$request				= '';
+		}
+	?>
+	<title><?= $purchase_order_name . ' ' . $supplier->supplier_name ?></title>
 </head>
 <div class='row' style='margin:0'>	
 	<div class='col-sm-10 col-sm-offset-1' style='background-color:white;padding:20px' id='printable'>
@@ -89,11 +89,11 @@
 			</tr>
 			<tr>
 				<td>
-					<p><?= $general->supplier_name ?></p>
+					<p><?= $supplier->name ?></p>
 					<p><?= $complete_address ?></p>
-					<p><?= $general->supplier_city ?></p>
-					<p><?= $general->phone_number ?></p>
-					<p><?= $general->npwp ?></p>
+					<p><?= $supplier->city ?></p>
+					<p><?= $supplier->phone_number ?></p>
+					<p><?= $supplier->npwp ?></p>
 				</td>
 				<td>
 					<p><?= $delivery_address ?></p>
@@ -175,7 +175,7 @@
 					<label>Supplier</label>
 					<br><br><br><br><br>
 					<hr style='border-top:1px solid black'>
-					<p><?= $general->supplier_name ?></p>
+					<p><?= $supplier->name ?></p>
 				</td>
 				<td style='padding:20px;border-right:1px solid #ddd;width:20%' valign='top'>
 					<label>Created by</label>

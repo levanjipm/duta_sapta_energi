@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Waktu pembuatan: 20 Agu 2020 pada 16.20
+-- Waktu pembuatan: 21 Agu 2020 pada 01.48
 -- Versi server: 10.4.13-MariaDB
 -- Versi PHP: 7.2.32
 
@@ -161,7 +161,8 @@ INSERT INTO `code_delivery_order` (`id`, `date`, `name`, `is_confirm`, `is_delet
 (4, '2020-08-19', 'DO-DSE-202008-00040', 1, 0, 1, 'C6FDAF1D-C9CE-4AFD-A8CE-DD1FF8F9D7AD', 4),
 (5, '2020-08-21', 'DO-DSE-202008-00050', 1, 0, 1, '255F8863-9CB6-4831-BDFB-8ED1CE8A4452', 6),
 (6, '2020-08-21', 'DO-DSE-202008-00061', 1, 0, 1, '6F99E4F2-5737-4EDC-B03C-1AEA39D0BB3D', NULL),
-(7, '2020-08-21', 'DO-DSE-202008-00070', 1, 0, 1, '3FDDF488-1D69-4057-8EE0-2A207E71B2B6', 7);
+(7, '2020-08-21', 'DO-DSE-202008-00070', 1, 0, 1, '3FDDF488-1D69-4057-8EE0-2A207E71B2B6', 7),
+(8, '2020-08-22', 'DO-DSE-202008-00080', 1, 0, 1, 'F497224A-6DB8-407F-9A0F-1A6F33CA65E9', 8);
 
 -- --------------------------------------------------------
 
@@ -216,7 +217,10 @@ INSERT INTO `code_good_receipt` (`id`, `name`, `date`, `is_confirm`, `is_delete`
 (4, 'aaaa', '2020-08-21', 1, 0, NULL, '2020-08-20', 1, 1, '5B55ADB4-F961-428A-90AB-D8B7F8ECA8D1'),
 (5, 'bbbb', '2020-08-21', 1, 0, NULL, '2020-08-20', 1, 1, 'FD0423B7-8532-476F-802D-741404E5A14B'),
 (6, 'asdf', '2020-08-21', 1, 0, NULL, '2020-08-20', 1, 1, 'BD88AFEF-6FDB-4443-B72C-197E8958C290'),
-(7, 'sdfg', '2020-08-21', 1, 0, NULL, '2020-08-20', 1, 1, 'D118641F-DD16-4C25-B963-9439A3583293');
+(7, 'sdfg', '2020-08-21', 1, 0, NULL, '2020-08-20', 1, 1, 'D118641F-DD16-4C25-B963-9439A3583293'),
+(8, 'wwww', '2020-08-21', 1, 0, NULL, '2020-08-21', 1, 1, '29E67C43-CDD4-445B-8425-8DE98C26C8E2'),
+(9, 'asdf', '2020-08-21', 1, 0, NULL, '2020-08-21', 1, 1, '7B747654-5EDE-45CF-B488-F5CC99B33E77'),
+(10, 'oooo', '2020-08-21', 1, 0, NULL, '2020-08-21', 1, 1, '3C73ED3F-2AD7-4398-A6F3-EEB0E0E1897E');
 
 -- --------------------------------------------------------
 
@@ -256,7 +260,8 @@ INSERT INTO `code_purchase_order` (`id`, `date`, `name`, `supplier_id`, `created
 (3, '2020-08-18', 'PO.DSE-202008-1285', 1, 1, 1, 0, NULL, NULL, NULL, NULL, NULL, 1, NULL, 'TOP URGENT', '6CD78F87-491A-4DE2-A66A-15F1E03C7D88', 0, 1, ''),
 (4, '2020-08-20', 'PO.DSE-202008-5864', 1, 1, 1, 0, NULL, NULL, NULL, NULL, NULL, 1, NULL, 'TOP URGENT', '8202A024-0B7C-466C-A013-D336CADE1675', 0, 1, ''),
 (5, '2020-08-20', 'PO.DSE-202008-7769', 1, 1, 1, 0, NULL, NULL, NULL, NULL, NULL, 1, NULL, 'TOP URGENT', 'E04C6C38-D63C-4506-B2ED-05ECEC6AC1B7', 0, 1, ''),
-(6, '2020-08-20', 'PO.DSE-202008-5909', 1, 1, NULL, 0, NULL, NULL, NULL, NULL, NULL, 1, NULL, NULL, '667EA103-7097-4F0A-811C-0AC649F2743C', 0, 0, '');
+(6, '2020-08-20', 'PO.DSE-202008-5909', 1, 1, NULL, 0, NULL, NULL, NULL, NULL, NULL, 1, NULL, NULL, '667EA103-7097-4F0A-811C-0AC649F2743C', 1, 0, ''),
+(7, '2020-08-21', 'PO.DSE-202008-7116', 1, 1, 1, 0, NULL, NULL, NULL, NULL, NULL, 1, NULL, 'TOP URGENT', 'BB52A959-E010-4A19-A833-015355B9A1BC', 0, 1, '');
 
 -- --------------------------------------------------------
 
@@ -302,7 +307,8 @@ INSERT INTO `code_sales_order` (`id`, `customer_id`, `name`, `date`, `taxing`, `
 (2, 116, '202008.74601026', '2020-08-18', 0, NULL, 1, 1, 'C2E62184-69E8-42D2-8CF9-E6CB919F62FE', 1, 1, 0),
 (3, 124, '202008.77832012', '2020-08-19', 0, NULL, 1, 1, '43CEB680-8381-4240-AA25-357DB277A208', 1, 1, 0),
 (4, 264, '202008.89276369', '2020-08-20', 0, NULL, 1, 1, '51CEE3A9-BB28-4331-9C07-13ADAF0405FD', 1, 1, 0),
-(5, 6, '202008.03642284', '2020-08-20', 0, NULL, 1, 1, '82AA4068-A1FF-4374-B26E-F15AF47875B0', 1, 1, 0);
+(5, 6, '202008.03642284', '2020-08-20', 0, NULL, 1, 1, '82AA4068-A1FF-4374-B26E-F15AF47875B0', 1, 1, 0),
+(6, 87, '202008.83768011', '2020-08-21', 0, NULL, 1, 1, 'EBDBDEA4-0FF7-46A2-BF2D-D0F70C3D9C5D', 1, 1, 0);
 
 -- --------------------------------------------------------
 
@@ -346,7 +352,8 @@ INSERT INTO `code_sales_return` (`id`, `name`, `created_by`, `created_date`, `is
 (1, 'SRS-202008-68932985', 1, '2020-08-18', 1, 0, NULL),
 (2, 'SRS-202008-29632063', 1, '2020-08-19', 1, 0, NULL),
 (3, 'SRS-202008-98134918', 1, '2020-08-20', 1, 0, NULL),
-(4, 'SRS-202008-52038778', 1, '2020-08-20', 1, 0, NULL);
+(4, 'SRS-202008-52038778', 1, '2020-08-20', 1, 0, NULL),
+(5, 'SRS-202008-04711550', 1, '2020-08-21', 1, 0, NULL);
 
 -- --------------------------------------------------------
 
@@ -375,7 +382,9 @@ INSERT INTO `code_sales_return_received` (`id`, `created_by`, `created_date`, `i
 (1, 1, '2020-08-18', 1, 0, 1, '202008-00010-RT', '2020-08-18', 0, NULL),
 (2, 1, '2020-08-19', 1, 0, 1, 'DO-DSE-202008-00021-RT', '2020-08-19', 0, NULL),
 (3, 1, '2020-08-20', 0, 0, NULL, 'DO-DSE-202008-00040-RT', '2020-08-20', 0, NULL),
-(4, 1, '2020-08-20', 0, 0, NULL, '202008-00050-RT', '2020-08-25', 0, NULL);
+(4, 1, '2020-08-20', 0, 0, NULL, '202008-00050-RT', '2020-08-25', 0, NULL),
+(5, 1, '2020-08-21', 1, 0, 1, '123RT', '2020-08-22', 0, NULL),
+(6, 1, '2020-08-21', 1, 0, 1, '87123', '2020-08-21', 0, NULL);
 
 -- --------------------------------------------------------
 
@@ -615,7 +624,8 @@ INSERT INTO `delivery_order` (`id`, `sales_order_id`, `code_delivery_order_id`, 
 (5, 4, 4, 1),
 (6, 5, 5, 3),
 (7, 1, 6, 3),
-(8, 6, 7, 3);
+(8, 6, 7, 3),
+(9, 7, 8, 4);
 
 -- --------------------------------------------------------
 
@@ -768,7 +778,10 @@ INSERT INTO `good_receipt` (`id`, `purchase_order_id`, `quantity`, `code_good_re
 (6, 6, 2, 4, '314880.0000'),
 (7, 7, 2, 5, '364800.0000'),
 (8, 7, 1, 6, '364800.0000'),
-(9, 6, 1, 7, '314880.0000');
+(9, 6, 1, 7, '314880.0000'),
+(10, 4, 1, 8, '5379200.0000'),
+(11, 9, 2, 9, '5379200.0000'),
+(12, 9, 1, 10, '5379200.0000');
 
 -- --------------------------------------------------------
 
@@ -846,7 +859,8 @@ INSERT INTO `invoice` (`id`, `name`, `value`, `date`, `information`, `is_done`, 
 (4, 'INV.DSE202008-00040', '2689600.00', '2020-08-19', 'DO-DSE-202008-00040', 0, 0, NULL, NULL, NULL, 0),
 (5, 'INV.DSE202008-00031', '537920.00', '2020-08-19', 'DO-DSE-202008-00031', 0, 0, NULL, NULL, NULL, 0),
 (6, 'INV.DSE202008-00050', '944640.00', '2020-08-21', 'DO-DSE-202008-00050', 0, 1, NULL, NULL, NULL, 0),
-(7, 'INV.DSE202008-00070', '944640.00', '2020-08-21', 'DO-DSE-202008-00070', 0, 0, NULL, NULL, NULL, 0);
+(7, 'INV.DSE202008-00070', '944640.00', '2020-08-21', 'DO-DSE-202008-00070', 0, 0, NULL, NULL, NULL, 0),
+(8, 'INV.DSE202008-00080', '23616000.00', '2020-08-22', 'DO-DSE-202008-00080', 0, 0, NULL, NULL, NULL, 0);
 
 -- --------------------------------------------------------
 
@@ -1205,11 +1219,12 @@ INSERT INTO `purchase_order` (`id`, `item_id`, `price_list`, `net_price`, `quant
 (1, 1, '328000.0000', '268960.0000', 500, 300, 0, 1),
 (2, 14, '4208000.0000', '3450560.0000', 200, 100, 0, 1),
 (3, 16, '600000.0000', '492000.0000', 100, 50, 0, 1),
-(4, 9, '6560000.0000', '5379200.0000', 2, 1, 0, 2),
+(4, 9, '6560000.0000', '5379200.0000', 2, 2, 1, 2),
 (5, 4, '3280000.0000', '2689600.0000', 1, 1, 1, 3),
 (6, 65, '384000.0000', '314880.0000', 3, 3, 1, 4),
 (7, 65, '384000.0000', '364800.0000', 3, 3, 1, 5),
-(8, 1, '328000.0000', '268960.0000', 20, 0, 0, 6);
+(8, 1, '328000.0000', '268960.0000', 20, 0, 0, 6),
+(9, 9, '6560000.0000', '5379200.0000', 5, 3, 0, 7);
 
 -- --------------------------------------------------------
 
@@ -1298,7 +1313,8 @@ INSERT INTO `sales_order` (`id`, `price_list_id`, `discount`, `quantity`, `sent`
 (3, 57, '18.0000', 10, 10, 1, 3),
 (4, 57, '100.0000', 1, 1, 1, 3),
 (5, 69, '18.0000', 3, 3, 1, 4),
-(6, 69, '18.0000', 3, 3, 1, 5);
+(6, 69, '18.0000', 3, 3, 1, 5),
+(7, 9, '10.0000', 4, 4, 1, 6);
 
 -- --------------------------------------------------------
 
@@ -1323,7 +1339,8 @@ INSERT INTO `sales_return` (`id`, `delivery_order_id`, `quantity`, `received`, `
 (1, 1, 1, 1, 1, 1),
 (2, 2, 1, 1, 1, 2),
 (3, 4, 3, 1, 0, 3),
-(4, 6, 3, 3, 1, 4);
+(4, 6, 3, 3, 1, 4),
+(5, 9, 4, 4, 1, 5);
 
 -- --------------------------------------------------------
 
@@ -1346,7 +1363,9 @@ INSERT INTO `sales_return_received` (`id`, `code_sales_return_received_id`, `sal
 (1, 1, 1, 1),
 (2, 2, 2, 1),
 (3, 3, 3, 1),
-(4, 4, 4, 3);
+(4, 4, 4, 3),
+(5, 5, 5, 2),
+(6, 6, 5, 2);
 
 -- --------------------------------------------------------
 
@@ -1375,12 +1394,16 @@ INSERT INTO `stock_in` (`id`, `item_id`, `quantity`, `residue`, `supplier_id`, `
 (1, 1, 300, 281, 1, NULL, 1, NULL, NULL, '268960.0000'),
 (2, 14, 100, 100, 1, NULL, 2, NULL, NULL, '3450560.0000'),
 (3, 16, 50, 50, 1, NULL, 3, NULL, NULL, '492000.0000'),
-(4, 9, 1, 1, 1, NULL, 4, NULL, NULL, '5379200.0000'),
+(4, 9, 1, 0, 1, NULL, 4, NULL, NULL, '5379200.0000'),
 (5, 4, 1, 0, 1, NULL, 5, NULL, NULL, '2689600.0000'),
 (6, 65, 2, 0, 1, NULL, 6, NULL, NULL, '314880.0000'),
 (7, 65, 2, 0, 1, NULL, 7, NULL, NULL, '364800.0000'),
 (8, 65, 1, 0, 1, NULL, 8, NULL, NULL, '364800.0000'),
-(9, 65, 1, 0, 1, NULL, 9, NULL, NULL, '314880.0000');
+(9, 65, 1, 0, 1, NULL, 9, NULL, NULL, '314880.0000'),
+(10, 9, 1, 0, 1, NULL, 10, NULL, NULL, '5379200.0000'),
+(11, 9, 2, 0, 1, NULL, 11, NULL, NULL, '0.0000'),
+(12, 9, 1, 1, 1, NULL, 12, NULL, NULL, '5379200.0000'),
+(14, 9, 2, 2, NULL, 87, NULL, 6, NULL, '2689600.0000');
 
 -- --------------------------------------------------------
 
@@ -1415,7 +1438,10 @@ INSERT INTO `stock_out` (`id`, `in_id`, `quantity`, `customer_id`, `supplier_id`
 (13, 1, 3, 116, NULL, 7, NULL, NULL),
 (14, 7, 2, 6, NULL, 8, NULL, NULL),
 (15, 8, 1, 6, NULL, 8, NULL, NULL),
-(16, 9, 0, 6, NULL, 8, NULL, NULL);
+(16, 9, 0, 6, NULL, 8, NULL, NULL),
+(17, 4, 1, 87, NULL, 9, NULL, NULL),
+(18, 10, 1, 87, NULL, 9, NULL, NULL),
+(19, 11, 2, 87, NULL, 9, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -1931,7 +1957,7 @@ ALTER TABLE `code_billing`
 -- AUTO_INCREMENT untuk tabel `code_delivery_order`
 --
 ALTER TABLE `code_delivery_order`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT untuk tabel `code_event`
@@ -1943,13 +1969,13 @@ ALTER TABLE `code_event`
 -- AUTO_INCREMENT untuk tabel `code_good_receipt`
 --
 ALTER TABLE `code_good_receipt`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT untuk tabel `code_purchase_order`
 --
 ALTER TABLE `code_purchase_order`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT untuk tabel `code_purchase_return`
@@ -1961,7 +1987,7 @@ ALTER TABLE `code_purchase_return`
 -- AUTO_INCREMENT untuk tabel `code_sales_order`
 --
 ALTER TABLE `code_sales_order`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT untuk tabel `code_sales_order_close_request`
@@ -1973,13 +1999,13 @@ ALTER TABLE `code_sales_order_close_request`
 -- AUTO_INCREMENT untuk tabel `code_sales_return`
 --
 ALTER TABLE `code_sales_return`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT untuk tabel `code_sales_return_received`
 --
 ALTER TABLE `code_sales_return_received`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT untuk tabel `customer`
@@ -2003,7 +2029,7 @@ ALTER TABLE `debt_type`
 -- AUTO_INCREMENT untuk tabel `delivery_order`
 --
 ALTER TABLE `delivery_order`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT untuk tabel `department`
@@ -2039,7 +2065,7 @@ ALTER TABLE `fixed_asset_type`
 -- AUTO_INCREMENT untuk tabel `good_receipt`
 --
 ALTER TABLE `good_receipt`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT untuk tabel `income_class`
@@ -2057,7 +2083,7 @@ ALTER TABLE `internal_bank_account`
 -- AUTO_INCREMENT untuk tabel `invoice`
 --
 ALTER TABLE `invoice`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT untuk tabel `item`
@@ -2123,7 +2149,7 @@ ALTER TABLE `purchase_invoice_other`
 -- AUTO_INCREMENT untuk tabel `purchase_order`
 --
 ALTER TABLE `purchase_order`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT untuk tabel `purchase_return`
@@ -2153,31 +2179,31 @@ ALTER TABLE `salary_slip`
 -- AUTO_INCREMENT untuk tabel `sales_order`
 --
 ALTER TABLE `sales_order`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT untuk tabel `sales_return`
 --
 ALTER TABLE `sales_return`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT untuk tabel `sales_return_received`
 --
 ALTER TABLE `sales_return_received`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT untuk tabel `stock_in`
 --
 ALTER TABLE `stock_in`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT untuk tabel `stock_out`
 --
 ALTER TABLE `stock_out`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
 -- AUTO_INCREMENT untuk tabel `supplier`

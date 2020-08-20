@@ -79,7 +79,7 @@ class Sales_return_received_detail_model extends CI_Model {
 		public function getByCodeId($id)
 		{
 			$query			= $this->db->query("
-				SELECT sales_return_received.id, item.reference, item.name, sales_return_received.quantity, sales_order.discount, price_list.price_list, priceTable.value
+				SELECT DISTINCT(sales_return_received.id) as id, item.id as item_id, item.reference, item.name, sales_return_received.quantity, sales_order.discount, price_list.price_list, priceTable.value
 				FROM sales_return_received
 				JOIN sales_return ON sales_return_received.sales_return_id = sales_return.id
 				JOIN delivery_order ON delivery_order.id = sales_return.delivery_order_id
@@ -91,10 +91,10 @@ class Sales_return_received_detail_model extends CI_Model {
 					SELECT COALESCE(SUM(a.quantity * a.price)/SUM(a.quantity), 0) as value, a.id 
 					FROM (
 						SELECT SUM(stock_out.quantity) as quantity, stock_in.price, item.id
-						FROM stock_out
-						JOIN stock_in ON stock_out.in_id = stock_in.id
+						FROM stock_in
+						JOIN stock_out ON stock_out.in_id = stock_in.id
 						JOIN item ON stock_in.item_id = item.id
-						GROUP BY item.id
+						GROUP BY stock_out.in_id, item.id
 					) as a
 					GROUP BY a.id
 				) as priceTable
