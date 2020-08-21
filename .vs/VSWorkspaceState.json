@@ -3,10 +3,14 @@
     "",
     "\\application",
     "\\application\\controllers",
-    "\\application\\views\\purchasing\\Return",
-    "\\application\\views\\sales",
-    "\\application\\views\\sales\\SalesOrder"
+    "\\application\\views",
+    "\\application\\views\\finance",
+    "\\application\\views\\finance\\Billing",
+    "\\application\\views\\finance\\PettyCash",
+    "\\application\\views\\sales\\Return",
+    "\\application\\views\\sales\\SalesOrder",
+    "\\css"
   ],
-  "SelectedNode": "\\application\\controllers\\Item.php",
+  "SelectedNode": "\\application\\views\\sales",
   "PreviewInSolutionExplorer": false
 }

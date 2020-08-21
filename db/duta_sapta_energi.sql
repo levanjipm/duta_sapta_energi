@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Waktu pembuatan: 21 Agu 2020 pada 11.53
+-- Waktu pembuatan: 22 Agu 2020 pada 01.54
 -- Versi server: 10.4.13-MariaDB
 -- Versi PHP: 7.2.32
 
@@ -1059,7 +1059,8 @@ CREATE TABLE `petty_cash` (
 --
 
 INSERT INTO `petty_cash` (`id`, `date`, `transaction`, `value`, `information`, `expense_class`, `bank_id`, `created_by`) VALUES
-(1, '2020-08-21', 2, '2000000.00', '', NULL, 4, 1);
+(1, '2020-08-21', 2, '2000000.00', '', NULL, 4, 1),
+(2, '2020-08-22', 1, '200000.00', 'Ongkos angkut GTS', NULL, NULL, 1);
 
 -- --------------------------------------------------------
 
@@ -2151,7 +2152,7 @@ ALTER TABLE `payable`
 -- AUTO_INCREMENT untuk tabel `petty_cash`
 --
 ALTER TABLE `petty_cash`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT untuk tabel `plafond_submission`

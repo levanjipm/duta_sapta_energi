@@ -4,11 +4,18 @@
 	</div>
 	<br>
 	<div class='dashboard_in'>
-		<label>Date</label>
-        <input type='date' class='form-control' id='date'>
+		<div class='input_group'>
+			<input type='date' class='form-control' id='date'>
+			<div class='input_group_append'>
+				<button class='button button_default_dark'><i class='fa fa-long-arrow-right'></i></button>
+			</div>
+		</div>
         <br>
-        <button class='button button_default_dark' id='viewSuggestionButton' style='display:none' title='View suggestion list'><i class='fa fa-eye'></i></button>
-        <hr>
+        <button class="button button_mini_tab">Recommended</button>
+		<button class="button button_mini_tab">Invoices</button>
+		<hr>
+		<div id='recommendedWrapper'></div>
+		<div id='invoiceWrapper'></div>
         <input type='text' class='form-control' id='search_bar'>
         <br>
         <div class='customerTable'>
