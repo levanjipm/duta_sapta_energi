@@ -99,4 +99,12 @@ class Expense extends CI_Controller {
 
 		echo $result;
 	}
+
+	public function deleteById()
+	{
+		$id			= $this->input->post('id');
+		$this->load->model('Expense_class_model');
+		$result		= $this->Expense_class_model->deleteById($id);
+		echo $result;
+	}
 }

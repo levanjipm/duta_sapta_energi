@@ -147,8 +147,14 @@ class Debt extends CI_Controller {
 		$data['debt']	= $debt;
 
 		$supplierId		= $debt->supplier_id;
-		$this->load->model('Supplier_model');
-		$data['supplier'] = $this->Supplier_model->getById($supplierId);
+		$otherOpponnentId = $debt->other_opponent_id;
+		if($supplierId != null){
+			$this->load->model('Supplier_model');
+			$data['supplier'] = $this->Supplier_model->getById($supplierId);
+		 } else {
+		 	 $this->load->model('Opponent_model');
+			 $data['supplier'] = $this->Opponent_model->getById($otherOpponnentId);
+		 }
 
 		header('Content-Type: application/json');
 		echo json_encode($data);
@@ -268,3 +274,4 @@ class Debt extends CI_Controller {
 		echo json_encode($data);
 	}
 }
+?>

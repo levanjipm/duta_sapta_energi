@@ -465,4 +465,17 @@ class Bank_model extends CI_Model {
 			
 			return $result->value;
 		}
+
+		public function getUnassignedByCustomerId($customerId)
+		{
+			$query = $this->db->query("
+				SELECT bank_transaction.date, COALESCE((IF(transaction = 1, (SUM(bank_transaction.value) * (-1)), SUM(bank_transaction.value))),0) as value FROM bank_transaction
+				WHERE customer_id = '$customerId'
+				AND is_done = '0'
+				AND is_delete = '0'
+			");
+
+			$result = $query->result();
+			return $result;
+		}
 }

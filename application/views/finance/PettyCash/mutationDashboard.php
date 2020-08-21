@@ -10,7 +10,7 @@
 		<label>Current balance</label>
 		<p>Rp. <?= number_format($currentBalance, 2) ?></p>
 		
-		<label>Month</label>
+		<div class='input_group'>
 		<select class='form-control' id='month'>
 <?php
 	for($i = 1; $i <= 12; $i++){
@@ -25,7 +25,6 @@
 	}
 ?>
 		</select>
-		<label>Year</label>
 		<select class='form-control' id='year'>
 <?php
 		for($i = '2020'; $i <= date('Y'); $i++){
@@ -39,9 +38,11 @@
 <?php
 		}
 ?>
-		</select><br>
-		
-		<button type='button' class='button button_default_dark' id='refresh_button'><i class='fa fa-search'></i></button><br><br>
+		</select>
+			<div class='input_group_append'>
+				<button type='button' class='button button_default_dark' id='refresh_button'><i class='fa fa-search'></i></button>
+			</div>
+		</div><br>
 		
 		<div  id='pettyCashTable'>
 			<table class='table table-bordered'>

@@ -190,7 +190,8 @@ class Debt_model extends CI_Model {
 		
 		public function viewPayableChart()
 		{
-			$query		= $this->db->query("SELECT SUM(good_receipt.billed_price * good_receipt.quantity) as value, supplier.name, supplier.city, COALESCE(a.value,0) as paid, code_purchase_order.supplier_id
+			$query		= $this->db->query("
+				SELECT SUM(good_receipt.billed_price * good_receipt.quantity) as value, supplier.name, COALESCE(a.value,0) as paid, code_purchase_order.supplier_id, NULL as other_opponent_id
 				FROM good_receipt 
 				INNER JOIN code_good_receipt ON good_receipt.code_good_receipt_id = code_good_receipt.id 
 				JOIN purchase_order ON good_receipt.purchase_order_id = purchase_order.id
@@ -202,6 +203,20 @@ class Debt_model extends CI_Model {
 				ON a.purchase_id = purchase_invoice.id
 				WHERE purchase_invoice.is_done = '0'
 				GROUP BY code_purchase_order.supplier_id
+				UNION
+				(
+					SELECT SUM(purchase_invoice_other.value) as value, COALESCE(supplier.name, other_opponent.name) as name, COALESCE(b.value,0) as paid, purchase_invoice_other.supplier_id, purchase_invoice_other.other_opponent_id
+					FROM purchase_invoice_other
+					LEFT JOIN supplier ON purchase_invoice_other.supplier_id = supplier.id
+					LEFT JOIN other_opponent ON purchase_invoice_other.other_opponent_id = other_opponent.id
+					LEFT JOIN (
+						SELECT SUM(value) AS value, other_purchase_id FROM payable GROUP BY other_purchase_id
+					) b
+					ON b.other_purchase_id = purchase_invoice_other.id
+					WHERE purchase_invoice_other.is_done = '0'
+					AND purchase_invoice_other.is_confirm = '1'
+					GROUP BY IF(purchase_invoice_other.supplier_id = null, purchase_invoice_other.other_opponent_id, purchase_invoice_other.supplier_id)
+				)
 			");
 			$result		= $query->result();
 			
@@ -223,8 +238,32 @@ class Debt_model extends CI_Model {
 				WHERE purchase_invoice.is_done = '0'
 				AND code_purchase_order.supplier_id = '$supplierId'
 				GROUP BY code_good_receipt.invoice_id
+				UNION (
+					SELECT purchase_invoice_other.id, purchase_invoice_other.date,  purchase_invoice_other.tax_document, purchase_invoice_other.invoice_document, purchase_invoice_other.created_by, purchase_invoice_other.is_confirm, purchase_invoice_other.is_delete, purchase_invoice_other.confirmed_by, purchase_invoice_other.is_done, purchase_invoice_other.value, COALESCE(b.value,0) as paid
+					FROM purchase_invoice_other
+					LEFT JOIN (
+						SELECT SUM(value) as value, payable.other_purchase_id FROM payable GROUP BY payable.other_purchase_id
+					) AS b
+					ON b.other_purchase_id = purchase_invoice_other.id
+					WHERE purchase_invoice_other.supplier_id = '$supplierId'
+				)
 			");
 
+			$result = $query->result();
+			return $result;
+		}
+
+		public function getPayableByOtherId($otherId)
+		{
+			$query		= $this->db->query("
+				SELECT purchase_invoice_other.id, purchase_invoice_other.date,  purchase_invoice_other.tax_document, purchase_invoice_other.invoice_document, purchase_invoice_other.created_by, purchase_invoice_other.is_confirm, purchase_invoice_other.is_delete, purchase_invoice_other.confirmed_by, purchase_invoice_other.is_done, purchase_invoice_other.value, COALESCE(b.value,0) as paid
+				FROM purchase_invoice_other
+				LEFT JOIN (
+					SELECT SUM(value) as value, payable.other_purchase_id FROM payable GROUP BY payable.other_purchase_id
+				) AS b
+				ON b.other_purchase_id = purchase_invoice_other.id
+				WHERE purchase_invoice_other.other_opponent_id = '$otherId'
+			");
 			$result = $query->result();
 			return $result;
 		}

@@ -35,8 +35,8 @@
 		<a href='<?= site_url('Supplier') ?>'><button><p>Supplier</p></button></a>
 		<button class='container_button'><p style='font-family:museo'>Return</p></button>
 		<div class='container_bar'>
-			<a href='<?= site_url('Item_return/purchasing') ?>'><p>Create return</p></a>
-			<a href='<?= site_url('Item_return/confirm/purchasing') ?>'><p>Confirm return</p></a>	
+			<a href='<?= site_url('Purchase_return') ?>'><p>Create</p></a>
+			<a href='<?= site_url('Purchase_return/confirmDashboard') ?>'><p>Confirm</p></a>	
 		</div>
 	</div>
 </div>

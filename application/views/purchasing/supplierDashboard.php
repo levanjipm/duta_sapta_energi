@@ -1,12 +1,15 @@
+<head>
+	<title>Supplier</title>
+</head>
 <div class='dashboard'>
 	<div class='dashboard_head'>
 		<p style='font-family:museo'><a href='<?= site_url('Purchasing') ?>' title='Purchasing'><i class='fa fa-briefcase'></i></a> /Supplier</p>
 	</div>
 	<div class='dashboard_in'>
 		<div class='input_group'>
-			<input type='text' class='form-control input-lg' id='search_bar' placeholder="Search supplier">
+			<input type='text' class='form-control' id='search_bar' placeholder="Search supplier">
 			<div class='input_group_append'>
-				<button type='button' class='button button_default_dark' id='add_supplier_button'>Add supplier</button>
+				<button type='button' class='button button_default_dark' id='add_supplier_button'><i class='fa fa-plus'></i> Add supplier</button>
 			</div>
 		</div>
 		<br>

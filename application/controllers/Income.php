@@ -22,49 +22,56 @@ class Income extends CI_Controller {
 		$this->load->view('head');
 		$this->load->view('finance/header', $data);
 		
-		$this->load->view('finance/income_class_dashboard');
+		$this->load->view('finance/Income/classDashboard');
 	}
 	
-	public function show_all()
+	public function getItems()
 	{
 		$term		= $this->input->get('term');
 		$page		= $this->input->get('page');
 		$offset		= ($page - 1) * 25;
 		
 		$this->load->model('Income_class_model');
-		$data['classes']	= $this->Income_class_model->show_all($offset, $term);
-		$data['pages']		= max(1, ceil($this->Income_class_model->count_all($term)/25));
+		$data['classes']	= $this->Income_class_model->getItems($offset, $term);
+		$data['pages']		= max(1, ceil($this->Income_class_model->countItems($term)/25));
 		
 		header('Content-Type: application/json');
 		echo json_encode($data);
 	}
 	
-	public function add_class()
+	public function insertItem()
 	{
 		$this->load->model('Income_class_model');
-		$this->Income_class_model->insert_from_post();
-		redirect(site_url('Income/class'));
+		$result = $this->Income_class_model->insertItem();
+		echo $result;
 	}
 	
-	public function get_by_id()
+	public function getById()
 	{
 		$this->load->model('Income_class_model');
 		$id = $this->input->post('id');
-		$data = $this->Income_class_model->get_by_id($id);
+		$data = $this->Income_class_model->getById($id);
 		
 		header('Content-Type: application/json');
 		echo json_encode($data);
 	}
 	
-	public function update_class()
+	public function updateById()
 	{
 		$id = $this->input->post('id');
 		$name = $this->input->post('name');
 		$description = $this->input->post('information');
 		
 		$this->load->model('Income_class_model');
-		$this->Income_class_model->update_class_by_id($id, $name, $description);
-		
-		redirect(site_url('Income/class'));
+		$result = $this->Income_class_model->updateById($id, $name, $description);
+		echo $result;
+	}
+
+	public function deleteById()
+	{
+		$id = $this->input->post('id');
+		$this->load->model('Income_class_model');
+		$result = $this->Income_class_model->deleteById($id);
+		echo $result;
 	}
 }

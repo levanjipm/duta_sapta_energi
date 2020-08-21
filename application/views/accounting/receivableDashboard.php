@@ -1,69 +1,72 @@
-<style>	
-	.receivable_line{
-		height:30px;
-		background-color:#014886;
-		border:none;
-		transition:0.3s all ease;
-		width:0;
-		cursor:pointer;
-		opacity:0.7;
-	}
+<head>
+	<title>Receivable</title>
+	<style>	
+		.receivable_line{
+			height:30px;
+			background-color:#014886;
+			border:none;
+			transition:0.3s all ease;
+			width:0;
+			cursor:pointer;
+			opacity:0.7;
+		}
 	
-	.receivable_line:hover{
-		background-color:#013663;
-		transition:0.3s all ease;
-		opacity:1;
-	}
+		.receivable_line:hover{
+			background-color:#013663;
+			transition:0.3s all ease;
+			opacity:1;
+		}
 	
-	.center{
-		position: relative;
-	}
+		.center{
+			position: relative;
+		}
 	
-	.center p{
-		position:absolute;
-		margin:0;
-		top:50%;
-		left:15px;
-		transform: translate(0, -50%);
-		text-align:left
-	}
+		.center p{
+			position:absolute;
+			margin:0;
+			top:50%;
+			left:15px;
+			transform: translate(0, -50%);
+			text-align:left
+		}
 
-	#receivable_chart{
-		position:relative;
-		z-index:5;
-	}
+		#receivable_chart{
+			position:relative;
+			z-index:5;
+		}
 
-	#receivable_view_pane{
-		position:relative;
-	}
+		#receivable_view_pane{
+			position:relative;
+		}
 	
-	#receivable_grid{
-		position:absolute;
-		top:0;
-		left:0;
-		width:100%;
-		height:100%;
-		padding:0;
-		z-index:0;
-	}
+		#receivable_grid{
+			position:absolute;
+			top:0;
+			left:0;
+			width:100%;
+			height:100%;
+			padding:0;
+			z-index:0;
+		}
 	
-	.grid{
-		-ms-flex-preferred-size: 100%;
-		box-sizing: border-box;
-		height:100%;
-		border-left:1px solid black;
-		position:relative;
-		padding:0;
-		margin:0;
-	}
+		.grid{
+			-ms-flex-preferred-size: 100%;
+			box-sizing: border-box;
+			height:100%;
+			border-left:1px solid black;
+			position:relative;
+			padding:0;
+			margin:0;
+		}
 	
-	#grid_wrapper{
-		display:-webkit-box;
-		display:-ms-flexbox;
-		display:flex;
-		opacity:0;
-	}
-</style>
+		#grid_wrapper{
+			display:-webkit-box;
+			display:-ms-flexbox;
+			display:flex;
+			opacity:0;
+		}
+	</style>
+</head>
 
 <div class='dashboard'>
 	<div class='dashboard_head'>
@@ -111,6 +114,9 @@
 <div class='alert_wrapper' id='receivable_detail_wrapper'>
 	<button class='slide_alert_close_button'>&times;</button>
 	<div class='alert_box_slide'>
+		<h3 style='font-family:bebasneue'>Customer's receivable</h3>
+		<hr>
+		<label>Customer</label>
 		<p><strong><span id='customer_name_p'></span></strong></p>
 		<p id='customer_address_p'></p>
 		<p id='customer_city_p'></p>
@@ -207,7 +213,7 @@
 					complete_address	+= ' No. ' + customer_number;
 				}
 				
-				if(customer_block != null){
+				if(customer_block != null && customer_block != "000"){
 					complete_address	+= ' Blok ' + customer_block;
 				}
 			
@@ -243,12 +249,20 @@
 					$('#receivable_table').append("<tr><td>" + my_date_format(date) + " (" + numeral(date_diff).format('0,0') + " days)</td><td>" + invoice_name + "</td><td>Rp. " + numeral(value).format('0,0.00') + "</td><td>Rp. " + numeral(paid).format('0,0.00') + "</td><td>Rp. " + numeral(residue).format('0,0.00') + "</td></tr>");
 				});
 
+				var pendingBankValue = 0;
+				var items = response.pendingBank;
+				$.each(items, function(index, item ){
+					pendingBankValue += parseFloat(item.value);
+				});
+
+				
+
+				$('#receivable_table').append("<tr><td colspan='2'>Pending bank value</td><td>Rp. " + numeral(0).format('0,0.00') + "</td><td>Rp. " + numeral(pendingBankValue).format('0,0.00') + "</td><td>Rp. " + numeral(pendingBankValue).format('0,0.00') +"</td></tr>");
+
 				$('#receivable_detail_wrapper').fadeIn(300, function(){
 					$('#receivable_detail_wrapper .alert_box_slide').show("slide", { direction: "right" }, 250);
 				});
 			}
 		});
 	}
-	
-	
 </script>

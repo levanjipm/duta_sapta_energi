@@ -75,7 +75,7 @@ class Income_class_model extends CI_Model {
 			return $result;
 		}
 		
-		public function show_all($offset = 0, $term = '', $limit = 25)
+		public function getItems($offset = 0, $term = '', $limit = 25)
 		{			
 			if($term != ''){
 				$this->db->like('name', $term, 'both');
@@ -88,7 +88,7 @@ class Income_class_model extends CI_Model {
 			return $result;
 		}
 		
-		public function count_all($term)
+		public function countItems($term)
 		{
 			if($term != ''){
 				$this->db->like('name', $term, 'both');
@@ -101,8 +101,9 @@ class Income_class_model extends CI_Model {
 			return $result;
 		}
 		
-		public function insert_from_post()
+		public function insertItem()
 		{
+			$this->db->db_debug = false;
 			$db_item		= array(
 				'name' => $this->input->post('name'),
 				'description' => $this->input->post('information'),
@@ -111,9 +112,10 @@ class Income_class_model extends CI_Model {
 			);
 			
 			$this->db->insert($this->table_income, $db_item);
+			return $this->db->affected_rows();
 		}
 		
-		public function get_by_id($id)
+		public function getById($id)
 		{
 			$this->db->where('id', $id);
 			$query = $this->db->get($this->table_income);
@@ -122,11 +124,22 @@ class Income_class_model extends CI_Model {
 			return $result;
 		}
 		
-		public function update_class_by_id($id, $name, $description)
+		public function updateById($id, $name, $description)
 		{
+			$this->db->db_debug = false;
 			$this->db->set('name', $name);
 			$this->db->set('description', $description);
 			$this->db->where('id', $id);
 			$this->db->update($this->table_income);
+
+			return $this->db->affected_rows();
+		}
+
+		public function deleteById($id)
+		{
+			$this->db->db_debug = false;
+			$this->db->where('id', $id);
+			$result = $this->db->delete($this->table_income);
+			return $result;
 		}
 }

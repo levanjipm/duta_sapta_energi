@@ -45,4 +45,17 @@ class Payable extends CI_Controller {
 		header('Content-Type: application/json');
 		echo json_encode($data);
 	}
+
+	public function viewPayableByOtherId()
+	{
+		$supplierId = $this->input->get('id');
+		$this->load->model('Debt_model');
+		$data['items'] = $this->Debt_model->getPayableByOtherId($supplierId);
+
+		$this->load->model('Opponent_model');
+		$data['supplier'] = $this->Opponent_model->getById($supplierId);
+
+		header('Content-Type: application/json');
+		echo json_encode($data);
+	}
 }

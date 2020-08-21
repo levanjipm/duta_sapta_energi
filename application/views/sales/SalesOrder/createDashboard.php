@@ -179,15 +179,15 @@
 	
 	$('#add_item_button').click(function(){
 		$('#search_bar').val('');
-		refresh_view();
+		refresh_view(1);
 	});
 	
-	function refresh_view(){
+	function refresh_view(page = $('#page').val()){
 		$.ajax({
 			url:'<?= site_url('Item/showItems') ?>',
 			data:{
 				term:$('#search_bar').val(),
-				page:$('#page').val()
+				page:page
 			},
 			success:function(response){
 				$('#add_item_wrapper').fadeIn();

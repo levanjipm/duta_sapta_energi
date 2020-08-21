@@ -145,4 +145,12 @@ class Expense_class_model extends CI_Model {
 
 			return $this->db->affected_rows();
 		}
+
+		public function deleteById($id)
+		{
+			$this->db->db_debug = false;
+			$this->db->where('id', $id);
+			$result = $this->db->delete($this->table_expense);
+			return $result;
+		}
 }

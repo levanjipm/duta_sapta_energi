@@ -189,6 +189,7 @@ class Invoice_model extends CI_Model {
 						JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
 						JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
 						JOIN customer ON code_sales_order.customer_id = customer.id
+						WHERE invoice.is_confirm = '1'
 						GROUP BY code_sales_order.customer_id
 					");
 					break;
@@ -210,6 +211,7 @@ class Invoice_model extends CI_Model {
 						JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
 						JOIN customer ON code_sales_order.customer_id = customer.id
 						WHERE difference > customer.term_of_payment
+						AND invoice.is_confirm = '1'
 						GROUP BY code_sales_order.customer_id
 					");
 					break;
@@ -231,6 +233,7 @@ class Invoice_model extends CI_Model {
 						JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
 						JOIN customer ON code_sales_order.customer_id = customer.id
 						WHERE DATEDIFF(NOW(), invoice.date) <= 30
+						AND invoice.is_confirm = '1'
 						GROUP BY code_sales_order.customer_id
 					");
 					break;
@@ -252,6 +255,7 @@ class Invoice_model extends CI_Model {
 						JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
 						JOIN customer ON code_sales_order.customer_id = customer.id
 						WHERE DATEDIFF(NOW(), invoice.date) > 30 AND DATEDIFF(NOW(), invoice.date) <= 45
+						AND invoice.is_confirm = '1'
 						GROUP BY code_sales_order.customer_id
 					");
 					break;
@@ -273,6 +277,7 @@ class Invoice_model extends CI_Model {
 						JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
 						JOIN customer ON code_sales_order.customer_id = customer.id
 						WHERE DATEDIFF(NOW(), invoice.date) > 45 AND DATEDIFF(NOW(), invoice.date) <= 60
+						AND invoice.is_confirm = '1'
 						GROUP BY code_sales_order.customer_id
 					");
 					break;
@@ -294,6 +299,7 @@ class Invoice_model extends CI_Model {
 						JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
 						JOIN customer ON code_sales_order.customer_id = customer.id
 						WHERE DATEDIFF(NOW(), invoice.date) > 60
+						AND invoice.is_confirm = '1'
 						GROUP BY code_sales_order.customer_id
 					");
 					break;

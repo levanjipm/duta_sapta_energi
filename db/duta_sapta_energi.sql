@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Waktu pembuatan: 21 Agu 2020 pada 01.48
+-- Waktu pembuatan: 21 Agu 2020 pada 11.53
 -- Versi server: 10.4.13-MariaDB
 -- Versi PHP: 7.2.32
 
@@ -80,7 +80,10 @@ CREATE TABLE `bank_transaction` (
 --
 
 INSERT INTO `bank_transaction` (`id`, `value`, `date`, `transaction`, `customer_id`, `supplier_id`, `other_id`, `is_done`, `is_delete`, `bank_transaction_major`, `account_id`) VALUES
-(1, '3000000.00', '2020-08-19', 2, NULL, NULL, 1, 0, 0, NULL, 2);
+(1, '3000000.00', '2020-08-19', 2, NULL, NULL, 1, 0, 0, NULL, 2),
+(2, '23000000.00', '2020-08-22', 1, 87, NULL, NULL, 1, 0, NULL, 2),
+(3, '20000000.00', '2020-08-21', 2, NULL, 1, NULL, 1, 0, NULL, 2),
+(4, '2000000.00', '2020-08-21', 2, NULL, NULL, NULL, 0, 0, NULL, 2);
 
 -- --------------------------------------------------------
 
@@ -211,8 +214,8 @@ CREATE TABLE `code_good_receipt` (
 --
 
 INSERT INTO `code_good_receipt` (`id`, `name`, `date`, `is_confirm`, `is_delete`, `invoice_id`, `received_date`, `created_by`, `confirmed_by`, `guid`) VALUES
-(1, 'PI-CK-SL-DOT2JUA', '2020-08-18', 1, 0, NULL, '2020-08-18', 1, 1, 'FEB314E2-C997-476E-A3B6-9326BA2D9921'),
-(2, 'PI-CK-BO-ABGEF', '2020-08-19', 1, 0, NULL, '2020-08-18', 1, 1, 'E164166D-56F6-4B96-96C3-11476F2848A7'),
+(1, 'PI-CK-SL-DOT2JUA', '2020-08-18', 1, 0, 1, '2020-08-18', 1, 1, 'FEB314E2-C997-476E-A3B6-9326BA2D9921'),
+(2, 'PI-CK-BO-ABGEF', '2020-08-19', 1, 0, 1, '2020-08-18', 1, 1, 'E164166D-56F6-4B96-96C3-11476F2848A7'),
 (3, 'PI-CK-BO-ABGEF', '2020-08-18', 1, 0, NULL, '2020-08-18', 1, 1, '8D0C0487-05BD-4363-9870-3D1E11B02CCE'),
 (4, 'aaaa', '2020-08-21', 1, 0, NULL, '2020-08-20', 1, 1, '5B55ADB4-F961-428A-90AB-D8B7F8ECA8D1'),
 (5, 'bbbb', '2020-08-21', 1, 0, NULL, '2020-08-20', 1, 1, 'FD0423B7-8532-476F-802D-741404E5A14B'),
@@ -718,8 +721,7 @@ INSERT INTO `expense_class` (`id`, `name`, `parent_id`, `description`, `created_
 (21, 'Marketing cost', NULL, 'This class is used for marketing expenses including transportation, marketing fee, and telecommunication.', 1, '2020-08-12', NULL),
 (22, 'Marketing fee', 21, 'Account for marketing fee', 1, '2020-08-12', 1),
 (23, 'Transportation', 21, 'Account for transportation due to marketing', 1, '2020-08-12', 1),
-(24, 'Telecomunication', 21, 'Account for telecomunication due to marketing', 1, '2020-08-12', 1),
-(27, 'Daniel', NULL, 'asdfasdfasdf', 1, '2020-08-19', NULL);
+(24, 'Telecomunication', 21, 'Account for telecomunication due to marketing', 1, '2020-08-12', 1);
 
 -- --------------------------------------------------------
 
@@ -860,7 +862,7 @@ INSERT INTO `invoice` (`id`, `name`, `value`, `date`, `information`, `is_done`, 
 (5, 'INV.DSE202008-00031', '537920.00', '2020-08-19', 'DO-DSE-202008-00031', 0, 0, NULL, NULL, NULL, 0),
 (6, 'INV.DSE202008-00050', '944640.00', '2020-08-21', 'DO-DSE-202008-00050', 0, 1, NULL, NULL, NULL, 0),
 (7, 'INV.DSE202008-00070', '944640.00', '2020-08-21', 'DO-DSE-202008-00070', 0, 0, NULL, NULL, NULL, 0),
-(8, 'INV.DSE202008-00080', '23616000.00', '2020-08-22', 'DO-DSE-202008-00080', 0, 0, NULL, NULL, NULL, 0);
+(8, 'INV.DSE202008-00080', '23616000.00', '2020-08-22', 'DO-DSE-202008-00080', 0, 1, NULL, NULL, NULL, 0);
 
 -- --------------------------------------------------------
 
@@ -1028,6 +1030,13 @@ CREATE TABLE `payable` (
   `other_purchase_id` int(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+--
+-- Dumping data untuk tabel `payable`
+--
+
+INSERT INTO `payable` (`id`, `value`, `bank_id`, `date`, `purchase_id`, `other_purchase_id`) VALUES
+(1, '20000000.00', 3, '2020-08-21', 1, NULL);
+
 -- --------------------------------------------------------
 
 --
@@ -1044,6 +1053,13 @@ CREATE TABLE `petty_cash` (
   `bank_id` int(255) DEFAULT NULL,
   `created_by` int(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data untuk tabel `petty_cash`
+--
+
+INSERT INTO `petty_cash` (`id`, `date`, `transaction`, `value`, `information`, `expense_class`, `bank_id`, `created_by`) VALUES
+(1, '2020-08-21', 2, '2000000.00', '', NULL, 4, 1);
 
 -- --------------------------------------------------------
 
@@ -1163,6 +1179,13 @@ CREATE TABLE `purchase_invoice` (
   `is_done` tinyint(4) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+--
+-- Dumping data untuk tabel `purchase_invoice`
+--
+
+INSERT INTO `purchase_invoice` (`id`, `date`, `tax_document`, `invoice_document`, `created_by`, `is_confirm`, `is_delete`, `confirmed_by`, `is_done`) VALUES
+(1, '2020-08-18', '010.003-20.65468687', '010.003-20.65468687', 1, 1, 0, 1, 0);
+
 -- --------------------------------------------------------
 
 --
@@ -1192,7 +1215,8 @@ CREATE TABLE `purchase_invoice_other` (
 --
 
 INSERT INTO `purchase_invoice_other` (`id`, `date`, `tax_document`, `invoice_document`, `supplier_id`, `other_opponent_id`, `value`, `taxing`, `information`, `created_by`, `is_confirm`, `confirmed_by`, `is_delete`, `is_done`, `type`) VALUES
-(1, '2020-08-19', '', 'ASDFASDF', NULL, 1, '30000000.00', 0, 'Kemairn numpang buatkan panel di mereka', 1, 0, NULL, 0, 0, 2);
+(1, '2020-08-19', '', 'ASDFASDF', NULL, 1, '30000000.00', 0, 'Kemairn numpang buatkan panel di mereka', 1, 1, 1, 0, 0, 2),
+(2, '2020-08-21', '', 'asdf045', 1, NULL, '20000000.00', 0, 'Beli kabel 2 roll tapi gausah dimasukin ke stock ini teh.', 1, 1, 1, 0, 0, 2);
 
 -- --------------------------------------------------------
 
@@ -1256,6 +1280,13 @@ CREATE TABLE `receivable` (
   `date` date NOT NULL,
   `invoice_id` int(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data untuk tabel `receivable`
+--
+
+INSERT INTO `receivable` (`id`, `bank_id`, `value`, `date`, `invoice_id`) VALUES
+(1, 2, '23000000.00', '2020-08-22', 8);
 
 -- --------------------------------------------------------
 
@@ -1722,7 +1753,8 @@ ALTER TABLE `good_receipt`
 -- Indeks untuk tabel `income_class`
 --
 ALTER TABLE `income_class`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `name` (`name`);
 
 --
 -- Indeks untuk tabel `internal_bank_account`
@@ -1933,7 +1965,7 @@ ALTER TABLE `attendance_status`
 -- AUTO_INCREMENT untuk tabel `bank_transaction`
 --
 ALTER TABLE `bank_transaction`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT untuk tabel `benefit`
@@ -2071,7 +2103,7 @@ ALTER TABLE `good_receipt`
 -- AUTO_INCREMENT untuk tabel `income_class`
 --
 ALTER TABLE `income_class`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT untuk tabel `internal_bank_account`
@@ -2113,13 +2145,13 @@ ALTER TABLE `other_opponent_type`
 -- AUTO_INCREMENT untuk tabel `payable`
 --
 ALTER TABLE `payable`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT untuk tabel `petty_cash`
 --
 ALTER TABLE `petty_cash`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT untuk tabel `plafond_submission`
@@ -2137,13 +2169,13 @@ ALTER TABLE `price_list`
 -- AUTO_INCREMENT untuk tabel `purchase_invoice`
 --
 ALTER TABLE `purchase_invoice`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT untuk tabel `purchase_invoice_other`
 --
 ALTER TABLE `purchase_invoice_other`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT untuk tabel `purchase_order`
@@ -2161,7 +2193,7 @@ ALTER TABLE `purchase_return`
 -- AUTO_INCREMENT untuk tabel `receivable`
 --
 ALTER TABLE `receivable`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT untuk tabel `salary_benefit`
@@ -2340,6 +2372,13 @@ ALTER TABLE `purchase_invoice_other`
   ADD CONSTRAINT `purchase_invoice_other_ibfk_3` FOREIGN KEY (`other_opponent_id`) REFERENCES `other_opponent` (`id`),
   ADD CONSTRAINT `purchase_invoice_other_ibfk_4` FOREIGN KEY (`confirmed_by`) REFERENCES `users` (`id`),
   ADD CONSTRAINT `purchase_invoice_other_ibfk_5` FOREIGN KEY (`type`) REFERENCES `debt_type` (`id`);
+
+--
+-- Ketidakleluasaan untuk tabel `receivable`
+--
+ALTER TABLE `receivable`
+  ADD CONSTRAINT `receivable_ibfk_1` FOREIGN KEY (`invoice_id`) REFERENCES `invoice` (`id`),
+  ADD CONSTRAINT `receivable_ibfk_2` FOREIGN KEY (`bank_id`) REFERENCES `bank_transaction` (`id`);
 
 --
 -- Ketidakleluasaan untuk tabel `sales_return`

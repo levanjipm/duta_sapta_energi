@@ -274,33 +274,38 @@
 
 				var supplier 				= response.supplier;
 				var supplierName 			= supplier.name;
-				var complete_address		= '';
-				complete_address			+= supplier.address;
-				var supplier_city			= supplier.city;
-				var supplier_number			= supplier.number;
-				var supplier_rt				= supplier.rt;
-				var supplier_rw				= supplier.rw;
-				var supplier_postal			= supplier.postal_code;
-				var supplier_block			= supplier.block;
+				if(supplier.address == null){
+					var complete_address = supplier.description;
+					var supplier_city	= supplier.type;
+				} else {
+					var complete_address		= '';
+					complete_address			+= supplier.address;
+					var supplier_city			= supplier.city;
+					var supplier_number			= supplier.number;
+					var supplier_rt				= supplier.rt;
+					var supplier_rw				= supplier.rw;
+					var supplier_postal			= supplier.postal_code;
+					var supplier_block			= supplier.block;
 	
-				if(supplier_number != null){
-					complete_address	+= ' No. ' + supplier_number;
-				}
+					if(supplier_number != null){
+						complete_address	+= ' No. ' + supplier_number;
+					}
 				
-				if(supplier_block != null){
-					complete_address	+= ' Blok ' + supplier_block;
-				}
+					if(supplier_block != null){
+						complete_address	+= ' Blok ' + supplier_block;
+					}
 			
-				if(supplier_rt != '000'){
-					complete_address	+= ' RT ' + supplier_rt;
-				}
+					if(supplier_rt != '000'){
+						complete_address	+= ' RT ' + supplier_rt;
+					}
 				
-				if(supplier_rw != '000' && supplier_rt != '000'){
-					complete_address	+= ' /RW ' + supplier_rw;
-				}
+					if(supplier_rw != '000' && supplier_rt != '000'){
+						complete_address	+= ' /RW ' + supplier_rw;
+					}
 				
-				if(supplier_postal != null){
-					complete_address	+= ', ' + supplier_postal;
+					if(supplier_postal != null){
+						complete_address	+= ', ' + supplier_postal;
+					}
 				}
 				$('#blankSupplierName_p').html(supplierName);
 				$('#blankSupplierAddress_p').html(complete_address);
@@ -446,6 +451,4 @@
 			}
 		});
 	}
-	
-	
 </script>	

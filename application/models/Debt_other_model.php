@@ -18,6 +18,7 @@ class Debt_other_model extends CI_Model {
 		public $taxing;
 		public $information;
 		public $value;
+		public $type;
 
 		public function __construct()
 		{
@@ -40,6 +41,7 @@ class Debt_other_model extends CI_Model {
 			$this->taxing				= $db_item->taxing;
 			$this->information			= $db_item->information;
 			$this->value				= $db_item->value;
+			$this->type					= $db_item->type;
 			
 			return $this;
 		}
@@ -62,6 +64,7 @@ class Debt_other_model extends CI_Model {
 			$db_item->taxing				= $this->taxing;
 			$db_item->information			= $this->information;
 			$db_item->value					= $this->value;
+			$db_item->type					= $this->type;
 			
 			return $db_item;
 		}
@@ -84,6 +87,7 @@ class Debt_other_model extends CI_Model {
 			$stub->taxing				= $db_item->taxing;
 			$stub->information			= $db_item->information;
 			$stub->value				= $db_item->value;
+			$stub->type					= $db_item->type;
 			
 			return $stub;
 		}
@@ -156,6 +160,7 @@ class Debt_other_model extends CI_Model {
 			$this->taxing				= $this->input->post('taxing');
 			$this->information			= $this->input->post('information');
 			$this->value				= $this->input->post('value');
+			$this->type					= $this->input->post('type');
 
 			$db_item 					= $this->get_db_from_stub($this);
 			$this->db->insert($this->table_purchase_invoice, $db_item);

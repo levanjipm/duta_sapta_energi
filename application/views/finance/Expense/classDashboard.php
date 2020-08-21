@@ -7,7 +7,7 @@
 	</div>
 	<br>
 	<div class='dashboard_in'>
-		<button type='button' class='button button_default_dark' id='create_account_button'>Create new class</button>
+		<button type='button' class='button button_default_dark' id='create_account_button'><i class='fa fa-plus'></i> Create new class</button>
 		<br><br>
 		<div id='pettyTable'>
 			<table class='table table-bordered'>
@@ -98,8 +98,7 @@
 			<p>You are about to delete this data.</p>
 			<p>Are you sure?</p>
 			<button class='button button_default_dark' onclick="$('#delete_class_wrapper').fadeOut()">Cancel</button>
-			<button class='button button_danger_dark' onclick='delete_class()'>Delete</button>
-			
+			<button class='button button_danger_dark' onclick='deleteClass()'>Delete</button>
 			<br><br>
 			
 			<p style='font-family:museo;background-color:#f63e21;width:100%;padding:5px;color:white;position:relative;bottom:0;left:0;opacity:0' id='error_delete_class'>Deletation failed.</p>
@@ -282,12 +281,13 @@
 		$('#delete_class_wrapper').fadeIn();
 	}
 
-	function delete_class(){
+	function deleteClass(){
 		$.ajax({
-			url:"<?= site_urul('Expense/deleteClassById') ?>",
+			url:'<?= site_url('Expense/deleteById') ?>',
 			data:{
-				id: $('#delete_class_id').val()
+				id:$('#delete_class_id').val()
 			},
+			type:'POST',
 			beforeSend:function(){
 				$('button').attr('disabled', true);
 			},
@@ -300,9 +300,9 @@
 					$('#error_delete_class').fadeTo(250, 1);
 					setTimeout(function(){
 						$('#error_delete_class').fadeTo(250, 0);
-					}, 1000);
+					}, 1000)
 				}
 			}
 		})
-	};
+	}
 </script>

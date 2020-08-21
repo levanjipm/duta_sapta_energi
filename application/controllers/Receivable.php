@@ -40,6 +40,9 @@ class Receivable extends CI_Controller {
 
 		$this->load->model('Invoice_model');
 		$data['receivable'] = $this->Invoice_model->viewReceivableByCustomerId($customerId);
+
+		$this->load->model("Bank_model");
+		$data['pendingBank'] = $this->Bank_model->getUnassignedByCustomerId($customerId);
 		
 		$this->load->model('Customer_model');
 		$data['customer'] = $this->Customer_model->getById($customerId);
