@@ -22,5 +22,18 @@ class Purchase_return extends CI_Controller {
 		$this->load->view('purchasing/header', $data);
 		$this->load->view('purchasing/Return/createDashboard');
 	}
+
+	public function insertItem()
+	{
+		$this->load->model('Purchase_return_model');
+		$result = $this->Purchase_return_model->insertItem();
+		if($result != null){
+			$this->load->model('Purchase_return_detail_model');
+			$finalResult = $this->Purchase_return_detail_model->insertItem();
+			echo $finalResult;
+		} else {
+			echo 0;
+		}
+	}
 }
 ?>

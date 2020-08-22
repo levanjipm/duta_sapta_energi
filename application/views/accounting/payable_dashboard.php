@@ -266,7 +266,6 @@
 				$('#payableTableContent').append("<tr><td colspan='3'></td><td colspan='2'>Total</td><td>Rp. " + numeral(totalRemainder).format("0,0.00") + "</td></tr");
 
 				var supplier 				= response.supplier;
-				var supplier 				= response.supplier;
 				var supplierName 			= supplier.name;
 				var complete_address		= '';
 				complete_address			+= supplier.address;

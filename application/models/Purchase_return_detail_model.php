@@ -26,8 +26,7 @@ class Purchase_return_detail_model extends CI_Model {
 		{
 			$this->id						= $db_item->id;
 			$this->item_id					= $db_item->item_id;
-			$this->price_list				= $db_item->price_list;
-			$this->discount					= $db_item->discount;
+			$this->price					= $db_item->price;
 			$this->quantity					= $db_item->quantity;
 			$this->received					= $db_item->received;
 			$this->status					= $db_item->status;
@@ -42,8 +41,7 @@ class Purchase_return_detail_model extends CI_Model {
 			
 			$db_item->id						= $this->id;
 			$db_item->item_id					= $this->item_id;
-			$db_item->price_list				= $this->price_list;
-			$db_item->discount					= $this->discount;
+			$db_item->price						= $this->price;
 			$db_item->quantity					= $this->quantity;
 			$db_item->received					= $this->received;
 			$db_item->status					= $this->status;
@@ -54,12 +52,11 @@ class Purchase_return_detail_model extends CI_Model {
 		
 		public function get_new_stub_from_db($db_item)
 		{
-			$stub = new Area_model();
+			$stub = new Purchase_return_detail_model();
 			
 			$stub->id						= $db_item->id;
 			$stub->item_id					= $db_item->item_id;
-			$stub->price_list				= $db_item->price_list;
-			$stub->discount					= $db_item->discount;
+			$stub->price					= $db_item->price;
 			$stub->quantity					= $db_item->quantity;
 			$stub->received					= $db_item->received;
 			$stub->status					= $db_item->status;
@@ -68,12 +65,12 @@ class Purchase_return_detail_model extends CI_Model {
 			return $stub;
 		}
 		
-		public function map_list($areas)
+		public function map_list($items)
 		{
 			$result = array();
-			foreach ($areas as $area)
+			foreach ($items as $item)
 			{
-				$result[] = $this->get_new_stub_from_db($area);
+				$result[] = $this->get_new_stub_from_db($item);
 			}
 			return $result;
 		}
