@@ -7,7 +7,12 @@
 	</div>
     <br>
     <div class='dashboard_in'>
-        <button class='button button_default_dark' id='addStatusButton'><i class='fa fa-plus'></i> Add status</button>
+        <div class='input_group'>
+            <input type='text' class='form-control' id='search_bar'>
+            <div class='input_group_append'>
+                <button class='button button_default_dark' id='addStatusButton'><i class='fa fa-plus'></i> Add status</button>
+            </div>
+        </div>
         <br><br>
         <div id='statusListTable'>
             <table class='table table-bordered'>
@@ -18,6 +23,10 @@
                 </tr>
                 <tbody id='statusListTableContent'></tbody>
             </table>
+
+            <select class='form-control' id='page' style='width:100px'>
+                <option value='1'>1</option>
+            </select>
         </div>
         <p id='statusListTableText'>There is no status found.</p>
     </div>
@@ -30,18 +39,41 @@
             <h3 style='font-family:bebasneue'>Create new status</h3>
             <hr>
             <label>Name</label>
-            <input type='text' class='form-control' id='name'>
+            <input type='text' class='form-control' id='name' required>
             
             <label>Description</label>
-            <textarea class='form-control' id='description' style='resize:none' rows='3'></textarea>
+            <textarea class='form-control' id='description' style='resize:none' rows='3' required minlength='25'></textarea>
 
             <label>Point</label>
-            <input type='number' class='form-control' id='point'><br>
+            <input type='number' class='form-control' id='point' required><br>
 
             <button type='button' class='button button_default_dark' id='addStatusSubmitButton'><i class='fa fa-long-arrow-right'></i></button>
 
             <div class='notificationText danger' id='createFailedNotification'><p>Failed to insert status.</p></div>
-        </div>
+        </form>
+    </div>
+</div>
+
+<div class='alert_wrapper' id='editStatusWrapper'>
+    <button class='slide_alert_close_button'>&times;</button>
+    <div class='alert_box_slide'>
+        <form id='editStatusForm'>
+            <h3 style='font-family:bebasneue'>Edit status</h3>
+            <hr>
+            <input type='hidden' id='editId' name='id'>
+            <label>Name</label>
+            <input type='text' class='form-control' id='editName' name='name' required>
+            
+            <label>Description</label>
+            <textarea class='form-control' id='editDescription' name='description' style='resize:none' rows='3' required minlength='25'></textarea>
+
+            <label>Point</label>
+            <input type='number' class='form-control' id='editPoint' name='point' required><br>
+
+            <button type='button' class='button button_default_dark' id='editStatusSubmitButton'><i class='fa fa-long-arrow-right'></i></button>
+
+            <div class='notificationText danger' id='updateFailedNotification'><p>Failed to update status.</p></div>
+        </form>
     </div>
 </div>
 
@@ -68,21 +100,35 @@
     $(document).ready(function(){
         refreshView();
     });
+    
+    $('#search_bar').change(function(){
+        refreshView(1);
+    });
+
+    $('#page').change(function(){
+        refreshView();
+    })
 
     $('#createNewStatusForm').validate();
+    $('#editStatusForm').validate();
 
-    function refreshView(){
+    function refreshView(page = $('#page').val()){
         $.ajax({
             url:"<?= site_url('Attendance/getAttendanceStatus') ?>",
+            data:{
+                page: $('#page').val(),
+                term: $('#search_bar').val()
+            },
             success:function(response){
+                var items = response.items;
                 var statusCount = 0;
                 $('#statusListTableContent').html("");
-                $.each(response, function(index, value){
+                $.each(items, function(index, value){
                     var name = value.name;
                     var id = value.id;
                     var description = value.description;
 
-                    $('#statusListTableContent').append("<tr><td>" + name + "</td><td>" + description + "</td><td><button class='button button_default_dark'><i class='fa fa-eye'></i></button> <button class='button button_danger_dark' onclick='deleteStatus(" + id + ")'><i class='fa fa-trash'></i></button>");
+                    $('#statusListTableContent').append("<tr><td>" + name + "</td><td>" + description + "</td><td><button class='button button_success_dark' onclick='openEditView(" + id + ")'><i class='fa fa-pencil'></i></button> <button class='button button_danger_dark' onclick='deleteStatus(" + id + ")'><i class='fa fa-trash'></i></button>");
                     statusCount++;
                 })
 
@@ -101,6 +147,55 @@
         $('#deleteStatusWrapper').fadeIn();
         $('#delete_status_id').val(n);
     }
+
+    function openEditView(n){
+        $.ajax({
+            url:'<?= site_url('Attendance/getStatusById') ?>',
+            data:{
+                id: n
+            },
+            success:function(response){
+                var name = response.name;
+                var description = response.description;
+                var id = response.id;
+                var point = response.point;
+
+                $('#editName').val(name);
+                $('#editDescription').val(description);
+                $('#editId').val(id);
+                $('#editPoint').val(point);
+
+                $('#editStatusWrapper').fadeIn(300, function(){
+                    $('#editStatusWrapper .alert_box_slide').show("slide", { direction: "right" }, 250);
+                });
+            }
+        })
+    }
+
+    $('#editStatusSubmitButton').click(function(){
+        if($('#editStatusForm').valid()){
+            $.ajax({
+                url:"<?= site_url('Attendance/updateStatusById') ?>",
+                data: $('#editStatusForm').serialize(),
+                type:"POST",
+                beforeSend:function(){
+                    $('button').attr('disabled', true);
+                },
+                success:function(response){
+                    $('button').attr('disabled', false);
+                    refreshView();
+                    if(response == 1){
+                        $('#editStatusWrapper .slide_alert_close_button').click();
+                    } else {
+                        $('#updateFailedNotification').fadeIn();
+                        setTimeout(function(){
+                            $('#updateFailedNotification').fadeOut();
+                        }, 1000)
+                    }
+                }
+            })
+        }
+    })
 
     function confirm_delete(){
         $.ajax({

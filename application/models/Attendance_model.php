@@ -64,29 +64,35 @@ class Attendance_model extends CI_Model {
 
 		public function getUnattendedList($date)
 		{
-			$this->db->select('users.*');
-			$this->db->from('users');
-			$this->db->where('is_active', 1);
-
-			$query = $this->db->get();
-			$users = $query->result();
-
-			$result = array();
-			foreach($users as $user){
-				$userArray = (array) $user;
-
-				$resultArray = array();
-				$resultArray['user'] = $userArray;
-
-				$this->db->where('date', $date);
-				$this->db->where('user_id', $user->id);
-				$query = $this->db->get($this->table_attendance);
-				$attendance = (array) $query->row();
-
-				$resultArray['attendance'] = $attendance;
-				array_push($result, $resultArray);
-			}
-
+			$query	 = $this->db->query("
+				SELECT users.*, a.status FROM users LEFT JOIN
+				(
+					SELECT attendance_list.* FROM users
+					LEFT JOIN attendance_list ON attendance_list.user_id = users.id
+					WHERE attendance_list.date = CURDATE()
+				) as a
+				ON a.user_id = users.id
+				WHERE users.is_active = '1'
+			");
+			$result = $query->result();
 			return $result;
+		}
+
+		public function insertItem($userId, $status)
+		{
+			$this->db->where('user_id', $userId);
+			$this->db->where('date', date('Y-m-d'));
+			$query		= $this->db->get($this->table_attendance);
+			$result		= $query->num_rows();
+
+			if($result == 0){
+				$query		= $this->db->query("
+					INSERT INTO Attendance_list (date, time, user_id, status) VALUES
+					('" . date("Y-m-d") . "', NOW(), '$userId', '$status')
+				");
+				return $this->db->affected_rows();
+			} else {
+				return 0;
+			}
 		}
 }
