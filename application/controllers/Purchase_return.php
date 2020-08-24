@@ -29,11 +29,25 @@ class Purchase_return extends CI_Controller {
 		$result = $this->Purchase_return_model->insertItem();
 		if($result != null){
 			$this->load->model('Purchase_return_detail_model');
-			$finalResult = $this->Purchase_return_detail_model->insertItem();
-			echo $finalResult;
+			$this->Purchase_return_detail_model->insertItem($result);
+			echo 1;
 		} else {
 			echo 0;
 		}
+	}
+
+	public function receiveDashboard()
+	{
+		$user_id		= $this->session->userdata('user_id');
+		$this->load->model('User_model');
+		$data['user_login'] = $this->User_model->getById($user_id);
+		
+		$this->load->model('Authorization_model');
+		$data['departments']	= $this->Authorization_model->getByUserId($user_id);
+		
+		$this->load->view('head');
+		$this->load->view('purchasing/header', $data);
+		$this->load->view('inventory/Return/purchaseReturnDashboard');
 	}
 }
 ?>

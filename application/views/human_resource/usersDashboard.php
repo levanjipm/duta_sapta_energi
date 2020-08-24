@@ -1,3 +1,6 @@
+<head>
+	<title>User dashboard</title>
+</head>
 <div class='dashboard'>
 	<div class='dashboard_head'>
 		<p style='font-family:museo'><a href='<?= site_url('Human_resource') ?>' title='Human resource'><i class='fa fa-briefcase'></i></a> / Users</p>
@@ -33,23 +36,29 @@
 	<div class='alert_box_slide'>
 		<h3 style='font-family:bebasneue'>User data</h3>
 		<hr>
-		<label>Name</label>
-		<p id='user_name_p'></p>
+		<div class='row'>
+			<div class='col-sm-4'>
+				<img style='width:100%;border-radius:50%'>
+			</div>
+			<div class='col-sm-8'>
+				<label>Name</label>
+				<p id='user_name_p'></p>
 		
-		<label>Address</label>
-		<p id='user_address_p'></p>
+				<label>Address</label>
+				<p id='user_address_p'></p>
 		
-		<label>Email</label>
-		<p id='user_email_p'></p>
+				<label>Email</label>
+				<p id='user_email_p'></p>
 		
-		<label>Bank account</label>
-		<p id='user_bank_p'></p>
+				<label>Bank account</label>
+				<p id='user_bank_p'></p>
 		
-		<label>Access level</label>
-		<p id='user_access_p'></p>
+				<label>Access level</label>
+				<p id='user_access_p'></p>
 		
-		<label>Status</label><br>
-		<div id='active_button'><button class='button button_verified'><i class='fa fa-check'></i></button> Active</div>
+				<label>Status</label><br>
+				<div id='active_button'><button class='button button_verified'><i class='fa fa-check'></i></button> Active</div>
+			</div>
 		<br><br>
 		
 		<input type='hidden' id='user_id'>
@@ -62,28 +71,31 @@
 	<div class='alert_box_slide'>
 		<h3 style='font-family:bebasneue'>Add user form</h3>
 		<hr>
-		<form id='add_user_form'>
+		<form id='add_user_form' enctype="multipart/form-data">
 			<label>Name</label>
-			<input type='text' class='form-control' id='name' required><br>
+			<input type='text' class='form-control' id='name' name='name' required><br>
 			
 			<label>Address</label>
-			<input type='text' class='form-control' id='address' required><br>
+			<input type='text' class='form-control' id='address' name='address' required><br>
 			
 			<label>Email</label>
-			<input type='email' class='form-control' id='email' required><br>
+			<input type='email' class='form-control' id='email' name='email' required><br>
 			
 			<label>Password</label>
-			<input type='password' class='form-control' id='password' minlength='8' required><br>
+			<input type='password' class='form-control' id='password' name='password' minlength='8' required><br>
 			
 			<label>Bank account</label>
-			<input type='text' class='form-control' id='bank_account' required><br>
+			<input type='text' class='form-control' id='bank_account' name='bank_account' required><br>
 			
 			<label>Access level</label>
-			<select class='form-control' id='access_level'>
+			<select class='form-control' id='access_level' name='access_level'>
 			<?php for($i = 1; $i <=5; $i++){ ?>
 				<option value='<?= $i ?>'><?= $i ?></option>
 			<?php } ?>
-			</select><br>
+			</select>
+			
+			<label>Profile picture</label>
+			<input type='file' class='form-control' id='image' name='image'>
 			<br>
 			<button type='button' id='submitFormButton' class='button button_default_dark'><i class='fa fa-long-arrow-right'></i></button>
 		</form>
@@ -96,21 +108,18 @@
 		if($('#add_user_form').valid()){
 			$.ajax({
 				url:'<?= site_url('Users/insertItem') ?>',
-				data:{
-					name: $('#name').val(),
-					address: $('#address').val(),
-					email: $('#email').val(),
-					password: $('#password').val(),
-					bank_account: $('#bank_account').val(),
-					access_level: $('#access_level').val()
-				},
+				data:new FormData(document.getElementById('add_user_form')),
+				processData:false,
+				contentType:false,
+				cache:false,
+				async:false,
 				type:'POST',
 				beforeSend:function(){
 					$('button').attr('disabled', true);
 				},
 				success:function(response){
 					refresh_view();
-					$('buton').attr('disabled', false);
+					$('button').attr('disabled', false);
 					$('#addUserWrapper .slide_alert_close_button').click();
 				}	
 			});
@@ -131,7 +140,7 @@
 	
 	function refresh_view(page = $('#page').val()){
 		$.ajax({
-			url:'<?= site_url('Users/get_users') ?>',
+			url:'<?= site_url('Users/getItems') ?>',
 			data:{
 				page: page,
 				term: $('#search_bar').val()

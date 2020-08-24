@@ -1,16 +1,12 @@
 {
   "ExpandedNodes": [
     "",
-    "\\application",
-    "\\application\\controllers",
+    "\\application\\models",
     "\\application\\views",
-    "\\application\\views\\finance",
-    "\\application\\views\\finance\\Billing",
-    "\\application\\views\\finance\\PettyCash",
-    "\\application\\views\\sales\\Return",
-    "\\application\\views\\sales\\SalesOrder",
-    "\\css"
+    "\\application\\views\\human_resource",
+    "\\application\\views\\inventory\\Return",
+    "\\assets"
   ],
-  "SelectedNode": "\\application\\views\\sales",
+  "SelectedNode": "\\assets\\absentee.png",
   "PreviewInSolutionExplorer": false
 }

@@ -74,43 +74,26 @@ class Purchase_return_detail_model extends CI_Model {
 			}
 			return $result;
 		}
-		
-		public function insert_from_post($code_purchase_return_id)
+
+		public function insertItem($codePurchaseReturnId)
 		{
-			$batch		= $this->Purchase_return_detail_model->create_batch($code_purchase_return_id);
+			$quantityArray = $this->input->post('quantity');
+			$priceArray		= $this->input->post('price');
+			$batch = array();
+			foreach($quantityArray as $itemId => $quantity){
+				$batch[] = array(
+					"id"		=> "",			
+					"item_id"		=> $itemId,					
+					"price"		=> $priceArray[$itemId],		
+					"quantity"	=> $quantity,					
+					"received"	=> 0,
+					"status"		=> 0,					
+					"code_purchase_return_id"	=> $codePurchaseReturnId
+				);
+
+				next($quantityArray);
+			};
+
 			$this->db->insert_batch($this->table_return, $batch);
-		}
-		
-		public function create_batch($code_purchase_return_id)
-		{
-			$batch					= array();
-			$price_list_array		= $this->input->post('price_list');
-			$discount_array			= $this->input->post('discount');
-			$quantity_array			= $this->input->post('quantity');
-			
-			foreach($price_list_array as $price_list)
-			{
-				$item_id		= key($price_list_array);
-				$discount		= $discount_array[$item_id];
-				$quantity		= $quantity_array[$item_id];
-				$price_list		= $price_list_array[$item_id];
-				
-				if($quantity > 0){
-					$batch[] = array(
-						'id' => '',
-						'item_id' => $item_id,
-						'price_list' => $price_list,
-						'discount' => $discount,
-						'quantity' => $quantity,
-						'received' => 0,
-						'status' => 0,
-						'code_purchase_return_id' => $code_purchase_return_id
-					);
-				}
-				
-				next($price_list_array);
-			}
-			
-			return $batch;
 		}
 }

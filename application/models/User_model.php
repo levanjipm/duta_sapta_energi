@@ -122,7 +122,7 @@ class User_model extends CI_Model {
 			return $user;
 		}
 		
-		public function get_users($offset = 0, $term = "", $limit = 10)
+		public function getItems($offset = 0, $term = "", $limit = 10)
 		{
 			if($term != ""){
 				$this->db->like('name', $term, 'both');
@@ -134,7 +134,7 @@ class User_model extends CI_Model {
 			return $result;
 		}
 		
-		public function count_users($term = "")
+		public function countItems($term = "")
 		{
 			if($term != ""){
 				$this->db->like('name', $term, 'both');
@@ -168,7 +168,15 @@ class User_model extends CI_Model {
 
 			$db_item 					= $this->get_db_from_stub($this);
 			$db_result 					= $this->db->insert($this->table_user, $db_item);
+			$insertId					= $this->db->insert_id();
+			
+			return $this->db->insert_id() == null? null: $insertId;
+		}
 
-			return $this->db->affected_rows();
+		public function updateProfilePicture($userId, $imageUrl)
+		{
+			$this->db->set('image_url', $imageUrl);
+			$this->db->where('id', $userId);
+			$this->db->update($this->table_user);
 		}
 }

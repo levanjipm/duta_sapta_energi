@@ -8,9 +8,6 @@
 	<br>
 	<div class='dashboard_in'>
 		<form id='createReturnForm'>
-			<label>Date</label>
-			<input type='date' class='form-control' id='date' name='date' required min='2020-01-01'>
-
 			<label>Supplier</label>
 			<button type='button' class='form-control' id='supplierButton' style='text-align:left!important'></button>
 			<input type='hidden' id='supplier' name='supplier' required>
@@ -112,6 +109,9 @@
 			<tbody id='returnItemFinal'></tbody>
 		</table>
 		<button type='button' id='submitReturnButton' class='button button_default_dark'><i class='fa fa-long-arrow-right'></i></button>
+
+		<br>
+		<div class='notificationText danger' id='failedInsertReturn'><p>Failed to insert item.</p></div>
 	</div>
 </div>
 
@@ -120,6 +120,14 @@
 		ignore:"",
 		rules: {"hidden_field": {required: true}}
 	});
+
+	$('#search_bar').change(function(){
+		refresh_view(1);
+	})
+
+	$('#page').change(function(){
+		refresh_view();
+	})
 
 	$('#addItemButton').click(function(){
 		$('#search_bar').val('');
@@ -332,7 +340,6 @@
 			var returnValue = 0;
 			$('input[id^="quantity-"]').each(function(){
 				var id = parseInt($(this).attr('id').substring(9, 264));
-				console.log(id);
 				var reference = $('#reference-' + id).html();
 				var name = $('#name-' + id).html();
 
@@ -357,24 +364,34 @@
 	});
 
 	$('#submitReturnButton').click(function(){
-		$.ajax({
-			url:'<?= site_url('Purchase_return/insertItem') ?>',
-			data:$('#createReturnForm').serialize(),
-			type:"POST",
-			beforeSend:function(){
-				$('input').attr('readonly', true);
-				$('button').attr('disabled', true);
-			},
-			success:function(response){
-				$('input').attr('readonly', false);
-				$('button').attr('disabled', false);
-				if(response == 1){
-					
-				} else {
+		if($('#createReturnForm').valid()){
+			$.ajax({
+				url:'<?= site_url('Purchase_return/insertItem') ?>',
+				data:$('#createReturnForm').serialize(),
+				type:"POST",
+				beforeSend:function(){
+					$('input').attr('readonly', true);
+					$('button').attr('disabled', true);
+				},
+				success:function(response){
+					$('input').attr('readonly', false);
+					$('button').attr('disabled', false);
+					if(response == 1){
+						$('#returnItemTableContent').html("");
+						$('#returnItemTable').hide();
+						$('#createReturnForm').trigger("reset");
+						$("#supplierButton").html("");
 
+						$('#returnWrapper .slide_alert_close_button').click();
+					} else {
+						$('#failedInsertReturn').fadeIn();
+						setTimeout(function(){
+							$('#failedInsertReturn').fadeOut();
+						}, 1000)
+					}
 				}
-			}
-		})
+			})
+		}
 	})
 
 	$('.alert_full_close_button').click(function(){

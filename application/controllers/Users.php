@@ -24,15 +24,15 @@ class Users extends CI_Controller {
 		$this->load->view('human_resource/usersDashboard');
 	}
 	
-	public function get_users()
+	public function getItems()
 	{
 		$page = $this->input->get('page');
 		$term = $this->input->get('term');
 		$offset = ($page - 1) * 10;
 		
 		$this->load->model('User_model');
-		$data['users'] = $this->User_model->get_users($offset, $term);
-		$data['pages'] = min(1, ceil($this->User_model->count_users($term) / 10));
+		$data['users'] = $this->User_model->getItems($offset, $term);
+		$data['pages'] = min(1, ceil($this->User_model->countItems($term) / 10));
 		
 		header('Content-Type: application/json');
 		echo json_encode($data);
@@ -82,6 +82,23 @@ class Users extends CI_Controller {
 	{
 		$this->load->model('User_model');
 		$result = $result = $this->User_model->insertItem();
-		echo $result;
+
+		if($result != null){
+			$config['upload_path']= "./assets/ProfileImages";
+			$config['allowed_types']='jpeg|jpg|png';
+			$config['encrypt_name'] = TRUE;
+			$this->load->library('upload',$config);
+			$this->upload->initialize($config);
+			if($this->upload->do_upload("image")){
+				$data = array('upload_data' => $this->upload->data());
+				$image= $data['upload_data']['file_name'];
+				$result= $this->User_model->updateProfilePicture($result,$image);
+			}
+		}
+	}
+
+	public function ngasal()
+	{
+		
 	}
 }
