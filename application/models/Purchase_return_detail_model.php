@@ -96,4 +96,16 @@ class Purchase_return_detail_model extends CI_Model {
 
 			$this->db->insert_batch($this->table_return, $batch);
 		}
+
+		public function getByCodeId($codePurchaseReturnId)
+		{
+			$query		= $this->db->query("
+				SELECT item.reference, item.name, purchase_return.*
+				FROM purchase_return
+				JOIN item ON purchase_return.item_id = item.id
+				WHERE purchase_return.code_purchase_return_id = '$codePurchaseReturnId'
+			");
+			$result		= $query->result();
+			return $result;
+		}
 }
