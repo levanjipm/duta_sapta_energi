@@ -87,12 +87,32 @@ class Attendance_model extends CI_Model {
 
 			if($result == 0){
 				$query		= $this->db->query("
-					INSERT INTO Attendance_list (date, time, user_id, status) VALUES
+					INSERT INTO attendance_list (date, time, user_id, status) VALUES
 					('" . date("Y-m-d") . "', NOW(), '$userId', '$status')
 				");
 				return $this->db->affected_rows();
 			} else {
 				return 0;
 			}
+		}
+
+		public function getAttendanceSalary($month, $year, $userId)
+		{
+			$query		= $this->db->query("
+				SELECT attendance_status.id, attendance_status.name, COALESCE(a.count,0) as count 
+				FROM attendance_status
+				LEFT JOIN (
+					SELECT COUNT(attendance_list.id) as count, attendance_status.id 
+					FROM Attendance_list
+					JOIN attendance_status ON attendance_status.id = attendance_list.status
+					WHERE attendance_list.user_id = '$userId'
+					AND MONTH(attendance_list.date) = '$month'
+					AND YEAR(attendance_list.date) = '$year'
+					GROUP BY attendance_list.status
+				) AS a
+				ON a.id = attendance_status.id
+			");
+			$result = $query->result();
+			return $result;
 		}
 }

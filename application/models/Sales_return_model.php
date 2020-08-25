@@ -167,4 +167,46 @@ class Sales_return_model extends CI_Model {
 			$this->db->update($this->table_sales_return);
 			return $this->db->affected_rows();
 		}
+
+		public function getYears()
+		{
+			$query			= $this->db->query("
+				SELECT DISTINCT(YEAR(created_date)) as year FROM
+				code_sales_return
+				ORDER BY created_date
+			");
+			$result		= $query->result();
+			return $result;
+		}
+
+		public function getItems($month, $year, $offset = 0, $limit = 10)
+		{
+			$query		= $this->db->query("
+				SELECT code_sales_return.*, customer.name as customerName, customer.city as customerCity FROM
+				(
+					SELECT DISTINCT(code_sales_return.id) as id, code_sales_order.customer_id
+					FROM code_sales_return
+					JOIN sales_return ON sales_return.code_sales_return_id = code_sales_return.id
+					JOIN delivery_order ON sales_return.delivery_order_id = delivery_order.id
+					JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
+					JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
+				) AS a
+				JOIN code_sales_return ON a.id = code_sales_return.id
+				JOIN customer ON a.customer_id = customer.id
+				WHERE MONTH(code_sales_return.created_date) = '$month' AND YEAR(code_sales_return.created_date) = '$year'
+				AND code_sales_return.is_delete = '0'
+			");
+			$result		= $query->result();
+			return $result;
+		}
+
+		public function countItems($month, $year)
+		{
+			$this->db->where('MONTH(created_date)', $month);
+			$this->db->where('YEAR(created_date)', $year);
+			$this->db->where('is_delete', 0);
+			$query		= $this->db->get($this->table_sales_return);
+			$result		= $query->num_rows();
+			return $result;
+		}
 }

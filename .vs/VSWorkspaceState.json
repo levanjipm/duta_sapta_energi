@@ -1,14 +1,16 @@
 {
   "ExpandedNodes": [
-    ""
-    "\\assets"
+    "",
     "\\application",
     "\\application\\models",
-    "\\application\\views\\inventory\\Return",
-    "\\application\\views\\purchasing",
-    "\\application\\views\\purchasing\\Return",
-    "\\css"
+    "\\application\\views",
+    "\\application\\views\\human_resource",
+    "\\application\\views\\inventory",
+    "\\application\\views\\inventory\\DeliveryOrder",
+    "\\application\\views\\sales",
+    "\\assets",
+    "\\assets\\ProfileImages"
   ],
-  "SelectedNode": "\\application\\models\\Purchase_return_detail_model.php",
+  "SelectedNode": "\\application\\models\\Salary_slip_model.php",
   "PreviewInSolutionExplorer": false
 }

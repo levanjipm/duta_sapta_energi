@@ -32,7 +32,7 @@ class Users extends CI_Controller {
 		
 		$this->load->model('User_model');
 		$data['users'] = $this->User_model->getItems($offset, $term);
-		$data['pages'] = min(1, ceil($this->User_model->countItems($term) / 10));
+		$data['pages'] = max(1, ceil($this->User_model->countItems($term) / 10));
 		
 		header('Content-Type: application/json');
 		echo json_encode($data);

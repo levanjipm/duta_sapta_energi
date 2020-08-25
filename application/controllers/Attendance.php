@@ -117,5 +117,24 @@ class Attendance extends CI_Controller {
 
 		echo $result;
 	}
+
+	public function getItemSalary()
+	{
+		$userId			= (int) $this->input->post('user');
+		$month			= (int) $this->input->post('month');
+		$year			= (int) $this->input->post('year');
+
+		$this->load->model("Attendance_model");
+		$this->load->model("Salary_slip_model");
+		$data['items']			= $this->Attendance_model->getAttendanceSalary($month, $year, $userId);
+		$result = $this->Salary_slip_model->checkUser($month, $year, $userId);
+		if($result){
+			$data['status'] = 1;
+		} else {
+			$data['status'] = 0;
+		}
+		header('Content-Type: application/json');
+		echo json_encode($data);
+	}
 }
 ?>

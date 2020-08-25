@@ -92,7 +92,6 @@ class Sales_return extends CI_Controller {
 				next($returnQuantityArray);
 			}
 
-			//Check for previous return//
 			$returnArray		= $this->Sales_return_detail_model->getQuantityByDeliveryOrderIdArray($deliveryOrderIdArray);
 			foreach($returnArray as $return){
 				$deliveryOrderId	= $return->id;
@@ -330,8 +329,11 @@ class Sales_return extends CI_Controller {
 		$data['departments']	= $this->Authorization_model->getByUserId($user_id);
 		
 		$this->load->view('head');
-		$this->load->view('inventory/header', $data);
-		$this->load->view('sales/Return/archiveDashboard');
+		$this->load->view('sales/header', $data);
+
+		$this->load->model("Sales_return_model");
+		$data['years'] = $this->Sales_return_model->getYears();
+		$this->load->view('sales/Return/archiveDashboard', $data);
 	}
 
 	public function deleteReceivedById()
@@ -409,5 +411,18 @@ class Sales_return extends CI_Controller {
 		} else {
 			echo 0;
 		}
+	}
+
+	public function getItems()
+	{
+		$page			= $this->input->get('page');
+		$month			= $this->input->get('month');
+		$year			= $this->input->get('year');
+		$offset			= ($page - 1) * 10;
+		$this->load->model("Sales_return_model");
+		$data['items'] = $this->Sales_return_model->getItems($month, $year, $offset);
+		$data['pages'] = max(1, ceil($this->Sales_return_model->countItems($month, $year)/10));
+		header('Content-Type: application/json');
+		echo json_encode($data);
 	}
 }

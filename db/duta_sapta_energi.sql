@@ -1,14 +1,13 @@
 -- phpMyAdmin SQL Dump
--- version 4.8.5
+-- version 5.0.2
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Waktu pembuatan: 25 Agu 2020 pada 09.02
--- Versi server: 10.1.38-MariaDB
--- Versi PHP: 7.3.2
+-- Waktu pembuatan: 25 Agu 2020 pada 14.50
+-- Versi server: 10.4.13-MariaDB
+-- Versi PHP: 7.2.32
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-SET AUTOCOMMIT = 0;
 START TRANSACTION;
 SET time_zone = "+00:00";
 
@@ -32,7 +31,7 @@ CREATE TABLE `attendance_list` (
   `id` int(255) NOT NULL,
   `user_id` int(255) NOT NULL,
   `date` date NOT NULL,
-  `time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `time` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `status` int(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -43,7 +42,10 @@ CREATE TABLE `attendance_list` (
 INSERT INTO `attendance_list` (`id`, `user_id`, `date`, `time`, `status`) VALUES
 (1, 1, '2020-08-24', '0000-00-00 00:00:00', 3),
 (2, 2, '2020-08-24', '0000-00-00 00:00:00', 2),
-(3, 16, '2020-08-24', '2020-08-24 08:48:19', 2);
+(3, 16, '2020-08-24', '2020-08-24 08:48:19', 2),
+(4, 2, '2020-08-25', '2020-08-25 08:32:41', 2),
+(5, 16, '2020-08-25', '2020-08-25 08:32:43', 2),
+(6, 1, '2020-08-25', '2020-08-25 08:32:45', 2);
 
 -- --------------------------------------------------------
 
@@ -81,8 +83,8 @@ CREATE TABLE `bank_transaction` (
   `customer_id` int(255) DEFAULT NULL,
   `supplier_id` int(255) DEFAULT NULL,
   `other_id` int(255) DEFAULT NULL,
-  `is_done` tinyint(1) NOT NULL DEFAULT '0',
-  `is_delete` tinyint(1) NOT NULL DEFAULT '0',
+  `is_done` tinyint(1) NOT NULL DEFAULT 0,
+  `is_delete` tinyint(1) NOT NULL DEFAULT 0,
   `bank_transaction_major` int(255) DEFAULT NULL,
   `account_id` int(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -143,8 +145,8 @@ CREATE TABLE `code_billing` (
   `date` date NOT NULL,
   `name` varchar(50) NOT NULL,
   `created_by` int(255) NOT NULL,
-  `is_confirm` tinyint(1) NOT NULL DEFAULT '0',
-  `is_delete` tinyint(1) NOT NULL DEFAULT '0',
+  `is_confirm` tinyint(1) NOT NULL DEFAULT 0,
+  `is_delete` tinyint(1) NOT NULL DEFAULT 0,
   `confirmed_by` int(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -158,9 +160,9 @@ CREATE TABLE `code_delivery_order` (
   `id` int(11) NOT NULL,
   `date` date NOT NULL,
   `name` varchar(50) NOT NULL,
-  `is_confirm` tinyint(1) NOT NULL DEFAULT '0',
-  `is_delete` tinyint(1) NOT NULL DEFAULT '0',
-  `is_sent` tinyint(1) NOT NULL DEFAULT '0',
+  `is_confirm` tinyint(1) NOT NULL DEFAULT 0,
+  `is_delete` tinyint(1) NOT NULL DEFAULT 0,
+  `is_sent` tinyint(1) NOT NULL DEFAULT 0,
   `guid` varchar(50) NOT NULL,
   `invoice_id` int(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
@@ -191,7 +193,7 @@ CREATE TABLE `code_event` (
   `name` varchar(50) NOT NULL,
   `created_by` int(255) NOT NULL,
   `date` date NOT NULL,
-  `is_confirm` tinyint(1) NOT NULL DEFAULT '0',
+  `is_confirm` tinyint(1) NOT NULL DEFAULT 0,
   `confirmed_by` int(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -212,8 +214,8 @@ CREATE TABLE `code_good_receipt` (
   `id` int(255) NOT NULL,
   `name` varchar(50) NOT NULL,
   `date` date NOT NULL,
-  `is_confirm` tinyint(1) NOT NULL DEFAULT '0',
-  `is_delete` tinyint(1) NOT NULL DEFAULT '0',
+  `is_confirm` tinyint(1) NOT NULL DEFAULT 0,
+  `is_delete` tinyint(1) NOT NULL DEFAULT 0,
   `invoice_id` int(255) DEFAULT NULL,
   `received_date` date NOT NULL,
   `created_by` int(255) NOT NULL,
@@ -250,9 +252,9 @@ CREATE TABLE `code_purchase_order` (
   `supplier_id` int(255) NOT NULL,
   `created_by` int(255) NOT NULL,
   `confirmed_by` int(255) DEFAULT NULL,
-  `is_closed` tinyint(1) NOT NULL DEFAULT '0',
+  `is_closed` tinyint(1) NOT NULL DEFAULT 0,
   `promo_code` varchar(50) DEFAULT NULL,
-  `dropship_address` text,
+  `dropship_address` text DEFAULT NULL,
   `dropship_city` varchar(50) DEFAULT NULL,
   `dropship_contact_person` varchar(50) DEFAULT NULL,
   `dropship_contact` varchar(50) DEFAULT NULL,
@@ -260,8 +262,8 @@ CREATE TABLE `code_purchase_order` (
   `date_send_request` date DEFAULT NULL,
   `status` varchar(10) DEFAULT NULL,
   `guid` varchar(50) NOT NULL,
-  `is_delete` tinyint(1) NOT NULL DEFAULT '0',
-  `is_confirm` tinyint(1) NOT NULL DEFAULT '0',
+  `is_delete` tinyint(1) NOT NULL DEFAULT 0,
+  `is_confirm` tinyint(1) NOT NULL DEFAULT 0,
   `note` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -290,8 +292,8 @@ CREATE TABLE `code_purchase_return` (
   `supplier_id` int(255) NOT NULL,
   `created_by` int(255) NOT NULL,
   `created_date` date NOT NULL,
-  `is_confirm` tinyint(1) NOT NULL DEFAULT '0',
-  `is_delete` tinyint(1) NOT NULL DEFAULT '0',
+  `is_confirm` tinyint(1) NOT NULL DEFAULT 0,
+  `is_delete` tinyint(1) NOT NULL DEFAULT 0,
   `confirmed_by` int(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -316,11 +318,11 @@ CREATE TABLE `code_purchase_return_sent` (
   `created_by` int(255) NOT NULL,
   `created_date` date NOT NULL,
   `confirmed_by` int(255) DEFAULT NULL,
-  `is_confirm` tinyint(1) NOT NULL DEFAULT '0',
+  `is_confirm` tinyint(1) NOT NULL DEFAULT 0,
   `is_delete` int(11) NOT NULL,
   `name` varchar(50) NOT NULL,
   `date` date NOT NULL,
-  `is_done` tinyint(1) NOT NULL DEFAULT '0',
+  `is_done` tinyint(1) NOT NULL DEFAULT 0,
   `bank_id` int(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -337,12 +339,12 @@ CREATE TABLE `code_sales_order` (
   `date` date NOT NULL,
   `taxing` tinyint(1) NOT NULL,
   `seller` int(255) DEFAULT NULL,
-  `is_confirm` tinyint(1) NOT NULL DEFAULT '0',
+  `is_confirm` tinyint(1) NOT NULL DEFAULT 0,
   `confirmed_by` int(255) DEFAULT NULL,
   `guid` varchar(50) NOT NULL,
   `created_by` int(255) NOT NULL,
-  `invoicing_method` tinyint(1) NOT NULL DEFAULT '1',
-  `is_delete` tinyint(1) NOT NULL DEFAULT '0'
+  `invoicing_method` tinyint(1) NOT NULL DEFAULT 1,
+  `is_delete` tinyint(1) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
@@ -386,8 +388,8 @@ CREATE TABLE `code_sales_return` (
   `name` varchar(50) NOT NULL,
   `created_by` int(255) NOT NULL,
   `created_date` date NOT NULL,
-  `is_confirm` tinyint(1) NOT NULL DEFAULT '0',
-  `is_delete` tinyint(1) NOT NULL DEFAULT '0',
+  `is_confirm` tinyint(1) NOT NULL DEFAULT 0,
+  `is_delete` tinyint(1) NOT NULL DEFAULT 0,
   `confirmed_by` int(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -412,12 +414,12 @@ CREATE TABLE `code_sales_return_received` (
   `id` int(255) NOT NULL,
   `created_by` int(255) NOT NULL,
   `created_date` date NOT NULL,
-  `is_confirm` tinyint(1) NOT NULL DEFAULT '0',
-  `is_delete` tinyint(1) NOT NULL DEFAULT '0',
+  `is_confirm` tinyint(1) NOT NULL DEFAULT 0,
+  `is_delete` tinyint(1) NOT NULL DEFAULT 0,
   `confirmed_by` int(255) DEFAULT NULL,
   `name` varchar(100) NOT NULL,
   `date` date NOT NULL,
-  `is_done` tinyint(1) NOT NULL DEFAULT '0',
+  `is_done` tinyint(1) NOT NULL DEFAULT 0,
   `bank_id` int(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -451,7 +453,7 @@ CREATE TABLE `customer` (
   `city` varchar(100) NOT NULL,
   `postal_code` varchar(10) DEFAULT NULL,
   `area_id` int(255) NOT NULL,
-  `is_black_list` tinyint(1) NOT NULL DEFAULT '0',
+  `is_black_list` tinyint(1) NOT NULL DEFAULT 0,
   `block` varchar(10) NOT NULL,
   `npwp` varchar(20) DEFAULT NULL,
   `phone_number` varchar(50) DEFAULT NULL,
@@ -460,10 +462,10 @@ CREATE TABLE `customer` (
   `created_by` int(255) NOT NULL,
   `latitude` decimal(33,30) DEFAULT NULL,
   `longitude` decimal(33,30) DEFAULT NULL,
-  `term_of_payment` int(255) NOT NULL DEFAULT '45',
+  `term_of_payment` int(255) NOT NULL DEFAULT 45,
   `plafond` decimal(50,2) NOT NULL,
-  `is_remind` tinyint(1) NOT NULL DEFAULT '1',
-  `visiting_frequency` int(1) NOT NULL DEFAULT '1',
+  `is_remind` tinyint(1) NOT NULL DEFAULT 1,
+  `visiting_frequency` int(1) NOT NULL DEFAULT 1,
   `uid` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -638,7 +640,7 @@ CREATE TABLE `debt_type` (
   `id` int(255) NOT NULL,
   `name` varchar(50) NOT NULL,
   `description` text NOT NULL,
-  `is_operational` tinyint(1) NOT NULL DEFAULT '1'
+  `is_operational` tinyint(1) NOT NULL DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
@@ -659,7 +661,7 @@ CREATE TABLE `delivery_order` (
   `id` int(255) NOT NULL,
   `sales_order_id` int(255) NOT NULL,
   `code_delivery_order_id` int(255) NOT NULL,
-  `quantity` int(255) NOT NULL DEFAULT '0'
+  `quantity` int(255) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
@@ -737,7 +739,7 @@ CREATE TABLE `expense_class` (
   `description` text NOT NULL,
   `created_by` int(255) DEFAULT NULL,
   `created_date` date DEFAULT NULL,
-  `type` int(255) DEFAULT '1'
+  `type` int(255) DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
@@ -890,12 +892,12 @@ CREATE TABLE `invoice` (
   `value` decimal(50,2) NOT NULL,
   `date` date NOT NULL,
   `information` text NOT NULL,
-  `is_done` tinyint(1) DEFAULT '0',
-  `is_confirm` tinyint(1) NOT NULL DEFAULT '0',
+  `is_done` tinyint(1) DEFAULT 0,
+  `is_confirm` tinyint(1) NOT NULL DEFAULT 0,
   `taxInvoice` varchar(50) DEFAULT NULL,
   `lastBillingDate` date DEFAULT NULL,
   `nextBillingDate` date DEFAULT NULL,
-  `is_billed` tinyint(1) NOT NULL DEFAULT '0'
+  `is_billed` tinyint(1) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
@@ -922,8 +924,8 @@ CREATE TABLE `item` (
   `reference` varchar(50) NOT NULL,
   `name` varchar(100) NOT NULL,
   `type` int(255) DEFAULT NULL,
-  `is_notified_stock` tinyint(1) NOT NULL DEFAULT '0',
-  `confidence_level` float(5,2) NOT NULL DEFAULT '90.00'
+  `is_notified_stock` tinyint(1) NOT NULL DEFAULT 0,
+  `confidence_level` float(5,2) NOT NULL DEFAULT 90.00
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
@@ -1032,7 +1034,7 @@ INSERT INTO `item_class` (`id`, `name`, `description`, `created_by`) VALUES
 CREATE TABLE `other_opponent` (
   `id` int(255) NOT NULL,
   `name` varchar(500) NOT NULL,
-  `description` text,
+  `description` text DEFAULT NULL,
   `type` int(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -1121,8 +1123,8 @@ CREATE TABLE `plafond_submission` (
   `submitted_plafond` decimal(50,2) NOT NULL,
   `submitted_by` int(255) NOT NULL,
   `submitted_date` date NOT NULL,
-  `is_confirm` tinyint(1) NOT NULL DEFAULT '0',
-  `is_delete` tinyint(1) NOT NULL DEFAULT '0',
+  `is_confirm` tinyint(1) NOT NULL DEFAULT 0,
+  `is_delete` tinyint(1) NOT NULL DEFAULT 0,
   `confirmed_by` int(255) DEFAULT NULL,
   `confirmed_date` date DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
@@ -1221,10 +1223,10 @@ CREATE TABLE `purchase_invoice` (
   `tax_document` varchar(100) DEFAULT NULL,
   `invoice_document` varchar(100) NOT NULL,
   `created_by` int(255) NOT NULL,
-  `is_confirm` tinyint(1) NOT NULL DEFAULT '0',
-  `is_delete` tinyint(1) NOT NULL DEFAULT '0',
+  `is_confirm` tinyint(1) NOT NULL DEFAULT 0,
+  `is_delete` tinyint(1) NOT NULL DEFAULT 0,
   `confirmed_by` int(255) DEFAULT NULL,
-  `is_done` tinyint(4) NOT NULL DEFAULT '0'
+  `is_done` tinyint(4) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
@@ -1251,10 +1253,10 @@ CREATE TABLE `purchase_invoice_other` (
   `taxing` tinyint(1) NOT NULL,
   `information` text NOT NULL,
   `created_by` int(255) NOT NULL,
-  `is_confirm` tinyint(1) NOT NULL DEFAULT '0',
+  `is_confirm` tinyint(1) NOT NULL DEFAULT 0,
   `confirmed_by` int(255) DEFAULT NULL,
-  `is_delete` tinyint(1) NOT NULL DEFAULT '0',
-  `is_done` tinyint(1) NOT NULL DEFAULT '0',
+  `is_delete` tinyint(1) NOT NULL DEFAULT 0,
+  `is_done` tinyint(1) NOT NULL DEFAULT 0,
   `type` int(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -1278,8 +1280,8 @@ CREATE TABLE `purchase_order` (
   `price_list` decimal(50,4) NOT NULL,
   `net_price` decimal(50,4) NOT NULL,
   `quantity` int(255) NOT NULL,
-  `received` int(255) NOT NULL DEFAULT '0',
-  `status` tinyint(1) NOT NULL DEFAULT '0',
+  `received` int(255) NOT NULL DEFAULT 0,
+  `status` tinyint(1) NOT NULL DEFAULT 0,
   `code_purchase_order_id` int(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -1310,7 +1312,7 @@ CREATE TABLE `purchase_return` (
   `price` decimal(24,4) NOT NULL,
   `quantity` int(255) NOT NULL,
   `received` int(255) NOT NULL,
-  `status` tinyint(1) NOT NULL DEFAULT '0',
+  `status` tinyint(1) NOT NULL DEFAULT 0,
   `code_purchase_return_id` int(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -1358,6 +1360,19 @@ INSERT INTO `receivable` (`id`, `bank_id`, `value`, `date`, `invoice_id`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Struktur dari tabel `salary_attendance`
+--
+
+CREATE TABLE `salary_attendance` (
+  `id` int(255) NOT NULL,
+  `salary_slip_id` int(255) NOT NULL,
+  `status_id` int(255) NOT NULL,
+  `value` decimal(20,4) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
 -- Struktur dari tabel `salary_benefit`
 --
 
@@ -1379,10 +1394,11 @@ CREATE TABLE `salary_slip` (
   `user_id` int(255) NOT NULL,
   `month` int(2) NOT NULL,
   `year` int(4) NOT NULL,
-  `daily` decimal(10,2) NOT NULL,
   `basic` decimal(10,2) NOT NULL,
   `bonus` decimal(10,2) NOT NULL,
-  `deduction` decimal(10,2) NOT NULL
+  `deduction` decimal(10,2) NOT NULL,
+  `created_by` int(255) NOT NULL,
+  `created_date` date NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -1396,8 +1412,8 @@ CREATE TABLE `sales_order` (
   `price_list_id` int(255) NOT NULL,
   `discount` decimal(10,4) NOT NULL,
   `quantity` int(255) NOT NULL,
-  `sent` int(255) NOT NULL DEFAULT '0',
-  `status` tinyint(1) NOT NULL DEFAULT '0',
+  `sent` int(255) NOT NULL DEFAULT 0,
+  `status` tinyint(1) NOT NULL DEFAULT 0,
   `code_sales_order_id` int(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -1425,7 +1441,7 @@ CREATE TABLE `sales_return` (
   `delivery_order_id` int(255) NOT NULL,
   `quantity` int(255) NOT NULL,
   `received` int(255) NOT NULL,
-  `is_done` tinyint(1) NOT NULL DEFAULT '0',
+  `is_done` tinyint(1) NOT NULL DEFAULT 0,
   `code_sales_return_id` int(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -1560,7 +1576,7 @@ CREATE TABLE `supplier` (
   `rw` varchar(3) NOT NULL,
   `city` varchar(100) NOT NULL,
   `postal_code` varchar(10) DEFAULT NULL,
-  `is_black_list` tinyint(1) NOT NULL DEFAULT '0',
+  `is_black_list` tinyint(1) NOT NULL DEFAULT 0,
   `block` varchar(10) NOT NULL,
   `npwp` varchar(20) DEFAULT NULL,
   `phone_number` varchar(50) DEFAULT NULL,
@@ -1587,12 +1603,12 @@ CREATE TABLE `users` (
   `name` varchar(100) NOT NULL,
   `address` varchar(500) NOT NULL,
   `bank_account` varchar(50) NOT NULL,
-  `is_active` tinyint(1) NOT NULL DEFAULT '1',
+  `is_active` tinyint(1) NOT NULL DEFAULT 1,
   `entry_date` date DEFAULT NULL,
   `password` varchar(50) NOT NULL,
   `email` varchar(50) NOT NULL,
   `image_url` varchar(100) DEFAULT NULL,
-  `access_level` tinyint(1) NOT NULL DEFAULT '1'
+  `access_level` tinyint(1) NOT NULL DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
@@ -1954,6 +1970,12 @@ ALTER TABLE `receivable`
   ADD KEY `invoice_id` (`invoice_id`);
 
 --
+-- Indeks untuk tabel `salary_attendance`
+--
+ALTER TABLE `salary_attendance`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indeks untuk tabel `salary_benefit`
 --
 ALTER TABLE `salary_benefit`
@@ -1964,7 +1986,8 @@ ALTER TABLE `salary_benefit`
 --
 ALTER TABLE `salary_slip`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `user_id` (`user_id`);
+  ADD KEY `user_id` (`user_id`),
+  ADD KEY `created_by` (`created_by`);
 
 --
 -- Indeks untuk tabel `sales_order`
@@ -2038,7 +2061,7 @@ ALTER TABLE `user_authorization`
 -- AUTO_INCREMENT untuk tabel `attendance_list`
 --
 ALTER TABLE `attendance_list`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT untuk tabel `attendance_status`
@@ -2293,6 +2316,12 @@ ALTER TABLE `receivable`
   MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
+-- AUTO_INCREMENT untuk tabel `salary_attendance`
+--
+ALTER TABLE `salary_attendance`
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT untuk tabel `salary_benefit`
 --
 ALTER TABLE `salary_benefit`
@@ -2489,6 +2518,13 @@ ALTER TABLE `purchase_return_sent`
 ALTER TABLE `receivable`
   ADD CONSTRAINT `receivable_ibfk_1` FOREIGN KEY (`invoice_id`) REFERENCES `invoice` (`id`),
   ADD CONSTRAINT `receivable_ibfk_2` FOREIGN KEY (`bank_id`) REFERENCES `bank_transaction` (`id`);
+
+--
+-- Ketidakleluasaan untuk tabel `salary_slip`
+--
+ALTER TABLE `salary_slip`
+  ADD CONSTRAINT `salary_slip_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
+  ADD CONSTRAINT `salary_slip_ibfk_2` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`);
 
 --
 -- Ketidakleluasaan untuk tabel `sales_return`
