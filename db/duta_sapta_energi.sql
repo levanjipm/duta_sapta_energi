@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Waktu pembuatan: 24 Agu 2020 pada 11.50
+-- Waktu pembuatan: 25 Agu 2020 pada 09.02
 -- Versi server: 10.1.38-MariaDB
 -- Versi PHP: 7.3.2
 
@@ -303,7 +303,7 @@ INSERT INTO `code_purchase_return` (`id`, `name`, `supplier_id`, `created_by`, `
 (1, 'PRS-202008-42687639', 1, 1, '2020-08-22', 0, 0, NULL),
 (2, 'PRS-202008-44572414', 1, 1, '2020-08-22', 0, 0, NULL),
 (3, 'PRS-202008-10202201', 1, 1, '2020-08-22', 0, 0, NULL),
-(4, 'PRS-202008-17680692', 1, 1, '2020-08-22', 0, 0, NULL);
+(4, 'PRS-202008-17680692', 1, 1, '2020-08-22', 1, 0, NULL);
 
 -- --------------------------------------------------------
 
@@ -396,7 +396,7 @@ CREATE TABLE `code_sales_return` (
 --
 
 INSERT INTO `code_sales_return` (`id`, `name`, `created_by`, `created_date`, `is_confirm`, `is_delete`, `confirmed_by`) VALUES
-(1, 'SRS-202008-68932985', 1, '2020-08-18', 1, 0, NULL),
+(1, 'SRS-202008-68932985', 1, '2020-08-18', 1, 0, 1),
 (2, 'SRS-202008-29632063', 1, '2020-08-19', 1, 0, NULL),
 (3, 'SRS-202008-98134918', 1, '2020-08-20', 1, 0, NULL),
 (4, 'SRS-202008-52038778', 1, '2020-08-20', 1, 0, NULL),
@@ -428,10 +428,12 @@ CREATE TABLE `code_sales_return_received` (
 INSERT INTO `code_sales_return_received` (`id`, `created_by`, `created_date`, `is_confirm`, `is_delete`, `confirmed_by`, `name`, `date`, `is_done`, `bank_id`) VALUES
 (1, 1, '2020-08-18', 1, 0, 1, '202008-00010-RT', '2020-08-18', 0, NULL),
 (2, 1, '2020-08-19', 1, 0, 1, 'DO-DSE-202008-00021-RT', '2020-08-19', 0, NULL),
-(3, 1, '2020-08-20', 0, 0, NULL, 'DO-DSE-202008-00040-RT', '2020-08-20', 0, NULL),
-(4, 1, '2020-08-20', 0, 0, NULL, '202008-00050-RT', '2020-08-25', 0, NULL),
+(3, 1, '2020-08-20', 0, 1, 1, 'DO-DSE-202008-00040-RT', '2020-08-20', 0, NULL),
+(4, 1, '2020-08-20', 1, 0, 1, '202008-00050-RT', '2020-08-25', 0, NULL),
 (5, 1, '2020-08-21', 1, 0, 1, '123RT', '2020-08-22', 0, NULL),
-(6, 1, '2020-08-21', 1, 0, 1, '87123', '2020-08-21', 0, NULL);
+(6, 1, '2020-08-21', 1, 0, 1, '87123', '2020-08-21', 0, NULL),
+(7, 1, '2020-08-25', 0, 1, 1, 'asdfasdfasdfasd', '2020-08-25', 0, NULL),
+(8, 1, '2020-08-25', 1, 0, 1, 'asdfasdfasdfasdf', '2020-08-25', 0, NULL);
 
 -- --------------------------------------------------------
 
@@ -1434,7 +1436,7 @@ CREATE TABLE `sales_return` (
 INSERT INTO `sales_return` (`id`, `delivery_order_id`, `quantity`, `received`, `is_done`, `code_sales_return_id`) VALUES
 (1, 1, 1, 1, 1, 1),
 (2, 2, 1, 1, 1, 2),
-(3, 4, 3, 1, 0, 3),
+(3, 4, 3, 3, 1, 3),
 (4, 6, 3, 3, 1, 4),
 (5, 9, 4, 4, 1, 5);
 
@@ -1461,7 +1463,9 @@ INSERT INTO `sales_return_received` (`id`, `code_sales_return_received_id`, `sal
 (3, 3, 3, 1),
 (4, 4, 4, 3),
 (5, 5, 5, 2),
-(6, 6, 5, 2);
+(6, 6, 5, 2),
+(7, 7, 3, 2),
+(8, 8, 3, 1);
 
 -- --------------------------------------------------------
 
@@ -1499,7 +1503,9 @@ INSERT INTO `stock_in` (`id`, `item_id`, `quantity`, `residue`, `supplier_id`, `
 (10, 9, 1, 0, 1, NULL, 10, NULL, NULL, '5379200.0000'),
 (11, 9, 2, 0, 1, NULL, 11, NULL, NULL, '0.0000'),
 (12, 9, 1, 1, 1, NULL, 12, NULL, NULL, '5379200.0000'),
-(14, 9, 2, 2, NULL, 87, NULL, 6, NULL, '2689600.0000');
+(14, 9, 2, 2, NULL, 87, NULL, 6, NULL, '2689600.0000'),
+(15, 65, 3, 3, NULL, 264, NULL, 4, NULL, '348160.0000'),
+(16, 1, 1, 1, NULL, 124, NULL, 8, NULL, '268960.0000');
 
 -- --------------------------------------------------------
 
@@ -2122,7 +2128,7 @@ ALTER TABLE `code_sales_return`
 -- AUTO_INCREMENT untuk tabel `code_sales_return_received`
 --
 ALTER TABLE `code_sales_return_received`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT untuk tabel `customer`
@@ -2314,13 +2320,13 @@ ALTER TABLE `sales_return`
 -- AUTO_INCREMENT untuk tabel `sales_return_received`
 --
 ALTER TABLE `sales_return_received`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT untuk tabel `stock_in`
 --
 ALTER TABLE `stock_in`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT untuk tabel `stock_out`

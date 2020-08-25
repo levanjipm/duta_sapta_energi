@@ -176,4 +176,19 @@ class Purchase_return_model extends CI_Model {
 			$result		= $query->num_rows();
 			return $result;
 		}
+
+		public function updateById($status, $id)
+		{
+			if($status == 0){
+				$this->db->set('is_delete', 1);
+				$this->db->where('is_confirm', 0);
+			} else if($status == 1){
+				$this->db->set('is_confirm', 1);
+				$this->db->where('is_delete', 0);
+			}
+
+			$this->db->where('id', $id);
+			$this->db->update($this->table_return);
+			return $this->db->affected_rows();
+		}
 }

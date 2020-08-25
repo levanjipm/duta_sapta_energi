@@ -63,6 +63,22 @@ class Purchase_return extends CI_Controller {
 		echo json_encode($data);
 	}
 
+	public function confirmById()
+	{
+		$id			= $this->input->post('id');
+		$this->load->model("Purchase_return_model");
+		$result		= $this->Purchase_return_model->updateById(1, $id);
+		echo $result;
+	}
+
+	public function deleteById()
+	{
+		$id		= $this->input->post('id');
+		$this->load->model("Purchase_return_model");
+		$result		= $this->Purchase_return_model->updateById(0, $id);
+		echo $result;
+	}
+
 	public function getById()
 	{
 		$id		= $this->input->get('id');
@@ -92,7 +108,7 @@ class Purchase_return extends CI_Controller {
 		$data['departments']	= $this->Authorization_model->getByUserId($user_id);
 		
 		$this->load->view('head');
-		$this->load->view('purchasing/header', $data);
+		$this->load->view('inventory/header', $data);
 		$this->load->view('inventory/Return/purchaseReturnDashboard');
 	}
 

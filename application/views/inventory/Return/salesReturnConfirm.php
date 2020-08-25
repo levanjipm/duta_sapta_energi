@@ -1,7 +1,7 @@
 <div id='returnConfirmTable'>
     <table class='table table-bordered'>
         <tr>
-            <th>Date</th>
+            <th>Name</th>
             <th>Customer</th>
             <th>Action</th>
         </tr>

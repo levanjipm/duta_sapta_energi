@@ -53,7 +53,8 @@
 		<button class='container_button'><p style='font-family:museo'>Return  <i class='fa fa-caret-down'></i></p></button>
 		<div class='container_bar'>
 			<a href='<?= site_url('Sales_return/createDashboard') ?>'><p>Create</p></a>
-			<a href='<?= site_url('Sales_return/confirmDashboard') ?>'><p>Confirm</p></a>	
+			<a href='<?= site_url('Sales_return/confirmDashboard') ?>'><p>Confirm</p></a>
+			<a href='<?= site_url('Sales_return/archiveDashboard') ?>'><p>Archive</p></a>	
 		</div>
 		<a href='<?= site_url('Stock/view/Sales') ?>'><button><p>Check stock</p></button></a>
 		<a href='<?= site_url('SalesAnalytics') ?>'><button><p>Analytic</p></button></a>

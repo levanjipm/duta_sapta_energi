@@ -156,9 +156,11 @@ class Sales_return_model extends CI_Model {
 		{
 			if($status == 1){
 				$this->db->set('is_confirm', 1);
+				$this->db->set('confirmed_by', $this->session->userdata('user_id'));
 				$this->db->where('id', $salesReturnId);
 			} else if($status == 0) {
 				$this->db->set('is_delete', 1);
+				$this->db->set('confirmed_by', $this->session->userdata('user_id'));
 				$this->db->where('id', $salesReturnId);
 			}
 

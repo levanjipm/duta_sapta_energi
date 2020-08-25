@@ -58,9 +58,16 @@
 			</tr>
 			<tbody id='purchaseReturnItemTable'></tbody>
 		</table>
+		<input type='hidden' id='purchaseReturnId'>
+		<button class='button button_default_dark' title='Confirm purchase return' onclick='confirmReturn()'><i class='fa fa-long-arrow-right'></i></button>
+		<button class='button button_danger_dark'><i class='fa fa-trash' title='Delete purchase return' onclick='deleteReturn()'></i></button>
 
+		<div class='notificationText danger' id='failedConfirmNotification'><p>Failed to confirm purchase return.</p></div>
+		<div class='notificationText danger' id='failedDeleteNotification'><p>Failed to delete purchase return.</p></div>
+		
 		<p class='subtitleText'>Created by <span id='createdBy_p'></span></p>
 		<p class='subtitleText'>Created on <span id='createdDate_p'></span></p>
+
 	</div>
 </div>
 
@@ -128,6 +135,7 @@
 				var createdBy = general.created_by;
 				var createdDate = general.created_date;
 				var name = general.name;
+				$('#purchaseReturnId').val(n);
 
 				$("#purchaseReturnName_p").html(name);
 				$('#createdBy_p').html(createdBy);
@@ -187,6 +195,56 @@
 				$('#purchaseReturnWrapper').fadeIn(300, function(){
 					$('#purchaseReturnWrapper .alert_box_slide').show("slide", { direction: "right" }, 250);
 				});
+			}
+		})
+	}
+
+	function confirmReturn(){
+		$.ajax({
+			url:"<?= site_url('Purchase_return/confirmById') ?>",
+			data:{
+				id: $('#purchaseReturnId').val()
+			},
+			type:"POST",
+			beforeSend:function(){
+				$('button').attr('disabled', true);
+			},
+			success:function(response){
+				$('button').attr('disabled', false);
+				refreshView();
+				if(response == 1){
+					$('#purchaseReturnWrapper .slide_alert_close_button').click();
+				} else {
+					$('#failedConfirmNotification').fadeIn(250);
+					setTimeout(function(){
+						$('#failedConfirmNotification').fadeOut(250);
+					}, 1000)
+				}
+			}
+		})
+	}
+
+	function deleteReturn(){
+		$.ajax({
+			url:"<?= site_url('Purchase_return/deleteById') ?>",
+			data:{
+				id: $('#purchaseReturnId').val()
+			},
+			type:"POST",
+			beforeSend:function(){
+				$('button').attr('disabled', true);
+			},
+			success:function(response){
+				$('button').attr('disabled', false);
+				refreshView();
+				if(response == 1){
+					$('#purchaseReturnWrapper .slide_alert_close_button').click();
+				} else {
+					$('#failedDeleteNotification').fadeIn(250);
+					setTimeout(function(){
+						$('#failedDeleteNotification').fadeOut(250);
+					}, 1000)
+				}
 			}
 		})
 	}

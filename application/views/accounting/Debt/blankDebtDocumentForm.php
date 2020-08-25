@@ -502,8 +502,7 @@
 				supplier_city = response.description;
 
 				$("#supplier_id").val(n);
-
-				$('#supplierPickButton').text(name);
+				$('#supplierPickButton').text(supplier_name);
 
 				$('#supplierDetail').html("<label>Name</label><p>" + supplier_name + "</p><label>Type</label><p>" + complete_address + "</p><label>Description</label><p>" + supplier_city + "</p>");
 

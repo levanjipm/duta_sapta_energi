@@ -108,8 +108,6 @@ class Debt_other_model extends CI_Model {
 			$this->db->from('purchase_invoice_other');
 			$this->db->join('debt_type', 'debt_type.id = purchase_invoice_other.type');
 			$this->db->join('users', 'purchase_invoice_other.created_by = users.id');
-			$this->db->where('purchase_invoice_other.is_confirm', 0);
-			$this->db->where('purchase_invoice_other.is_delete', 0);
 			$this->db->where('purchase_invoice_other.id', $invoice_id);
 			
 			$query = $this->db->get();

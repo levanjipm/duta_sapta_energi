@@ -320,19 +320,42 @@ class Sales_return extends CI_Controller {
 		echo $result;
 	}
 
+	public function archiveDashboard()
+	{
+		$user_id		= $this->session->userdata('user_id');
+		$this->load->model('User_model');
+		$data['user_login'] = $this->User_model->getById($user_id);
+		
+		$this->load->model('Authorization_model');
+		$data['departments']	= $this->Authorization_model->getByUserId($user_id);
+		
+		$this->load->view('head');
+		$this->load->view('inventory/header', $data);
+		$this->load->view('sales/Return/archiveDashboard');
+	}
+
 	public function deleteReceivedById()
 	{
 		$id			= $this->input->post('id');
 		$this->load->model('Sales_return_received_model');
-		// $result = $this->Sales_return_received_model->updateById(0, $id);
-		// if($result == 1){
+		$result = $this->Sales_return_received_model->updateById(0, $id);
+		if($result == 1){
+			$salesReturnBatch = array();
 			$this->load->model('Sales_return_received_detail_model');
-			$receivedItem = $this->Sales_return_received_detail_model->getByCodeId($id);
-			print_r($receivedItem);
-			// echo 1;
-		// } else {
-		// 	echo 0;
-		// }
+			$receivedItems = $this->Sales_return_received_detail_model->getByCodeId($id);
+			foreach($receivedItems as $receivedItem){
+				if($receivedItem->quantity > 0){
+					$id		= $receivedItem->id;
+					$salesReturnBatch[$id] = $receivedItem->quantity;
+				}
+			}
+
+			$this->load->model("Sales_return_detail_model");
+			$this->Sales_return_detail_model->updateByDeleteReceivedArray($salesReturnBatch);
+			echo 1;
+		} else {
+			echo 0;
+		}
 	}
 
 	public function getUnassignedSalesReturn()
