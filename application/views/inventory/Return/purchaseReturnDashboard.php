@@ -23,7 +23,7 @@
 
     $('#createReturnButton').click(function(){
         $.ajax({
-            url:"<?= site_url('Sales_return/loadForm/create') ?>",
+            url:"<?= site_url('Purchase_return/loadForm/create') ?>",
             success:function(response){
                 $('.button_mini_tab').attr('disabled', false);
                 $('#confirmReturnButton').removeClass('active');
@@ -37,7 +37,7 @@
 
     $('#confirmReturnButton').click(function(){
         $.ajax({
-            url:"<?= site_url('Sales_return/loadForm/confirm') ?>",
+            url:"<?= site_url('Purchase_return/loadForm/confirm') ?>",
             success:function(response){
                 $('.button_mini_tab').attr('disabled', false);
                 $('#createReturnButton').removeClass('active');

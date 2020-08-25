@@ -1,5 +1,5 @@
 <div class='topnav_bar'>
-	<div style='width:50%;display:inline-block'><h3>Sales</h3></div><div style='width:50%;display:inline-block;text-align:right;color:white'><?php if(!empty($user_login)){ ?><h4>Hello, <a href='<?= site_url('Profile') ?>' style='text-decoration:none;color:#fff'><?= $user_login->name ?></a></h4><?php } else { ?><button type='button' class='button button_default_dark'>Login</button> <?php } ?></div>
+	<div style='width:50%;display:inline-block'><h3>Sales</h3></div><div style='width:50%;display:inline-block;text-align:right;color:white'><?php if(!empty($user_login)){ ?><h4>Hello, <a href='<?= site_url('Profile') ?>' style='text-decoration:none;color:#fff'><?= $user_login->name ?> <img src='<?= $user_login->image_url == null ? base_url('assets/ProfileImages/defaultImage.png') : $user_login->image_url ?>' style='height:30px;border-radius:50%'></img></a></h4><?php } else { ?><button type='button' class='button button_default_dark'>Login</button> <?php } ?></div>
 </div>
 <div class='sidenav_bar'>
 	<button class='button_close_sidenav'>
@@ -53,7 +53,8 @@
 		<button class='container_button'><p style='font-family:museo'>Return  <i class='fa fa-caret-down'></i></p></button>
 		<div class='container_bar'>
 			<a href='<?= site_url('Sales_return/createDashboard') ?>'><p>Create</p></a>
-			<a href='<?= site_url('Sales_return/confirmDashboard') ?>'><p>Confirm</p></a>	
+			<a href='<?= site_url('Sales_return/confirmDashboard') ?>'><p>Confirm</p></a>
+			<a href='<?= site_url('Sales_return/archiveDashboard') ?>'><p>Archive</p></a>	
 		</div>
 		<a href='<?= site_url('Stock/view/Sales') ?>'><button><p>Check stock</p></button></a>
 		<a href='<?= site_url('SalesAnalytics') ?>'><button><p>Analytic</p></button></a>

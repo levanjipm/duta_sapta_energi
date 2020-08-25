@@ -106,4 +106,89 @@ class Purchase_return_model extends CI_Model {
 
 			return $insertId;
 		}
+
+		public function getUnconfirmedItems($offset = 0, $term = "", $limit = 10)
+		{
+			$this->db->select("code_purchase_return.*, supplier.name as supplierName");
+			$this->db->from('code_purchase_return');
+			$this->db->join('supplier', 'code_purchase_return.supplier_id = supplier.id');
+			
+			$this->db->where('code_purchase_return.is_confirm', 0);
+			$this->db->where('code_purchase_return.is_delete', 0);
+			if($term != ""){
+				$this->db->like('code_purchase_return.name', $term, 'both');
+				$this->db->or_like('supplier.name', $term, 'both');
+			}
+			$this->db->limit($limit, $offset);
+			$query			= $this->db->get();
+			$result			= $query->result();
+			return $result;
+		}
+
+		public function countUnconfirmedItems($term = "")
+		{
+			$this->db->where('is_confirm', 0);
+			$this->db->where('is_delete', 0);
+			if($term != ""){
+				$this->db->like('name', $term, 'both');
+			}
+			$query			= $this->db->get($this->table_return);
+			$result			= $query->num_rows();
+			return $result;
+		}
+
+		public function getById($id)
+		{
+			$query		= $this->db->query("
+				SELECT code_purchase_return.*, users.name as created_by
+				FROM code_purchase_return
+				JOIN users ON code_purchase_return.created_by = users.id
+				WHERE code_purchase_return.id = '$id'
+			");
+
+			$result		= $query->row();
+			return $result;
+		}
+
+		public function getIncompletedReturn($offset = 0, $term = "", $limit = 10)
+		{
+			$this->db->select('code_purchase_return.*');
+			$this->db->from('code_purchase_return');
+			$this->db->join('supplier', 'code_purchase_return.supplier_id = supplier.id');
+			if($term != ""){
+				$this->db->like('code_purchase_return.name', $term);
+				$this->db->like('supplier.name', $term);
+			}
+			$this->db->where('code_purchase_return.is_confirm', 1);
+			$this->db->limit($limit, $offset);
+			$query		 = $this->db->get();
+			$result		= $query->result();
+			return $result;
+		}
+
+		public function countIncompletedReturn($term = "")
+		{
+			if($term != ""){
+				$this->db->like('purchase_return.name', $term);
+				$this->db->like('supplier.name', $term);
+			}
+			$query		 = $this->db->get($this->table_return);
+			$result		= $query->num_rows();
+			return $result;
+		}
+
+		public function updateById($status, $id)
+		{
+			if($status == 0){
+				$this->db->set('is_delete', 1);
+				$this->db->where('is_confirm', 0);
+			} else if($status == 1){
+				$this->db->set('is_confirm', 1);
+				$this->db->where('is_delete', 0);
+			}
+
+			$this->db->where('id', $id);
+			$this->db->update($this->table_return);
+			return $this->db->affected_rows();
+		}
 }

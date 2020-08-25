@@ -242,5 +242,34 @@ class Sales_return_detail_model extends CI_Model {
 			$result = $query->result();
 			return $result;
 		}
+
+		public function updateByDeleteReceivedArray($quantityArray)
+		{
+			$keyArray = array();
+			foreach($quantityArray as $id => $quantity)
+			{
+				array_push($keyArray, $id);
+			};
+
+			$this->db->where_in('id', $keyArray);
+			$query		= $this->db->get($this->table_sales_return);
+			$result		= $query->result();
+
+			$updateBatch = array();
+			foreach($result as $item)
+			{
+				$quantity		= $item->quantity;
+				$received		= $item->received;
+				$id				= $item->id;
+
+				$finalReceived	= $received - $quantityArray[$id];
+				$updateBatch[] = array(
+					'id' => $id,
+					'received' => $finalReceived,
+					'is_done' => 0
+				);
+			};
+			$this->db->update_batch($this->table_sales_return, $updateBatch, 'id');
+		}
 	}
 ?>

@@ -24,6 +24,7 @@ class Customer_model extends CI_Model {
 		public $latitude;
 		public $longitude;
 		public $plafond;
+		public $uid;
 		
 		public $complete_address;
 		
@@ -54,6 +55,7 @@ class Customer_model extends CI_Model {
 			$this->latitude				= $db_item->latitude;
 			$this->longitude			= $db_item->longitude;
 			$this->term_of_payment		= $db_item->term_of_payment;
+			$this->uid					= $db_item->uid;
 			
 			return $this;
 		}
@@ -82,6 +84,7 @@ class Customer_model extends CI_Model {
 			$db_item->longitude				= $this->longitude;
 			$db_item->is_black_list			= $this->is_black_list;
 			$db_item->term_of_payment		= $this->term_of_payment;
+			$db_item->uid					= $this->uid;
 			
 			return $db_item;
 		}
@@ -110,6 +113,7 @@ class Customer_model extends CI_Model {
 			$stub->is_black_list		= $db_item->is_black_list;
 			$stub->plafond				= $db_item->plafond;
 			$stub->term_of_payment		= $db_item->term_of_payment;
+			$stub->uid					= $db_item->uid;
 			
 			return $stub;
 		}
@@ -151,6 +155,26 @@ class Customer_model extends CI_Model {
 			
 			return $result;
 		}
+
+		private function generateUid()
+		{
+			$validation = false;
+			while($validation == false){
+				$name		= rand(0,9) . rand(0,9) . rand(0,9) . rand(0,9) . rand(0,9) . rand(0,9) . rand(0,9) . rand(0,9);
+				$this->db->where('uid', $name);
+				$query		= $this->db->get($this->table_customer);
+				$result		= $query->num_rows();
+
+				if($result == 0){
+					$validation = true;
+				} else {
+					$this->Customer_model->generateUid();
+				}
+			}
+
+			return $name;
+			
+		}
 		
 		public function insertItem()
 		{
@@ -182,6 +206,7 @@ class Customer_model extends CI_Model {
 				$this->is_black_list		= '';
 				$this->term_of_payment		= $this->input->post('term_of_payment');
 				$this->plafond				= '3000000';
+				$this->uid					= $this->Customer_model->generateUid();
 				
 				$db_item 					= $this->get_db_from_stub($this);
 				$db_result 					= $this->db->insert($this->table_customer, $db_item);

@@ -58,11 +58,30 @@ class Attendance_status_model extends CI_Model {
 			return $result;
 		}
 
-		public function getItems()
+		public function getItems($offset = 0, $term = "", $limit = 10)
 		{
+			if($term != ""){
+				$this->db->like('name', $term, 'both');
+				$this->db->or_like("description", $term, 'both');
+			};
+
 			$this->db->order_by('name');
+			$this->db->limit($limit, $offset);
 			$query = $this->db->get($this->table_status);
 			$result = $query->result();
+
+			return $result;
+		}
+
+		public function countItems($term)
+		{
+			if($term != ""){
+				$this->db->like('name', $term, 'both');
+				$this->db->or_like("description", $term, 'both');
+			};
+
+			$query = $this->db->get($this->table_status);
+			$result = $query->num_rows();
 
 			return $result;
 		}
@@ -84,6 +103,28 @@ class Attendance_status_model extends CI_Model {
 			$db_result 			= $this->db->insert($this->table_status, $db_item);
 
 			return $this->db->affected_rows();
+		}
+
+		public function updateById()
+		{
+			$this->db->db_debug = false;
+
+			$this->db->set('name', $this->input->post('name'));
+			$this->db->set('description', $this->input->post('description'));
+			$this->db->set('point', $this->input->post('point'));
+			$this->db->where('id', $this->input->post('id'));
+
+			$this->db->update($this->table_status);
+
+			return $this->db->affected_rows();
+		}
+
+		public function getById($statusId)
+		{
+			$this->db->where('id', $statusId);
+			$query		= $this->db->get($this->table_status);
+			$result		= $query->row();
+			return $result;
 		}
 
 		public function deleteById($statusId)

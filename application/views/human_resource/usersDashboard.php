@@ -37,10 +37,11 @@
 		<h3 style='font-family:bebasneue'>User data</h3>
 		<hr>
 		<div class='row'>
-			<div class='col-sm-4'>
-				<img style='width:100%;border-radius:50%'>
+			<div class='col-md-2 col-sm-3 col-xs-4'>
+				<img style='width:100%;border-radius:50%' id='userProfileImage'><br><br>
+				<button type='button' class='button button_danger_dark' id='deleteUserProfile'>Remove picture</button>
 			</div>
-			<div class='col-sm-8'>
+			<div class='col-md-10 col-sm-9 col-xs-8'>
 				<label>Name</label>
 				<p id='user_name_p'></p>
 		
@@ -180,6 +181,15 @@
 				id:n
 			},
 			success:function(response){
+				if(response.image_url == null){
+					var imageUrl = '<?= base_url() . "/assets/ProfileImages/defaultImage.png" ?>';
+					$('#deleteUserProfile').hide();
+				} else {
+					var imageUrl = '<?= base_url() . "/assets/ProfileImages/" ?>' + response.image_url;
+					$('#deleteUserProfile').show();
+				}
+
+				$("#userProfileImage").attr('src', imageUrl);
 				var name = response.name;
 				var address = response.address;
 				var email = response.email;
@@ -210,6 +220,23 @@
 			}
 		});
 	}
+
+	$('#deleteUserProfile').click(function(){
+		$.ajax({
+			url:"<?= site_url('Users/removePorfilePicture') ?>",
+			data:{
+				id: $("#user_id").val()
+			},
+			type:"POST",
+			beforeSend:function(){
+				$('button').attr('disabled', true);
+			},
+			success:function(){
+				$('button').attr('disabled', false);
+				view_user($('#user_id').val());
+			}
+		})
+	})
 	
 	$('#add_new_user_button').click(function(){
 		$('#addUserWrapper').fadeIn(300, function(){

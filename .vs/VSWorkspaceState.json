@@ -1,8 +1,14 @@
 {
   "ExpandedNodes": [
-    "",
+    ""
     "\\assets"
+    "\\application",
+    "\\application\\models",
+    "\\application\\views\\inventory\\Return",
+    "\\application\\views\\purchasing",
+    "\\application\\views\\purchasing\\Return",
+    "\\css"
   ],
-  "SelectedNode": "\\assets\\absentee.png",
+  "SelectedNode": "\\application\\models\\Purchase_return_detail_model.php",
   "PreviewInSolutionExplorer": false
 }

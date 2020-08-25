@@ -304,7 +304,7 @@ class Debt_model extends CI_Model {
 		public function getItems($offset, $month, $year)
 		{
 			$query = $this->db->query("
-				SELECT purchase_invoice.*, a.supplier_id
+				SELECT purchase_invoice.id, purchase_invoice.date, purchase_invoice.tax_document, purchase_invoice.invoice_document, a.supplier_id, NULL as other_opponent_id, NULL as type, 'regular' as class
 				FROM purchase_invoice
 				JOIN (
 					SELECT DISTINCT(code_good_receipt.invoice_id) AS id, code_purchase_order.supplier_id 
@@ -317,7 +317,14 @@ class Debt_model extends CI_Model {
 				ON a.id = purchase_invoice.id
 				WHERE MONTH(purchase_invoice.date) = '$month' AND YEAR(purchase_invoice.date) = '$year'
 				AND purchase_invoice.is_delete = '0'
-				ORDER BY purchase_invoice.date ASC
+				UNION (
+					SELECT purchase_invoice_other.id, purchase_invoice_other.date, purchase_invoice_other.tax_document, purchase_invoice_other.invoice_document, purchase_invoice_other.supplier_id, purchase_invoice_other.other_opponent_id, debt_type.name as type, 'blank' as class
+					FROM purchase_invoice_other
+					JOIN debt_type ON purchase_invoice_other.type = debt_type.id
+					WHERE MONTH(purchase_invoice_other.date) = '$month' AND YEAR(purchase_invoice_other.date) = '$year'
+					AND purchase_invoice_other.is_delete = '0'
+				)
+				ORDER BY date ASC
 				LIMIT 10 OFFSET $offset
 			");
 			

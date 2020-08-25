@@ -166,7 +166,6 @@ class Sales_return_received_model extends CI_Model {
 			$this->db->update($this->table_sales_return);
 			return $this->db->affected_rows();
 		}
-
 		
 		public function getUnassignedItems($offset = 0, $limit = 10)
 		{

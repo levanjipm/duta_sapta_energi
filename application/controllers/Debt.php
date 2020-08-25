@@ -146,8 +146,8 @@ class Debt extends CI_Controller {
 		$debt			= $this->Debt_other_model->getById($id);
 		$data['debt']	= $debt;
 
-		$supplierId		= $debt->supplier_id;
-		$otherOpponnentId = $debt->other_opponent_id;
+		$supplierId			= $debt->supplier_id;
+		$otherOpponnentId 	= $debt->other_opponent_id;
 		if($supplierId != null){
 			$this->load->model('Supplier_model');
 			$data['supplier'] = $this->Supplier_model->getById($supplierId);
@@ -253,18 +253,28 @@ class Debt extends CI_Controller {
 
 		$this->load->model('Debt_model');
 		$this->load->model('Supplier_model');
+		$this->load->model("Opponent_model");
 		
 		$invoices = $this->Debt_model->getItems($offset, $month, $year);
 		$result = array();
 		foreach($invoices as $invoice){
 			$itemArray = array();
 			$supplierId = $invoice->supplier_id;
+			$otherOpponentId = $invoice->other_opponent_id;
 
-			$supplierObject = (array) $this->Supplier_model->getById($supplierId);
-			$itemArray = (array) $invoice;
-			$itemArray['supplier'] = $supplierObject;
+			if($supplierId != NULL){
+				$supplierObject = (array) $this->Supplier_model->getById($supplierId);
+				$itemArray = (array) $invoice;
+				$itemArray['supplier'] = $supplierObject;
 
-			array_push($result, $itemArray);
+				array_push($result, $itemArray);
+			} else {
+				$supplierObject = (array) $this->Opponent_model->getById($otherOpponentId);
+				$itemArray = (array) $invoice;
+				$itemArray['supplier'] = $supplierObject;
+
+				array_push($result, $itemArray);
+			}
 		};
 
 		$data['items'] = (object) $result;

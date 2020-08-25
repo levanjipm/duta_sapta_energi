@@ -31,3 +31,5 @@ user_guide_src/cilexer/pycilexer.egg-info/*
 *.sublime-project
 /tests/tests/
 /tests/results/
+.vs/slnx.sqlite
+.vs/duta_sapta_energi/v16/.suo

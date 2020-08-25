@@ -97,8 +97,16 @@ class Users extends CI_Controller {
 		}
 	}
 
-	public function ngasal()
+	public function removePorfilePicture()
 	{
-		
+		$id			= $this->input->post('id');
+		$this->load->model("User_model");
+
+		$user		= $this->User_model->getById($id);
+		$imageUrl	= $user->image_url;
+		$this->load->helper("file");
+		delete_files(base_url() . "/assets/profileImages/" . $imageUrl);
+
+		$this->User_model->updateProfilePicture($id, null);
 	}
 }

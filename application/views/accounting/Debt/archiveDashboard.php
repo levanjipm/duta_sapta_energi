@@ -1,5 +1,12 @@
 <head>
-	<title>Debt document archive</title>
+	<title>Debt document - Archive</title>
+	<style>
+		.subtitleText{
+            font-size:0.8em;
+            color:#555;
+            text-align:right;
+        }
+	</style>
 </head>
 <div class='dashboard'>
 	<div class='dashboard_head'>
@@ -62,6 +69,30 @@
 		<div id='goodReceiptWrapper'></div>
 	</div>
 </div>
+
+<div class='alert_wrapper' id='viewBlankInvoiceWrapper'>
+	<button class='slide_alert_close_button'>&times;</button>
+	<div class='alert_box_slide'>
+		<h3 style='font-family:bebasneue'>Invoice archive</h3>
+		<hr>
+		<label>Supplier</label>
+		<p id='blankSupplierName_p'></p>
+		<p id='blankSupplierAddress_p'></p>
+		<p id='blankSupplierCity_p'></p>
+
+		<label>Invoice</label>
+		<p id='blankInvoiceName_p'></p>
+		<p id='blankInvoiceTax_p'></p>
+		<p id='blankInvoiceDate_p'></p>
+		<p><strong>Rp. <span id='blankInvoiceValue_p'></span></strong></p>
+
+		<label>Information</label>
+		<p id='informationText_p'></p>
+
+		<p class='subtitleText'>Created by <span id='createdBy_p'></span></p>
+	</div>
+</div>
+
 <script>
 	$(document).ready(function(){
 		refreshView();
@@ -99,43 +130,96 @@
 					var isConfirm = item.is_confirm;
 					var id = item.id;
 					
-					var supplier = item.supplier;
-					var supplier_name = supplier.name;
-					var complete_address = supplier.address;
-					var supplier_number = supplier.number;
-					var supplier_block = supplier.block;
-					var supplier_rt = supplier.rt;
-					var supplier_rw = supplier.rw;
-					var supplier_city = supplier.city;
-					var supplier_postal = supplier.postal_code;
+					if(item.class == "regular"){
+						var supplier = item.supplier;
+						var supplier_name = supplier.name;
+						var complete_address = supplier.address;
+						var supplier_number = supplier.number;
+						var supplier_block = supplier.block;
+						var supplier_rt = supplier.rt;
+						var supplier_rw = supplier.rw;
+						var supplier_city = supplier.city;
+						var supplier_postal = supplier.postal_code;
+						
+						if(supplier_number != null){
+							complete_address	+= ' No. ' + supplier_number;
+						}
+						
+						if(supplier_block != null && supplier_block != '000'){
+							complete_address	+= ' Blok ' + supplier_block;
+						}
 					
-					if(supplier_number != null){
-						complete_address	+= ' No. ' + supplier_number;
-					}
-					
-					if(supplier_block != null && supplier_block != '000'){
-						complete_address	+= ' Blok ' + supplier_block;
-					}
-				
-					if(supplier_rt != '000'){
-						complete_address	+= ' RT ' + supplier_rt;
-					}
-					
-					if(supplier_rw != '000' && supplier_rw != '000'){
-						complete_address	+= ' /RW ' + supplier_rw;
-					}
-					
-					if(supplier_postal != null){
-						complete_address	+= ', ' + supplier_postal;
-					}
+						if(supplier_rt != '000'){
+							complete_address	+= ' RT ' + supplier_rt;
+						}
+						
+						if(supplier_rw != '000' && supplier_rw != '000'){
+							complete_address	+= ' /RW ' + supplier_rw;
+						}
+						
+						if(supplier_postal != null){
+							complete_address	+= ', ' + supplier_postal;
+						}
 
-					if(isConfirm == 0){
-						$('#archiveTable').append("<div class='row archive_row'><div class='col-md-3 col-sm-3 col-xs-4'><p><strong>" + invoiceName + "</strong></p></div><div class='col-md-3 col-sm-3 col-xs-3'><p><strong>" + supplier_name + "</strong></p><p>" + complete_address + "</p><p>" + supplier_city + "</p></div><div class='col-md-4 col-sm-5 col-xs-5 col-md-offset-2 col-sm-offset-1 col-xs-offset-2'><p style='display:inline-block'>" + my_date_format(date) + " <strong>|</strong> </p> <button type='button' class='button button_transparent' onclick='openView(" + id + ")' title='View " + invoiceName + "'><i class='fa fa-eye'></i></button></div>");
+						if(isConfirm == 0){
+							$('#archiveTable').append("<div class='row archive_row'><div class='col-md-3 col-sm-3 col-xs-4'><p><strong>" + invoiceName + "</strong></p><p>" + taxInvoiceName + "</p></div><div class='col-md-3 col-sm-3 col-xs-3'><p><strong>" + supplier_name + "</strong></p><p>" + complete_address + "</p><p>" + supplier_city + "</p></div><div class='col-md-4 col-sm-5 col-xs-5 col-md-offset-2 col-sm-offset-1 col-xs-offset-2'><p style='display:inline-block'>" + my_date_format(date) + " <strong>|</strong> </p> <button type='button' class='button button_transparent' onclick='openRegularView(" + id + ")' title='View " + invoiceName + "'><i class='fa fa-eye'></i></button></div>");
+						} else {
+							$('#archiveTable').append("<div class='row archive_row'><div class='col-md-3 col-sm-3 col-xs-4'><p><strong>" + invoiceName + "</strong></p><p>" + taxInvoiceName + "</p></div><div class='col-md-3 col-sm-3 col-xs-3'><p><strong>" + supplier_name + "</strong></p><p>" + complete_address + "</p><p>" + supplier_city + "</p></div><div class='col-md-4 col-sm-5 col-xs-5 col-md-offset-2 col-sm-offset-1 col-xs-offset-2'><p style='display:inline-block'>" + my_date_format(date) + " <strong>|</strong> </p> <button type='button' class='button button_transparent' onclick='openRegularView(" + id + ")' title='View " + invoiceName + "'><i class='fa fa-eye'></i></button> <button type='button' class='button button_verified' title='Confirmed'><i class='fa fa-check'></i></button></div>");
+						}
+
+						invoiceCount++;
 					} else {
-						$('#archiveTable').append("<div class='row archive_row'><div class='col-md-3 col-sm-3 col-xs-4'><p><strong>" + invoiceName + "</strong></p></div><div class='col-md-3 col-sm-3 col-xs-3'><p><strong>" + supplier_name + "</strong></p><p>" + complete_address + "</p><p>" + supplier_city + "</p></div><div class='col-md-4 col-sm-5 col-xs-5 col-md-offset-2 col-sm-offset-1 col-xs-offset-2'><p style='display:inline-block'>" + my_date_format(date) + " <strong>|</strong> </p> <button type='button' class='button button_transparent' onclick='openView(" + id + ")' title='View " + invoiceName + "'><i class='fa fa-eye'></i></button> <button type='button' class='button button_verified' title='Confirmed'><i class='fa fa-check'></i></button></div>");
-					}
+						if(item.other_opponent_id != null){
+							var supplier 	= item.supplier;
+							var supplierName = supplier.name;
+							var supplierType = supplier.type;
 
-					invoiceCount++;
+							if(isConfirm == 0){
+								$('#archiveTable').append("<div class='row archive_row'><div class='col-md-3 col-sm-3 col-xs-4'><p><strong>" + invoiceName + "</strong></p><p>" + taxInvoiceName + "</p></div><div class='col-md-3 col-sm-3 col-xs-3'><p><strong>" + supplierName + "</strong></p><p>" + supplierType + "</p></div><div class='col-md-4 col-sm-5 col-xs-5 col-md-offset-2 col-sm-offset-1 col-xs-offset-2'><p style='display:inline-block'>" + my_date_format(date) + " <strong>|</strong> </p> <button type='button' class='button button_transparent' onclick='openBlankView(" + id + ")' title='View " + invoiceName + "'><i class='fa fa-eye'></i></button></div>");
+							} else {
+								$('#archiveTable').append("<div class='row archive_row'><div class='col-md-3 col-sm-3 col-xs-4'><p><strong>" + invoiceName + "</strong></p><p>" + taxInvoiceName + "</p></div><div class='col-md-3 col-sm-3 col-xs-3'><p><strong>" + supplierName + "</strong></p><p>" + supplierType + "</p></div><div class='col-md-4 col-sm-5 col-xs-5 col-md-offset-2 col-sm-offset-1 col-xs-offset-2'><p style='display:inline-block'>" + my_date_format(date) + " <strong>|</strong> </p> <button type='button' class='button button_transparent' onclick='openBlankView(" + id + ")' title='View " + invoiceName + "'><i class='fa fa-eye'></i></button> <button type='button' class='button button_verified' title='Confirmed'><i class='fa fa-check'></i></button></div>");
+							}
+							invoiceCount++;
+						} else {
+							var supplier = item.supplier;
+							var supplier_name = supplier.name;
+							var complete_address = supplier.address;
+							var supplier_number = supplier.number;
+							var supplier_block = supplier.block;
+							var supplier_rt = supplier.rt;
+							var supplier_rw = supplier.rw;
+							var supplier_city = supplier.city;
+							var supplier_postal = supplier.postal_code;
+							
+							if(supplier_number != null){
+								complete_address	+= ' No. ' + supplier_number;
+							}
+							
+							if(supplier_block != null && supplier_block != '000'){
+								complete_address	+= ' Blok ' + supplier_block;
+							}
+						
+							if(supplier_rt != '000'){
+								complete_address	+= ' RT ' + supplier_rt;
+							}
+							
+							if(supplier_rw != '000' && supplier_rw != '000'){
+								complete_address	+= ' /RW ' + supplier_rw;
+							}
+							
+							if(supplier_postal != null){
+								complete_address	+= ', ' + supplier_postal;
+							}
+
+							if(isConfirm == 0){
+								$('#archiveTable').append("<div class='row archive_row'><div class='col-md-3 col-sm-3 col-xs-4'><p><strong>" + invoiceName + "</strong></p><p>" + taxInvoiceName + "</p></div><div class='col-md-3 col-sm-3 col-xs-3'><p><strong>" + supplier_name + "</strong></p><p>" + complete_address + "</p><p>" + supplier_city + "</p></div><div class='col-md-4 col-sm-5 col-xs-5 col-md-offset-2 col-sm-offset-1 col-xs-offset-2'><p style='display:inline-block'>" + my_date_format(date) + " <strong>|</strong> </p> <button type='button' class='button button_transparent' onclick='openBlankView(" + id + ")' title='View " + invoiceName + "'><i class='fa fa-eye'></i></button></div>");
+							} else {
+								$('#archiveTable').append("<div class='row archive_row'><div class='col-md-3 col-sm-3 col-xs-4'><p><strong>" + invoiceName + "</strong></p><p>" + taxInvoiceName + "</p></div><div class='col-md-3 col-sm-3 col-xs-3'><p><strong>" + supplier_name + "</strong></p><p>" + complete_address + "</p><p>" + supplier_city + "</p></div><div class='col-md-4 col-sm-5 col-xs-5 col-md-offset-2 col-sm-offset-1 col-xs-offset-2'><p style='display:inline-block'>" + my_date_format(date) + " <strong>|</strong> </p> <button type='button' class='button button_transparent' onclick='openBlankView(" + id + ")' title='View " + invoiceName + "'><i class='fa fa-eye'></i></button> <button type='button' class='button button_verified' title='Confirmed'><i class='fa fa-check'></i></button></div>");
+							}
+
+							invoiceCount++;
+						}
+					}
 				})
 
 				if(invoiceCount > 0){
@@ -159,7 +243,7 @@
 		})
 	}
 
-	function openView(n){
+	function openRegularView(n){
 		$.ajax({
 			url:'<?= site_url('Debt/getById') ?>',
 			data:{
@@ -244,37 +328,6 @@
 
 				$('#invoice_value_p').html(numeral(invoiceValue).format('0,0.00'));
 
-				// var name = salesOrder.name;
-
-				// var seller = salesOrder.seller;
-				// if(seller == null){
-				// 	var sellerText = "<i>Not available</i>";
-				// } else {
-				// 	var sellerText = seller;
-				// }
-
-				// $('#sales_order_name_p').html(name);
-				// $('#sales_order_date_p').html(my_date_format(date));
-				// $('#sales_order_seller_p').html(sellerText);
-
-				// $('#deliveryOrderTableContent').html('');
-				// var items = response.items;
-				// var invoiceValue = 0;
-				// $.each(items, function(index, item){
-				// 	var reference = item.reference;
-				// 	var name = item.name;
-				// 	var discount = parseFloat(item.discount);
-				// 	var priceList = parseFloat(item.price_list);
-				// 	var quantity = parseInt(item.quantity);
-				// 	var netPrice = (100 - discount) * priceList / 100;
-				// 	var totalPrice = netPrice * quantity;
-				// 	invoiceValue += totalPrice;
-
-				// 	$('#deliveryOrderTableContent').append("<tr><td>" + reference + "</td><td>" + name + "</td><td>Rp. " + numeral(priceList).format('0,0.00') + "</td><td>" + numeral(discount).format('0,0.00') + "%</td><td>Rp. " + numeral(netPrice).format("0,0.00") + "</td><td>" + numeral(quantity).format("0,0") + "</td><td>Rp. " + numeral(totalPrice).format('0,0.00') + "</td></tr>");
-				// });
-
-				// $('#deliveryOrderTableContent').append("<tr><td colspan='4'><td colspan='2'>Total</td><td>Rp. " + numeral(invoiceValue).format('0,0.00') + "</td></tr>");
-
 				$('#viewInvoiceWrapper').fadeIn(300, function(){
 					$('#viewInvoiceWrapper .alert_box_slide').show("slide", { direction: "right" }, 250);
 				});
@@ -282,5 +335,105 @@
 		})
 	}
 
-	
+	function openBlankView(n){
+		$.ajax({
+			url:"<?= site_url('Debt/getBlankById') ?>",
+			data:{
+				id:n
+			},
+			success:function(response){
+				var general = response.debt;
+				var invoiceDate = general.date;
+				var invoiceName = general.invoice_document;
+				var information = general.information;
+				var taxInvoice = general.tax_document;
+				var supplierId = general.supplier_id;
+				var opponentId = general.opponentId;
+				var invoiceValue = general.value;
+				var createdBy	= general.created_by;
+				var information = general.information;
+				if(information == null || information == ""){
+					var informationText = "<i>Not available</i>";
+				} else {
+					var informationText = information;
+				}
+
+				$('#informationText_p').html(informationText);
+				if(supplierId != null){
+					var supplier = response.supplier;
+					var supplier_name = supplier.name;
+					var complete_address = supplier.address;
+					var supplier_number = supplier.number;
+					var supplier_block = supplier.block;
+					var supplier_rt = supplier.rt;
+					var supplier_rw = supplier.rw;
+					var supplier_city = supplier.city;
+					var supplier_postal = supplier.postal_code;
+					
+					if(supplier_number != null){
+						complete_address	+= ' No. ' + supplier_number;
+					}
+					
+					if(supplier_block != null && supplier_block != '000'){
+						complete_address	+= ' Blok ' + supplier_block;
+					}
+				
+					if(supplier_rt != '000'){
+						complete_address	+= ' RT ' + supplier_rt;
+					}
+					
+					if(supplier_rw != '000' && supplier_rw != '000'){
+						complete_address	+= ' /RW ' + supplier_rw;
+					}
+					
+					if(supplier_postal != null){
+						complete_address	+= ', ' + supplier_postal;
+					}
+
+					$('#blankSupplierName_p').html(supplier_name);
+					$('#blankSupplierAddress_p').html(complete_address);
+					$('#blankSupplierCity_p').html(supplier_city);
+
+					$('#blankInvoiceName_p').html(invoiceName);
+					$('#blankInvoiceDate_p').html(my_date_format(invoiceDate));
+					$('#blankInvoiceValue_p').html(numeral(invoiceValue).format("0,0.00"));
+					if(taxInvoice == "" || taxInvoice == null){
+						$('#blankInvoiceTax_p').html("<i>Not available</i>");
+					} else {
+						$('#blankInvoiceTax_p').html(taxInvoice);
+					};
+
+					$('#createdBy_p').html(createdBy);
+
+					$('#viewBlankInvoiceWrapper').fadeIn(300, function(){
+						$('#viewBlankInvoiceWrapper .alert_box_slide').show("slide", { direction: "right" }, 250);
+					});
+				} else {
+					var supplier 		= response.supplier;
+					var name		 	= supplier.name;
+					var description		= supplier.description;
+					var type			= supplier.type;
+
+					$('#blankSupplierName_p').html(name);
+					$('#blankSupplierAddress_p').html(description);
+					$('#blankSupplierCity_p').html(type);
+
+					$('#blankInvoiceName_p').html(invoiceName);
+					$('#blankInvoiceDate_p').html(my_date_format(invoiceDate));
+					$('#blankInvoiceValue_p').html(numeral(invoiceValue).format("0,0.00"));
+					if(taxInvoice == "" || taxInvoice == null){
+						$('#blankInvoiceTax_p').html("<i>Not available</i>");
+					} else {
+						$('#blankInvoiceTax_p').html(taxInvoice);
+					};
+
+					$('#createdBy_p').html(createdBy);
+
+					$('#viewBlankInvoiceWrapper').fadeIn(300, function(){
+						$('#viewBlankInvoiceWrapper .alert_box_slide').show("slide", { direction: "right" }, 250);
+					});
+				}
+			}
+		})
+	}
 </script>
