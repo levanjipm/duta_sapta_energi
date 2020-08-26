@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Waktu pembuatan: 25 Agu 2020 pada 14.50
+-- Waktu pembuatan: 26 Agu 2020 pada 05.31
 -- Versi server: 10.4.13-MariaDB
 -- Versi PHP: 7.2.32
 
@@ -790,6 +790,13 @@ CREATE TABLE `fixed_asset` (
   `residue_value` float(50,4) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+--
+-- Dumping data untuk tabel `fixed_asset`
+--
+
+INSERT INTO `fixed_asset` (`id`, `name`, `description`, `sold_date`, `value`, `depreciation_time`, `date`, `type`, `residue_value`) VALUES
+(1, 'Meja', 'Meja untuk kerja dibuat dengan tangan manusia.', NULL, '3000000.0000', 4, '2020-08-25', 1, 250000.0000);
+
 -- --------------------------------------------------------
 
 --
@@ -801,6 +808,14 @@ CREATE TABLE `fixed_asset_type` (
   `name` varchar(50) NOT NULL,
   `description` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data untuk tabel `fixed_asset_type`
+--
+
+INSERT INTO `fixed_asset_type` (`id`, `name`, `description`) VALUES
+(1, 'Furniture', 'This asset includes office furniture such as desks, tables, chairs, etc.'),
+(2, 'Vehicles', 'This asset includes every vehicles.');
 
 -- --------------------------------------------------------
 
@@ -1370,6 +1385,14 @@ CREATE TABLE `salary_attendance` (
   `value` decimal(20,4) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+--
+-- Dumping data untuk tabel `salary_attendance`
+--
+
+INSERT INTO `salary_attendance` (`id`, `salary_slip_id`, `status_id`, `value`) VALUES
+(1, 3, 2, '100000.0000'),
+(2, 3, 3, '100000.0000');
+
 -- --------------------------------------------------------
 
 --
@@ -1382,6 +1405,13 @@ CREATE TABLE `salary_benefit` (
   `salary_slip_id` int(255) NOT NULL,
   `value` decimal(10,2) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data untuk tabel `salary_benefit`
+--
+
+INSERT INTO `salary_benefit` (`id`, `benefit_id`, `salary_slip_id`, `value`) VALUES
+(3, 3, 3, '100000.00');
 
 -- --------------------------------------------------------
 
@@ -1400,6 +1430,13 @@ CREATE TABLE `salary_slip` (
   `created_by` int(255) NOT NULL,
   `created_date` date NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data untuk tabel `salary_slip`
+--
+
+INSERT INTO `salary_slip` (`id`, `user_id`, `month`, `year`, `basic`, `bonus`, `deduction`, `created_by`, `created_date`) VALUES
+(3, 1, 8, 2020, '0.00', '0.00', '0.00', 1, '2020-08-26');
 
 -- --------------------------------------------------------
 
@@ -1979,7 +2016,9 @@ ALTER TABLE `salary_attendance`
 -- Indeks untuk tabel `salary_benefit`
 --
 ALTER TABLE `salary_benefit`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `salary_slip_id` (`salary_slip_id`),
+  ADD KEY `benefit_id` (`benefit_id`);
 
 --
 -- Indeks untuk tabel `salary_slip`
@@ -2199,13 +2238,13 @@ ALTER TABLE `expense_class`
 -- AUTO_INCREMENT untuk tabel `fixed_asset`
 --
 ALTER TABLE `fixed_asset`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT untuk tabel `fixed_asset_type`
 --
 ALTER TABLE `fixed_asset_type`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT untuk tabel `good_receipt`
@@ -2319,19 +2358,19 @@ ALTER TABLE `receivable`
 -- AUTO_INCREMENT untuk tabel `salary_attendance`
 --
 ALTER TABLE `salary_attendance`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT untuk tabel `salary_benefit`
 --
 ALTER TABLE `salary_benefit`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT untuk tabel `salary_slip`
 --
 ALTER TABLE `salary_slip`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT untuk tabel `sales_order`
@@ -2518,6 +2557,13 @@ ALTER TABLE `purchase_return_sent`
 ALTER TABLE `receivable`
   ADD CONSTRAINT `receivable_ibfk_1` FOREIGN KEY (`invoice_id`) REFERENCES `invoice` (`id`),
   ADD CONSTRAINT `receivable_ibfk_2` FOREIGN KEY (`bank_id`) REFERENCES `bank_transaction` (`id`);
+
+--
+-- Ketidakleluasaan untuk tabel `salary_benefit`
+--
+ALTER TABLE `salary_benefit`
+  ADD CONSTRAINT `salary_benefit_ibfk_1` FOREIGN KEY (`salary_slip_id`) REFERENCES `salary_slip` (`id`),
+  ADD CONSTRAINT `salary_benefit_ibfk_2` FOREIGN KEY (`benefit_id`) REFERENCES `benefit` (`id`);
 
 --
 -- Ketidakleluasaan untuk tabel `salary_slip`
