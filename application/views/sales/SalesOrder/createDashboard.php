@@ -25,16 +25,8 @@
 			<br>
 			
 			<label>Seller</label>
-			<select class='form-control' name='sales_order_seller' id='sales_order_seller'>
-				<option value=''>None</option>
-<?php
-	foreach($users as $user){
-?>
-				<option value='<?= $user->id ?>'><?= $user->name ?></option>
-<?php
-	}
-?>
-			</select>
+			<button type='button' class='form-control' id='sellerButton' style='text-align:left!important'>None</button>
+			<input type='hidden' id='sales_order_seller' name='sales_order_seller'>
 	
 			<label>Taxing</label>
 			<select class='form-control' name='taxing' id='taxing'>
@@ -75,6 +67,27 @@
 	
 			<button type='button' class='button button_default_dark' onclick='validate_form()' style='display:none' id='submit_button'>Submit</button>
 		</form>
+	</div>
+</div>
+
+<div class='alert_wrapper' id='selectSellerWrapper'>
+	<div class='alert_box_full'>		
+		<button type='button' class='button alert_full_close_button' title='Close select customer session'>&times;</button>
+		<h3 style='font-family:bebasneue'>Select seller</h3>
+		<br>
+		<div id='sellerTable'>
+			<table class='table table-bordered'>
+				<tr>
+					<th>Name</th>
+					<th>Action</th>
+				</tr>
+				<tbody id='sellerTableContent'></tbody>
+			</table>
+			<select class='form-control' id='sellerPage' style='width:100opx'>
+				<option value='1'>1</option>
+			</select>
+		</div>
+		<p id='sellerTableText'>There is no seller found.</p>
 	</div>
 </div>
 
@@ -167,6 +180,24 @@
 	</div>
 </div>
 <script>
+	$('#sellerButton').click(function(){
+		refreshSeller(1);
+	})
+
+	function refreshSeller(page = $('#sellerPage').val())
+	{
+		$.ajax({
+			url:"<?= site_url('Users/getSalesItems') ?>",
+			data:{
+				page: $('#userPage').val()
+			},
+			success:function(response){
+				console.log(response);
+				$('#selectSellerWrapper').fadeIn();
+			}
+		})
+	}
+
 	$('.slide_alert_close_button').click(function(){
 		$('input').attr('readonly',false);
 		$('select').attr('readonly',false);

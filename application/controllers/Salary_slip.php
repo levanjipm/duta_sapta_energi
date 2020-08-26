@@ -40,4 +40,17 @@ class Salary_slip extends CI_Controller {
 			echo 0;
 		}
 	}
+
+	public function getItems()
+	{
+		$page		= $this->input->get('page');
+		$offset		= ($page - 1) * 10;
+		$this->load->model("Salary_slip_model");
+
+		$data['items'] = $this->Salary_slip_model->getItems($offset);
+		$data['pages'] = max(1, ceil($this->Salary_slip_model->countItems()/10));
+
+		header('Content-Type: application/json');
+		echo json_encode($data);
+	}
 }

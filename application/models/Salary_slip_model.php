@@ -117,4 +117,28 @@ class Salary_slip_model extends CI_Model {
 				return null;
 			}
 		}
+
+		public function getItems($offset = 0, $limit = 10)
+		{
+			$query		= $this->db->query("
+				SELECT users.name, users.image_url, salary_slip.*, a.name as created_by
+				FROM salary_slip
+				JOIN users ON salary_slip.user_id = users.id
+				JOIN (
+					SELECT id, name FROM users
+				) AS a
+				ON a.id = salary_slip.created_by
+				ORDER BY salary_slip.year DESC, salary_slip.month DESC, users.name ASC
+				LIMIT $limit OFFSET $offset
+			");
+			$result = $query->result();
+			return $result;
+		}
+
+		public function countItems()
+		{
+			$query		= $this->db->get($this->table_salary);
+			$result		= $query->num_rows();
+			return $result;
+		}
 }
