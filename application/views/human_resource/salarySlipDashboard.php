@@ -44,43 +44,53 @@
 			<div class='notificationText warning' id='existSalarySlipNotification'><p><i class='fa fa-exclamation-triangle'></i> Salary slip already exist.</p></div>
 		</form>
 		<br>
-		<div id='attendanceTable' style='display:none'>
-			<table class='table table-bordered'>
-				<tr>
-					<th>Information</th>
-					<th>Total</th>
-					<th>Wage</th>
-					<th>Total</th>
-				</tr>
-				<tbody id='attendanceTableContent'></tbody>
-				<tr>
-					<td colspan='2'></td>
-					<td>Bonus</td>
-					<td><input type='number' class='form-control' id='bonus' name='bonus'>
-				</tr>
-				<tr>
-					<td colspan='2'></td>
-					<td>Deduction</td>
-					<td><input type='number' class='form-control' id='deduction' name'deduction'>
-				</tr>
-				<tr><td colspan='2'></td><td>Total</td><td>Rp. <span id='attendanceWage'></span></td></tr>
-			</table>
-
-			<button type='button' class='button button_default_dark' id='addBenefitButton'><i class='fa fa-plus'></i> Add benefit</button>
-			<div id='salaryBenefitTable' style='display:none'>
+		<form id='salarySlipDetailForm'>
+			<div id='attendanceTable' style='display:none'>
 				<table class='table table-bordered'>
 					<tr>
-						<th>Name</th>
-						<th>Description</th>
-						<th>Value</th>
-						<th>Action</th>
+						<th>Information</th>
+						<th>Total</th>
+						<th>Wage</th>
+						<th>Total</th>
 					</tr>
-					<tbody id='salaryBenefitTableContent'></tbody>
+					<tbody id='attendanceTableContent'></tbody>
+					<tr>
+						<td colspan='2'></td>
+						<td>Basic</td>
+						<td><input type='number' class='form-control' id='basic' name='basic' required min='0'>
+					</tr>
+					<tr>
+						<td colspan='2'></td>
+						<td>Bonus</td>
+						<td><input type='number' class='form-control' id='bonus' name='bonus' required min='0'>
+					</tr>
+					<tr>
+						<td colspan='2'></td>
+						<td>Deduction</td>
+						<td><input type='number' class='form-control' id='deduction' name='deduction' required min='0'>
+					</tr>
+					<tr><td colspan='2'></td><td>Total</td><td>Rp. <span id='attendanceWage'></span></td></tr>
 				</table>
-			</div>
 
-			<button type='button' class='button button_default_dark' onclick='createSalarySlip()'><i class='fa fa-long-arrow-right'></i></button>
-		</div>
+				<button type='button' class='button button_default_dark' id='addBenefitButton'><i class='fa fa-plus'></i> Add benefit</button><br>
+				<div id='salaryBenefitTable' style='display:none'>
+					<table class='table table-bordered'>
+						<tr>
+							<th>Name</th>
+							<th>Description</th>
+							<th>Value</th>
+							<th>Action</th>
+						</tr>
+						<tbody id='salaryBenefitTableContent'></tbody>
+					</table>
+				</div>
+				<br>
+
+				<button type='button' class='button button_default_dark' onclick='createSalarySlip()'><i class='fa fa-long-arrow-right'></i></button>
+
+				<div class='notificationText danger' id='failedInsertSalarySlip'><p>Failed to insert salary slip.</p></div>
+			</div>
+		</form>
 	</div>
 </div>
 
@@ -134,10 +144,13 @@
 </div>
 
 <script>
+	var totalValueArray = [];
 	$('#salarySlipForm').validate({
 		ignore: '',
 		rules: {"hidden_field": "required"}
 	});
+
+	$('#salarySlipDetailForm').validate();
 
 	$('#userButton').click(function(){
 		$('#userSearchBar').val("");
@@ -197,25 +210,30 @@
 				var status = response.status;
 				if(status == 1){
 					var items = response.items;
+					var itemCount = 0;
 					$.each(items, function(index, value){
 						var id = value.id;
 						var name = value.name;
-						var count = value.count;
-						var itemCount = 0;
+						var count = parseInt(value.count);
 						if(count == 0){
 							$('#attendanceTableContent').append("<tr><td>" + name + "</td><td>" + numeral(count).format("0,0") + "</td><td>Rp. 0.00</td><td>Rp. 0.00</tr>");
 						} else if(count > 0){
-							$('#attendanceTableContent').append("<tr><td>" + name + "</td><td>" + numeral(count).format("0,0") + "</td><td><input class='form-control' id='value-" + id + "'></td><td id='totalWage-" + id + "' required min='0'></td></tr>");
-							itemCount++;
+							$('#attendanceTableContent').append("<tr><td>" + name + "</td><td>" + numeral(count).format("0,0") + "</td><td><input class='form-control' id='value-" + id + "' name='value[" + id + "]'  required min='0'></td><td id='totalWage-" + id + "'></td></tr>");
+								$('#value-' + id).change(function(){
+									var totalValue = parseInt(count) * $(this).val();
+									totalValueArray[id] = totalValue;
+									$('#totalWage-' + id).html("Rp. " + numeral(totalValue).format('0,0.00'));
+									calculateWage();
+								})
+							itemCount += count;
 						}
-
-						if(itemCount > 0){
-							$("#attendanceTable").show();
-						} else {
-							$('#attendanceTable').hide();
-						}
-					
 					});
+
+					if(itemCount > 0){
+						$("#attendanceTable").show();
+					} else {
+						$('#attendanceTable').hide();
+					}
 				} else {
 					$('#existSalarySlipNotification').fadeIn();
 					setTimeout(function(){
@@ -224,6 +242,29 @@
 				}
 			}
 		})	
+	}
+
+	$('#basic').change(function(){
+		totalValueArray["basic"] = parseFloat($(this).val());
+		calculateWage();
+	})
+
+	$('#bonus').change(function(){
+		totalValueArray["bonus"] = parseFloat($(this).val());
+		calculateWage();
+	})
+
+	$('#deduction').change(function(){
+		totalValueArray["deduction"] = (-1) * parseFloat($(this).val());
+		calculateWage();
+	})
+
+	function calculateWage(){
+		var attendanceWage = 0;
+		$.each(totalValueArray, function(index, value){
+			attendanceWage += value;
+		})
+		$('#attendanceWage').html(numeral(attendanceWage).format("0,0.00"));
 	}
 
 	function refreshUsers(page = $('#userPage').val()){
@@ -359,4 +400,37 @@
 			$('#createSalaryWrapper .alert_box_slide').show("slide", { direction: "right" }, 250);
 		});
 	})
+
+	function createSalarySlip(){
+		if($('#salarySlipDetailForm').valid() && $('#salarySlipForm').valid()){
+			var formData = $('#salarySlipDetailForm').serializeArray();
+			var userArray = {name: "user", value: $('#user').val()};
+			var monthArray = {name: "month", value: $('#month').val()};
+			var yearArray = {name: "year", value: $('#year').val()};
+
+			formData.push(userArray);
+			formData.push(monthArray);
+			formData.push(yearArray);
+
+			$.ajax({
+				url:"<?= site_url('Salary_slip/insertItem') ?>",
+				data:formData,
+				type:"POST",
+				beforeSend:function(){
+					$('button').attr('disabled', true);
+					$('input').attr('readonly', true);
+				},
+				success:function(response){
+					$('button').attr('disabled', false);
+					$('input').attr('readonly', false);
+					if(response == 1){
+					
+					} else {
+					
+					}
+				}
+			})
+			
+		}
+	}
 </script>

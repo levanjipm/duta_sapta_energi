@@ -159,9 +159,16 @@ class Bank extends CI_Controller {
 	
 	public function opponent()
 	{
+		$user_id		= $this->session->userdata('user_id');
+		$this->load->model('User_model');
+		$data['user_login'] = $this->User_model->getById($user_id);
+		
+		$this->load->model('Authorization_model');
+		$data['departments']	= $this->Authorization_model->getByUserId($user_id);
+		
 		$this->load->view('head');
-		$this->load->view('finance/header');
-		$this->load->view('finance/opponent_dashboard');
+		$this->load->view('finance/header', $data);
+		$this->load->view('finance/Opponent/dashboard');
 	}
 	
 	public function showOpponent()

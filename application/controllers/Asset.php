@@ -107,12 +107,12 @@ class Asset extends CI_Controller {
 		echo $result;
 	}
 	
-	public function show_by_id()
+	public function getById()
 	{
 		$id			= $this->input->get('id');
 		
 		$this->load->model('Asset_model');
-		$data		= $this->Asset_model->show_by_id($id);
+		$data		= $this->Asset_model->getById($id);
 		
 		header('Content-Type: application/json');
 		echo json_encode($data);
@@ -132,6 +132,14 @@ class Asset extends CI_Controller {
 		$id			= $this->input->post('id');
 		$this->load->model('Asset_type_model');
 		$result = $this->Asset_type_model->deleteById($id);
+		echo $result;
+	}
+
+	public function updateById()
+	{
+		$this->load->model('Asset_model');
+		$result = $this->Asset_model->updateById();
+
 		echo $result;
 	}
 }

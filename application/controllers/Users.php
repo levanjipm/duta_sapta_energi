@@ -48,20 +48,6 @@ class Users extends CI_Controller {
 		echo json_encode($data);
 	}
 	
-	public function salarySlipDashboard()
-	{
-		$user_id		= $this->session->userdata('user_id');
-		$this->load->model('User_model');
-		$data['user_login'] = $this->User_model->getById($user_id);
-		
-		$this->load->model('Authorization_model');
-		$data['departments']	= $this->Authorization_model->getByUserId($user_id);
-		
-		$this->load->view('head');
-		$this->load->view('human_resource/header', $data);
-		$this->load->view('human_resource/salarySlipDashboard');
-	}
-	
 	public function update_status()
 	{
 		$user_id = $this->input->post('id');

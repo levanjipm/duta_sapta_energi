@@ -132,9 +132,12 @@
 			</tr>
 			<tbody id='receivable_table'></tbody>
 		</table>
+
+		<button class='button button_default_dark' onclick='viewCompleteReceivable()'><i class='fa fa-eye'></i></button>
 	</div>
 </div>
 <script>
+	var customerId;
 	function adjust_grid(){
 		var width		= $('#grid_wrapper').width();
 		var each		= (width) / 10;
@@ -199,6 +202,7 @@
 				id: n
 			},
 			success:function(response){
+				customerId = n;
 				var customer = response.customer;
 				var customer_name = customer.name;
 				var complete_address = customer.address;
@@ -264,5 +268,9 @@
 				});
 			}
 		});
+	}
+
+	function viewCompleteReceivable(){
+		window.location.href="<?= site_url('Receivable/viewByCustomerId/') ?>" + customerId;
 	}
 </script>

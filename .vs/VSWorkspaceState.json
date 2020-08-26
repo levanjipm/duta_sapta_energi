@@ -2,14 +2,12 @@
   "ExpandedNodes": [
     "",
     "\\application",
+    "\\application\\controllers",
     "\\application\\models",
     "\\application\\views",
-    "\\application\\views\\human_resource",
-    "\\application\\views\\inventory",
-    "\\application\\views\\inventory\\DeliveryOrder",
-    "\\application\\views\\sales",
-    "\\assets",
-    "\\assets\\ProfileImages"
+    "\\application\\views\\accounting",
+    "\\application\\views\\accounting\\Asset",
+    "\\application\\views\\inventory\\DeliveryOrder"
   ],
   "SelectedNode": "\\application\\models\\Salary_slip_model.php",
   "PreviewInSolutionExplorer": false

@@ -12,6 +12,7 @@ class Asset_model extends CI_Model {
 		public $depreciation_time;
 		public $date;
 		public $type;
+		public $residue_value;
 
 		public function __construct()
 		{
@@ -28,6 +29,7 @@ class Asset_model extends CI_Model {
 			$this->depreciation_time	= $db_item->depreciation_time;
 			$this->date					= $db_item->date;
 			$this->type					= $db_item->type;
+			$this->residue_value		= $db_item->residue_value;
 			
 			return $this;
 		}
@@ -44,6 +46,7 @@ class Asset_model extends CI_Model {
 			$db_item->depreciation_time		= $this->depreciation_time;
 			$db_item->date					= $this->date;
 			$db_item->type					= $this->type;
+			$db_item->residue_value			= $this->residue_value;
 			
 			return $db_item;
 		}
@@ -60,6 +63,7 @@ class Asset_model extends CI_Model {
 			$stub->depreciation_time	= $db_item->depreciation_time;
 			$stub->date					= $db_item->date;
 			$stub->type					= $db_item->type;
+			$stub->residue_value		= $db_item->residue_value;
 			
 			return $stub;
 		}
@@ -117,7 +121,8 @@ class Asset_model extends CI_Model {
 				'depreciation_time' => $depreciation,
 				'date' => $date,
 				'type' => $type,
-				'sold_date' => null
+				'sold_date' => null,
+				'residue_value' => $residualValue
 			);
 			
 			$this->db->insert($this->table_asset, $db_item);
@@ -131,6 +136,33 @@ class Asset_model extends CI_Model {
 			$result		= $query->row();
 			
 			return $result;
+		}
+
+		public function updateById()
+		{
+			$id					= $this->input->post('id');
+			$name				= $this->input->post('name');
+			$description		= $this->input->post('description');
+			$value				= $this->input->post('value');
+			$depreciation		= $this->input->post('depreciation');
+			$type				= $this->input->post('assetType');
+			$date				= $this->input->post('date');
+			$residue_value		= $this->input->post('residualValue');
+
+			$db_item	= array(
+				'name' => $name,
+				'description' => $description,
+				'value' => $value,
+				'depreciation_time' => $depreciation,
+				'date' => $date,
+				'type' => $type,
+				'residue_value' => $residue_value
+			);
+			$this->db->set($db_item);
+			$this->db->where("id", $id);
+			$this->db->update($this->table_asset);
+
+			return $this->db->affected_rows();
 		}
 
 }

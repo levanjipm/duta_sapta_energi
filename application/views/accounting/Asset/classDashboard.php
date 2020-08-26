@@ -10,7 +10,7 @@
 		<div class='input_group'>
 			<input type='text' class='form-control' id='search_bar'>
 			<div class='input_group_append'>
-				<button type='button' class='button button_default_dark' id='addAssetFormButton'>Add new asset class</button>
+				<button type='button' class='button button_default_dark' id='addAssetFormButton'><i class='fa fa-plus'></i> Add class</button>
 			</div>
 		</div>
 		<br>
@@ -188,6 +188,7 @@
 					$("button").attr('disabled', false);
 					refresh_view();
 					if(response == 1){
+						$("#addAssetForm").trigger("reset");
 						$('#addAssetWrapper .slide_alert_close_button').click();
 					} else {
 						$("#insertItemFailedNotification").fadeIn(250);

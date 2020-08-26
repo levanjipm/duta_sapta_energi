@@ -23,8 +23,8 @@ class Salary_slip_model extends CI_Model {
 		{
 			$this->id					= $db_item->id;
 			$this->user_id				= $db_item->user_id;
-			$this->month				= $db_item->$month;
-			$this->year					= $db_item->v;
+			$this->month				= $db_item->month;
+			$this->year					= $db_item->year;
 			$this->basic				= $db_item->basic;
 			$this->bonus				= $db_item->bonus;
 			$this->deduction			= $db_item->deduction;
@@ -57,8 +57,8 @@ class Salary_slip_model extends CI_Model {
 			
 			$stub->id					= $db_item->id;
 			$stub->user_id				= $db_item->user_id;
-			$stub->month				= $db_item->$month;
-			$stub->year					= $db_item->v;
+			$stub->month				= $db_item->month;
+			$stub->year					= $db_item->year;
 			$stub->basic				= $db_item->basic;
 			$stub->bonus				= $db_item->bonus;
 			$stub->deduction			= $db_item->deduction;
@@ -89,6 +89,32 @@ class Salary_slip_model extends CI_Model {
 				return true;
 			} else {
 				return false;
+			}
+		}
+
+		public function insertItem()
+		{
+			$year		= $this->input->post('year');
+			$month		= $this->input->post('month');
+			$user		= $this->input->post('user');
+			$checkResult	= $this->Salary_slip_model->checkUser($month, $year, $user);
+			if($checkResult){
+				$db_item = array(
+					"id"				=> "",
+					"user_id"			=> $user,
+					"month"				=> $month,
+					"year"				=> $year,
+					"basic"				=> $this->input->post('basic'),
+					"bonus"				=> $this->input->post('bonus'),
+					"deduction"			=> $this->input->post('deduction'),
+					"created_by"		=> $this->session->userdata('user_id'),
+					"created_date"		=> date('Y-m-d')
+				);
+
+				$this->db->insert($this->table_salary, $db_item);
+				return ($this->db->insert_id() != null)? $this->db->insert_id() : null;
+			} else {
+				return null;
 			}
 		}
 }

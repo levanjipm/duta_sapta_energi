@@ -21,7 +21,7 @@ class Receivable extends CI_Controller {
 		
 		$this->load->view('head');
 		$this->load->view('accounting/header', $data);
-		$this->load->view('accounting/receivableDashboard');
+		$this->load->view('accounting/Receivable/dashboard');
 	}
 	
 	public function viewReceivable()
@@ -47,6 +47,21 @@ class Receivable extends CI_Controller {
 		$this->load->model('Customer_model');
 		$data['customer'] = $this->Customer_model->getById($customerId);
 		
+		header('Content-Type: application/json');
+		echo json_encode($data);
+	}
+
+	public function getCompleteReceivableByCustomerId()
+	{
+		$customerId = $this->input->get('id');
+		$this->load->model('Invoice_model');
+		$data['invoices'] = $this->Invoice_model->viewCompleteReceivableByCustomerId($customerId);
+
+		$data['receivable'] = $this->Receivable_model->getByCustomerId($customerId);
+
+		$this->load->model("Bank_model");
+		$data['pendingBank'] = $this->Bank_model->getUnassignedByCustomerId($customerId);
+
 		header('Content-Type: application/json');
 		echo json_encode($data);
 	}
@@ -88,5 +103,24 @@ class Receivable extends CI_Controller {
 
 		header('Content-Type: application/json');
 		echo json_encode($data);
+	}
+
+	public function viewByCustomerId($customerId)
+	{
+		$user_id		= $this->session->userdata('user_id');
+		$this->load->model('User_model');
+		$data['user_login'] = $this->User_model->getById($user_id);
+		
+		$this->load->model('Authorization_model');
+		$data['departments']	= $this->Authorization_model->getByUserId($user_id);
+		
+		$this->load->view('head');
+		$this->load->view('accounting/header', $data);
+
+		$data = array();
+		$this->load->model("Customer_model");
+		$data['customer'] = $this->Customer_model->getById($customerId);
+
+		$this->load->view('accounting/Receivable/customerReceivable', $data);
 	}
 }
