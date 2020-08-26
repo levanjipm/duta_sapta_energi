@@ -9,19 +9,21 @@
 	<div class='dashboard_in'>
 		<button class='button button_default_dark' id='createSalarySlipButton'><i class='fa fa-plus'></i> Create salary slip</button>
 		<br><br>
-		<p>Last 10 salary slips</p>
-		<hr style='border-bottom:2px solid #2b2f38'>
-		<table class='table table-bordered'>
-			<tr>
-				<th>Period</th>
-				<th>User</th>
-				<th>Salary</th>
-				<th>Benefit</th>
-				<th>Total</th>
-				<th>Action</th>
-			</tr>
-			<tbody id='salary_table'></tbody>
-		</table>
+		<div id='salaryTable'>
+			<table class='table table-bordered'>
+				<tr>
+					<th>User</th>
+					<th>Period</th>
+					<th>Action</th>
+				</tr>
+				<tbody id='salaryTableContent'></tbody>
+			</table>
+
+			<select class='form-control' id='page' style='width:100px'>
+				<option value='1'>1</option>
+			</select>
+		</div>
+		<p id='salaryTableText'>There is no salary slip found.</p>
 	</div>
 </div>
 
@@ -149,6 +151,10 @@
 		ignore: '',
 		rules: {"hidden_field": "required"}
 	});
+
+	$(document).ready(function(){
+		refreshView();
+	})
 
 	$('#salarySlipDetailForm').validate();
 
@@ -423,14 +429,67 @@
 				success:function(response){
 					$('button').attr('disabled', false);
 					$('input').attr('readonly', false);
+					refreshView();
 					if(response == 1){
-					
+						$('#createSalaryWrapper .slide_alert_close_button').click();
 					} else {
-					
+						$('#failedInsertSalarySlip').fadeIn();
+						setTimeout(function(){
+							$('#failedInsertSalarySlip').fadeOut();
+						}, 1000);
 					}
 				}
 			})
 			
 		}
+	}
+
+	$('#page').change(function(){refreshView()}
+
+	function refreshView(page = $('#page').val()){
+		$.ajax({
+			url:"<?= site_url('Salary_slip/getItems') ?>",
+			data:{
+				page: page,
+			},
+			success:function(response){
+				var items = response.items;
+				var salarySlipCount = 0;
+				$('#salaryTableContent').html("");
+				$.each(items, function(index, item){
+					var name = item.name;
+					var month = item.month;
+					var year = item.year;
+					mlist = [ "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" ];
+					var period = mlist[month - 1] + " " + year;
+					if(item.image_url == null){
+						var imageUrl = "<?= base_url() . '/assets/ProfileImages/defaultImage.png' ?>";
+					} else {
+						var imageUrl = "<?= base_url() . '/assets/ProfileImages/' ?>" + item.image_url;
+					};
+
+					$('#salaryTableContent').append("<tr><td><img src='" + imageUrl + "' style='border-radius:50%;width:30px;height:30px'> " + name + "</td><td>" + period + "</td><td><button class='button button_default_dark'><i class='fa fa-eye'></i></button></td></tr>")
+					salarySlipCount++;
+				})
+
+				if(salarySlipCount > 0){
+					$('#salaryTable').show();
+					$('#salaryTableText').hide();
+				} else {
+					$('#salaryTable').hide();
+					$('#salaryTableText').show();
+				}
+
+				var pages = response.pages;
+				$('#page').html("");
+				for(i = 1; i <= pages; i++){
+					if(i == page){
+						$('#page').append("<option value='" + i + "' selected>" + i + "</option>");
+					} else {
+						$('#page').append("<option value='" + i + "'>" + i + "</option>");
+					}
+				}
+			}
+		})
 	}
 </script>

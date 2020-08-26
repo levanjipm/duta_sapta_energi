@@ -179,4 +179,36 @@ class User_model extends CI_Model {
 			$this->db->where('id', $userId);
 			$this->db->update($this->table_user);
 		}
+
+		public function getSalesItems($offset = 0, $limit = 10)
+		{
+			$query		= $this->db->query("
+				SELECT users.* FROM users
+				JOIN (
+					SELECT authorization.user_id FROM authorization
+					WHERE department_id = '2'
+				) AS a
+				ON a.user_id = user.id
+				LIMIT $limit OFFSET $offset
+			");
+
+			$result		= $query->result();
+			return $result;
+		}
+
+		public function countSalesItem()
+		{
+			$query		= $this->db->query("
+				SELECT users.* FROM users
+				JOIN (
+					SELECT authorization.user_id FROM authorization
+					WHERE department_id = '2'
+				) AS a
+				ON a.user_id = user.id
+				LIMIT $limit OFFSET $offset
+			");
+
+			$result		= $query->num_rows();
+			return $result;
+		}
 }
