@@ -6,9 +6,8 @@
     "\\application\\models",
     "\\application\\views",
     "\\application\\views\\accounting",
-    "\\application\\views\\accounting\\Asset",
-    "\\application\\views\\inventory\\DeliveryOrder"
+    "\\application\\views\\accounting\\Receivable"
   ],
-  "SelectedNode": "\\application\\models\\Salary_slip_model.php",
+  "SelectedNode": "\\application\\models\\Reminder_model.php",
   "PreviewInSolutionExplorer": false
 }
