@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Billing_model extends CI_Model {
+class Billing_detail_model extends CI_Model {
 	private $table_billing = 'billing';
 		
 		public $id;
@@ -65,10 +65,49 @@ class Billing_model extends CI_Model {
 		public function insertItem($codeBillingId)
 		{
 			$invoiceArray = $_REQUEST["invoices"];
+			$batch = array();
 			foreach($invoiceArray as $key => $invoiceId)
 			{
-				
+				$batch[] = array(
+					"id" => "",
+					"invoice_id" => $invoiceId,
+					"result" => 0,
+					"note" => "",
+					"code_billing_id" => $codeBillingId
+				);
 				next($invoiceArray);
 			}
+
+			$this->db->insert_batch($this->table_billing, $batch);
+		}
+
+		public function getByCodeId($codeBillingId)
+		{
+			$query			= $this->db->query("
+				SELECT invoice.value, invoice.name, invoice.date, customer.name as customerName, customer.address, customer.city, customer.number, customer.block, customer.rt, customer.rw, customer.postal_code, billing.id, billing.result, billing.note, billing.invoice_id, COALESCE(receivableTable.value,0) as paid
+				FROM billing
+				JOIN invoice ON invoice.id = billing.invoice_id
+				JOIN (
+					SELECT DISTINCT(code_delivery_order.invoice_id) as id, code_sales_order.customer_id
+					FROM code_delivery_order
+					JOIN invoice ON code_delivery_order.invoice_id = invoice.id
+					JOIN delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order.id
+					JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
+					JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
+				) as a
+				ON invoice.id = a.id
+				LEFT JOIN (
+					SELECT SUM(value) as value, invoice_id
+					FROM receivable
+					GROUP BY invoice_id
+				) AS receivableTable
+				ON receivableTable.invoice_id = invoice.id
+				JOIN customer ON customer.id = a.customer_id
+				WHERE billing.code_billing_id = '$codeBillingId'
+				ORDER BY customer.name ASC, invoice.name ASC
+			");
+
+			$result		= $query->result();
+			return $result;
 		}
 }

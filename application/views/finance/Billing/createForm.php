@@ -621,6 +621,12 @@
 				$('button').attr('disabled', false);
 				if(response == 1){
 					includedInvoice = [];
+					$('#countedInvoice_span').html(numeral(includedInvoice.length).format('0,0'));
+					if(includedInvoice.length > 0){
+						$('#createBillingButton').attr('disabled', false);
+					} else {
+						$('#createBillingButton').attr('disabled', true);
+					}
 					$('#urgentButton').click();
 				} else {
 					$('#failedInsertItemNotification').fadeIn(250, function(){

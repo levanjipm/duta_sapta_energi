@@ -109,4 +109,50 @@ class Billing_model extends CI_Model {
 			$this->db->insert($this->table_billing, $db_item);
 			return $this->db->insert_id();
 		}
+
+		public function getUnconfirmedItems($offset = 0, $limit = 10)
+		{
+			$query		= $this->db->query("
+				SELECT users.name as collector, users.image_url, code_billing.id, code_billing.date, code_billing.name
+				FROM code_billing
+				JOIN users ON code_billing.billed_by = users.id
+				WHERE code_billing.is_confirm = '0' AND code_billing.is_delete = '0'
+				LIMIT $limit OFFSET $offset
+			");
+			$result		= $query->result();
+			return $result;
+		}
+
+		public function countUnconfirmedItems()
+		{
+			$this->db->where('is_confirm', 0);
+			$this->db->where('is_delete', 0);
+			$query		= $this->db->get($this->table_billing);
+			$result		= $query->num_rows();
+			return $result;
+		}
+
+		public function getById($id)
+		{
+			$query		= $this->db->query("
+				SELECT code_billing.*, a.name as billed_by, a.image_url, b.name as created_by, c.name as confirmed_by
+				FROM code_billing
+				JOIN(
+					SELECT id, name, image_url FROM users
+				) AS a
+				ON code_billing.billed_by = a.id
+				JOIN(
+					SELECT id, name FROM users
+				) AS b
+				ON code_billing.created_by = b.id
+				LEFT JOIN(
+					SELECT id, name FROM users
+				) AS c
+				ON code_billing.confirmed_by = c.id
+				WHERE code_billing.id = '$id'
+			");
+
+			$result			= $query->row();
+			return $result;
+		}
 }

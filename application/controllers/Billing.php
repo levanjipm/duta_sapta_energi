@@ -26,7 +26,7 @@ class Billing extends CI_Controller {
 
 	public function createForm()
 	{
-		$date		= $this->input->get('date');
+		$date			= $this->input->get('date');
 		$collector		= $this->input->get('collector');
 		if(!isset($date) || !isset($collector) || $date < date('2020-01-01')){
 			redirect(site_url("Billing/createDashboard"));
@@ -43,6 +43,7 @@ class Billing extends CI_Controller {
 
 			$data = array();
 			$data['date'] = $date;
+			$data['collector'] = $collector;
 			$this->load->view('finance/Billing/createForm', $data);
 		}
 	}
@@ -119,11 +120,51 @@ class Billing extends CI_Controller {
 		$billingId = $this->Billing_model->insertItem($_REQUEST['date'], $_REQUEST['collector']);
 		if($billingId != NULL){
 			$this->load->model("Billing_detail_model");
-			$this->Billing_detail_model->insertItem($_REQUEST['invoices']);
+			$this->Billing_detail_model->insertItem($billingId);
 
 			echo 1;
 		} else {
 			echo 0;
 		}
+	}
+
+	public function confirmDashboard()
+	{
+		$user_id		= $this->session->userdata('user_id');
+		$this->load->model('User_model');
+		$data['user_login'] = $this->User_model->getById($user_id);
+		
+		$this->load->model('Authorization_model');
+		$data['departments']	= $this->Authorization_model->getByUserId($user_id);
+		
+		$this->load->view('head');
+		$this->load->view('finance/header', $data);
+		$this->load->view('finance/Billing/confirmDashboard');
+	}
+
+	public function getUnconfirmedBilling()
+	{
+		$page		= $this->input->get('page');
+		$offset		= ($page - 1) * 10;
+		$this->load->model("Billing_model");
+		$data['items'] = $this->Billing_model->getUnconfirmedItems($offset);
+		$data['pages'] = max(1, ceil($this->Billing_model->countUnconfirmedItems()/10));
+
+		header('Content-Type: application/json');
+		echo json_encode($data);
+	}
+
+	public function getById()
+	{
+		$id			= $this->input->get('id');
+		
+		$this->load->model("Billing_model");
+		$data['general'] = $this->Billing_model->getById($id);
+
+		$this->load->model("Billing_detail_model");
+		$data['items'] = $this->Billing_detail_model->getByCodeId($id);
+
+		header('Content-Type: application/json');
+		echo json_encode($data);
 	}
 }

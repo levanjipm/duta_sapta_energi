@@ -51,7 +51,7 @@
 		<button class='container_button'><p style='font-family:museo'>Billing</p></button>
 		<div class='container_bar'>
 			<a href='<?= site_url('Billing/createDashboard') ?>'><button><p style='font-family:museo'>Create</p></button></a>
-			<a href='<?= site_url('Billing/confirmDasbhoard') ?>'><button><p style='font-family:museo'>Confirm</p></button></a>
+			<a href='<?= site_url('Billing/confirmDashboard') ?>'><button><p style='font-family:museo'>Confirm</p></button></a>
 		</div>
 	</div>
 </div>

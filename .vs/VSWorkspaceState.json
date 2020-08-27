@@ -3,12 +3,12 @@
     "",
     "\\application",
     "\\application\\controllers",
-    "\\application\\models",
     "\\application\\views",
-    "\\application\\views\\accounting",
     "\\application\\views\\accounting\\Receivable",
+    "\\application\\views\\finance",
+    "\\application\\views\\finance\\Billing",
     "\\css"
   ],
-  "SelectedNode": "\\application\\views\\finance",
+  "SelectedNode": "\\application\\views\\finance\\Billing\\createForm.php",
   "PreviewInSolutionExplorer": false
 }
