@@ -2,14 +2,13 @@
   "ExpandedNodes": [
     "",
     "\\application",
+    "\\application\\controllers",
+    "\\application\\models",
     "\\application\\views",
-    "\\application\\views\\accounting\\Opponent",
+    "\\application\\views\\accounting",
     "\\application\\views\\accounting\\Receivable",
-    "\\application\\views\\finance\\Billing",
-    "\\application\\views\\finance\\PettyCash",
-    "\\application\\views\\inventory",
     "\\css"
   ],
-  "SelectedNode": "\\css\\style.css",
+  "SelectedNode": "\\application\\views\\finance",
   "PreviewInSolutionExplorer": false
 }
