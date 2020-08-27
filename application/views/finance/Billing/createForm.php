@@ -1,5 +1,44 @@
 <head>
 	<title>Billing</title>
+	<style>
+        .dashboardBox{
+            padding:8px;
+            box-shadow:3px 3px 3px 3px rgba(50,50,50,0.3);
+            border-radius:5px;
+            margin-bottom:10px;
+        }
+
+        .dashboardBox .leftSide{
+            width:50%;
+            font-weight:bold;
+            display:inline-block;
+        }
+
+        .dashboardBox .rightSide{
+            width:45%;
+            float:right;
+            display:inline-block;
+            text-align:center;
+            margin:0 auto;
+            top: 50%;
+            -ms-transform: translateY(-50%);
+            transform: translateY(-50%);
+            position:absolute;
+            border-left:2px solid #ccc;
+        }
+
+        .dashboardBox .rightSide h3{
+            
+            font-weight:bold;
+            color:#E19B3C;            
+        }
+
+        .subtitleText{
+            font-size:0.8em;
+            color:#555;
+            text-align:right;
+        }
+    </style>
 </head>
 <div class='dashboard'>
 	<div class='dashboard_head'>
@@ -10,9 +49,33 @@
 		<label>Date</label>
 		<p><?= date('d M Y', strtotime($date)); ?></p>
 
+		<button class='button button_default_dark' id='createBillingButton' disabled><i class='fa fa-plus'></i> Create (<span id='countedInvoice_span'>0</span>)</button>
+		<br><br>
+
+		<button class='button button_mini_tab' id='urgentButton'>Urgent</button>
 		<button class='button button_mini_tab' id='recommendedButton'>Recommended</button>
 		<button class='button button_mini_tab' id='searchButton'>Search</button>
-		<hr>
+		<br><br>
+		<div id='urgentView' style='display:none'>
+			<input type='text' id='urgentSearchBar' class='form-control'>
+			<br>
+			<div id='urgentTable'>
+				<table class='table table-bordered'>
+					<tr>
+						<th>Date</th>
+						<th>Name</th>
+						<th>Customer</th>
+						<th>Action</th>
+					</tr>
+					<tbody id='urgentTableContent'></tbody>
+				</table>
+
+				<select class='form-control' id='urgentPage' style='width:100px'>
+					<option value='1'>1</option>
+				</select>
+			</div>
+			<p id='urgentTableTetxt'>There is no urgent list</p>
+		</div>
 		<div id='recommendedView' style='display:none'>
 			<input type='text' id='recommendedSearchBar' class='form-control'>
 			<br>
@@ -55,10 +118,59 @@
 	</div>
 </div>
 
+<div class='alert_wrapper' id='customerReceivableWrapper'>
+	<button class='slide_alert_close_button'>&times;</button>
+	<div class='alert_box_slide'>
+		<h3 style='font-family:bebasneue'>Select invoice by customer</h3>
+		<hr>
+		<label>Customer</label>
+		<p id='customerName_p'></p>
+		<p id='customerAddress_p'></p>
+		<p id='customerCity_p'></p>
+
+		<table class='table table-bordered'>
+			<tr>
+				<th>Date</th>
+				<th>Name</th>
+				<th>Value</th>
+				<th>Paid</th>
+				<th>Last Billed</th>
+				<th>Action</th>
+			</tr>
+			<tbody id='receivableTableContent'></tbody>
+		</table>
+	</div>
+</div>
+
+<div class='alert_wrapper' id='createBillingWrapper'>
+	<button class='slide_alert_close_button'>&times;</button>
+	<div class='alert_box_slide'>
+		<h3 style='font-family:bebasneue'>Create Billing</h3>
+		<hr>
+		<label>Date</label>
+		<p><?= date('d M Y',strtotime($date)) ?></p>
+
+		<label>Invoices</label>
+		<table class='table table-bordered'>
+			<tr>
+				<th>Date</th>
+				<th>Customer</th>
+				<th>Name</th>
+				<th>Remainder value</th>
+			</tr>
+			<tbody id='billingTableContent'></tbody>
+		</table>
+
+		<button id='submitBillingButton' class='button button_default_dark'><i class='fa fa-long-arrow-right'></i></button>
+
+		<br>
+		<div class='notificationText danger' id='failedInsertItemNotification'><p>Failed to insert item.</p></div>
+	</div>
+</div>
 <script>
 	var includedInvoice = [];
 	$(document).ready(function(){
-		$('#recommendedButton').click();
+		$('#urgentButton').click();
 	});
 
 	$('#recommendedButton').click(function(){
@@ -68,9 +180,12 @@
 		fetchRecommendationList();
 		$('#recommendedButton').addClass('active');
 		$('#recommendedButton').attr('disabled', true);
-		$('#searchView').fadeOut(250, function(){
-			$('#recommendedView').fadeIn(250);
-		})
+
+		$('#urgentView, #searchView').fadeOut(250, function(){
+			setTimeout(function(){
+				$('#recommendedView').fadeIn(250);
+			}, 250)
+		});
 	})
 
 	$('#searchButton').click(function(){
@@ -80,8 +195,24 @@
 		fetchItemList();
 		$('#searchButton').addClass('active');
 		$('#searchButton').attr('disabled', true);
-		$('#recommendedView').fadeOut(250, function(){
-			$('#searchView').fadeIn(250);
+		$('#urgentView, #recommendedView').fadeOut(250, function(){
+			setTimeout(function(){
+				$('#searchView').fadeIn(250);
+			}, 250)			
+		})
+	});
+
+	$('#urgentButton').click(function(){
+		$('.button_mini_tab').attr('disabled', false);
+		$('.button_mini_tab').removeClass("active");
+
+		fetchUrgentList();
+		$('#urgentButton').addClass('active');
+		$('#urgentButton').attr('disabled', true);
+		$('#searchView, #recommendedView').fadeOut(250, function(){
+			setTimeout(function(){
+				$('#urgentView').fadeIn(250);
+			}, 250)			
 		})
 	});
 
@@ -171,6 +302,79 @@
 		})
 	}
 
+	function fetchUrgentList(page = $('#urgentPage').val()){
+		$.ajax({
+			url:"<?= site_url('Billing/getUrgentList') ?>",
+			data:{
+				page:page,
+				term: $('#urgentSearchBar').val(),
+				date: "<?= $date ?>"
+			},
+			success:function(response){
+				var items = response.items;
+				$('#urgentTableContent').html("");
+				var invoiceCount = 0;
+				$.each(items, function(index, item){
+					var date		= item.date;
+					var invoiceName = item.name;
+					var id			= item.id;
+					if(!includedInvoice.includes("" + id + "")){
+						var customerName = item.customerName;
+						var customerAddress = item.address;
+						var complete_address = customer.address;
+						var customer_number = customer.number;
+						var customer_block = customer.block;
+						var customer_rt = customer.rt;
+						var customer_rw = customer.rw;
+						var customer_city = customer.city;
+						var customer_postal = customer.postal_code;
+					
+						if(customer_number != null){
+							complete_address	+= ' No. ' + customer_number;
+						}
+					
+						if(customer_block != null && customer_block != "000"){
+							complete_address	+= ' Blok ' + customer_block;
+						}
+				
+						if(customer_rt != '000'){
+							complete_address	+= ' RT ' + customer_rt;
+						}
+					
+						if(customer_rw != '000' && customer_rt != '000'){
+							complete_address	+= ' /RW ' + customer_rw;
+						}
+					
+						if(customer_postal != null){
+							complete_address	+= ', ' + customer_postal;
+						}
+
+						$('#urgentTableContent').append("<tr id='row-" + id + "'><td>" + my_date_format(date) +"</td><td>" + invoiceName + "</td><td><label>" + customerName + "</label><p>" + complete_address + "</p><p>" + customer_city + "</p></td><td><button class='button button_default_dark'><i class='fa fa-long-arrow-right'></i></button></td></tr>");
+						invoiceCount++;
+					}
+				});
+
+				if(invoiceCount > 0){
+					$('#urgentTable').show();
+					$('#urgentTableText').hide();
+				} else {
+					$('#urgentTable').hide();
+					$("#urgentTableText").show();
+				}
+
+				var pages = response.pages;
+				$('#urgentPage').html("");
+				for(i = 1; i <= pages; i++){
+					if(i == page){
+						$('#urgentPage').append("<option value='" + i + "' selected>" + i + "</option>");
+					} else {
+						$('#urgentPage').append("<option value='" + i + "'>" + i + "</option>");
+					}
+				}
+			}
+		})
+	}
+
 	function fetchItemList(page = $('#recommendedPage').val()){
 		$.ajax({
 			url:"<?= site_url('Billing/getBillingData') ?>",
@@ -184,39 +388,40 @@
 				var invoiceCount = 0;
 				$.each(items, function(index, item){
 					var id			= item.id;
+					if(!includedInvoice.includes("" + id + "")){
+						var customerName = item.name;
+						var customerAddress = item.address;
+						var complete_address = item.address;
+						var customer_number = item.number;
+						var customer_block = item.block;
+						var customer_rt = item.rt;
+						var customer_rw = item.rw;
+						var customer_city = item.city;
+						var customer_postal = item.postal_code;
+					
+						if(customer_number != null){
+							complete_address	+= ' No. ' + customer_number;
+						}
+					
+						if(customer_block != null && customer_block != "000"){
+							complete_address	+= ' Blok ' + customer_block;
+						}
+				
+						if(customer_rt != '000'){
+							complete_address	+= ' RT ' + customer_rt;
+						}
+					
+						if(customer_rw != '000' && customer_rt != '000'){
+							complete_address	+= ' /RW ' + customer_rw;
+						}
+					
+						if(customer_postal != null){
+							complete_address	+= ', ' + customer_postal;
+						}
 
-					var customerName = item.name;
-					var customerAddress = item.address;
-					var complete_address = item.address;
-					var customer_number = item.number;
-					var customer_block = item.block;
-					var customer_rt = item.rt;
-					var customer_rw = item.rw;
-					var customer_city = item.city;
-					var customer_postal = item.postal_code;
-				
-					if(customer_number != null){
-						complete_address	+= ' No. ' + customer_number;
+						$('#searchTableContent').append("<tr><td><label>" + customerName + "</label><p>" + complete_address + "</p><p>" + customer_city + "</p></td><td><button class='button button_default_dark'  onclick='viewCustomer(" + id + ")'><i class='fa fa-eye'></i></button></tr>");
+						invoiceCount++;
 					}
-				
-					if(customer_block != null && customer_block != "000"){
-						complete_address	+= ' Blok ' + customer_block;
-					}
-			
-					if(customer_rt != '000'){
-						complete_address	+= ' RT ' + customer_rt;
-					}
-				
-					if(customer_rw != '000' && customer_rt != '000'){
-						complete_address	+= ' /RW ' + customer_rw;
-					}
-				
-					if(customer_postal != null){
-						complete_address	+= ', ' + customer_postal;
-					}
-
-					$('#searchTableContent').append("<tr><td><label>" + customerName + "</label><p>" + complete_address + "</p><p>" + customer_city + "</p></td><td><button class='button button_default_dark'><i class='fa fa-eye' onclick='viewCustomer(" + id + ")'></i></button></tr>");
-					invoiceCount++;
 				});
 
 				if(invoiceCount > 0){
@@ -247,8 +452,184 @@
 				id:n
 			},
 			success:function(response){
-				console.log(response);
+				var customer = response.customer;
+				var customerName = customer.name;
+				var customerAddress = customer.address;
+				var complete_address = customer.address;
+				var customer_number = customer.number;
+				var customer_block = customer.block;
+				var customer_rt = customer.rt;
+				var customer_rw = customer.rw;
+				var customer_city = customer.city;
+				var customer_postal = customer.postal_code;
+			
+				if(customer_number != null){
+					complete_address	+= ' No. ' + customer_number;
+				}
+			
+				if(customer_block != null && customer_block != "000"){
+					complete_address	+= ' Blok ' + customer_block;
+				}
+		
+				if(customer_rt != '000'){
+					complete_address	+= ' RT ' + customer_rt;
+				}
+			
+				if(customer_rw != '000' && customer_rt != '000'){
+					complete_address	+= ' /RW ' + customer_rw;
+				}
+			
+				if(customer_postal != null){
+					complete_address	+= ', ' + customer_postal;
+				}
+				$('#customerName_p').html(customerName);
+				$('#customerAddress_p').html(complete_address);
+				$('#customerCity_p').html(customer_city);
+
+				var items = response.items;
+				$("#receivableTableContent").html("");
+				$.each(items, function(index, item){
+					var date = item.date;
+					var difference = Math.ceil(Math.abs(new Date(date) - new Date())/(1000*60*60*24));
+					var name = item.name;
+					var value = item.value;
+					var paid = item.paid;
+					var id 		= item.id;
+
+					var lastBillingDate = customer.lastBillingDate;
+					if(lastBillingDate == null){
+						var lastBillingDateText = "<i>Never</i>";
+					} else if(lastBillingDate == new Date(<?= $date ?>)){
+						var lastBillingDateText = "<strong>On progress</strong>";
+					} else {
+						var lastBillingDateText = my_date_format(lastBillingDate);
+					}
+
+					if(!includedInvoice.includes("" + id + "")){
+						$('#receivableTableContent').append("<tr><td>" + my_date_format(date) + " (" + numeral(difference).format('0,0') + " days)</td><td>" + name + "</td><td>Rp. " + numeral(value).format('0,0.00') + "</td><td>Rp. " + numeral(paid).format('0,0.00') + "</td><td>" + lastBillingDateText + "</td><td><button class='button button_default_dark' onclick='selectCustomerInvoice(" + id + ")' id='selectInvoiceButtonCustomer-" + id + "'><i class='fa fa-long-arrow-right'></i></button><button class='button button_danger_dark' onclick='removeInvoice(" + id + ")' id='removeInvoiceButtonCustomer-" + id + "' style='display:none'><i class='fa fa-trash'></i></button></tr>");
+					} else {
+						$('#receivableTableContent').append("<tr><td>" + my_date_format(date) + " (" + numeral(difference).format('0,0') + " days)</td><td>" + name + "</td><td>Rp. " + numeral(value).format('0,0.00') + "</td><td>Rp. " + numeral(paid).format('0,0.00') + "</td><td>" + lastBillingDateTExt + "</td><td><button class='button button_default_dark' onclick='selectCustomerInvoice(" + id + ")' id='selectInvoiceButtonCustomer-" + id + "' style='display:none'><i class='fa fa-long-arrow-right'></i></button><button class='button button_danger_dark' onclick='removeInvoice(" + id + ")' id='removeInvoiceButtonCustomer-" + id + "'><i class='fa fa-trash'></i></button></tr>");
+					}
+					
+				})
+
+				$('#customerReceivableWrapper').fadeIn(300, function(){
+					$('#customerReceivableWrapper .alert_box_slide').show("slide", { direction: "right" }, 250);
+				});
 			}
 		})
 	}
+
+	function selectCustomerInvoice(n){
+		if(!includedInvoice.includes("" + n + "")){
+			includedInvoice.push("" + n + "");
+			$('#removeInvoiceButtonCustomer-' + n).show();
+			$('#selectInvoiceButtonCustomer-' + n).hide();
+
+			$('#countedInvoice_span').html(numeral(includedInvoice.length).format('0,0'));
+			if(includedInvoice.length > 0){
+				$('#createBillingButton').attr('disabled', false);
+			} else {
+				$('#createBillingButton').attr('disabled', true);
+			}
+		}
+	}
+
+	function removeInvoice(n){
+		var index = includedInvoice.indexOf("" + n + "");
+		if (index > -1) {
+			includedInvoice.splice(index, 1);
+			$('#selectInvoiceButtonCustomer-' + n).show();
+			$('#removeInvoiceButtonCustomer-' + n).hide();
+
+			$('#countedInvoice_span').html(numeral(includedInvoice.length).format('0,0'));
+			if(includedInvoice.length > 0){
+				$('#createBillingButton').attr('disabled', false);
+			} else {
+				$('#createBillingButton').attr('disabled', true);
+			}
+		}
+	}
+
+	$('#createBillingButton').click(function(){
+		if(includedInvoice.length > 0){
+			$.ajax({
+				url:"<?= site_url('Billing/getByIdArray') ?>",
+				data:{invoices: includedInvoice},
+				type:"POST",
+				beforeSend:function(){
+					$('button').attr('disabled', true);
+				},
+				success:function(response){
+					$('button').attr('disabled', false);
+					$('#billingTableContent').html("");
+					$.each(response, function(index, item){
+						var date = item.date;
+						var name = item.name;
+						var customerName = item.customerName;
+						var customerAddress = item.address;
+						var complete_address = item.address;
+						var customer_number = item.number;
+						var customer_block = item.block;
+						var customer_rt = item.rt;
+						var customer_rw = item.rw;
+						var customer_city = item.city;
+						var customer_postal = item.postal_code;
+						var value = parseFloat(item.value);
+						var paid = parseFloat(item.paid);
+
+						var remainder = value - paid;
+						if(customer_number != null){
+							complete_address	+= ' No. ' + customer_number;
+						}
+					
+						if(customer_block != null && customer_block != "000"){
+							complete_address	+= ' Blok ' + customer_block;
+						}
+				
+						if(customer_rt != '000'){
+							complete_address	+= ' RT ' + customer_rt;
+						}
+					
+						if(customer_rw != '000' && customer_rt != '000'){
+							complete_address	+= ' /RW ' + customer_rw;
+						}
+					
+						if(customer_postal != null){
+							complete_address	+= ', ' + customer_postal;
+						}
+						$('#billingTableContent').append("<tr><td>" + my_date_format(date) + "</td><td><label>" + customerName + "</label><p>" + complete_address + "</p><p>" + customer_city + "</p></td><td>" + name + "</td><td>Rp. " + numeral(remainder).format('0,0.00') + "</td></tr>");
+					});
+
+					$('#createBillingWrapper').fadeIn(300, function(){
+						$('#createBillingWrapper .alert_box_slide').show("slide", { direction: "right" }, 250);
+					});
+				}
+			})
+		}
+	})
+
+	$('#submitBillingButton').click(function(){
+		$.ajax({
+			url:"<?= site_url('Billing/insertItem') ?>",
+			data:{invoices: includedInvoice, date: "<?= date('Y-m-d', strtotime($date)) ?>", collector: "<?= $collector ?>"},
+			type:"POST",
+			beforeSend:function(){
+				$('button').attr('disabled', true);
+			},
+			success:function(response){
+				$('button').attr('disabled', false);
+				if(response == 1){
+					includedInvoice = [];
+					$('#urgentButton').click();
+				} else {
+					$('#failedInsertItemNotification').fadeIn(250, function(){
+						setTimeout(function(){
+							$('#failedInsertItemNotification').fadeOut(250);
+						}, 1000)
+					})
+				}
+			}
+		})
+	})
 </script>
