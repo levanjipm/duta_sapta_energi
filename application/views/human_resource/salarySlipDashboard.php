@@ -444,7 +444,7 @@
 		}
 	}
 
-	$('#page').change(function(){refreshView()}
+	$('#page').change(function(){refreshView()});
 
 	function refreshView(page = $('#page').val()){
 		$.ajax({

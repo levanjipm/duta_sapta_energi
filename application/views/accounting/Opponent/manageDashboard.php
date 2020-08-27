@@ -46,14 +46,17 @@
 			<textarea class='form-control' rows='3' style='resize:none' name='description' required minlength='25'></textarea><br>
 
             <label>Type</label>
-            <select class='form-control' name='type' id='opponentType'>
-            </select>
+			<button class='form-control' id='opponentTypeButton' style='text-align:left!important'></button>
+			<input type='hidden' id='opponentType' name='type' required>
 
 			<button type='button' class='button button_default_dark' id='submitOpponentButton'><i class='fa fa-long-arrow-right'></i></button>
 
 			<div class='notificationText danger' id='failedInsertNotification'><p>Failed to insert data.</p></div>
 		</form>
 	</div>
+</div>
+
+<div class='alert_wrapper' id='opponentTypeWrapper'>
 </div>
 
 <div class='alert_wrapper' id='updateOpponentWrapper'>

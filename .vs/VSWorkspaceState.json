@@ -2,12 +2,14 @@
   "ExpandedNodes": [
     "",
     "\\application",
-    "\\application\\controllers",
-    "\\application\\models",
     "\\application\\views",
-    "\\application\\views\\accounting",
-    "\\application\\views\\accounting\\Receivable"
+    "\\application\\views\\accounting\\Opponent",
+    "\\application\\views\\accounting\\Receivable",
+    "\\application\\views\\finance\\Billing",
+    "\\application\\views\\finance\\PettyCash",
+    "\\application\\views\\inventory",
+    "\\css"
   ],
-  "SelectedNode": "\\application\\models\\Reminder_model.php",
+  "SelectedNode": "\\css\\style.css",
   "PreviewInSolutionExplorer": false
 }

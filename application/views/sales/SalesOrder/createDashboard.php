@@ -83,7 +83,7 @@
 				</tr>
 				<tbody id='sellerTableContent'></tbody>
 			</table>
-			<select class='form-control' id='sellerPage' style='width:100opx'>
+			<select class='form-control' id='sellerPage' style='width:100px'>
 				<option value='1'>1</option>
 			</select>
 		</div>
@@ -182,6 +182,11 @@
 <script>
 	$('#sellerButton').click(function(){
 		refreshSeller(1);
+		$('#selectSellerWrapper').fadeIn();
+	})
+
+	$('#sellerPage').change(function(){
+		refreshSeller();
 	})
 
 	function refreshSeller(page = $('#sellerPage').val())
@@ -189,13 +194,56 @@
 		$.ajax({
 			url:"<?= site_url('Users/getSalesItems') ?>",
 			data:{
-				page: $('#userPage').val()
+				page: page
 			},
 			success:function(response){
-				console.log(response);
-				$('#selectSellerWrapper').fadeIn();
+				var items = response.users;
+				var sellerCount = 0;
+				$('#sellerTableContent').html("");
+				$('#sellerTableContent').append("<tr><td><img src='<?= base_url() . '/assets/ProfileImages/defaultImage.png' ?>' style='width:30px;height:30px;border-radius:50%'> None</td><td><button class='button button_default_dark' onclick='selectEmptySeller()'><i class='fa fa-long-arrow-right'></i></button></td></tr>");
+				$.each(items, function(index, item){
+					var name = item.name;
+					var id = item.id;
+					if(item.image_url == null){
+						var imageUrl = "<?= base_url() . '/assets/ProfileImages/defaultImage.png' ?>";
+					} else {
+						var imageUrl = "<?= base_url() . '/assets/ProfileImages/' ?>" + item.image_url;
+					}
+
+					$('#sellerTableContent').append("<tr><td><img src='" + imageUrl + "' style='width:30px;height:30px;border-radius:50%'> " + name + "</td><td><button class='button button_default_dark' id='selectSellerButton-" + id + "'><i class='fa fa-long-arrow-right'></i></button></td></tr>");
+					$('#selectSellerButton-' + id).click(function(){
+						$('#seller').val(id);
+						$('#sellerButton').html(name);
+						$('#selectSellerWrapper .alert_full_close_button').click();
+					});
+					sellerCount++;
+				});
+
+				if(sellerCount == 0){
+					$('#sellerTable').hide();
+					$('#sellerTableText').show();
+				} else {
+					$("#sellerTable").show();
+					$('#sellerTableText').hide();
+				};
+
+				var pages = response.pages;
+				$('#sellerPage').html("");
+				for(i = 1; i <= pages; i++){
+					if(i == page){
+						$('#sellerPage').append("<option value='" + i + "' selected>" + i  + "</option>");
+					} else {
+						$('#sellerPage').append("<option value='" + i + "'>" + i  + "</option>");
+					}
+				}
 			}
 		})
+	}
+
+	function selectEmptySeller(){
+		$('#seller').val("");
+		$('#sellerButton').html("None");
+		$('#selectSellerWrapper .alert_full_close_button').click();
 	}
 
 	$('.slide_alert_close_button').click(function(){

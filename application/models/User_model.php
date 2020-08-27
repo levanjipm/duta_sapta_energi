@@ -185,10 +185,10 @@ class User_model extends CI_Model {
 			$query		= $this->db->query("
 				SELECT users.* FROM users
 				JOIN (
-					SELECT authorization.user_id FROM authorization
+					SELECT user_authorization.user_id FROM user_authorization
 					WHERE department_id = '2'
 				) AS a
-				ON a.user_id = user.id
+				ON a.user_id = users.id
 				LIMIT $limit OFFSET $offset
 			");
 
@@ -196,16 +196,15 @@ class User_model extends CI_Model {
 			return $result;
 		}
 
-		public function countSalesItem()
+		public function countSalesItems()
 		{
 			$query		= $this->db->query("
 				SELECT users.* FROM users
 				JOIN (
-					SELECT authorization.user_id FROM authorization
+					SELECT user_authorization.user_id FROM user_authorization
 					WHERE department_id = '2'
 				) AS a
-				ON a.user_id = user.id
-				LIMIT $limit OFFSET $offset
+				ON a.user_id = users.id
 			");
 
 			$result		= $query->num_rows();

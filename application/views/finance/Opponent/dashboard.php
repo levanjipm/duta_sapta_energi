@@ -15,12 +15,7 @@
 		</select>
 		<br>
 
-		<div class='input_group'>
-			<input type='text' class='form-control' id='search_bar'>
-			<div class='input_group_append'>
-				<button type='button' class='button button_default_dark' id='addOpponentButton' disabled>Add other opponent</button>
-			</div>
-		</div>
+		<input type='text' class='form-control' id='search_bar'>
 		<br>
 
 		<div id='opponentTable'>
@@ -84,14 +79,6 @@
 				var opponents		= response.opponents;
 				var pages			= response.pages;
 				var type			= $('#opponent_type').val();
-				
-				if(type != 'other'){
-					$('#addOpponentButton').attr('disabled', true);
-					$('#addOpponentButton').hide();
-				} else {
-					$('#addOpponentButton').attr('disabled', false);
-					$('#addOpponentButton').show();
-				};
 				
 				var opponentCount = 0;
 				$.each(opponents, function(index, opponent){

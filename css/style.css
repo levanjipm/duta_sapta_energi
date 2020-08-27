@@ -11,6 +11,7 @@
 html, body{
 	height:100%;
 	background-color:#3b404b;
+	min-width:600px;
 }
 
 .topnav_bar{
