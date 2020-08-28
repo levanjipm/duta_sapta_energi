@@ -61,6 +61,9 @@
 			<a href='<?= site_url('Opponent') ?>'><button><p>Manage</p></button></a>
 			<a href='<?= site_url('Opponent_type') ?>'><button><p>Type</p></button></a>
 		</div>
+<?php if($user_login->access_level > 1){ ?>
+		<a href='<?= site_url('Customer/assignAccountantDashboard') ?>'><button><p style='font-family:museo'>Assign Customer</p></button></a>
+<?php } ?>
 	</div>
 </div>
 <script>

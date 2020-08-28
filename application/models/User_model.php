@@ -210,4 +210,20 @@ class User_model extends CI_Model {
 			$result		= $query->num_rows();
 			return $result;
 		}
+
+		public function countActiveUser()
+		{
+			$this->db->where("is_active", 1);
+			$query		= $this->db->get($this->table_user);
+			$result		= $query->num_rows();
+			return $result;
+		}
+
+		public function getActiveUser()
+		{
+			$this->db->where("is_active", 1);
+			$query		= $this->db->get($this->table_user);
+			$result		= $query->result();
+			return $result;
+		}
 }

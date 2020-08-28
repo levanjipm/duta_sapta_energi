@@ -10,8 +10,10 @@ class Billing_model extends CI_Model {
 		public $created_by;
 		public $is_confirm;
 		public $is_delete;
+		public $is_reported;
 		public $confirmed_by;
 		public $billed_by;
+		public $reported_by;
 		
 		public function __construct()
 		{
@@ -28,6 +30,8 @@ class Billing_model extends CI_Model {
 			$this->is_delete			= $db_item->is_delete;
 			$this->confirmed_by			= $db_item->confirmed_by;
 			$this->billed_by			= $db_item->billed_by;
+			$this->is_reported			= $db_item->is_reported;
+			$this->reported_by			= $db_item->reported_by;
 			
 			return $this;
 		}
@@ -44,6 +48,8 @@ class Billing_model extends CI_Model {
 			$db_item->is_delete				= $this->is_delete;
 			$db_item->confirmed_by			= $this->confirmed_by;
 			$db_item->billed_by				= $this->billed_by;
+			$db_item->is_reported			= $this->is_reported;
+			$db_item->reported_by			= $this->reported_by;
 			
 			return $db_item;
 		}
@@ -60,6 +66,8 @@ class Billing_model extends CI_Model {
 			$stub->is_delete			= $db_item->is_delete;
 			$stub->confirmed_by			= $db_item->confirmed_by;
 			$stub->billed_by			= $db_item->billed_by;
+			$stub->is_reported			= $db_item->is_reported;
+			$stub->reported_by			= $db_item->reported_by;
 			
 			return $stub;
 		}
@@ -102,8 +110,10 @@ class Billing_model extends CI_Model {
 				'created_by' => $this->session->userdata('user_id'),
 				'is_confirm' => 0,
 				'is_delete' => 0,
+				"is_reported" => 0,
 				'confirmed_by' => null,
-				'billed_by' => $collector
+				'billed_by' => $collector,
+				'reported_by' => null
 			);
 
 			$this->db->insert($this->table_billing, $db_item);
@@ -153,6 +163,96 @@ class Billing_model extends CI_Model {
 			");
 
 			$result			= $query->row();
+			return $result;
+		}
+
+		public function updateById($status, $id)
+		{
+			if($status == 1){
+				$this->db->set('is_confirm', 1);
+				$this->db->set('confirmed_by', $this->session->userdata('user_id'));
+				$this->db->where('is_confirm', 0);
+				$this->db->where('is_delete', 0);
+			} else if($status == 0){
+				$this->db->set('is_delete', 1);
+				$this->db->set('confirmed_by', $this->session->userdata('user_id'));
+				$this->db->where('is_confirm', 0);
+				$this->db->where('is_delete', 0);
+			}
+
+			$this->db->where('id', $id);
+			$this->db->update($this->table_billing);
+			$result = $this->db->affected_rows();
+			return $result;
+		}
+
+		public function getIncompletedItems()
+		{
+			$this->db->select('code_billing.*, users.name as billed_by');
+			$this->db->from('code_billing');
+			$this->db->join('users', 'code_billing.billed_by = users.id');
+
+			$this->db->where('code_billing.is_reported', 0);
+			$this->db->where("code_billing.is_confirm", 1);
+			$this->db->order_by('code_billing.date', 'ASC');
+			$this->db->order_by('code_billing.id', 'ASC');
+
+			$query = $this->db->get();
+			$result = $query->result();
+			return $result;
+		}
+
+		public function updateReport($id)
+		{
+			$this->db->set('is_reported', 1);
+			$this->db->set('reported_by', $this->session->userdata("user_id"));
+
+			$this->db->where('id', $id);
+			$this->db->where('is_confirm', 1);
+			$this->db->where('is_reported', 0);
+			$this->db->update($this->table_billing);
+			return $this->db->affected_rows();
+			
+		}
+
+		public function getYears()
+		{
+			$this->db->select("DISTINCT(YEAR(code_billing.date)) as year");
+			$this->db->from('code_billing');
+			$this->db->order_by('code_billing.date', 'asc');
+
+			$query		= $this->db->get();
+			$result		= $query->result();
+			return $result;
+		}
+
+		public function getArchive($offset = 0, $month, $year, $limit = 10)
+		{
+			$this->db->select('code_billing.*, users.name as billed_by');
+			$this->db->from('code_billing');
+			$this->db->join('users', 'code_billing.billed_by = users.id');
+
+			$this->db->where("code_billing.is_delete", 0);
+			$this->db->where("YEAR(date)", $year);
+			$this->db->where('MONTH(date)', $month);
+
+			$this->db->order_by('code_billing.date', 'ASC');
+			$this->db->order_by('code_billing.id', 'ASC');
+
+			$this->db->limit($limit, $offset);
+
+			$query = $this->db->get();
+			$result = $query->result();
+			return $result;
+		}
+
+		public function countArchive($month, $year)
+		{
+			$this->db->where("YEAR(date)", $year);
+			$this->db->where('MONTH(date)', $month);
+			$this->db->where('is_delete', 0);
+			$query		= $this->db->get($this->table_billing);
+			$result		= $query->num_rows();
 			return $result;
 		}
 }

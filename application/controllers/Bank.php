@@ -262,4 +262,12 @@ class Bank extends CI_Controller {
 			$this->Petty_cash_model->insert_income($insert_id, $value, $date);
 		}
 	}
+
+	public function getCurrentBalance()
+	{
+		$id			= $this->input->get('id');
+		$this->load->model("Bank_model");
+		$data = $this->Bank_model->getCurrentBalance($id);
+		echo $data;
+	}
 }

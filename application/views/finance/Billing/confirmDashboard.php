@@ -48,10 +48,17 @@
 			</tr>
 			<tbody id='billingItemTable'></tbody>
 		</table>
+
+		<button class='button button_default_dark' onclick='confirmBilling()'><i class='fa fa-long-arrow-right'></i></button>
+		<button class='button button_danger_dark' onclick='deleteBilling()'><i class='fa fa-trash'></i></button>
+		<br>
+		<div class='notificationText danger' id='failedInsertData'><p>Failed to insert data.</p></div>
+		<div class='notificationText danger' id='failedDeleteData'><p>Failed to delete data.</p></div>
 	</div>
 </div>
 
 <script>
+	var codeBillingId = null;;
 	$(document).ready(function(){
 		refreshView();
 	});
@@ -105,6 +112,64 @@
 		})
 	}
 
+	function confirmBilling(){
+		if(codeBillingId != null){
+			$.ajax({
+				url:"<?= site_url('Billing/confirmById') ?>",
+				data:{
+					id: codeBillingId
+				},
+				type:"POST",
+				beforeSend:function(){
+					$('button').attr('disabled', true);
+				},
+				success:function(response){
+					$('button').attr('disabled', false);
+					refreshView();
+					if(response == 1){
+						$('#confirmBillingWrapper .slide_alert_close_button').click();
+						window.location.href='<?= site_url('Billing/printBilling/') ?>' + codeBillingId;
+					} else {
+						$('#failedInsertData').fadeIn(250, function(){
+							setTimeout(function(){
+								$('#failedInsertData').fadeOut(250);
+							}, 1000);
+						});
+					}
+				}
+			})
+		}
+	}
+
+	function deleteBilling(){
+		if(codeBillingId != null){
+			$.ajax({
+				url:"<?= site_url('Billing/deleteById') ?>",
+				data:{
+					id: codeBillingId
+				},
+				type:"POST",
+				beforeSend:function(){
+					$('button').attr('disabled', true);
+				},
+				success:function(response){
+					$('button').attr('disabled', false);
+					refreshView();
+					if(response == 1){
+						codeBillingId = null;
+						$('#confirmBillingWrapper .slide_alert_close_button').click();
+					} else {
+						$('#failedDeleteData').fadeIn(250, function(){
+							setTimeout(function(){
+								$('#failedDeleteData').fadeOut(250);
+							}, 1000);
+						});
+					}
+				}
+			})
+		}
+	}
+
 	function viewBilling(n){
 		$.ajax({
 			url:"<?= site_url('Billing/getById') ?>",
@@ -112,6 +177,7 @@
 				id:n
 			},
 			success:function(response){
+				codeBillingId = n;
 				var general = response.general;
 				var collectorName = general.billed_by;
 				if(general.image_url == null){

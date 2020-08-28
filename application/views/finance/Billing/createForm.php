@@ -275,8 +275,8 @@
 						complete_address	+= ', ' + customer_postal;
 					}
 
-					if(includedInvoice[id] === undefined){
-						$('#recommendedTableContent').append("<tr id='row-" + id + "'><td>" + my_date_format(date) +"</td><td>" + invoiceName + "</td><td><label>" + customerName + "</label><p>" + complete_address + "</p><p>" + customer_city + "</p></td><td><button class='button button_default_dark'><i class='fa fa-long-arrow-right'></i></button></td></tr>");
+					if(!includedInvoice.includes("" + id + "")){
+						$('#recommendedTableContent').append("<tr id='row-" + id + "'><td>" + my_date_format(date) +"</td><td>" + invoiceName + "</td><td><label>" + customerName + "</label><p>" + complete_address + "</p><p>" + customer_city + "</p></td><td><button class='button button_default_dark' onclick='selectRecommendedInvoice(" + id + ")' id='selectInvoiceButtonRecommended-" + id + "'><i class='fa fa-long-arrow-right'></i></button><button class='button button_danger_dark' onclick='removeRecommendedInvoice(" + id + ")' id='removeInvoiceButtonRecommended-" + id + "' style='display:none'><i class='fa fa-trash'></i></button></td></tr>");
 						invoiceCount++;
 					}
 				});
@@ -349,7 +349,7 @@
 							complete_address	+= ', ' + customer_postal;
 						}
 
-						$('#urgentTableContent').append("<tr id='row-" + id + "'><td>" + my_date_format(date) +"</td><td>" + invoiceName + "</td><td><label>" + customerName + "</label><p>" + complete_address + "</p><p>" + customer_city + "</p></td><td><button class='button button_default_dark'><i class='fa fa-long-arrow-right'></i></button></td></tr>");
+						$('#urgentTableContent').append("<tr id='row-" + id + "'><td>" + my_date_format(date) +"</td><td>" + invoiceName + "</td><td><label>" + customerName + "</label><p>" + complete_address + "</p><p>" + customer_city + "</p></td><td><button class='button button_default_dark' onclick='selectUrgentInvoice(" + id + ")' id='selectInvoiceButtonUrgent-" + id + "'><i class='fa fa-long-arrow-right'></i></button><button class='button button_danger_dark' onclick='removeUrgentInvoice(" + id + ")' id='removeInvoiceButtonUrgent-" + id + "' style='display:none'><i class='fa fa-trash'></i></button></td></tr>");
 						invoiceCount++;
 					}
 				});
@@ -506,9 +506,9 @@
 					}
 
 					if(!includedInvoice.includes("" + id + "")){
-						$('#receivableTableContent').append("<tr><td>" + my_date_format(date) + " (" + numeral(difference).format('0,0') + " days)</td><td>" + name + "</td><td>Rp. " + numeral(value).format('0,0.00') + "</td><td>Rp. " + numeral(paid).format('0,0.00') + "</td><td>" + lastBillingDateText + "</td><td><button class='button button_default_dark' onclick='selectCustomerInvoice(" + id + ")' id='selectInvoiceButtonCustomer-" + id + "'><i class='fa fa-long-arrow-right'></i></button><button class='button button_danger_dark' onclick='removeInvoice(" + id + ")' id='removeInvoiceButtonCustomer-" + id + "' style='display:none'><i class='fa fa-trash'></i></button></tr>");
+						$('#receivableTableContent').append("<tr><td>" + my_date_format(date) + " (" + numeral(difference).format('0,0') + " days)</td><td>" + name + "</td><td>Rp. " + numeral(value).format('0,0.00') + "</td><td>Rp. " + numeral(paid).format('0,0.00') + "</td><td>" + lastBillingDateText + "</td><td><button class='button button_default_dark' onclick='selectCustomerInvoice(" + id + ")' id='selectInvoiceButtonCustomer-" + id + "'><i class='fa fa-long-arrow-right'></i></button><button class='button button_danger_dark' onclick='removeCustomerInvoice(" + id + ")' id='removeInvoiceButtonCustomer-" + id + "' style='display:none'><i class='fa fa-trash'></i></button></tr>");
 					} else {
-						$('#receivableTableContent').append("<tr><td>" + my_date_format(date) + " (" + numeral(difference).format('0,0') + " days)</td><td>" + name + "</td><td>Rp. " + numeral(value).format('0,0.00') + "</td><td>Rp. " + numeral(paid).format('0,0.00') + "</td><td>" + lastBillingDateTExt + "</td><td><button class='button button_default_dark' onclick='selectCustomerInvoice(" + id + ")' id='selectInvoiceButtonCustomer-" + id + "' style='display:none'><i class='fa fa-long-arrow-right'></i></button><button class='button button_danger_dark' onclick='removeInvoice(" + id + ")' id='removeInvoiceButtonCustomer-" + id + "'><i class='fa fa-trash'></i></button></tr>");
+						$('#receivableTableContent').append("<tr><td>" + my_date_format(date) + " (" + numeral(difference).format('0,0') + " days)</td><td>" + name + "</td><td>Rp. " + numeral(value).format('0,0.00') + "</td><td>Rp. " + numeral(paid).format('0,0.00') + "</td><td>" + lastBillingDateText + "</td><td><button class='button button_default_dark' onclick='selectCustomerInvoice(" + id + ")' id='selectInvoiceButtonCustomer-" + id + "' style='display:none'><i class='fa fa-long-arrow-right'></i></button><button class='button button_danger_dark' onclick='removeCustomerInvoice(" + id + ")' id='removeInvoiceButtonCustomer-" + id + "'><i class='fa fa-trash'></i></button></tr>");
 					}
 					
 				})
@@ -518,6 +518,68 @@
 				});
 			}
 		})
+	}
+
+	function selectRecommendedInvoice(n){
+		if(!includedInvoice.includes("" + n + "")){
+			includedInvoice.push("" + n + "");
+			$('#removeInvoiceButtonRecommended-' + n).show();
+			$('#selectInvoiceButtonRecommended-' + n).hide();
+
+			$('#countedInvoice_span').html(numeral(includedInvoice.length).format('0,0'));
+			if(includedInvoice.length > 0){
+				$('#createBillingButton').attr('disabled', false);
+			} else {
+				$('#createBillingButton').attr('disabled', true);
+			}
+		}
+	}
+
+	function removeRecommendedInvoice(n){
+		var index = includedInvoice.indexOf("" + n + "");
+		if (index > -1) {
+			includedInvoice.splice(index, 1);
+			$('#selectInvoiceButtonRecommended-' + n).show();
+			$('#removeInvoiceButtonRecommended-' + n).hide();
+
+			$('#countedInvoice_span').html(numeral(includedInvoice.length).format('0,0'));
+			if(includedInvoice.length > 0){
+				$('#createBillingButton').attr('disabled', false);
+			} else {
+				$('#createBillingButton').attr('disabled', true);
+			}
+		}
+	}
+
+	function selectUrgentInvoice(n){
+		if(!includedInvoice.includes("" + n + "")){
+			includedInvoice.push("" + n + "");
+			$('#removeInvoiceButtonUrgent-' + n).show();
+			$('#selectInvoiceButtonUrgent-' + n).hide();
+
+			$('#countedInvoice_span').html(numeral(includedInvoice.length).format('0,0'));
+			if(includedInvoice.length > 0){
+				$('#createBillingButton').attr('disabled', false);
+			} else {
+				$('#createBillingButton').attr('disabled', true);
+			}
+		}
+	}
+
+	function removeUrgentInvoice(n){
+		var index = includedInvoice.indexOf("" + n + "");
+		if (index > -1) {
+			includedInvoice.splice(index, 1);
+			$('#selectInvoiceButtonUrgent-' + n).show();
+			$('#removeInvoiceButtonUrgent-' + n).hide();
+
+			$('#countedInvoice_span').html(numeral(includedInvoice.length).format('0,0'));
+			if(includedInvoice.length > 0){
+				$('#createBillingButton').attr('disabled', false);
+			} else {
+				$('#createBillingButton').attr('disabled', true);
+			}
+		}
 	}
 
 	function selectCustomerInvoice(n){
@@ -535,7 +597,7 @@
 		}
 	}
 
-	function removeInvoice(n){
+	function removeCustomerInvoice(n){
 		var index = includedInvoice.indexOf("" + n + "");
 		if (index > -1) {
 			includedInvoice.splice(index, 1);
@@ -627,6 +689,8 @@
 					} else {
 						$('#createBillingButton').attr('disabled', true);
 					}
+					$('#createBillingWrapper .slide_alert_close_button').click();
+
 					$('#urgentButton').click();
 				} else {
 					$('#failedInsertItemNotification').fadeIn(250, function(){

@@ -84,7 +84,7 @@ class Billing_detail_model extends CI_Model {
 		public function getByCodeId($codeBillingId)
 		{
 			$query			= $this->db->query("
-				SELECT invoice.value, invoice.name, invoice.date, customer.name as customerName, customer.address, customer.city, customer.number, customer.block, customer.rt, customer.rw, customer.postal_code, billing.id, billing.result, billing.note, billing.invoice_id, COALESCE(receivableTable.value,0) as paid
+				SELECT invoice.nextBillingDate, billing.note, billing.result, customer.id as customerId, invoice.value, invoice.name, invoice.date, customer.name as customerName, customer.address, customer.city, customer.number, customer.block, customer.rt, customer.rw, customer.postal_code, billing.id, billing.result, billing.note, billing.invoice_id, COALESCE(receivableTable.value,0) as paid
 				FROM billing
 				JOIN invoice ON invoice.id = billing.invoice_id
 				JOIN (
@@ -104,10 +104,37 @@ class Billing_detail_model extends CI_Model {
 				ON receivableTable.invoice_id = invoice.id
 				JOIN customer ON customer.id = a.customer_id
 				WHERE billing.code_billing_id = '$codeBillingId'
-				ORDER BY customer.name ASC, invoice.name ASC
+				ORDER BY customer.name ASC, customer.id ASC, invoice.name ASC
 			");
 
 			$result		= $query->result();
 			return $result;
+		}
+
+		public function updateReport($billingDate, $resultArray, $noteArray, $nextBillingDateArray)
+		{
+			$this->load->model("Invoice_model");
+			$updateBatch = array();
+			foreach($resultArray as $billingId => $result)
+			{
+				$note = $noteArray[$billingId];
+				if($result == 1 || $result == 2){
+					if($nextBillingDateArray[$billingId] > $billingDate){
+						$this->Invoice_model->updateBillingDate($id, $billingDate, $nextBillingDateArray[$billingId]);
+					} else {
+						$this->Invoice_model->updateBillingDate($id, $billingDate);
+					}
+				}
+
+				$updateBatch[] = array(
+					"id" => $billingId,
+					"result" => $result,
+					"note" => $note,
+				);
+
+				next($resultArray);
+			}
+
+			$this->db->update_batch($this->table_billing, $updateBatch, "id");
 		}
 }

@@ -1,3 +1,6 @@
+<head>
+	<title>Bank - Mutation</title>
+</head>
 <div class='dashboard'>
 	<div class='dashboard_head'>
 		<p style='font-family:museo'><a href='<?= site_url('Finance') ?>' title='Finance'><i class='fa fa-briefcase'></i></a> <a href='<?= site_url('Bank') ?>'>Bank</a> / Mutation</p>
@@ -5,9 +8,10 @@
 	<br>
 	<div class='dashboard_in'>
 		<label>Account</label>
-		<label>Account</label>
 		<button type='button' class='form-control' id='accountButton' style='text-align:left!important'></button>
 		<input type='hidden' id='account' name='account' required>
+		<label>Current balance</label>
+		<p id='currentBalance_p'>Rp. 0.00</p>
 		<br>
 		<div class='input_group'>
 			<input type='date' class='form-control' value='<?= date('Y-m-d') ?>' id='date_1'>
@@ -141,6 +145,7 @@
 				var number = response.number;
 				$('#accountButton').text(name + " - " + number);
 				$('#account').val(n);
+				getCurrentBalance(n);
 
 				$('#bankAccountWrapper').fadeOut();
 			}
@@ -209,6 +214,18 @@
 				}
 			}
 		});
+	}
+
+	function getCurrentBalance(accountId){
+		$.ajax({
+			url:"<?= site_url('Bank/getCurrentBalance') ?>",
+			data:{
+				id: accountId
+			},
+			success:function(response){
+				$('#currentBalance_p').html("Rp. " + numeral(response).format('0,0.00'));
+			}
+		})
 	}
 
 	$('.alert_full_close_button').click(function(){

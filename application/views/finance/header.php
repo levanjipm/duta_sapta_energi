@@ -52,6 +52,8 @@
 		<div class='container_bar'>
 			<a href='<?= site_url('Billing/createDashboard') ?>'><button><p style='font-family:museo'>Create</p></button></a>
 			<a href='<?= site_url('Billing/confirmDashboard') ?>'><button><p style='font-family:museo'>Confirm</p></button></a>
+			<a href='<?= site_url('Billing/reportDashboard') ?>'><button><p style='font-family:museo'>Report</p></button></a>
+			<a href='<?= site_url('Billing/archiveDashboard') ?>'><button><p style='font-family:museo'>Archive</p></button></a>
 		</div>
 	</div>
 </div>

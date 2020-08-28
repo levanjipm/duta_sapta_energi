@@ -773,4 +773,11 @@ class Invoice_model extends CI_Model {
 			$result = $query->result();
 			return $result;
 		}
+
+		public function updateBillingDate($id, $lastBillingDate, $nextBillingDate = null){
+			$this->db->set('lastBillingDate', $lastBillingDate);
+			$this->db->set('nextBillingDate', $nextBillingDate);
+			$this->db->where('id', $id);
+			$this->db->update($this->table_invoice);
+		}
 }

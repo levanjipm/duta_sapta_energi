@@ -21,5 +21,9 @@ class Human_resource extends CI_Controller {
 		
 		$this->load->view('head');
 		$this->load->view('human_resource/header', $data);
+		$data = array();
+
+		$data['activeUser'] = $this->User_model->countActiveUser();
+		$this->load->view('human_resource/dashboard', $data);
 	}
 }

@@ -167,4 +167,115 @@ class Billing extends CI_Controller {
 		header('Content-Type: application/json');
 		echo json_encode($data);
 	}
+
+	public function confirmById()
+	{
+		$id			= $this->input->post('id');
+		$this->load->model("Billing_model");
+		$result		= $this->Billing_model->updateById(1, $id);
+		echo $result;
+	}
+
+	public function deleteById()
+	{
+		$id			= $this->input->post('id');
+		$this->load->model("Billing_model");
+		$result		= $this->Billing_model->updateById(0, $id);
+		echo $result;
+	}
+
+
+	public function printBilling($billingId)
+	{
+		$user_id		= $this->session->userdata('user_id');
+		$this->load->model('User_model');
+		$data['user_login'] = $this->User_model->getById($user_id);
+		
+		$this->load->model('Authorization_model');
+		$data['departments']	= $this->Authorization_model->getByUserId($user_id);
+		
+		$this->load->view('head');
+		$this->load->view('finance/header', $data);
+
+		$data = array();
+		$this->load->model("Billing_model");
+		$data['billing'] = $this->Billing_model->getById($billingId);
+		
+		$this->load->model("Billing_detail_model");
+		$data['items'] = $this->Billing_detail_model->getByCodeId($billingId);
+
+		$this->load->view('finance/Billing/printBilling', $data);
+	}
+
+	public function reportDashboard()
+	{
+		$user_id		= $this->session->userdata('user_id');
+		$this->load->model('User_model');
+		$data['user_login'] = $this->User_model->getById($user_id);
+		
+		$this->load->model('Authorization_model');
+		$data['departments']	= $this->Authorization_model->getByUserId($user_id);
+		
+		$this->load->view('head');
+		$this->load->view('finance/header', $data);
+		$this->load->view('finance/Billing/reportDashboard');
+	}
+
+	public function getIncompletedItems()
+	{
+		$this->load->model("Billing_model");
+		$data = $this->Billing_model->getIncompletedItems();
+
+		header('Content-Type: application/json');
+		echo json_encode($data);
+	}
+
+	public function fileReport()
+	{
+		$id = $this->input->post('id');
+		$this->load->model("Billing_model");
+		$result = $this->Billing_model->updateReport($id);
+		if($result == 1){
+			$billing	= $this->Billing_model->getById($id);
+			$date		= $billing->date;
+			$this->load->model("Billing_detail_model");
+			$this->Billing_detail_model->updateReport($date, $this->input->post('result'), $this->input->post('note'), $this->input->post('nextBillingDate'));
+			echo 1;
+		} else {
+			echo 0;
+		}	
+	}
+
+	public function archiveDashboard()
+	{
+		$user_id		= $this->session->userdata('user_id');
+		$this->load->model('User_model');
+		$data['user_login'] = $this->User_model->getById($user_id);
+		
+		$this->load->model('Authorization_model');
+		$data['departments']	= $this->Authorization_model->getByUserId($user_id);
+		
+		$this->load->view('head');
+		$this->load->view('finance/header', $data);
+
+		$data = array();
+		$this->load->model("Billing_model");
+		$data['years'] = $this->Billing_model->getYears();
+		$this->load->view('finance/Billing/archiveDashboard', $data);
+	}
+
+	public function GetArchive()
+	{
+		$page		= $this->input->get('page');
+		$month		= $this->input->get('month');
+		$year		= $this->input->get('year');
+		$offset		= ($page - 1) * 10;
+
+		$this->load->model("Billing_model");
+		$data['items'] = $this->Billing_model->getArchive($offset, $month, $year);
+		$data['pages'] = max(1, ceil($this->Billing_model->countArchive($month, $year))/10);
+
+		header('Content-Type: application/json');
+		echo json_encode($data);
+	}
 }

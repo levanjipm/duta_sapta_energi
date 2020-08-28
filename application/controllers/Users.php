@@ -108,4 +108,12 @@ class Users extends CI_Controller {
 
 		$this->User_model->updateProfilePicture($id, null);
 	}
+
+	public function getActiveUser()
+	{
+		$this->load->model("User_model");
+		$data		= $this->User_model->getActiveUser();
+		header('Content-Type: application/json');
+		echo json_encode($data);
+	}
 }
