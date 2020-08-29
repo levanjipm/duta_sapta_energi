@@ -24,6 +24,20 @@ class Asset extends CI_Controller {
 		
 		$this->load->view('accounting/Asset/dashboard');
 	}
+
+	public function getExistingItems()
+	{
+		$term		= $this->input->get('term');
+		$page		= $this->input->get('page');
+		$offset		= ($page - 1) * 10;
+
+		$this->load->model('Asset_model');
+		$data['items']		= $this->Asset_model->getExistingItems($offset, $term);
+		$data['pages']		= max(1, ceil($this->Asset_model->countExistingItems($term)/10));
+		
+		header('Content-Type: application/json');
+		echo json_encode($data);
+	}
 	
 	public function getItems()
 	{
@@ -62,15 +76,15 @@ class Asset extends CI_Controller {
 		echo $result;
 	}
 	
-	public function show_type_limited()
+	public function getClassItems()
 	{
 		$term		= $this->input->get('term');
 		$page		= $this->input->get('page');
 		$offset		= ($page - 1) * 10;
 		
 		$this->load->model('Asset_type_model');
-		$data['types']		= $this->Asset_type_model->show_items($offset, $term);
-		$data['pages']		= max(1, ceil($this->Asset_type_model->count_items($term)/10));
+		$data['types']		= $this->Asset_type_model->getItems($offset, $term);
+		$data['pages']		= max(1, ceil($this->Asset_type_model->countItems($term)/10));
 		
 		header('Content-Type: application/json');
 		echo json_encode($data);
@@ -118,15 +132,6 @@ class Asset extends CI_Controller {
 		echo json_encode($data);
 	}
 
-	public function getAllTypes()
-	{
-		$this->load->model('Asset_type_model');
-		$data = $this->Asset_type_model->getAllItems();
-
-		header('Content-Type: application/json');
-		echo json_encode($data);
-	}
-
 	public function deleteClassById()
 	{
 		$id			= $this->input->post('id');
@@ -141,5 +146,29 @@ class Asset extends CI_Controller {
 		$result = $this->Asset_model->updateById();
 
 		echo $result;
+	}
+
+	function setSoldById()
+	{
+		$id			= $this->input->post('id');
+		$date		= $this->input->post('date');
+		$this->load->model("Asset_model");
+		$result = $this->Asset_model->setSoldById($id, $date);
+		echo $result;
+	}
+
+	public function archiveDashboard()
+	{
+		$user_id		= $this->session->userdata('user_id');
+		$this->load->model('User_model');
+		$data['user_login'] = $this->User_model->getById($user_id);
+		
+		$this->load->model('Authorization_model');
+		$data['departments']	= $this->Authorization_model->getByUserId($user_id);
+		
+		$this->load->view('head');
+		$this->load->view('accounting/header', $data);
+		
+		$this->load->view('accounting/Asset/archiveDashboard');
 	}
 }

@@ -1,5 +1,40 @@
 <head>
 	<title>Sales order - Track</title>
+	<style>
+		.progressBarWrapper{
+			width:100%;
+			height:30px;
+			background-color:white;
+			border-radius:10px;
+			padding:5px;
+			position:relative;
+		}
+
+		.progressBar{
+			width:0;
+			height:20px;
+			background-color:#01bb00;
+			position:relative;
+			border-radius:10px;
+			cursor:pointer;
+			opacity:0.4;
+			transition:0.3s all ease;
+		}
+
+		.progressBar:hover{
+			opacity:1;
+			transition:0.3s all ease;
+		}
+
+		.progressBarWrapper p{
+			font-family:museo;
+			color:black;
+			font-weight:700;
+			z-index:50;
+			position:absolute;
+			right:10px;
+		}
+	</style>
 </head>
 <div class='dashboard'>
 	<div class='dashboard_head'>
@@ -34,6 +69,8 @@
 		<label>Sales order</label>
 		<p id='sales_order_name_p'></p>
 		<p id='sales_order_date_p'></p>
+
+		<label>Sales</label>
 		<p id='sales_order_seller_p'></p>
 		
 		<label>Customer</label>
@@ -131,8 +168,14 @@
 					}
 					
 					complete_address += ', ' + customer_city;
+					var quantity = parseInt(sales_order.quantity);
+					var sent = parseInt(sales_order.sent);
+					var progress = sent * 100 / quantity;
 
-					$('#salesOrderTableContent').append("<tr><td>" + my_date_format(date) + "</td><td>" + name + "</td><td><p>" + customer_name + "</p><p>" + complete_address + "</p></td><td><button class='button button_default_dark' onclick='track(" + id + ")'><i class='fa fa-eye'></i></button></td></tr>");
+					$('#salesOrderTableContent').append("<tr><td>" + my_date_format(date) + "</td><td><p>" + name + "</p><div class='progressBarWrapper'><p>" + numeral(progress).format('0,0.0') + "%</p><div class='progressBar' id='progressBar-" + id + "'></div></div></td><td><p>" + customer_name + "</p><p>" + complete_address + "</p></td><td><button class='button button_default_dark' onclick='track(" + id + ")'><i class='fa fa-eye'></i></button></td></tr>");
+					$('#progressBar-' + id).animate({
+						width: progress + "%"
+					}, "slow");
 
 					salesOrderCount++;
 				})

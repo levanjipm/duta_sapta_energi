@@ -416,7 +416,7 @@
 						complete_address	+= ', ' + customer_postal;
 					}
 					
-					$('#customerTableContent').append("<tr><td>" + customer_name + "</td><td><p>" + complete_address + "</p><p>" + customer_city + "</p></td><td><button type='button' class='button button_success_dark' onclick='open_edit_form(" + customer_id + ")'><i class='fa fa-pencil'></i></button> <button type='button' class='button button_danger_dark' onclick='confirm_delete(" + customer_id + ")'><i class='fa fa-trash'></i></button> <button type='button' class='button button_default_dark'><i class='fa fa-eye'></i></button></tr>");
+					$('#customerTableContent').append("<tr><td>" + customer_name + "</td><td><p>" + complete_address + "</p><p>" + customer_city + "</p></td><td><button type='button' class='button button_success_dark' onclick='open_edit_form(" + customer_id + ")'><i class='fa fa-pencil'></i></button> <button type='button' class='button button_danger_dark' onclick='confirm_delete(" + customer_id + ")'><i class='fa fa-trash'></i></button> <button type='button' onclick='viewCustomerDetail(" + customer_id + ")' class='button button_default_dark'><i class='fa fa-eye'></i></button></tr>");
 					customerCount++;
 				});
 
@@ -438,5 +438,9 @@
 			},
 			
 		});
+	};
+
+	function viewCustomerDetail(n){
+		window.location.href='<?= site_url('Customer/viewCustomerDetail/') ?>' + n;
 	};
 </script>

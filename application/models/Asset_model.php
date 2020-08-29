@@ -103,6 +103,34 @@ class Asset_model extends CI_Model {
 			
 			return $result;
 		}
+
+		public function getExistingItems($offset = 0, $term = '', $limit = 25)
+		{
+			if($term != ''){
+				$this->db->like('name', $term, 'both');
+				$this->db->or_like('description', $term, 'both');
+			};
+			$this->db->where('sold_date', NULL);
+			
+			$query		= $this->db->get($this->table_asset, $limit, $offset);
+			$result		= $query->result();
+			
+			return $result;
+		}
+		
+		public function countExistingItems($term = '')
+		{
+			if($term != ''){
+				$this->db->like('name', $term, 'both');
+				$this->db->or_like('description', $term, 'both');
+			};
+			$this->db->where('sold_date', NULL);
+			
+			$query		= $this->db->get($this->table_asset);
+			$result		= $query->num_rows();
+			
+			return $result;
+		}
 		
 		public function insertItem()
 		{
@@ -112,6 +140,7 @@ class Asset_model extends CI_Model {
 			$depreciation		= $this->input->post('depreciation');
 			$type				= $this->input->post('assetType');
 			$date				= $this->input->post('date');
+			$residualValue		= $this->input->post('residualValue');
 
 			$db_item	= array(
 				'id' => '',
@@ -131,8 +160,11 @@ class Asset_model extends CI_Model {
 		
 		public function getById($id)
 		{
-			$this->db->where('id', $id);
-			$query		= $this->db->get($this->table_asset);
+			$this->db->select('fixed_asset.*, fixed_asset_type.name as assetType');
+			$this->db->from('fixed_asset');
+			$this->db->join('fixed_asset_type', 'fixed_asset.type = fixed_asset_type.id');
+			$this->db->where('fixed_asset.id', $id);
+			$query		= $this->db->get();
 			$result		= $query->row();
 			
 			return $result;
@@ -160,6 +192,16 @@ class Asset_model extends CI_Model {
 			);
 			$this->db->set($db_item);
 			$this->db->where("id", $id);
+			$this->db->update($this->table_asset);
+
+			return $this->db->affected_rows();
+		}
+
+		public function setSoldById($id, $dateSold)
+		{
+			$this->db->set('sold_date', $dateSold);
+			$this->db->where('id', $id);
+			$this->db->where('date <=', $dateSold);
 			$this->db->update($this->table_asset);
 
 			return $this->db->affected_rows();

@@ -46,12 +46,13 @@ class Sales_order extends CI_Controller {
 	{
 		$page = $this->input->get('page');
 		$offset = ($page - 1) * 10;
+		$term	= $this->input->get('term');
 
 		$resultArray = array();
 
 		$this->load->model('Sales_order_model');
 		$this->load->model('Customer_model');
-		$salesOrderArray	= $this->Sales_order_model->getIncompleteSalesOrder($offset);
+		$salesOrderArray	= $this->Sales_order_model->getIncompleteSalesOrder($offset, $term);
 		foreach($salesOrderArray as $salesOrder){
 			$childResultArray = (array) $salesOrder;
 			$customerId = $salesOrder->customer_id;
@@ -62,7 +63,7 @@ class Sales_order extends CI_Controller {
 		}
 
 		$data['items']			= (object) $resultArray;
-		$data['pages'] 			= max(1, ceil($this->Sales_order_model->countIncompleteSalesOrder()/10));
+		$data['pages'] 			= max(1, ceil($this->Sales_order_model->countIncompleteSalesOrder($term)/10));
 
 		header('Content-Type: application/json');
 		echo json_encode($data);

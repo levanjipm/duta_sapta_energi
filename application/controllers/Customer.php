@@ -27,7 +27,7 @@ class Customer extends CI_Controller {
 		
 		$data['authorize'] = $this->session->userdata('user_role');
 		
-		$this->load->view('sales/customerDashboard',$data);
+		$this->load->view('sales/Customer/dashboard',$data);
 	}
 	
 	public function insertItem()
@@ -143,5 +143,31 @@ class Customer extends CI_Controller {
 		$this->load->view('head');
 		$this->load->view('accounting/header', $data);
 		$this->load->view('accounting/assignAccountantDashboard');
+	}
+
+	public function viewCustomerDetail($customerId)
+	{
+		$user_id		= $this->session->userdata('user_id');
+		$this->load->model('User_model');
+		$data['user_login'] = $this->User_model->getById($user_id);
+		
+		$this->load->model('Authorization_model');
+		$data['departments']	= $this->Authorization_model->getByUserId($user_id);
+		
+		$this->load->view('head');
+		$this->load->view('sales/header', $data);
+
+		$data = array();
+		$this->load->model("Customer_model");
+		$customer = $this->Customer_model->getById($customerId);
+		$data['customer'] = $customer;
+
+		$this->load->model("Area_model");
+		$data['area'] = $this->Area_model->getItemById($customer->area_id);
+
+		$this->load->model("Sales_order_model");
+		$data['salesOrders'] = $this->Sales_order_model->getPendingSalesOrdersByCustomerId($customerId);
+
+		$this->load->view('sales/Customer/detailDashboard', $data);
 	}
 }

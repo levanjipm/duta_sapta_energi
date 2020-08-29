@@ -20,7 +20,7 @@ class Attendance extends CI_Controller {
 		
 		$this->load->view('head');
 		$this->load->view('human_resource/header', $data);
-		$this->load->view('human_resource/attandanceList');
+		$this->load->view('human_resource/Attendance/attendanceList');
     }
     
     public function statusDashboard()
@@ -34,7 +34,7 @@ class Attendance extends CI_Controller {
 		
 		$this->load->view('head');
         $this->load->view('human_resource/header', $data);
-        $this->load->view('human_resource/attendanceStatusDashboard');
+        $this->load->view('human_resource/Attendance/attendanceStatusDashboard');
     }
 
 	public function getTodayAbsentee()
@@ -106,6 +106,7 @@ class Attendance extends CI_Controller {
 		
 		$this->load->view('head');
         $this->load->view('human_resource/header', $data);
+		$this->load->view('human_resource/Attendance/historyDashboard');
 	}
 
 	public function insertItem()

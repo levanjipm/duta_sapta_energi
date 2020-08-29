@@ -55,6 +55,7 @@
 			<a href='<?= site_url('Asset') ?>'><button><p style='font-family:museo'>List</p></button></a>
 			<a href='<?= site_url('Asset/calculateValue') ?>'><button><p style='font-family:museo'>Value</p></button></a>
 			<a href='<?= site_url('Asset/classDashboard') ?>'><button><p style='font-family:museo'>Class</p></button></a>
+			<a href='<?= site_url('Asset/archiveDashboard') ?>'><button><p style='font-family:museo'>Archive</p></button></a>
 		</div>
 		<button class='container_button'><p>Opponent</p></button>
 		<div class='container_bar'>

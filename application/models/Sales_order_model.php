@@ -129,23 +129,34 @@ class Sales_order_model extends CI_Model {
 			return $name;
 		}
 
-		public function getIncompleteSalesOrder()
+		public function getIncompleteSalesOrder($offset, $term)
 		{
 			$query = $this->db->query("
-				SELECT code_sales_order.* FROM code_sales_order 
+				SELECT code_sales_order.*, sellerTable.name as seller, salesOrderTable.quantity, salesOrderTable.sent
+				FROM code_sales_order
+				LEFT JOIN (
+					SELECT id, name FROM users
+				) as sellerTable
+				ON code_sales_order.seller = sellerTable.id
 				JOIN (
-					SELECT DISTINCT(sales_order.code_sales_order_id) as id FROM sales_order
-					WHERE status = '0' 	
-				) as a
-				ON a.id = code_sales_order.id
-				WHERE code_sales_order.is_confirm = '1' AND code_sales_order.is_delete = '0'
+					SELECT sales_order.code_sales_order_id, SUM(sales_order.quantity) AS quantity, IF(sales_order.status = 1, SUM(sales_order.quantity), SUM(sales_order.sent)) as sent
+					FROM sales_order
+					GROUP BY sales_order.code_sales_order_id
+				) as salesOrderTable
+				ON salesOrderTable.code_sales_order_id = code_sales_order.id
+				JOIN (
+					SELECT DISTINCT(sales_order.code_sales_order_id) as id FROM sales_order WHERE status = '0'
+				) as incompletedSalesOrderTable
+				ON code_sales_order.id = incompletedSalesOrderTable.id
+				WHERE code_sales_order.is_confirm = '1'
+				AND code_sales_order.name LIKE '%$term%';
 			");
 
 			$result = $query->result();
 			return $result;
 		}
 
-		public function countIncompleteSalesOrder()
+		public function countIncompleteSalesOrder($term)
 		{
 			$query = $this->db->query("
 				SELECT code_sales_order.* FROM code_sales_order 
@@ -154,6 +165,8 @@ class Sales_order_model extends CI_Model {
 					WHERE status = '0' 	
 				) as a
 				ON a.id = code_sales_order.id
+				WHERE code_sales_order.is_confirm = '1'
+				AND code_sales_order.name LIKE '%$term%'
 			");
 
 			$result = $query->num_rows();
@@ -414,6 +427,31 @@ class Sales_order_model extends CI_Model {
 			$query		= $this->db->get();
 			$result		= $query->num_rows();
 			
+			return $result;
+		}
+
+		public function getPendingSalesOrdersByCustomerId($customerId)
+		{
+			$query		= $this->db->query("
+				SELECT code_sales_order.date, code_sales_order.id, code_sales_order.name, sellerTable.name as seller, salesOrderTable.quantity, salesOrderTable.sent
+				FROM code_sales_order
+				LEFT JOIN (
+					SELECT id, name FROM users
+				) as sellerTable
+				ON code_sales_order.seller = sellerTable.id
+				JOIN (
+					SELECT sales_order.code_sales_order_id, SUM(sales_order.quantity) AS quantity, IF(sales_order.status = 1, SUM(sales_order.quantity), SUM(sales_order.sent)) as sent
+					FROM sales_order
+					GROUP BY sales_order.code_sales_order_id
+				) as salesOrderTable
+				ON salesOrderTable.code_sales_order_id = code_sales_order.id
+				JOIN (
+					SELECT DISTINCT(sales_order.code_sales_order_id) as id FROM sales_order WHERE status = '0'
+				) as incompletedSalesOrderTable
+				ON code_sales_order.id = incompletedSalesOrderTable.id
+				WHERE code_sales_order.customer_id = '$customerId';
+			");
+			$result = $query->result();
 			return $result;
 		}
 }

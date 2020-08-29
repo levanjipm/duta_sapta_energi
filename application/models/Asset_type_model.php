@@ -54,14 +54,6 @@ class Asset_type_model extends CI_Model {
 			return $result;
 		}
 		
-		public function show_all()
-		{
-			$query 		= $this->db->get($this->table_asset_type);
-			$items	 	= $query->result();
-						
-			return $items;
-		}
-		
 		public function insertItem($name, $description)
 		{
 			$db_item	= array(
@@ -74,7 +66,7 @@ class Asset_type_model extends CI_Model {
 			return $this->db->affected_rows();
 		}
 		
-		public function show_items($offset = 0, $term = '', $limit = 25)
+		public function getItems($offset = 0, $term = '', $limit = 25)
 		{
 			if($term != ''){
 				$this->db->like('name', $term, 'both');
@@ -87,7 +79,7 @@ class Asset_type_model extends CI_Model {
 			return $result;
 		}
 		
-		public function count_items($term = '')
+		public function countItems($term = '')
 		{
 			if($term != ''){
 				$this->db->like('name', $term, 'both');

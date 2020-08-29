@@ -5,11 +5,11 @@
     "\\application\\controllers",
     "\\application\\models",
     "\\application\\views",
-    "\\application\\views\\finance\\Bank",
     "\\application\\views\\sales",
-    "\\application\\views\\sales\\Analytics",
+    "\\application\\views\\sales\\Customer",
+    "\\application\\views\\sales\\Return",
     "\\css"
   ],
-  "SelectedNode": "\\application\\views\\sales\\Analytics\\dashboard.php",
+  "SelectedNode": "\\application\\views\\sales\\dashboard.php",
   "PreviewInSolutionExplorer": false
 }

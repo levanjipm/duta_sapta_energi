@@ -1,5 +1,5 @@
 <head>
-	<title>Bank accounts</title>
+	<title>Assign accountant</title>
 </head>
 <div class='dashboard'>
 	<div class='dashboard_head'>

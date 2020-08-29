@@ -99,7 +99,7 @@
 	
 	function refresh_view(page = $('#page').val()){
 		$.ajax({
-			url:'<?= site_url('Asset/show_type_limited') ?>',
+			url:'<?= site_url('Asset/getClassItems') ?>',
 			data:{
 				page:page,
 				term:$('#search_bar').val()

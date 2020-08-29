@@ -32,7 +32,7 @@
 		<div class='container_bar'>
 			<a href='<?= site_url('Attendance') ?>'><button><p style='font-family:museo'>List</p></button></a>
 			<a href='<?= site_url('Attendance/statusDashboard') ?>'><button><p style='font-family:museo'>Status</p></button></a>
-			<a href='<?= site_url('Users/attandance') ?>'><button><p style='font-family:museo'>History</p></button></a>
+			<a href='<?= site_url('Attendance/historyDashboard') ?>'><button><p style='font-family:museo'>History</p></button></a>
 		</div>
 		<a href='<?= site_url('Benefits') ?>'><button><p style='font-family:museo'>Benefits</p></button></a>
 	</div>
