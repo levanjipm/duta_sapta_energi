@@ -55,13 +55,19 @@
 	</div>
 </div>
 
-<div class='alert_wrapper' id='view_good_receipt_wrapper'>
-	<button type='button' class='slide_alert_close_button'>&times </button>
+<div class='alert_wrapper' id='viewSalesOrderWrapper'>
+	<button type='button' class='slide_alert_close_button'>&times;</button>
 	<div class='alert_box_slide'>
+		<h3 style='font-family:bebasneue'>Sales Order Archive</h3>
+		<hr>
 		<label>Sales order</label>
 		<p style='font-family:museo' id='sales_order_name_p'></p>
 		<p style='font-family:museo' id='sales_order_date_p'></p>
-		<p style='font-family:museo' id='sales_order_seller_p'></p>
+		<p style='font-family:museo'>Created by <span id='created_by_p'></span></p>
+		<p style='font-family:museo' id='sales_order_confirm'></p>
+
+		<label>Seller</label>
+		<p style='font-family:museo' id='sales_order_seller_p'></p>		
 		
 		<label>Taxing</label>
 		<p style='font-family:museo' id='taxing_name_p'></p>
@@ -98,7 +104,9 @@
 		refresh_view();
 	});
 	
-	refresh_view();
+	$(document).ready(function(){
+		refresh_view();
+	})
 	
 	function refresh_view(page = $('#page').val()){
 		$.ajax({
@@ -150,7 +158,7 @@
 						complete_address	+= ' No. ' + customer_number;
 					}
 					
-					if(customer_block != ''){
+					if(customer_block != '' && customer_block != "000"){
 						complete_address	+= ' Blok ' + customer_block;
 					}
 				
@@ -171,6 +179,8 @@
 					} else {
 						if(is_approved == 1){
 							$('#archive_table').append("<div class='row archive_row'><div class='col-md-3 col-sm-3 col-xs-4'><p><strong>" + sales_order_name + "</strong></p><p>" + seller + "</p></div><div class='col-md-3 col-sm-3 col-xs-3'><p><strong>" + customer_name + "</strong></p><p>" + complete_address + "</p><p>" + customer_city + "</p></div><div class='col-md-4 col-sm-5 col-xs-5 col-md-offset-2 col-sm-offset-1 col-xs-offset-2'><p style='display:inline-block'>" + my_date_format(sales_order_date) + " <strong>|</strong> </p> <button type='button' class='button button_transparent' onclick='open_view(" + sales_order_id + ")' title='View " + sales_order_name + "'><i class='fa fa-eye'></i></button> <button type='button' class='button button_verified' title='Confirmed'><i class='fa fa-check'></i></button> <button class='button button_verified_false' title='Closed on " + my_date_format(approved_date) + "'><i class='fa fa-times'></i></button></div>");
+							var dangerButtonWidth	= $('.button_verified_false').height();
+							$('.button_verified_false').width(dangerButtonWidth);
 						} else {
 							$('#archive_table').append("<div class='row archive_row'><div class='col-md-3 col-sm-3 col-xs-4'><p><strong>" + sales_order_name + "</strong></p><p>" + seller + "</p></div><div class='col-md-3 col-sm-3 col-xs-3'><p><strong>" + customer_name + "</strong></p><p>" + complete_address + "</p><p>" + customer_city + "</p></div><div class='col-md-4 col-sm-5 col-xs-5 col-md-offset-2 col-sm-offset-1 col-xs-offset-2'><p style='display:inline-block'>" + my_date_format(sales_order_date) + " <strong>|</strong> </p> <button type='button' class='button button_transparent' onclick='open_view(" + sales_order_id + ")' title='View " + sales_order_name + "'><i class='fa fa-eye'></i></button> <button type='button' class='button button_verified' title='Confirmed'><i class='fa fa-check'></i></button></div>");
 						}
@@ -193,6 +203,9 @@
 				var general					= response.general;
 				var sales_order_date		= general.date;
 				var sales_order_name		= general.name;
+				var seller					= general.seller;
+				var creator					= general.creator;
+				var confirmed_by			= general.confirmed_by;
 				var complete_address		= '';
 
 				var customer				= response.customer;
@@ -245,6 +258,9 @@
 
 				$('#sales_order_name_p').html(sales_order_name);
 				$('#sales_order_date_p').html(my_date_format(sales_order_date));
+				$('#sales_order_seller_p').html((seller == null)? "<i>Not available</i>": seller);
+				$('#created_by_p').html((creator == null)? "<i>Not available</i>": creator);
+				$('#sales_order_confirm').html((confirmed_by == null)? "<i>Has not been confirmed</i>": "Confirmed by " + confirmed_by)
 				
 				$('#customer_name_p').html(customer_name);
 				$('#customer_address_p').html(complete_address);
@@ -269,8 +285,8 @@
 				
 				$('#sales_order_table').append("<tr><td colspan='4'></td><td colspan='2'>Total</td><td>Rp. " + numeral(sales_order_value).format('0,0.00') + "</td></tr>");
 				
-				$('#view_good_receipt_wrapper').fadeIn(300, function(){
-					$('#view_good_receipt_wrapper .alert_box_slide').show("slide", { direction: "right" }, 250);
+				$('#viewSalesOrderWrapper').fadeIn(300, function(){
+					$('#viewSalesOrderWrapper .alert_box_slide').show("slide", { direction: "right" }, 250);
 				});
 			}
 		});

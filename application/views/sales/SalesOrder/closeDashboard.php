@@ -222,7 +222,7 @@
 					$('#sales_order_seller_p').html(sales_order_seller);
 				}
 
-				var delivery_orders = response.delivery_orders;
+				var delivery_orders = response.deliveryOrders;
 				var deliveryOrderCount = 0;
 				$('#deliveryOrderTableContent').html('');
 				$.each(delivery_orders, function(index, delivery_order){

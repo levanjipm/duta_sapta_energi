@@ -175,7 +175,7 @@ class Invoice_model extends CI_Model {
 			switch($category){
 				case 1:
 					$query	= $this->db->query("
-						SELECT (SUM(invoice.value) - COALESCE(a.value, 0)) as value, customer.name, customer.city, code_sales_order.customer_id as id
+						SELECT (SUM(invoice.value) - COALESCE(a.value, 0)) as value, customer.name, customer.city, deliveryOrderTable.customer_id as id
 						FROM invoice
 						LEFT JOIN (
 							SELECT SUM(receivable.value) as value, invoice_id FROM receivable
@@ -184,18 +184,22 @@ class Invoice_model extends CI_Model {
 							GROUP BY invoice_id
 							) a
 						ON invoice.id = a.invoice_id
-						JOIN code_delivery_order ON code_delivery_order.invoice_id = invoice.id
-						JOIN delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order.id
-						JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
-						JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
-						JOIN customer ON code_sales_order.customer_id = customer.id
+						JOIN(
+							SELECT DISTINCT(code_delivery_order.invoice_id) as id, code_sales_order.customer_id
+							FROM code_delivery_order
+							JOIN delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order.id
+							JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
+							JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
+						) as deliveryOrderTable
+						ON deliveryOrderTable.id = invoice.id
+						JOIN customer ON deliveryOrderTable.customer_id = customer.id
 						WHERE invoice.is_confirm = '1'
-						GROUP BY code_sales_order.customer_id
+						GROUP BY deliveryOrderTable.customer_id
 					");
 					break;
 				case 2:
 					$query	= $this->db->query("
-						SELECT (SUM(invoice.value) - COALESCE(a.value, 0)) as value, customer.name, customer.city, code_sales_order.customer_id as id, MIN(a.difference) as difference
+						SELECT (SUM(invoice.value) - COALESCE(a.value, 0)) as value, customer.name, customer.city, deliveryOrderTable.customer_id as id, MIN(a.difference) as difference
 						FROM invoice
 						LEFT JOIN (
 							SELECT SUM(receivable.value) as value, invoice_id, invoice.date, DATEDIFF(NOW(), invoice.date) as difference
@@ -205,19 +209,23 @@ class Invoice_model extends CI_Model {
 							GROUP BY invoice_id
 							) a
 						ON invoice.id = a.invoice_id
-						JOIN code_delivery_order ON code_delivery_order.invoice_id = invoice.id
-						JOIN delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order.id
-						JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
-						JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
-						JOIN customer ON code_sales_order.customer_id = customer.id
+						JOIN(
+							SELECT DISTINCT(code_delivery_order.invoice_id) as id, code_sales_order.customer_id
+							FROM code_delivery_order
+							JOIN delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order.id
+							JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
+							JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
+						) as deliveryOrderTable
+						ON deliveryOrderTable.id = invoice.id
+						JOIN customer ON deliveryOrderTable.customer_id = customer.id
 						WHERE difference > customer.term_of_payment
 						AND invoice.is_confirm = '1'
-						GROUP BY code_sales_order.customer_id
+						GROUP BY deliveryOrderTable.customer_id
 					");
 					break;
 				case 3:
 					$query	= $this->db->query("
-						SELECT (SUM(invoice.value) - COALESCE(a.value, 0)) as value, customer.name, customer.city, code_sales_order.customer_id as id, MIN(a.difference) as difference
+						SELECT (SUM(invoice.value) - COALESCE(a.value, 0)) as value, customer.name, customer.city, deliveryOrderTable.customer_id as id, MIN(a.difference) as difference
 						FROM invoice
 						LEFT JOIN (
 							SELECT SUM(receivable.value) as value, invoice_id, invoice.date, DATEDIFF(NOW(), invoice.date) as difference
@@ -227,19 +235,23 @@ class Invoice_model extends CI_Model {
 							GROUP BY invoice_id
 							) a
 						ON invoice.id = a.invoice_id
-						JOIN code_delivery_order ON code_delivery_order.invoice_id = invoice.id
-						JOIN delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order.id
-						JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
-						JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
-						JOIN customer ON code_sales_order.customer_id = customer.id
+						JOIN(
+							SELECT DISTINCT(code_delivery_order.invoice_id) as id, code_sales_order.customer_id
+							FROM code_delivery_order
+							JOIN delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order.id
+							JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
+							JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
+						) as deliveryOrderTable
+						ON deliveryOrderTable.id = invoice.id
+						JOIN customer ON deliveryOrderTable.customer_id = customer.id
 						WHERE DATEDIFF(NOW(), invoice.date) <= 30
 						AND invoice.is_confirm = '1'
-						GROUP BY code_sales_order.customer_id
+						GROUP BY deliveryOrderTable.customer_id
 					");
 					break;
 				case 4:
 					$query	= $this->db->query("
-						SELECT (SUM(invoice.value) - COALESCE(a.value, 0)) as value, customer.name, customer.city, code_sales_order.customer_id as id, MIN(a.difference) as difference
+						SELECT (SUM(invoice.value) - COALESCE(a.value, 0)) as value, customer.name, customer.city, deliveryOrderTable.customer_id as id, MIN(a.difference) as difference
 						FROM invoice
 						LEFT JOIN (
 							SELECT SUM(receivable.value) as value, invoice_id, invoice.date, DATEDIFF(NOW(), invoice.date) as difference
@@ -249,19 +261,23 @@ class Invoice_model extends CI_Model {
 							GROUP BY invoice_id
 							) a
 						ON invoice.id = a.invoice_id
-						JOIN code_delivery_order ON code_delivery_order.invoice_id = invoice.id
-						JOIN delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order.id
-						JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
-						JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
-						JOIN customer ON code_sales_order.customer_id = customer.id
+						JOIN(
+							SELECT DISTINCT(code_delivery_order.invoice_id) as id, code_sales_order.customer_id
+							FROM code_delivery_order
+							JOIN delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order.id
+							JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
+							JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
+						) as deliveryOrderTable
+						ON deliveryOrderTable.id = invoice.id
+						JOIN customer ON deliveryOrderTable.customer_id = customer.id
 						WHERE DATEDIFF(NOW(), invoice.date) > 30 AND DATEDIFF(NOW(), invoice.date) <= 45
 						AND invoice.is_confirm = '1'
-						GROUP BY code_sales_order.customer_id
+						GROUP BY deliveryOrderTable.customer_id
 					");
 					break;
 				case 5:
 					$query	= $this->db->query("
-						SELECT (SUM(invoice.value) - COALESCE(a.value, 0)) as value, customer.name, customer.city, code_sales_order.customer_id as id, MIN(a.difference) as difference
+						SELECT (SUM(invoice.value) - COALESCE(a.value, 0)) as value, customer.name, customer.city, deliveryOrderTable.customer_id as id, MIN(a.difference) as difference
 						FROM invoice
 						LEFT JOIN (
 							SELECT SUM(receivable.value) as value, invoice_id, invoice.date, DATEDIFF(NOW(), invoice.date) as difference
@@ -271,19 +287,23 @@ class Invoice_model extends CI_Model {
 							GROUP BY invoice_id
 							) a
 						ON invoice.id = a.invoice_id
-						JOIN code_delivery_order ON code_delivery_order.invoice_id = invoice.id
-						JOIN delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order.id
-						JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
-						JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
-						JOIN customer ON code_sales_order.customer_id = customer.id
+						JOIN(
+							SELECT DISTINCT(code_delivery_order.invoice_id) as id, code_sales_order.customer_id
+							FROM code_delivery_order
+							JOIN delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order.id
+							JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
+							JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
+						) as deliveryOrderTable
+						ON deliveryOrderTable.id = invoice.id
+						JOIN customer ON deliveryOrderTable.customer_id = customer.id
 						WHERE DATEDIFF(NOW(), invoice.date) > 45 AND DATEDIFF(NOW(), invoice.date) <= 60
 						AND invoice.is_confirm = '1'
-						GROUP BY code_sales_order.customer_id
+						GROUP BY deliveryOrderTable.customer_id
 					");
 					break;
 				case 6:
 					$query	= $this->db->query("
-						SELECT (SUM(invoice.value) - COALESCE(a.value, 0)) as value, customer.name, customer.city, code_sales_order.customer_id as id, MIN(a.difference) as difference
+						SELECT (SUM(invoice.value) - COALESCE(a.value, 0)) as value, customer.name, customer.city, deliveryOrderTable.customer_id as id, MIN(a.difference) as difference
 						FROM invoice
 						LEFT JOIN (
 							SELECT SUM(receivable.value) as value, invoice_id, invoice.date, DATEDIFF(NOW(), invoice.date) as difference
@@ -293,14 +313,18 @@ class Invoice_model extends CI_Model {
 							GROUP BY invoice_id
 							) a
 						ON invoice.id = a.invoice_id
-						JOIN code_delivery_order ON code_delivery_order.invoice_id = invoice.id
-						JOIN delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order.id
-						JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
-						JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
-						JOIN customer ON code_sales_order.customer_id = customer.id
+						JOIN(
+							SELECT DISTINCT(code_delivery_order.invoice_id) as id, code_sales_order.customer_id
+							FROM code_delivery_order
+							JOIN delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order.id
+							JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
+							JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
+						) as deliveryOrderTable
+						ON deliveryOrderTable.id = invoice.id
+						JOIN customer ON deliveryOrderTable.customer_id = customer.id
 						WHERE DATEDIFF(NOW(), invoice.date) > 60
 						AND invoice.is_confirm = '1'
-						GROUP BY code_sales_order.customer_id
+						GROUP BY deliveryOrderTable.customer_id
 					");
 					break;
 			}
@@ -385,14 +409,18 @@ class Invoice_model extends CI_Model {
 				SELECT invoice.*, COALESCE(a.value,0) as paid
 				FROM invoice 
 				JOIN code_delivery_order ON invoice.id = code_delivery_order.invoice_id
-				LEFT JOIN delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order.id
-				JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
-				JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
 				LEFT JOIN (
 					SELECT SUM(value) as value, invoice_id FROM receivable GROUP BY invoice_id
 				) AS a
 				ON a.invoice_id = invoice.id
-				WHERE code_sales_order.customer_id = '$customerId'
+				JOIN (
+					SELECT DISTINCT(code_delivery_order.invoice_id) as id, code_sales_order.customer_id FROM code_delivery_order
+					JOIN delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order.id
+					JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
+					JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
+				) AS deliveryOrderTable
+				ON deliveryOrderTable.id = invoice.id
+				WHERE deliveryOrderTable.customer_id = '$customerId'
 				AND invoice.is_done = '0'
 				ORDER BY invoice.date ASC, invoice.name ASC, invoice.id ASC
 			");

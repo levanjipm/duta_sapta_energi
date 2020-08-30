@@ -96,7 +96,7 @@ class Sales_order extends CI_Controller {
 	public function inputItem()
 	{
 		$this->load->model('Sales_order_model');
-		$id = $this->Sales_order_model->insert_from_post();
+		$id = $this->Sales_order_model->insertItem();
 		if($id != NULL){
 			$this->load->model('Sales_order_detail_model');
 			$this->Sales_order_detail_model->insert_from_post($id);

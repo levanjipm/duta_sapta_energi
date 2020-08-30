@@ -259,7 +259,7 @@
 			success:function(){
 				$('button').attr('disabled', false);
 				refresh_view();
-				$('.slide_alert_close_button').click();
+				$('#view_user_wrapper .slide_alert_close_button').click();
 			}
 		});
 	}

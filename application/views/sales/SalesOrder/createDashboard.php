@@ -1,4 +1,4 @@
-<head>
+s<head>
 	<title>Create sales order</title>
 </head>
 <div class='dashboard'>
@@ -8,6 +8,8 @@
 	<br>
 	<div class='dashboard_in'>
 		<form action='<?= site_url('Sales_order/inputItem') ?>' method='POST' id='sales_order_form'>
+			<h3 style='font-family:bebasneue'>Create Sales Order</h3>
+			<hr>
 			<label>Date</label>
 			<input type='date' class='form-control' name='sales_order_date' id='sales_order_date' value='<?= date('Y-m-d') ?>'>
 			
@@ -26,7 +28,7 @@
 			
 			<label>Seller</label>
 			<button type='button' class='form-control' id='sellerButton' style='text-align:left!important'>None</button>
-			<input type='hidden' id='sales_order_seller' name='sales_order_seller'>
+			<input type='hidden' id='sales_order_seller' name='sales_order_seller' value="">
 	
 			<label>Taxing</label>
 			<select class='form-control' name='taxing' id='taxing'>
@@ -212,8 +214,9 @@
 
 					$('#sellerTableContent').append("<tr><td><img src='" + imageUrl + "' style='width:30px;height:30px;border-radius:50%'> " + name + "</td><td><button class='button button_default_dark' id='selectSellerButton-" + id + "'><i class='fa fa-long-arrow-right'></i></button></td></tr>");
 					$('#selectSellerButton-' + id).click(function(){
-						$('#seller').val(id);
+						$('#sales_order_seller').val(id);
 						$('#sellerButton').html(name);
+						$('#seller_p').html(name);
 						$('#selectSellerWrapper .alert_full_close_button').click();
 					});
 					sellerCount++;
@@ -243,6 +246,7 @@
 	function selectEmptySeller(){
 		$('#seller').val("");
 		$('#sellerButton').html("None");
+		$('#seller_p').html("None");
 		$('#selectSellerWrapper .alert_full_close_button').click();
 	}
 
@@ -317,14 +321,13 @@
 			var taxing 		= $("#taxing option:selected").html();
 			var date 		= $("#sales_order_date").val();
 			var customer	= $("#select_customer_button").text();
-			var seller		= $("#sales_order_seller option:selected").html();
 			var method		= $("#method option:selected").html();
 			
 			$('#customer_p').html(customer);
 			$('#customer_address_p').html(customer_address_select);
 			$('#date').html(my_date_format(date));
 			$('#taxing_p').html(taxing);
-			$('#seller_p').html(seller);
+			
 			$('#invoicing_p').html(method);
 			
 			var sales_order_value = 0;

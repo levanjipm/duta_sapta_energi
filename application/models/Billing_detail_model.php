@@ -120,9 +120,9 @@ class Billing_detail_model extends CI_Model {
 				$note = $noteArray[$billingId];
 				if($result == 1 || $result == 2){
 					if($nextBillingDateArray[$billingId] > $billingDate){
-						$this->Invoice_model->updateBillingDate($id, $billingDate, $nextBillingDateArray[$billingId]);
+						$this->Invoice_model->updateBillingDate($billingId, $billingDate, $nextBillingDateArray[$billingId]);
 					} else {
-						$this->Invoice_model->updateBillingDate($id, $billingDate);
+						$this->Invoice_model->updateBillingDate($billingId, $billingDate);
 					}
 				}
 

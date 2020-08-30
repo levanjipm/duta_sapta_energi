@@ -87,7 +87,7 @@
 						var imageUrl = "<?= base_url() . '/assets/ProfileImages/' ?>" + item.image_url;
 					}
 					var date = item.date;
-					$('#billingTableContent').append("<tr><td>" + my_date_format(date) + "</td><td><img src='" + imageUrl + "' style='width:30px;height:30px;border-radius:50%'> " + name + "</td><td><button class='button button_default_dark' onclick='viewBilling(" + id + ")'><i class='fa fa-eye'></i></button></td></tr>");
+					$('#billingTableContent').append("<tr><td><label>" + name + "</label><p>" + my_date_format(date) + "</p></td><td><img src='" + imageUrl + "' style='width:30px;height:30px;border-radius:50%'> " + collector + "</td><td><button class='button button_default_dark' onclick='viewBilling(" + id + ")'><i class='fa fa-eye'></i></button></td></tr>");
 					billingCount++;
 				})
 

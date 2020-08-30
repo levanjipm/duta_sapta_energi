@@ -270,4 +270,34 @@ class Bank extends CI_Controller {
 		$data = $this->Bank_model->getCurrentBalance($id);
 		echo $data;
 	}
+
+	public function viewTransactions($type, $id)
+	{
+		$user_id		= $this->session->userdata('user_id');
+		$this->load->model('User_model');
+		$data['user_login'] = $this->User_model->getById($user_id);
+		
+		$this->load->model('Authorization_model');
+		$data['departments']	= $this->Authorization_model->getByUserId($user_id);
+		
+		$this->load->view('head');
+		$this->load->view('finance/header', $data);
+
+		$data = array();
+		if($type == 1){
+			$data['type'] = "Customer";
+			$this->load->model("Customer_model");
+			$data['opponent'] = $this->Customer_model->getById($id);
+		} else if($type == 2){
+			$data['type'] = "Supplier";
+			$this->load->model("Supplier_model");
+			$data['opponent'] = $this->Supplier_model->getById($id);
+		} else if($type == 3){
+			$data['type'] = "Other";
+			$this->load->model("Opponent_model");
+			$data['opponent'] = $this->Opponent_model->getById($id);
+		};
+
+		$this->load->view('finance/Opponent/mutationDashboard', $data);
+	}
 }

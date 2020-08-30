@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Waktu pembuatan: 28 Agu 2020 pada 12.08
+-- Waktu pembuatan: 31 Agu 2020 pada 01.51
 -- Versi server: 10.4.13-MariaDB
 -- Versi PHP: 7.2.32
 
@@ -75,6 +75,20 @@ INSERT INTO `attendance_status` (`id`, `name`, `description`, `point`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Struktur dari tabel `bank_assignment`
+--
+
+CREATE TABLE `bank_assignment` (
+  `id` int(255) NOT NULL,
+  `bank_id` int(255) NOT NULL,
+  `income_id` int(255) NOT NULL,
+  `expense_id` int(255) NOT NULL,
+  `note` text NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
 -- Struktur dari tabel `bank_transaction`
 --
 
@@ -100,7 +114,9 @@ INSERT INTO `bank_transaction` (`id`, `value`, `date`, `transaction`, `customer_
 (1, '3000000.00', '2020-08-19', 2, NULL, NULL, 1, 0, 0, NULL, 2),
 (2, '23000000.00', '2020-08-22', 1, 87, NULL, NULL, 1, 0, NULL, 2),
 (3, '20000000.00', '2020-08-21', 2, NULL, 1, NULL, 1, 0, NULL, 2),
-(4, '2000000.00', '2020-08-21', 2, NULL, NULL, NULL, 0, 0, NULL, 2);
+(4, '2000000.00', '2020-08-21', 2, NULL, NULL, NULL, 0, 0, NULL, 2),
+(5, '275520.00', '2020-08-31', 1, 69, NULL, NULL, 1, 0, NULL, 2),
+(6, '275520.00', '2020-08-31', 2, 69, NULL, NULL, 1, 0, 5, 2);
 
 -- --------------------------------------------------------
 
@@ -153,7 +169,11 @@ INSERT INTO `billing` (`id`, `invoice_id`, `result`, `note`, `code_billing_id`) 
 (9, 2, 0, '', 8),
 (10, 5, 0, '', 8),
 (11, 4, 0, '', 10),
-(12, 4, 0, '', 11);
+(12, 4, 0, '', 11),
+(13, 4, 1, 'asdf', 12),
+(14, 4, 1, 'bayar 200.000', 13),
+(15, 9, 0, '', 14),
+(16, 9, 1, 'Bayar tapi cuma 200.000', 15);
 
 -- --------------------------------------------------------
 
@@ -189,7 +209,11 @@ INSERT INTO `code_billing` (`id`, `date`, `name`, `created_by`, `billed_by`, `is
 (8, '2020-08-28', 'CB-2020-94274932', 1, 1, 0, 1, 0, 1, NULL),
 (9, '2020-08-28', 'CB-2020-90717442', 1, 1, 1, 0, 0, 1, NULL),
 (10, '2020-08-28', 'CB-2020-80878770', 1, 1, 0, 1, 0, 1, NULL),
-(11, '2020-08-28', 'CB-2020-37219775', 1, 1, 0, 1, 0, 1, NULL);
+(11, '2020-08-28', 'CB-2020-37219775', 1, 1, 0, 1, 0, 1, NULL),
+(12, '2020-08-30', 'CB-2020-88727563', 1, 1, 1, 0, 1, 1, 1),
+(13, '2020-08-30', 'CB-2020-21729216', 1, 16, 1, 0, 1, 1, 1),
+(14, '2020-08-30', 'CB-2020-46395585', 1, 1, 0, 1, 0, 1, NULL),
+(15, '2020-08-30', 'CB-2020-57065458', 1, 1, 1, 0, 1, 1, 1);
 
 -- --------------------------------------------------------
 
@@ -221,7 +245,8 @@ INSERT INTO `code_delivery_order` (`id`, `date`, `name`, `is_confirm`, `is_delet
 (6, '2020-08-21', 'DO-DSE-202008-00061', 1, 0, 1, '6F99E4F2-5737-4EDC-B03C-1AEA39D0BB3D', NULL),
 (7, '2020-08-21', 'DO-DSE-202008-00070', 1, 0, 1, '3FDDF488-1D69-4057-8EE0-2A207E71B2B6', 7),
 (8, '2020-08-22', 'DO-DSE-202008-00080', 1, 0, 1, 'F497224A-6DB8-407F-9A0F-1A6F33CA65E9', 8),
-(9, '2020-08-26', 'DO-DSE-202008-00091', 0, 1, 0, '19B57205-3CDB-43A5-A372-641E8EB657B2', NULL);
+(9, '2020-08-26', 'DO-DSE-202008-00091', 0, 1, 0, '19B57205-3CDB-43A5-A372-641E8EB657B2', NULL),
+(10, '2020-08-30', 'DO-DSE-202008-00100', 1, 0, 1, 'A0640C89-2C19-410D-B3F5-97FD2FA3F5C2', 9);
 
 -- --------------------------------------------------------
 
@@ -400,7 +425,9 @@ INSERT INTO `code_sales_order` (`id`, `customer_id`, `name`, `date`, `taxing`, `
 (4, 264, '202008.89276369', '2020-08-20', 0, NULL, 1, 1, '51CEE3A9-BB28-4331-9C07-13ADAF0405FD', 1, 1, 0),
 (5, 6, '202008.03642284', '2020-08-20', 0, NULL, 1, 1, '82AA4068-A1FF-4374-B26E-F15AF47875B0', 1, 1, 0),
 (6, 87, '202008.83768011', '2020-08-21', 0, NULL, 1, 1, 'EBDBDEA4-0FF7-46A2-BF2D-D0F70C3D9C5D', 1, 1, 0),
-(7, 116, '202008.72564649', '2020-08-26', 0, NULL, 1, 1, '5FEF68B7-F601-49FC-9A1E-298DE2750DA4', 1, 1, 0);
+(7, 116, '202008.72564649', '2020-08-26', 0, NULL, 1, 1, '5FEF68B7-F601-49FC-9A1E-298DE2750DA4', 1, 1, 0),
+(8, 69, '202008.74499829', '2020-08-30', 0, NULL, 1, 1, '0A113520-69B0-480F-8E3F-5574FAE4711A', 17, 1, 0),
+(9, 263, '202008.73572968', '2020-08-31', 0, 17, 1, 1, '25436EF9-F0F3-4328-81B4-532220CF4284', 1, 1, 0);
 
 -- --------------------------------------------------------
 
@@ -419,6 +446,13 @@ CREATE TABLE `code_sales_order_close_request` (
   `approved_date` date DEFAULT NULL,
   `created_by` int(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data untuk tabel `code_sales_order_close_request`
+--
+
+INSERT INTO `code_sales_order_close_request` (`id`, `date`, `code_sales_order_id`, `requested_by`, `information`, `is_approved`, `approved_by`, `approved_date`, `created_by`) VALUES
+(1, '2020-08-30', 8, 0, 'lama teuing, toko nya udah marah\"', 1, 1, '2020-08-30', 17);
 
 -- --------------------------------------------------------
 
@@ -445,7 +479,9 @@ INSERT INTO `code_sales_return` (`id`, `name`, `created_by`, `created_date`, `is
 (2, 'SRS-202008-29632063', 1, '2020-08-19', 1, 0, NULL),
 (3, 'SRS-202008-98134918', 1, '2020-08-20', 1, 0, NULL),
 (4, 'SRS-202008-52038778', 1, '2020-08-20', 1, 0, NULL),
-(5, 'SRS-202008-04711550', 1, '2020-08-21', 1, 0, NULL);
+(5, 'SRS-202008-04711550', 1, '2020-08-21', 1, 0, NULL),
+(6, 'SRS-202008-25460829', 17, '2020-08-30', 1, 0, 1),
+(7, 'SRS-202008-88666005', 17, '2020-08-30', 0, 1, 17);
 
 -- --------------------------------------------------------
 
@@ -478,7 +514,8 @@ INSERT INTO `code_sales_return_received` (`id`, `created_by`, `created_date`, `i
 (5, 1, '2020-08-21', 1, 0, 1, '123RT', '2020-08-22', 0, NULL),
 (6, 1, '2020-08-21', 1, 0, 1, '87123', '2020-08-21', 0, NULL),
 (7, 1, '2020-08-25', 0, 1, 1, 'asdfasdfasdfasd', '2020-08-25', 0, NULL),
-(8, 1, '2020-08-25', 1, 0, 1, 'asdfasdfasdfasdf', '2020-08-25', 0, NULL);
+(8, 1, '2020-08-25', 1, 0, 1, 'asdfasdfasdfasdf', '2020-08-25', 0, NULL),
+(9, 1, '2020-08-30', 1, 0, 1, 'DO-DSE-202008-00100(RT)', '2020-08-31', 1, 5);
 
 -- --------------------------------------------------------
 
@@ -509,148 +546,159 @@ CREATE TABLE `customer` (
   `plafond` decimal(50,2) NOT NULL,
   `is_remind` tinyint(1) NOT NULL DEFAULT 1,
   `visiting_frequency` int(1) NOT NULL DEFAULT 1,
-  `uid` varchar(50) NOT NULL,
-  `accountant_id` int(255) DEFAULT NULL
+  `uid` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data untuk tabel `customer`
 --
 
-INSERT INTO `customer` (`id`, `name`, `address`, `number`, `rt`, `rw`, `city`, `postal_code`, `area_id`, `is_black_list`, `block`, `npwp`, `phone_number`, `pic_name`, `date_created`, `created_by`, `latitude`, `longitude`, `term_of_payment`, `plafond`, `is_remind`, `visiting_frequency`, `uid`, `accountant_id`) VALUES
-(1, 'Toko Sumber Lampu', 'Jalan Jendral Ahmad Yani (Plaza IBCC)', '3', '029', '006', 'Bandung', '40271', 1, 0, 'B2', NULL, '(022) 7233271', 'Bapak Ayung', '2020-01-24', 1, NULL, NULL, 45, '3000000.00', 1, 1, '72297039', NULL),
-(5, 'Toko Agni Surya', 'Jalan Jendral Ahmad Yani', '353', '000', '000', 'Bandung', '40121', 1, 0, '', NULL, '(022) 7273893', 'Ibu Yani', '2020-01-24', 1, NULL, NULL, 45, '3000000.00', 1, 1, '09715857', NULL),
-(6, 'Toko Trijaya 2', 'Jalan Cikawao', '56', '001', '001', 'Bandung', '40261', 1, 0, '', NULL, '(022) 4220661', 'Bapak Yohan', '2020-01-24', 1, NULL, NULL, 45, '3000000.00', 1, 1, '45860382', NULL),
-(7, 'Toko Utama Lighting', 'Jalan Jendral Ahmad Yani (Plaza IBCC)', '12', '029', '006', 'Bandung', '40271', 1, 0, 'D2', NULL, '081224499786', 'Ibu Mimi', '2020-01-25', 1, NULL, NULL, 45, '3000000.00', 1, 1, '51644842', NULL),
-(8, 'Toko Surya Agung', 'Jalan H. Ibrahim Adjie (Bandung Trade Mall)', '47A', '005', '011', 'Bandung', '40283', 1, 0, 'C1', '', '(022) 7238333', 'Bapak Jajang Aji', '2020-01-29', 1, NULL, NULL, 45, '3000000.00', 1, 1, '88051032', NULL),
-(9, 'Toko Dua Saudara Electric', 'Jalan Pungkur', '51', '000', '000', 'Bandung', '40252', 3, 0, '', '', '08122033019', 'Bapak Hendrik', '2020-01-29', 1, NULL, NULL, 45, '3000000.00', 1, 1, '04153061', NULL),
-(11, 'Toko Buana Elektrik', 'Jalan Cinangka', '4', '000', '000', 'Bandung', '40616', 1, 0, '', '', '', 'Bapak Darma', '2020-01-29', 1, NULL, NULL, 45, '3000000.00', 1, 1, '59582911', NULL),
-(12, 'Toko Central Electronic', 'Jalan Mohammad Toha', '72', '000', '000', 'Bandung', '40243', 1, 0, '', '', '(022) 5225851', 'Ibu Siu Men', '2020-01-29', 1, NULL, NULL, 45, '3000000.00', 1, 1, '58385097', NULL),
-(13, 'Toko Kian Sukses', 'Jalan Cikutra', '106A', '000', '000', 'Bandung', '40124', 1, 0, '', '', '081298336288', 'Bapak Firman', '2020-01-29', 1, NULL, NULL, 45, '3000000.00', 1, 1, '26779059', NULL),
-(15, 'Toko Utama', 'Jalan Pasar Atas', '076', '000', '000', 'Cimahi', '40525', 2, 0, '000', '', '022-6654795', 'Bapak Sugianto', '2020-01-31', 1, NULL, NULL, 45, '3000000.00', 1, 1, '14731462', NULL),
-(16, 'Toko Sari Bakti', 'Jalan Babakan Sari I (Kebaktian)', '160', '000', '000', 'Bandung', '40283', 3, 0, '000', '', '082318303322', 'Bapak Jisman', '2020-01-31', 1, NULL, NULL, 45, '3000000.00', 1, 1, '35701384', NULL),
-(17, 'Toko Surya Indah Rancabolang', 'Jalan Rancabolang', '043', '000', '000', 'Bandung', '40286', 1, 0, '000', '', '081321250208', 'Ibu Dewi', '2020-01-31', 1, NULL, NULL, 45, '3000000.00', 1, 1, '96748409', NULL),
-(18, 'Toko Bangunan HD', 'Jalan Cingised', '125', '000', '000', 'Bandung', '40293', 1, 0, '000', '', '08156275160', 'Bapak Rudy', '2020-01-31', 1, NULL, NULL, 45, '3000000.00', 1, 1, '73398235', NULL),
-(19, 'Toko Paranti', 'Jalan Jendral Ahmad Yani', '945', '000', '000', 'Bandung', '40282', 4, 0, '000', '', '085315073966', 'Ibu Lili', '2020-01-31', 1, NULL, NULL, 45, '3000000.00', 1, 1, '19400857', NULL),
-(21, 'Toko Laksana', 'Jalan Ciroyom', '153', '000', '000', 'Bandung', '40183', 2, 0, '000', '', '08122396777', 'Mr. Tatang', '2020-01-31', 1, NULL, NULL, 45, '3000000.00', 1, 1, '86739707', NULL),
-(22, 'Toko Nirwana Electronic', 'Jalan Ciroyom', '117', '000', '000', 'Bandung', '40183', 2, 0, '000', '', '08122176094', 'Mr. Suwardi', '2020-01-31', 1, NULL, NULL, 45, '3000000.00', 1, 1, '40982336', NULL),
-(23, 'Toko Sinar Untung Electrical', 'Jalan Raya Dayeuh Kolot', '295', '000', '000', 'Bandung', '40258', 2, 0, '000', '', '082218456161', 'Mr. Kery', '2020-01-31', 1, NULL, NULL, 45, '3000000.00', 1, 1, '14168828', NULL),
-(24, 'Toko Depo Listrik', 'Jalan Jendral Ahmad Yani, Plaza IBCC LGF', '008', '000', '000', 'Bandung', '40271', 3, 0, 'D3', '', '022-7238318', 'Bapak Dadang', '2020-01-31', 1, NULL, NULL, 45, '3000000.00', 1, 1, '17842175', NULL),
-(25, 'Toko Krista Lighting', 'Jalan Jendral Ahmad Yani, Plaza IBCC', '12A', '000', '000', 'Bandung', '40114', 3, 0, 'D1', '', '022-7238369', 'Mr. Yendi', '2020-01-31', 1, NULL, NULL, 45, '3000000.00', 1, 1, '21343724', NULL),
-(26, 'Toko Prima', 'Jalan Surya Sumantri', '058', '000', '000', 'Bandung', '40164', 4, 0, '000', '', '022-2014967', 'Mrs. Uut', '2020-01-31', 1, NULL, NULL, 45, '3000000.00', 1, 1, '31153562', NULL),
-(27, 'Toko Sumber Rejeki', 'Jalan Jendral Ahmad Yani', '328', '000', '000', 'Bandung', '40271', 3, 0, '000', '', '081570265893', 'Ibu Sinta', '2020-01-31', 1, NULL, NULL, 45, '3000000.00', 1, 1, '70362778', NULL),
-(29, 'Toko Bangunan Kurniawan', 'Jalan Boling', '001', '000', '000', 'Bandung', '40293', 1, 0, '000', '', '085101223235', 'Mr. Kurniawan', '2020-01-31', 1, NULL, NULL, 45, '3000000.00', 1, 1, '57997527', NULL),
-(30, 'Toko Besi Adil', 'Jalan Gatot Subroto', '355', '000', '000', 'Bandung', '40724', 3, 0, '000', '', '08122047066', 'Mr. Julius', '2020-01-31', 1, NULL, NULL, 45, '3000000.00', 1, 1, '99961710', NULL),
-(31, 'Toko Karunia Sakti', 'Jalan Mohammad Toha', '210', '000', '000', 'Bandung', '40243', 2, 0, '000', '', '087827722212', 'Mrs. Alin', '2020-01-31', 1, NULL, NULL, 45, '3000000.00', 1, 1, '79488686', NULL),
-(32, 'Toko Aneka Nada', 'Jalan Jendral Ahmad Yani', '180', '000', '000', 'Bandung', '40262', 3, 0, '000', '', '089630011866', 'Mr. Ano', '2020-01-31', 1, NULL, NULL, 45, '3000000.00', 1, 1, '85679959', NULL),
-(33, 'Toko VIP Elektrik', 'Jalan Pahlawan', '049', '000', '000', 'Bandung', '40122', 4, 0, '000', '', '08122043095', 'Mr. Rudi', '2020-01-31', 1, NULL, NULL, 45, '3000000.00', 1, 1, '52951066', NULL),
-(34, 'Toko Mitra Elektrik', 'Jalan Raya Cileunyi', '036', '000', '000', 'Bandung', '40622', 1, 0, '000', '', '082129265391', 'Mr. Halifa', '2020-01-31', 1, NULL, NULL, 45, '3000000.00', 1, 1, '19707657', NULL),
-(35, 'Toko Remaja Teknik', 'Jalan Kiaracondong', '318', '000', '000', 'Bandung', '40275', 3, 0, '000', '', '022-7311813', 'Mrs. Dewi', '2020-01-31', 1, NULL, NULL, 45, '3000000.00', 1, 1, '69668982', NULL),
-(36, 'Toko Tang Mandiri', 'Jalan Holis', '321-325', '000', '000', 'Bandung', '40212', 2, 0, '000', '', '087779614332', 'Mr. Tikno', '2020-01-31', 1, NULL, NULL, 45, '3000000.00', 1, 1, '54923133', NULL),
-(37, 'Toko Bangunan Buana Jaya', 'Komplek Batununggal Indah Jalan Waas', '013', '000', '000', 'Bandung', '40266', 3, 0, '000', '', '087878878708', 'Mr. Tatang', '2020-02-01', 1, NULL, NULL, 45, '3000000.00', 1, 1, '93344156', NULL),
-(38, 'Toko Bangunan Kurniawan Jaya', 'Jalan Terusan Cibaduyut', '052', '000', '000', 'Bandung', '40239', 3, 0, '000', '', '022-5409888', 'Mrs. Lili', '2020-02-01', 1, NULL, NULL, 45, '3000000.00', 1, 1, '88500323', NULL),
-(39, 'Toko Serly Electric', 'Jalan Raya Cijerah', '242', '000', '000', 'Bandung', '40213', 2, 0, '000', '', '085220265002', 'Mr. Yayan', '2020-02-01', 1, NULL, NULL, 45, '3000000.00', 1, 1, '72941448', NULL),
-(40, 'Toko Bangunan Rahmat Putra', 'Jalan Terusan Jakarta', '272', '000', '000', 'Bandung', '40291', 1, 0, '000', '', '08122128363', 'Mr. Tanto', '2020-02-01', 1, NULL, NULL, 45, '3000000.00', 1, 1, '08912912', NULL),
-(41, 'Toko Bangunan Cahaya Logam', 'Jalan Babakan Ciparay', '088', '000', '000', 'Bandung', '40223', 2, 0, '000', '', '022-5402609', 'Mrs. Yani', '2020-02-01', 1, NULL, NULL, 45, '3000000.00', 1, 1, '06855577', NULL),
-(42, 'Toko Sumber Cahaya', 'Jalan Leuwigajah', '43C', '000', '000', 'Cimahi', '40522', 2, 0, '0000', '', '08988321110', 'Mrs. Nova Wiliana', '2020-02-01', 1, NULL, NULL, 45, '3000000.00', 1, 1, '21914045', NULL),
-(43, 'Toko D&P Electronics', 'Taman Kopo Indah II', '041', '000', '000', 'Bandung', '40218', 2, 0, '000', '', '08126526986', 'Mrs. Susanti', '2020-02-01', 1, NULL, NULL, 45, '3000000.00', 1, 1, '64927313', NULL),
-(44, 'Toko Bangunan Pusaka Jaya', 'Jalan Gardujati, Jendral Sudirman', '001', '000', '000', 'Bandung', '40181', 2, 0, '000', '', '022-6031756', 'Mrs. Jeni', '2020-02-01', 1, NULL, NULL, 45, '3000000.00', 1, 1, '98204352', NULL),
-(45, 'Toko Bangunan Raya Timur', 'Jalan Abdul Haris Nasution, Sindanglaya', '156', '000', '000', 'Bandung', '40293', 1, 0, '000', '', '085974113514', 'Mrs. Safiah', '2020-02-01', 1, NULL, NULL, 45, '3000000.00', 1, 1, '46723199', NULL),
-(46, 'Toko Guna Jaya Teknik', 'Jalan Sukamenak', '123', '000', '000', 'Bandung', '40228', 4, 0, '000', '', '0895802238369', 'Mrs. Yuliah', '2020-02-01', 1, NULL, NULL, 45, '3000000.00', 1, 1, '25854166', NULL),
-(47, 'Toko Bangunan Sinar Surya', 'Jalan Terusan Pasirkoja', '108', '000', '000', 'Bandung', '40232', 2, 0, '000', '', '022-6018088', 'Mrs. Mely', '2020-02-01', 1, NULL, NULL, 45, '3000000.00', 1, 1, '38239857', NULL),
-(48, 'Toko Pada Selamat', 'Jalan Raya Dayeuh Kolot', '314', '000', '000', 'Bandung', '40258', 2, 0, '000', '', '08985085885', 'Mr. Selamet', '2020-02-01', 1, NULL, NULL, 45, '3000000.00', 1, 1, '64112119', NULL),
-(49, 'Toko Bangunan Kopo Indah', 'Jalan Peta', '200', '000', '000', 'Bandung', '40233', 2, 0, '000', '', '022-6036149', 'Mr. Iwan', '2020-02-01', 1, NULL, NULL, 45, '3000000.00', 1, 1, '58742819', NULL),
-(50, 'Toko Yasa Elektronik', 'Jalan Margacinta', '165', '000', '000', 'Bandung', '40287', 1, 0, '000', '', '082115065506', 'Mr. Jajang', '2020-02-01', 1, NULL, NULL, 45, '3000000.00', 1, 1, '06280309', NULL),
-(51, 'Toko Fikriy Berkah Elektronik', 'Jalan Raya Jatinangor', '131', '000', '000', 'Bandung', '45363', 1, 0, '000', '', '082219561667', 'Mr. Agung', '2020-02-01', 1, NULL, NULL, 45, '3000000.00', 1, 1, '25976047', NULL),
-(52, 'Toko AA Electronic Service', 'Jalan Kyai Haji Ahmad Sadili', '194', '000', '000', 'Bandung', '40394', 1, 0, '000', '', '085316116595', 'Mr. Amir', '2020-02-01', 1, NULL, NULL, 45, '3000000.00', 1, 1, '06823947', NULL),
-(53, 'Toko Kencana Electric', 'Jalan Sultan Agung', '136', '000', '000', 'Pekalongan', '51126', 1, 0, '000', '', '0285-422035', 'Mr. Akiang', '2020-02-01', 1, NULL, NULL, 45, '3000000.00', 1, 1, '42876037', NULL),
-(54, 'Toko Kurnia Electronic', 'Jalan Raya Batujajar', '268', '000', '000', 'Bandung', '40561', 2, 0, '000', '', '085797993942', 'Mrs. Alda', '2020-02-01', 1, NULL, NULL, 45, '3000000.00', 1, 1, '06621118', NULL),
-(55, 'Toko Wira Elektrik', 'Jalan Buah Batu', '036', '000', '000', 'Bandung', '40262', 3, 0, '000', '', '08122136088', 'Mr. Budi', '2020-02-01', 1, NULL, NULL, 45, '3000000.00', 1, 1, '02946580', NULL),
-(56, 'Toko Bunga Elektrik', 'Jalan Cikondang', '025', '000', '000', 'Bandung', '40133', 4, 0, '000', '', '081320419469', 'Mr. Ayon', '2020-02-03', 1, NULL, NULL, 45, '3000000.00', 1, 1, '30546962', NULL),
-(57, 'Toko Cahaya Baru Cimuncang', 'Jalan Cimuncang', '037', '000', '000', 'Bandung', '40125', 4, 0, '000', '', '085782724800', 'Mr. Arif', '2020-02-03', 1, NULL, NULL, 45, '3000000.00', 1, 1, '81824949', NULL),
-(58, 'Toko Sinar Karapitan', 'Jalan Karapitan', '026', '000', '000', 'Bandung', '40261', 3, 0, '000', '', '022-4208474', 'Mr. Yangyang', '2020-02-03', 1, NULL, NULL, 45, '3000000.00', 1, 1, '61933227', NULL),
-(59, 'Toko Bintang Elektronik', 'Jalan Kebon Bibit, Balubur Town Square', '012', '000', '000', 'Bandung', '40132', 4, 0, '000', '', '022-76665492', 'Mr. Darman', '2020-02-03', 1, NULL, NULL, 45, '3000000.00', 1, 1, '16708835', NULL),
-(60, 'Toko Anam Elektronik', 'Jalan Kebon Kembang', '003', '000', '000', 'Bandung', '40116', 4, 0, '000', '', '022-4233870', 'Mr. Anam', '2020-02-03', 1, NULL, NULL, 45, '3000000.00', 1, 1, '68578865', NULL),
-(61, 'Toko Sinar Permata Jaya', 'Jalan Gegerkalong girang', '088', '000', '000', 'Bandung', '40153', 4, 0, '000', '', '081326453213', 'Mr. Andi', '2020-02-03', 1, NULL, NULL, 45, '3000000.00', 1, 1, '73691650', NULL),
-(62, 'Toko Aneka Niaga', 'Jalan Gegerkalong Tengah', '077', '000', '000', 'Bandung', '40153', 4, 0, '000', '', '022-2010184', 'Mr. Saiful', '2020-02-03', 1, NULL, NULL, 45, '3000000.00', 1, 1, '82205398', NULL),
-(63, 'Toko Altrik', 'Jalan Sarijadi Raya', '047', '000', '000', 'Bandung', '40151', 4, 0, '000', '', '082320420999', 'Mr. Firman', '2020-02-03', 1, NULL, NULL, 45, '3000000.00', 1, 1, '62385719', NULL),
-(64, 'Toko Kurnia Elektrik', 'Jalan Gegerkalong Hilir', '165', '000', '000', 'Bandung', '40153', 4, 0, '000', '', '082219152433', 'Mr. Is', '2020-02-03', 1, NULL, NULL, 45, '3000000.00', 1, 1, '76437473', NULL),
-(65, 'Toko Sinar Logam', 'Jalan Sariasih', '019', '000', '000', 'Bandung', '40151', 4, 0, '006', '', '022-2017598', 'Mr. Fajar', '2020-02-03', 1, NULL, NULL, 45, '3000000.00', 1, 1, '72080674', NULL),
-(66, 'Toko 8', 'Jalan Baladewa', '008', '000', '000', 'Bandung', '40173', 2, 0, '000', '', '022-6034875', 'Mr. Thomas', '2020-02-03', 1, NULL, NULL, 45, '3000000.00', 1, 1, '68114990', NULL),
-(67, 'Toko Glory Electric', 'Jalan Komud Supadio', '36A', '000', '000', 'Bandung', '40174', 2, 0, '000', '', '085974901894', 'Mr. Anton', '2020-02-03', 1, NULL, NULL, 45, '3000000.00', 1, 1, '37872824', NULL),
-(68, 'Toko Lestari', 'Jalan Rajawali Barat', '99A', '000', '000', 'Bandung', '40184', 2, 0, '000', '', '022-6044308', 'Mr. Dedi', '2020-02-03', 1, NULL, NULL, 45, '3000000.00', 1, 1, '45508256', NULL),
-(69, 'Toko 23', 'Jalan Kebon Kopi', '128', '000', '000', 'Cimahi', '40535', 2, 0, '000', '', '022-6018073', 'Mr. Nanan', '2020-02-03', 1, NULL, NULL, 45, '5000000.00', 1, 1, '78275254', NULL),
-(70, 'Toko Abadi', 'Jalan Gegerkalong Hilir', '073', '000', '000', 'Bandung', '40153', 4, 0, '000', '', '022-2010185', 'Mr. Arifin', '2020-02-03', 1, NULL, NULL, 45, '3000000.00', 1, 1, '71022859', NULL),
-(71, 'Toko Graha Electronic', 'Jalan Melong Asih', '071', '000', '000', 'Bandung', '40213', 2, 0, '000', '', '085722237789', 'Mr. Hendra', '2020-02-03', 1, NULL, NULL, 45, '3000000.00', 1, 1, '71798919', NULL),
-(72, 'Toko Asih', 'Jalan Melong Asih', '015', '000', '000', 'Cimahi', '40213', 2, 0, '000', '', '022-6016764', '', '2020-02-03', 1, NULL, NULL, 45, '3000000.00', 1, 1, '50061887', NULL),
-(73, 'Toko Mutiara Jaya', 'Jalan Holis', '330', '000', '000', 'Bandung', '40212', 2, 0, '000', '', '087823231177', 'Mr. Supandi', '2020-02-03', 1, NULL, NULL, 45, '3000000.00', 1, 1, '35474619', NULL),
-(74, 'Toko Berdikari', 'Jalan Holis', '328', '000', '000', 'Bandung', '40212', 2, 0, '000', '', '022-6010288', 'Mr. Ayung', '2020-02-04', 1, NULL, NULL, 45, '3000000.00', 1, 1, '55445048', NULL),
-(75, 'Toko Cipta Mandiri Electronics', 'Jalan Jendral Ahmad Yani, Jaya Plaza lt dasar', '238', '000', '000', 'Bandung', '40262', 3, 0, 'B5', '', '081220066835', 'Mr. Tino', '2020-02-04', 1, NULL, NULL, 45, '3000000.00', 1, 1, '39261382', NULL),
-(76, 'Toko Sinar Makmur Electronics', 'Jalan Jendral Ahmad Yani, Jaya Plaza lt dasar', '238', '000', '000', 'Bandung', '40262', 3, 0, 'G8', '', '081321450345', 'Mrs. Frenita', '2020-02-04', 1, NULL, NULL, 45, '3000000.00', 1, 1, '64461574', NULL),
-(77, 'Toko Aneka Electric', 'Jalan Jendral Ahmad Yani, Jaya Plaza lt dasar', '238', '000', '000', 'Bandung', '40271', 3, 0, 'C11-12', '', '022-7214731', 'Mr. Iksan', '2020-02-04', 1, NULL, NULL, 45, '3000000.00', 1, 1, '40272992', NULL),
-(78, 'Toko Tehnik Aneka Prima', 'Jalan Peta, Ruko Kopo Kencana', '002', '000', '000', 'Bandung', '40233', 2, 0, 'A3', '', '082219197020', 'Mr. Wendy Hauw', '2020-02-04', 1, NULL, NULL, 45, '3000000.00', 1, 1, '58906992', NULL),
-(80, 'Toko 487', 'Jalan Terusan Gatot Subroto', '487', '000', '000', 'Bandung', '40284', 3, 0, '000', '', '08112143030', 'Mr. Udin', '2020-02-04', 1, NULL, NULL, 45, '3000000.00', 1, 1, '88568165', NULL),
-(81, 'Toko Agung Jaya', 'Jalan Kebon Jati', '264', '000', '000', 'Bandung', '40182', 2, 0, '000', '', '022-20564092', 'Mrs. Shirly', '2020-02-04', 1, NULL, NULL, 45, '3000000.00', 1, 1, '05925620', NULL),
-(82, 'Toko Alam Ria', 'Jalan Kopo Sayati', '122-124', '000', '000', 'Bandung', '40228', 3, 0, '000', '', '022-54413432', 'Mr. Mukian', '2020-02-04', 1, NULL, NULL, 45, '3000000.00', 1, 1, '10424519', NULL),
-(83, 'Toko Alka', 'Jalan Caringin', '002', '000', '000', 'Bandung', '40223', 2, 0, '000', '', '022-5408473', 'Mr. Mila Suryantini', '2020-02-04', 1, NULL, NULL, 0, '3000000.00', 1, 1, '30080751', NULL),
-(84, 'Toko Alvina Elektronik', 'Jalan Terusan Gatot Subroto', '487', '000', '000', 'Bandung', '40284', 3, 0, '000', '', '081222556066', 'Mr. Dedi', '2020-02-04', 1, NULL, NULL, 45, '3000000.00', 1, 1, '84854085', NULL),
-(85, 'Toko Aneka Teknik', 'Jalan Jamika', '121', '000', '000', 'Bandung', '40221', 2, 0, '000', '', '022-6024485', 'Mr. Akwet', '2020-02-04', 1, NULL, NULL, 45, '3000000.00', 1, 1, '87577953', NULL),
-(86, 'Toko Anugerah', 'Jalan Kopo', '356', '000', '000', 'Bandung', '40233', 2, 0, '000', '', '022-6016845', 'Mr. Acen', '2020-02-04', 1, NULL, NULL, 45, '3000000.00', 1, 1, '68149352', NULL),
-(87, 'Toko Asa', 'Jalan Lengkong Dalam', '009', '000', '000', 'Bandung', '40263', 3, 0, '000', '', '089641476277', 'Mrs. Herlina', '2020-02-04', 1, NULL, NULL, 45, '3000000.00', 1, 1, '24899872', NULL),
-(88, 'Toko Atari', 'Jalan Sukajadi', '039', '000', '000', 'Bandung', '40162', 4, 0, '000', '', '022-2036944', 'Mr. Adi', '2020-02-04', 1, NULL, NULL, 45, '3000000.00', 1, 1, '61264749', NULL),
-(89, 'Toko B-33', 'Jalan Banceuy Gang Cikapundung', '016', '000', '000', 'Bandung', '40111', 4, 0, '000', '', '081903151932', 'Mr. Engkus', '2020-02-04', 1, NULL, NULL, 45, '3000000.00', 1, 1, '86707011', NULL),
-(90, 'Toko Banciang', 'Jalan Gandawijaya', '149', '000', '000', 'Cimahi', '40524', 2, 0, '000', '', '022-6652162', 'Mr. Erik', '2020-02-04', 1, NULL, NULL, 45, '3000000.00', 1, 1, '54638724', NULL),
-(91, 'Toko Bandung Raya', 'Jalan Otto Iskandar Dinata', '322', '000', '000', 'Bandung', '40241', 2, 0, '000', '', '022-4231988', 'Mr. Tonny', '2020-02-04', 1, NULL, NULL, 45, '3000000.00', 1, 1, '35349884', NULL),
-(92, 'Toko Bangunan Hurip Jaya', 'Jalan Cikutra', '129A', '000', '000', 'Bandung', '40124', 4, 0, '000', '', '0818423316', 'Mr. Eko', '2020-02-04', 1, NULL, NULL, 45, '3000000.00', 1, 1, '59913679', NULL),
-(93, 'Toko Bangunan Key Kurnia Jaya', 'Jalan Manglid, Ruko Kopo Lestari', '016', '000', '000', 'Bandung', '40226', 3, 0, '000', '', '082119739191', 'Mr. Kurnia', '2020-02-04', 1, NULL, NULL, 45, '3000000.00', 1, 1, '34345357', NULL),
-(94, 'Toko Bangunan Mandiri', 'Jalan Babakan Sari I', '144', '000', '000', 'Bandung', '40283', 3, 0, '000', '', '082221000473', 'Mr. Mamat', '2020-02-04', 1, NULL, NULL, 45, '3000000.00', 1, 1, '88280734', NULL),
-(95, 'Toko Bangunan Mekar Indah', 'Jalan Terusan Jakarta', '177', '000', '000', 'Bandung', '40291', 1, 0, '000', '', '081285885152', 'Mr. Yudha', '2020-02-04', 1, NULL, NULL, 45, '3000000.00', 1, 1, '35787553', NULL),
-(96, 'Toko Bangunan Rossa', 'Jalan Mohammad Toha', '189', '000', '000', 'Bandung', '40243', 3, 0, '000', '', '081320003205', 'Mr. Rosa', '2020-02-04', 1, NULL, NULL, 45, '3000000.00', 1, 1, '47254592', NULL),
-(97, 'Toko Bangunan Sakti', 'Jalan Kopo', '499', '000', '000', 'Bandung', '40235', 2, 0, '000', '', '022-5401421', 'Mr. Michael', '2020-02-04', 1, NULL, NULL, 45, '3000000.00', 1, 1, '99476327', NULL),
-(98, 'Toko Bangunan Sarifah', 'Jalan Cikutra', '180', '000', '000', 'Bandung', '40124', 4, 0, '000', '', '081222125523', 'Mr. Yosef', '2020-02-04', 1, NULL, NULL, 45, '3000000.00', 1, 1, '08246341', NULL),
-(99, 'Toko Bangunan Sawargi', 'Jalan Sriwijaya', '20-22', '000', '000', 'Bandung', '40253', 3, 0, '000', '', '022-5229954', 'Mr. Wahid Hasim', '2020-02-04', 1, NULL, NULL, 45, '3000000.00', 1, 1, '82188310', NULL),
-(100, 'Toko Bangunan Tresnaco VI', 'Jalan Ciwastra', '086', '000', '000', 'Bandung', '40287', 1, 0, '000', '', '022-7562368', 'Mr. Aep', '2020-02-04', 1, NULL, NULL, 45, '3000000.00', 1, 1, '36403978', NULL),
-(101, 'Toko Baros Elektronik', 'Jalan Baros', '30-32', '000', '000', 'Cimahi', '40521', 2, 0, '000', '', '022-6642155', 'Mr. Hadi Kurniawan', '2020-02-04', 1, NULL, NULL, 45, '3000000.00', 1, 1, '18422520', NULL),
-(102, 'Toko Bintang Elektrik', 'Jalan Mekar Utama', '010', '000', '000', 'Bandung', '40237', 2, 0, '000', '', '085324106262', 'Mr. Bill', '2020-02-04', 1, NULL, NULL, 45, '3000000.00', 1, 1, '56420431', NULL),
-(103, 'Toko Cahaya Abadi', 'Jalan ABC, Pasar Cikapundung Gedung CEC lt.1', '017', '000', '000', 'Bandung', '40111', 4, 0, 'EE', '', '022-84460646', 'Mr. Ari', '2020-02-04', 1, NULL, NULL, 45, '3000000.00', 1, 1, '96303027', NULL),
-(104, 'Toko Cahaya Gemilang', 'Jalan Leuwi Panjang', '059', '000', '000', 'Bandung', '40234', 2, 0, '000', '', '0895807009085', 'Mrs. Paula', '2020-02-04', 1, NULL, NULL, 45, '3000000.00', 1, 1, '43333165', NULL),
-(105, 'Toko Chiefa Elektronik', 'Jalan Pamekar Raya', '001', '000', '000', 'Bandung', '40292', 1, 0, '000', '', '085220056200', 'Mr. Faizin', '2020-02-04', 1, NULL, NULL, 45, '3000000.00', 1, 1, '43114169', NULL),
-(106, 'Toko Ciumbuleuit', 'Jalan Ciumbuleuit', '009', '000', '000', 'Bandung', '40131', 4, 0, '000', '', '022-2032701', 'Mrs. Isan', '2020-02-04', 1, NULL, NULL, 45, '3000000.00', 1, 1, '55778737', NULL),
-(107, 'Toko CN Elektrik', 'Taman Kopo Indah Raya', '184B', '000', '000', 'Bandung', '40228', 3, 0, '000', '', '085100807853', 'Mrs. Michel', '2020-02-04', 1, NULL, NULL, 45, '3000000.00', 1, 1, '17233710', NULL),
-(108, 'Toko Denvar Elektronik', 'Jalan Raya Ujungberung', '367', '000', '000', 'Bandung', '40614', 1, 0, '000', '', '085323469911', 'Mr. Deden', '2020-02-04', 1, NULL, NULL, 45, '3000000.00', 1, 1, '55609139', NULL),
-(109, 'Toko Dragon CCTV', 'Jalan Peta, Komplek Bumi Kopo Kencana', '019', '000', '000', 'Bandung', '40233', 2, 0, 'E', '', '08122002178', 'Mr. Fendi', '2020-02-04', 1, NULL, NULL, 45, '3000000.00', 1, 1, '82745929', NULL),
-(110, 'Toko Dunia Bahan Bangunan Bandung', 'Jalan Raya Derwati', '089', '000', '000', 'Bandung', '40292', 1, 0, '000', '', '081299422379', 'Mr. Aldi', '2020-02-04', 1, NULL, NULL, 45, '3000000.00', 1, 1, '86559407', NULL),
-(111, 'Toko Dunia Electric', 'Jalan Otto Iskandar Dinata', '319', '000', '000', 'Bandung', '40251', 3, 0, '000', '', '022-4230423', 'Mr. Tedy', '2020-02-04', 1, NULL, NULL, 45, '3000000.00', 1, 1, '06580908', NULL),
-(112, 'Toko Fortuna Elektronik', 'Jalan Rancabolang Margahyu Raya', '045', '000', '000', 'Bandung', '40292', 1, 0, '000', '', '0817436868', 'Mrs. Ika', '2020-02-04', 1, NULL, NULL, 45, '3000000.00', 1, 1, '80759977', NULL),
-(113, 'Toko Golden Lite', 'Jalan Banceuy', '100', '000', '000', 'Bandung', '40111', 4, 0, '000', '', '081220016888', 'Mr. Joni', '2020-02-04', 1, NULL, NULL, 45, '3000000.00', 1, 1, '29152644', NULL),
-(114, 'Toko Bangunan Hadap Jaya', 'Jalan Margasari', '082', '000', '000', 'Bandung', '40287', 1, 0, '000', '', '022-7510948', 'Mrs. Suamiati', '2020-02-04', 1, NULL, NULL, 45, '3000000.00', 1, 1, '66270755', NULL),
-(115, 'Toko Bangunan Hadap Jaya II', 'Jalan Ciwastra', '169', '000', '000', 'Bandung', '40287', 1, 0, '000', '', '082115009077', 'Mr. David', '2020-02-04', 1, NULL, NULL, 45, '3000000.00', 1, 1, '39249455', NULL),
-(116, 'Perusahaan Dagang Hasil Jaya', 'Jalan Peta', '210', '000', '000', 'Bandung', '40231', 2, 0, '000', '', '022-6036170', 'Mrs. Sandra', '2020-02-04', 1, NULL, NULL, 45, '100000000.00', 1, 1, '00381476', NULL),
-(117, 'Toko Bangunan Hidup Sejahtera', 'Jalan Raya Barat', '785', '000', '000', 'Cimahi', '40526', 2, 0, '000', '', '081221204121', 'Mr. Sarip', '2020-02-04', 1, NULL, NULL, 45, '3000000.00', 1, 1, '84919567', NULL),
-(118, 'Toko Indo Mitra', 'Jalan Leuwi Panjang', '074', '000', '000', 'Bandung', '40233', 2, 0, '000', '', '081220691333', 'Mr. Chandra', '2020-02-04', 1, NULL, NULL, 45, '3000000.00', 1, 1, '87605194', NULL),
-(119, 'Toko Intio', 'Jalan Babakan Sari I', '105', '000', '000', 'Bandung', '40283', 3, 0, '000', '', '087815400681', 'Mr. Warto', '2020-02-04', 1, NULL, NULL, 45, '3000000.00', 1, 1, '69002776', NULL),
-(120, 'Toko Jatiluhur', 'Jalan Gandawijaya', '103', '000', '000', 'Cimahi', '40523', 2, 0, '000', '', '0811220270', 'Mr. Victor', '2020-02-04', 1, NULL, NULL, 45, '3000000.00', 1, 1, '47961940', NULL),
-(121, 'Toko Jaya Elektrik', 'Jalan Cilengkrang II', '012', '000', '000', 'Bandung', '40615', 1, 0, '000', '', '081313401812', 'Mr. Andi', '2020-02-04', 1, NULL, NULL, 45, '3000000.00', 1, 1, '98594144', NULL),
-(122, 'Toko Jaya Sakti', 'Jalan ABC, Pasar Cikapundung', '007', '000', '000', 'Bandung', '40111', 4, 0, 'Q', '', '081273037722', 'Mr. Teat', '2020-02-04', 1, NULL, NULL, 45, '3000000.00', 1, 1, '59389510', NULL),
-(123, 'Toko Jingga Elektronik', 'Jalan Raya Bojongsoang', '086', '000', '000', 'Bandung', '40288', 3, 0, '000', '', '089626491468', 'Mrs. Mita', '2020-02-04', 1, NULL, NULL, 45, '3000000.00', 1, 1, '36621724', NULL),
-(124, 'PT Kencana Elektrindo', 'Jalan Batununggal Indah I', '2A', '000', '000', 'Bandung', '40266', 2, 0, '000', '', '082217772889', 'Mr. Natanael', '2020-02-07', 1, NULL, NULL, 45, '3000000.00', 1, 1, '91520857', NULL),
-(125, 'Toko Lamora Elektrik', 'Jalan Babakan Sari I', '030', '000', '000', 'Bandung', '40283', 3, 0, '000', '', '081809900750', 'Mr. Andre', '2020-02-07', 1, NULL, NULL, 45, '3000000.00', 1, 1, '80580303', NULL),
-(126, 'Toko Laris Elektrik', 'Jalan Kiaracondong', '192A', '000', '000', 'Bandung', '40283', 3, 0, '000', '', '081220880699', 'Mr. Wili', '2020-02-07', 1, NULL, NULL, 45, '3000000.00', 1, 1, '38912490', NULL),
-(127, 'Toko MM Elektrik', 'Jalan Soekarno Hatta', '841', '000', '000', 'Bandung', '40293', 1, 0, '000', '', '082121977326', 'Mr. Miming', '2020-02-07', 1, NULL, NULL, 45, '3000000.00', 1, 1, '46965304', NULL),
-(128, 'Toko Mega Teknik', 'Jalan Jamika', '151B', '000', '000', 'Bandung', '40232', 2, 0, '000', '', '082124452324', 'Mr. Elvado', '2020-02-07', 1, NULL, NULL, 45, '3000000.00', 1, 1, '90468472', NULL),
-(129, 'Toko Merpati Elektrik', 'Jalan Otto Iskandar Dinata', '339', '000', '000', 'Bandung', '40251', 2, 0, '000', '', '081320663366', 'Mrs. Erline', '2020-02-07', 1, NULL, NULL, 45, '3000000.00', 1, 1, '00984247', NULL),
-(130, 'Toko Nceng', 'Jalan Bojong Koneng', '123', '000', '000', 'Bandung', '40191', 4, 0, '000', '', '081395112236', 'Mr. Enceng', '2020-02-07', 1, NULL, NULL, 45, '3000000.00', 1, 1, '98191337', NULL),
-(131, 'Toko Omega Electric', 'Jalan Indramayu', '012', '000', '000', 'Bandung', '40291', 1, 0, '000', '', '081322922888', 'Mrs. Diana', '2020-02-07', 1, NULL, NULL, 45, '3000000.00', 1, 1, '53714447', NULL),
-(132, 'Toko Panca Mulya', 'Jalan Kopo Sayati', '144', '000', '000', 'Bandung', '40228', 2, 0, '000', '', '022-5420586', 'Mrs. Dede', '2020-02-07', 1, NULL, NULL, 45, '3000000.00', 1, 1, '78507690', NULL),
-(133, 'Toko Pelita Putra', 'Ruko Gunung Batu', '009', '000', '000', 'Bandung', '40175', 2, 0, '000', '', '0811239777', 'Mr. Sunsun', '2020-02-07', 1, NULL, NULL, 45, '3000000.00', 1, 1, '39844658', NULL),
-(134, 'Toko Bangunan Pesantren II', 'Jalan Pagarsih', '339', '000', '000', 'Bandung', '40221', 2, 0, '000', '', '022-6040285', 'Mr. Yanto', '2020-02-07', 1, NULL, NULL, 45, '3000000.00', 1, 1, '61249526', NULL),
-(135, 'Toko Prima Elektrik', 'Jalan ABC Komplek Cikapundung Electronic Center lt.1', '003', '000', '000', 'Bandung', '40111', 4, 0, 'EE', '', '085227160748', 'Mr. Endhi', '2020-02-07', 1, NULL, NULL, 45, '3000000.00', 1, 1, '50445892', NULL),
-(136, 'Toko Purnama Jaya Electronic', 'Jalan Cibodas Raya', '006', '000', '000', 'Bandung', '40291', 1, 0, '000', '', '081224798744', 'Mr. Nurzaki', '2020-02-07', 1, NULL, NULL, 45, '3000000.00', 1, 1, '69926012', NULL),
-(137, 'Toko Echi El', 'Jalan Logam', '7', '000', '000', 'Bandung', '40287', 3, 0, '000', '', '082129554478', 'Bapak Hendar', '2020-03-30', 1, NULL, NULL, 45, '3000000.00', 1, 1, '17759482', NULL),
-(261, 'Toko Sinar Agung', 'Jalan Caringin', '258', '000', '000', 'Bandung', '40223', 2, 0, '000', '', '022-6026321', 'Mr. Miming', '2020-01-24', 1, NULL, NULL, 45, '2500000.00', 1, 1, '54444708', NULL),
-(262, 'Toko Bangunan Sinar Sekelimus', 'Jalan Soekarno Hatta', '569', '000', '000', 'Bandung', '40275', 1, 0, '000', '', '(022) 7300317', 'Bapak Hendra', '2020-08-14', 1, NULL, NULL, 30, '3000000.00', 1, 1, '04770219', NULL),
-(263, 'Toko Bahagia Elektrik', 'Jalan Kopo - Katapang KM 13.6', '', '000', '000', 'Bandung', '', 2, 0, '', '', '085723489618', 'Bapak Sina', '2020-08-19', 1, NULL, NULL, 30, '3000000.00', 1, 1, '04086274', NULL),
-(264, 'Toko Atha Elektrik', 'Jalan Ganda Sari', '71', '000', '000', 'Bandung', '', 2, 0, '', '', '083804987086', 'Bapak Arif', '2020-08-19', 1, NULL, NULL, 30, '3000000.00', 1, 1, '18782587', NULL);
+INSERT INTO `customer` (`id`, `name`, `address`, `number`, `rt`, `rw`, `city`, `postal_code`, `area_id`, `is_black_list`, `block`, `npwp`, `phone_number`, `pic_name`, `date_created`, `created_by`, `latitude`, `longitude`, `term_of_payment`, `plafond`, `is_remind`, `visiting_frequency`, `uid`) VALUES
+(1, 'Toko Sumber Lampu', 'Jalan Jendral Ahmad Yani (Plaza IBCC)', '3', '029', '006', 'Bandung', '40271', 1, 0, 'B2', NULL, '(022) 7233271', 'Bapak Ayung', '2020-01-24', 1, NULL, NULL, 45, '3000000.00', 1, 1, '72297039'),
+(5, 'Toko Agni Surya', 'Jalan Jendral Ahmad Yani', '353', '000', '000', 'Bandung', '40121', 1, 0, '', NULL, '(022) 7273893', 'Ibu Yani', '2020-01-24', 1, NULL, NULL, 45, '3000000.00', 1, 1, '09715857'),
+(6, 'Toko Trijaya 2', 'Jalan Cikawao', '56', '001', '001', 'Bandung', '40261', 1, 0, '', NULL, '(022) 4220661', 'Bapak Yohan', '2020-01-24', 1, NULL, NULL, 45, '3000000.00', 1, 1, '45860382'),
+(7, 'Toko Utama Lighting', 'Jalan Jendral Ahmad Yani (Plaza IBCC)', '12', '029', '006', 'Bandung', '40271', 1, 0, 'D2', NULL, '081224499786', 'Ibu Mimi', '2020-01-25', 1, NULL, NULL, 45, '3000000.00', 1, 1, '51644842'),
+(8, 'Toko Surya Agung', 'Jalan H. Ibrahim Adjie (Bandung Trade Mall)', '47A', '005', '011', 'Bandung', '40283', 1, 0, 'C1', '', '(022) 7238333', 'Bapak Jajang Aji', '2020-01-29', 1, NULL, NULL, 45, '3000000.00', 1, 1, '88051032'),
+(9, 'Toko Dua Saudara Electric', 'Jalan Pungkur', '51', '000', '000', 'Bandung', '40252', 3, 0, '', '', '08122033019', 'Bapak Hendrik', '2020-01-29', 1, NULL, NULL, 45, '3000000.00', 1, 1, '04153061'),
+(11, 'Toko Buana Elektrik', 'Jalan Cinangka', '4', '000', '000', 'Bandung', '40616', 1, 0, '', '', '', 'Bapak Darma', '2020-01-29', 1, NULL, NULL, 45, '3000000.00', 1, 1, '59582911'),
+(12, 'Toko Central Electronic', 'Jalan Mohammad Toha', '72', '000', '000', 'Bandung', '40243', 1, 0, '', '', '(022) 5225851', 'Ibu Siu Men', '2020-01-29', 1, NULL, NULL, 45, '3000000.00', 1, 1, '58385097'),
+(13, 'Toko Kian Sukses', 'Jalan Cikutra', '106A', '000', '000', 'Bandung', '40124', 1, 0, '', '', '081298336288', 'Bapak Firman', '2020-01-29', 1, NULL, NULL, 45, '3000000.00', 1, 1, '26779059'),
+(15, 'Toko Utama', 'Jalan Pasar Atas', '076', '000', '000', 'Cimahi', '40525', 2, 0, '000', '', '022-6654795', 'Bapak Sugianto', '2020-01-31', 1, NULL, NULL, 45, '3000000.00', 1, 1, '14731462'),
+(16, 'Toko Sari Bakti', 'Jalan Babakan Sari I (Kebaktian)', '160', '000', '000', 'Bandung', '40283', 3, 0, '000', '', '082318303322', 'Bapak Jisman', '2020-01-31', 1, NULL, NULL, 45, '3000000.00', 1, 1, '35701384'),
+(17, 'Toko Surya Indah Rancabolang', 'Jalan Rancabolang', '043', '000', '000', 'Bandung', '40286', 1, 0, '000', '', '081321250208', 'Ibu Dewi', '2020-01-31', 1, NULL, NULL, 45, '3000000.00', 1, 1, '96748409'),
+(18, 'Toko Bangunan HD', 'Jalan Cingised', '125', '000', '000', 'Bandung', '40293', 1, 0, '000', '', '08156275160', 'Bapak Rudy', '2020-01-31', 1, NULL, NULL, 45, '3000000.00', 1, 1, '73398235'),
+(19, 'Toko Paranti', 'Jalan Jendral Ahmad Yani', '945', '000', '000', 'Bandung', '40282', 4, 0, '000', '', '085315073966', 'Ibu Lili', '2020-01-31', 1, NULL, NULL, 45, '3000000.00', 1, 1, '19400857'),
+(21, 'Toko Laksana', 'Jalan Ciroyom', '153', '000', '000', 'Bandung', '40183', 2, 0, '000', '', '08122396777', 'Mr. Tatang', '2020-01-31', 1, NULL, NULL, 45, '3000000.00', 1, 1, '86739707'),
+(22, 'Toko Nirwana Electronic', 'Jalan Ciroyom', '117', '000', '000', 'Bandung', '40183', 2, 0, '000', '', '08122176094', 'Mr. Suwardi', '2020-01-31', 1, NULL, NULL, 45, '3000000.00', 1, 1, '40982336'),
+(23, 'Toko Sinar Untung Electrical', 'Jalan Raya Dayeuh Kolot', '295', '000', '000', 'Bandung', '40258', 2, 0, '000', '', '082218456161', 'Mr. Kery', '2020-01-31', 1, NULL, NULL, 45, '3000000.00', 1, 1, '14168828'),
+(24, 'Toko Depo Listrik', 'Jalan Jendral Ahmad Yani, Plaza IBCC LGF', '008', '000', '000', 'Bandung', '40271', 3, 0, 'D3', '', '022-7238318', 'Bapak Dadang', '2020-01-31', 1, NULL, NULL, 45, '3000000.00', 1, 1, '17842175'),
+(25, 'Toko Krista Lighting', 'Jalan Jendral Ahmad Yani, Plaza IBCC', '12A', '000', '000', 'Bandung', '40114', 3, 0, 'D1', '', '022-7238369', 'Mr. Yendi', '2020-01-31', 1, NULL, NULL, 45, '3000000.00', 1, 1, '21343724'),
+(26, 'Toko Prima', 'Jalan Surya Sumantri', '058', '000', '000', 'Bandung', '40164', 4, 0, '000', '', '022-2014967', 'Mrs. Uut', '2020-01-31', 1, NULL, NULL, 45, '3000000.00', 1, 1, '31153562'),
+(27, 'Toko Sumber Rejeki', 'Jalan Jendral Ahmad Yani', '328', '000', '000', 'Bandung', '40271', 3, 0, '000', '', '081570265893', 'Ibu Sinta', '2020-01-31', 1, NULL, NULL, 45, '3000000.00', 1, 1, '70362778'),
+(29, 'Toko Bangunan Kurniawan', 'Jalan Boling', '001', '000', '000', 'Bandung', '40293', 1, 0, '000', '', '085101223235', 'Mr. Kurniawan', '2020-01-31', 1, NULL, NULL, 45, '3000000.00', 1, 1, '57997527'),
+(30, 'Toko Besi Adil', 'Jalan Gatot Subroto', '355', '000', '000', 'Bandung', '40724', 3, 0, '000', '', '08122047066', 'Mr. Julius', '2020-01-31', 1, NULL, NULL, 45, '3000000.00', 1, 1, '99961710'),
+(31, 'Toko Karunia Sakti', 'Jalan Mohammad Toha', '210', '000', '000', 'Bandung', '40243', 2, 0, '000', '', '087827722212', 'Mrs. Alin', '2020-01-31', 1, NULL, NULL, 45, '3000000.00', 1, 1, '79488686'),
+(32, 'Toko Aneka Nada', 'Jalan Jendral Ahmad Yani', '180', '000', '000', 'Bandung', '40262', 3, 0, '000', '', '089630011866', 'Mr. Ano', '2020-01-31', 1, NULL, NULL, 45, '3000000.00', 1, 1, '85679959'),
+(33, 'Toko VIP Elektrik', 'Jalan Pahlawan', '049', '000', '000', 'Bandung', '40122', 4, 0, '000', '', '08122043095', 'Mr. Rudi', '2020-01-31', 1, NULL, NULL, 45, '3000000.00', 1, 1, '52951066'),
+(34, 'Toko Mitra Elektrik', 'Jalan Raya Cileunyi', '036', '000', '000', 'Bandung', '40622', 1, 0, '000', '', '082129265391', 'Mr. Halifa', '2020-01-31', 1, NULL, NULL, 45, '3000000.00', 1, 1, '19707657'),
+(35, 'Toko Remaja Teknik', 'Jalan Kiaracondong', '318', '000', '000', 'Bandung', '40275', 3, 0, '000', '', '022-7311813', 'Mrs. Dewi', '2020-01-31', 1, NULL, NULL, 45, '3000000.00', 1, 1, '69668982'),
+(36, 'Toko Tang Mandiri', 'Jalan Holis', '321-325', '000', '000', 'Bandung', '40212', 2, 0, '000', '', '087779614332', 'Mr. Tikno', '2020-01-31', 1, NULL, NULL, 45, '3000000.00', 1, 1, '54923133'),
+(37, 'Toko Bangunan Buana Jaya', 'Komplek Batununggal Indah Jalan Waas', '013', '000', '000', 'Bandung', '40266', 3, 0, '000', '', '087878878708', 'Mr. Tatang', '2020-02-01', 1, NULL, NULL, 45, '3000000.00', 1, 1, '93344156'),
+(38, 'Toko Bangunan Kurniawan Jaya', 'Jalan Terusan Cibaduyut', '052', '000', '000', 'Bandung', '40239', 3, 0, '000', '', '022-5409888', 'Mrs. Lili', '2020-02-01', 1, NULL, NULL, 45, '3000000.00', 1, 1, '88500323'),
+(39, 'Toko Serly Electric', 'Jalan Raya Cijerah', '242', '000', '000', 'Bandung', '40213', 2, 0, '000', '', '085220265002', 'Mr. Yayan', '2020-02-01', 1, NULL, NULL, 45, '3000000.00', 1, 1, '72941448'),
+(40, 'Toko Bangunan Rahmat Putra', 'Jalan Terusan Jakarta', '272', '000', '000', 'Bandung', '40291', 1, 0, '000', '', '08122128363', 'Mr. Tanto', '2020-02-01', 1, NULL, NULL, 45, '3000000.00', 1, 1, '08912912'),
+(41, 'Toko Bangunan Cahaya Logam', 'Jalan Babakan Ciparay', '088', '000', '000', 'Bandung', '40223', 2, 0, '000', '', '022-5402609', 'Mrs. Yani', '2020-02-01', 1, NULL, NULL, 45, '3000000.00', 1, 1, '06855577'),
+(42, 'Toko Sumber Cahaya', 'Jalan Leuwigajah', '43C', '000', '000', 'Cimahi', '40522', 2, 0, '0000', '', '08988321110', 'Mrs. Nova Wiliana', '2020-02-01', 1, NULL, NULL, 45, '3000000.00', 1, 1, '21914045'),
+(43, 'Toko D&P Electronics', 'Taman Kopo Indah II', '041', '000', '000', 'Bandung', '40218', 2, 0, '000', '', '08126526986', 'Mrs. Susanti', '2020-02-01', 1, NULL, NULL, 45, '3000000.00', 1, 1, '64927313'),
+(44, 'Toko Bangunan Pusaka Jaya', 'Jalan Gardujati, Jendral Sudirman', '001', '000', '000', 'Bandung', '40181', 2, 0, '000', '', '022-6031756', 'Mrs. Jeni', '2020-02-01', 1, NULL, NULL, 45, '3000000.00', 1, 1, '98204352'),
+(45, 'Toko Bangunan Raya Timur', 'Jalan Abdul Haris Nasution, Sindanglaya', '156', '000', '000', 'Bandung', '40293', 1, 0, '000', '', '085974113514', 'Mrs. Safiah', '2020-02-01', 1, NULL, NULL, 45, '3000000.00', 1, 1, '46723199'),
+(46, 'Toko Guna Jaya Teknik', 'Jalan Sukamenak', '123', '000', '000', 'Bandung', '40228', 4, 0, '000', '', '0895802238369', 'Mrs. Yuliah', '2020-02-01', 1, NULL, NULL, 45, '3000000.00', 1, 1, '25854166'),
+(47, 'Toko Bangunan Sinar Surya', 'Jalan Terusan Pasirkoja', '108', '000', '000', 'Bandung', '40232', 2, 0, '000', '', '022-6018088', 'Mrs. Mely', '2020-02-01', 1, NULL, NULL, 45, '3000000.00', 1, 1, '38239857'),
+(48, 'Toko Pada Selamat', 'Jalan Raya Dayeuh Kolot', '314', '000', '000', 'Bandung', '40258', 2, 0, '000', '', '08985085885', 'Mr. Selamet', '2020-02-01', 1, NULL, NULL, 45, '3000000.00', 1, 1, '64112119'),
+(49, 'Toko Bangunan Kopo Indah', 'Jalan Peta', '200', '000', '000', 'Bandung', '40233', 2, 0, '000', '', '022-6036149', 'Mr. Iwan', '2020-02-01', 1, NULL, NULL, 45, '3000000.00', 1, 1, '58742819'),
+(50, 'Toko Yasa Elektronik', 'Jalan Margacinta', '165', '000', '000', 'Bandung', '40287', 1, 0, '000', '', '082115065506', 'Mr. Jajang', '2020-02-01', 1, NULL, NULL, 45, '3000000.00', 1, 1, '06280309'),
+(51, 'Toko Fikriy Berkah Elektronik', 'Jalan Raya Jatinangor', '131', '000', '000', 'Bandung', '45363', 1, 0, '000', '', '082219561667', 'Mr. Agung', '2020-02-01', 1, NULL, NULL, 45, '3000000.00', 1, 1, '25976047'),
+(52, 'Toko AA Electronic Service', 'Jalan Kyai Haji Ahmad Sadili', '194', '000', '000', 'Bandung', '40394', 1, 0, '000', '', '085316116595', 'Mr. Amir', '2020-02-01', 1, NULL, NULL, 45, '3000000.00', 1, 1, '06823947'),
+(53, 'Toko Kencana Electric', 'Jalan Sultan Agung', '136', '000', '000', 'Pekalongan', '51126', 1, 0, '000', '', '0285-422035', 'Mr. Akiang', '2020-02-01', 1, NULL, NULL, 45, '3000000.00', 1, 1, '42876037'),
+(54, 'Toko Kurnia Electronic', 'Jalan Raya Batujajar', '268', '000', '000', 'Bandung', '40561', 2, 0, '000', '', '085797993942', 'Mrs. Alda', '2020-02-01', 1, NULL, NULL, 45, '3000000.00', 1, 1, '06621118'),
+(55, 'Toko Wira Elektrik', 'Jalan Buah Batu', '036', '000', '000', 'Bandung', '40262', 3, 0, '000', '', '08122136088', 'Mr. Budi', '2020-02-01', 1, NULL, NULL, 45, '3000000.00', 1, 1, '02946580'),
+(56, 'Toko Bunga Elektrik', 'Jalan Cikondang', '025', '000', '000', 'Bandung', '40133', 4, 0, '000', '', '081320419469', 'Mr. Ayon', '2020-02-03', 1, NULL, NULL, 45, '3000000.00', 1, 1, '30546962'),
+(57, 'Toko Cahaya Baru Cimuncang', 'Jalan Cimuncang', '037', '000', '000', 'Bandung', '40125', 4, 0, '000', '', '085782724800', 'Mr. Arif', '2020-02-03', 1, NULL, NULL, 45, '3000000.00', 1, 1, '81824949'),
+(58, 'Toko Sinar Karapitan', 'Jalan Karapitan', '026', '000', '000', 'Bandung', '40261', 3, 0, '000', '', '022-4208474', 'Mr. Yangyang', '2020-02-03', 1, NULL, NULL, 45, '3000000.00', 1, 1, '61933227'),
+(59, 'Toko Bintang Elektronik', 'Jalan Kebon Bibit, Balubur Town Square', '012', '000', '000', 'Bandung', '40132', 4, 0, '000', '', '022-76665492', 'Mr. Darman', '2020-02-03', 1, NULL, NULL, 45, '3000000.00', 1, 1, '16708835'),
+(60, 'Toko Anam Elektronik', 'Jalan Kebon Kembang', '003', '000', '000', 'Bandung', '40116', 4, 0, '000', '', '022-4233870', 'Mr. Anam', '2020-02-03', 1, NULL, NULL, 45, '3000000.00', 1, 1, '68578865'),
+(61, 'Toko Sinar Permata Jaya', 'Jalan Gegerkalong girang', '088', '000', '000', 'Bandung', '40153', 4, 0, '000', '', '081326453213', 'Mr. Andi', '2020-02-03', 1, NULL, NULL, 45, '3000000.00', 1, 1, '73691650'),
+(62, 'Toko Aneka Niaga', 'Jalan Gegerkalong Tengah', '077', '000', '000', 'Bandung', '40153', 4, 0, '000', '', '022-2010184', 'Mr. Saiful', '2020-02-03', 1, NULL, NULL, 45, '3000000.00', 1, 1, '82205398'),
+(63, 'Toko Altrik', 'Jalan Sarijadi Raya', '047', '000', '000', 'Bandung', '40151', 4, 0, '000', '', '082320420999', 'Mr. Firman', '2020-02-03', 1, NULL, NULL, 45, '3000000.00', 1, 1, '62385719'),
+(64, 'Toko Kurnia Elektrik', 'Jalan Gegerkalong Hilir', '165', '000', '000', 'Bandung', '40153', 4, 0, '000', '', '082219152433', 'Mr. Is', '2020-02-03', 1, NULL, NULL, 45, '3000000.00', 1, 1, '76437473'),
+(65, 'Toko Sinar Logam', 'Jalan Sariasih', '019', '000', '000', 'Bandung', '40151', 4, 0, '006', '', '022-2017598', 'Mr. Fajar', '2020-02-03', 1, NULL, NULL, 45, '3000000.00', 1, 1, '72080674'),
+(66, 'Toko 8', 'Jalan Baladewa', '008', '000', '000', 'Bandung', '40173', 2, 0, '000', '', '022-6034875', 'Mr. Thomas', '2020-02-03', 1, NULL, NULL, 45, '3000000.00', 1, 1, '68114990'),
+(67, 'Toko Glory Electric', 'Jalan Komud Supadio', '36A', '000', '000', 'Bandung', '40174', 2, 0, '000', '', '085974901894', 'Mr. Anton', '2020-02-03', 1, NULL, NULL, 45, '3000000.00', 1, 1, '37872824'),
+(68, 'Toko Lestari', 'Jalan Rajawali Barat', '99A', '000', '000', 'Bandung', '40184', 2, 0, '000', '', '022-6044308', 'Mr. Dedi', '2020-02-03', 1, NULL, NULL, 45, '3000000.00', 1, 1, '45508256'),
+(69, 'Toko 23', 'Jalan Kebon Kopi', '128', '000', '000', 'Cimahi', '40535', 2, 0, '000', '', '022-6018073', 'Mr. Nanan', '2020-02-03', 1, NULL, NULL, 45, '5000000.00', 1, 1, '78275254'),
+(70, 'Toko Abadi', 'Jalan Gegerkalong Hilir', '073', '000', '000', 'Bandung', '40153', 4, 0, '000', '', '022-2010185', 'Mr. Arifin', '2020-02-03', 1, NULL, NULL, 45, '3000000.00', 1, 1, '71022859'),
+(71, 'Toko Graha Electronic', 'Jalan Melong Asih', '071', '000', '000', 'Bandung', '40213', 2, 0, '000', '', '085722237789', 'Mr. Hendra', '2020-02-03', 1, NULL, NULL, 45, '3000000.00', 1, 1, '71798919'),
+(72, 'Toko Asih', 'Jalan Melong Asih', '015', '000', '000', 'Cimahi', '40213', 2, 0, '000', '', '022-6016764', '', '2020-02-03', 1, NULL, NULL, 45, '3000000.00', 1, 1, '50061887'),
+(73, 'Toko Mutiara Jaya', 'Jalan Holis', '330', '000', '000', 'Bandung', '40212', 2, 0, '000', '', '087823231177', 'Mr. Supandi', '2020-02-03', 1, NULL, NULL, 45, '3000000.00', 1, 1, '35474619'),
+(74, 'Toko Berdikari', 'Jalan Holis', '328', '000', '000', 'Bandung', '40212', 2, 0, '000', '', '022-6010288', 'Mr. Ayung', '2020-02-04', 1, NULL, NULL, 45, '3000000.00', 1, 1, '55445048'),
+(75, 'Toko Cipta Mandiri Electronics', 'Jalan Jendral Ahmad Yani, Jaya Plaza lt dasar', '238', '000', '000', 'Bandung', '40262', 3, 0, 'B5', '', '081220066835', 'Mr. Tino', '2020-02-04', 1, NULL, NULL, 45, '3000000.00', 1, 1, '39261382'),
+(76, 'Toko Sinar Makmur Electronics', 'Jalan Jendral Ahmad Yani, Jaya Plaza lt dasar', '238', '000', '000', 'Bandung', '40262', 3, 0, 'G8', '', '081321450345', 'Mrs. Frenita', '2020-02-04', 1, NULL, NULL, 45, '3000000.00', 1, 1, '64461574'),
+(77, 'Toko Aneka Electric', 'Jalan Jendral Ahmad Yani, Jaya Plaza lt dasar', '238', '000', '000', 'Bandung', '40271', 3, 0, 'C11-12', '', '022-7214731', 'Mr. Iksan', '2020-02-04', 1, NULL, NULL, 45, '3000000.00', 1, 1, '40272992'),
+(78, 'Toko Tehnik Aneka Prima', 'Jalan Peta, Ruko Kopo Kencana', '002', '000', '000', 'Bandung', '40233', 2, 0, 'A3', '', '082219197020', 'Mr. Wendy Hauw', '2020-02-04', 1, NULL, NULL, 45, '3000000.00', 1, 1, '58906992'),
+(80, 'Toko 487', 'Jalan Terusan Gatot Subroto', '487', '000', '000', 'Bandung', '40284', 3, 0, '000', '', '08112143030', 'Mr. Udin', '2020-02-04', 1, NULL, NULL, 45, '3000000.00', 1, 1, '88568165'),
+(81, 'Toko Agung Jaya', 'Jalan Kebon Jati', '264', '000', '000', 'Bandung', '40182', 2, 0, '000', '', '022-20564092', 'Mrs. Shirly', '2020-02-04', 1, NULL, NULL, 45, '3000000.00', 1, 1, '05925620'),
+(82, 'Toko Alam Ria', 'Jalan Kopo Sayati', '122-124', '000', '000', 'Bandung', '40228', 3, 0, '000', '', '022-54413432', 'Mr. Mukian', '2020-02-04', 1, NULL, NULL, 45, '3000000.00', 1, 1, '10424519'),
+(83, 'Toko Alka', 'Jalan Caringin', '002', '000', '000', 'Bandung', '40223', 2, 0, '000', '', '022-5408473', 'Mr. Mila Suryantini', '2020-02-04', 1, NULL, NULL, 0, '3000000.00', 1, 1, '30080751'),
+(84, 'Toko Alvina Elektronik', 'Jalan Terusan Gatot Subroto', '487', '000', '000', 'Bandung', '40284', 3, 0, '000', '', '081222556066', 'Mr. Dedi', '2020-02-04', 1, NULL, NULL, 45, '3000000.00', 1, 1, '84854085'),
+(85, 'Toko Aneka Teknik', 'Jalan Jamika', '121', '000', '000', 'Bandung', '40221', 2, 0, '000', '', '022-6024485', 'Mr. Akwet', '2020-02-04', 1, NULL, NULL, 45, '3000000.00', 1, 1, '87577953'),
+(86, 'Toko Anugerah', 'Jalan Kopo', '356', '000', '000', 'Bandung', '40233', 2, 0, '000', '', '022-6016845', 'Mr. Acen', '2020-02-04', 1, NULL, NULL, 45, '3000000.00', 1, 1, '68149352'),
+(87, 'Toko Asa', 'Jalan Lengkong Dalam', '009', '000', '000', 'Bandung', '40263', 3, 0, '000', '', '089641476277', 'Mrs. Herlina', '2020-02-04', 1, NULL, NULL, 45, '3000000.00', 1, 1, '24899872'),
+(88, 'Toko Atari', 'Jalan Sukajadi', '039', '000', '000', 'Bandung', '40162', 4, 0, '000', '', '022-2036944', 'Mr. Adi', '2020-02-04', 1, NULL, NULL, 45, '3000000.00', 1, 1, '61264749'),
+(89, 'Toko B-33', 'Jalan Banceuy Gang Cikapundung', '016', '000', '000', 'Bandung', '40111', 4, 0, '000', '', '081903151932', 'Mr. Engkus', '2020-02-04', 1, NULL, NULL, 45, '3000000.00', 1, 1, '86707011'),
+(90, 'Toko Banciang', 'Jalan Gandawijaya', '149', '000', '000', 'Cimahi', '40524', 2, 0, '000', '', '022-6652162', 'Mr. Erik', '2020-02-04', 1, NULL, NULL, 45, '3000000.00', 1, 1, '54638724'),
+(91, 'Toko Bandung Raya', 'Jalan Otto Iskandar Dinata', '322', '000', '000', 'Bandung', '40241', 2, 0, '000', '', '022-4231988', 'Mr. Tonny', '2020-02-04', 1, NULL, NULL, 45, '3000000.00', 1, 1, '35349884'),
+(92, 'Toko Bangunan Hurip Jaya', 'Jalan Cikutra', '129A', '000', '000', 'Bandung', '40124', 4, 0, '000', '', '0818423316', 'Mr. Eko', '2020-02-04', 1, NULL, NULL, 45, '3000000.00', 1, 1, '59913679'),
+(93, 'Toko Bangunan Key Kurnia Jaya', 'Jalan Manglid, Ruko Kopo Lestari', '016', '000', '000', 'Bandung', '40226', 3, 0, '000', '', '082119739191', 'Mr. Kurnia', '2020-02-04', 1, NULL, NULL, 45, '3000000.00', 1, 1, '34345357'),
+(94, 'Toko Bangunan Mandiri', 'Jalan Babakan Sari I', '144', '000', '000', 'Bandung', '40283', 3, 0, '000', '', '082221000473', 'Mr. Mamat', '2020-02-04', 1, NULL, NULL, 45, '3000000.00', 1, 1, '88280734'),
+(95, 'Toko Bangunan Mekar Indah', 'Jalan Terusan Jakarta', '177', '000', '000', 'Bandung', '40291', 1, 0, '000', '', '081285885152', 'Mr. Yudha', '2020-02-04', 1, NULL, NULL, 45, '3000000.00', 1, 1, '35787553'),
+(96, 'Toko Bangunan Rossa', 'Jalan Mohammad Toha', '189', '000', '000', 'Bandung', '40243', 3, 0, '000', '', '081320003205', 'Mr. Rosa', '2020-02-04', 1, NULL, NULL, 45, '3000000.00', 1, 1, '47254592'),
+(97, 'Toko Bangunan Sakti', 'Jalan Kopo', '499', '000', '000', 'Bandung', '40235', 2, 0, '000', '', '022-5401421', 'Mr. Michael', '2020-02-04', 1, NULL, NULL, 45, '3000000.00', 1, 1, '99476327'),
+(98, 'Toko Bangunan Sarifah', 'Jalan Cikutra', '180', '000', '000', 'Bandung', '40124', 4, 0, '000', '', '081222125523', 'Mr. Yosef', '2020-02-04', 1, NULL, NULL, 45, '3000000.00', 1, 1, '08246341'),
+(99, 'Toko Bangunan Sawargi', 'Jalan Sriwijaya', '20-22', '000', '000', 'Bandung', '40253', 3, 0, '000', '', '022-5229954', 'Mr. Wahid Hasim', '2020-02-04', 1, NULL, NULL, 45, '3000000.00', 1, 1, '82188310'),
+(100, 'Toko Bangunan Tresnaco VI', 'Jalan Ciwastra', '086', '000', '000', 'Bandung', '40287', 1, 0, '000', '', '022-7562368', 'Mr. Aep', '2020-02-04', 1, NULL, NULL, 45, '3000000.00', 1, 1, '36403978'),
+(101, 'Toko Baros Elektronik', 'Jalan Baros', '30-32', '000', '000', 'Cimahi', '40521', 2, 0, '000', '', '022-6642155', 'Mr. Hadi Kurniawan', '2020-02-04', 1, NULL, NULL, 45, '3000000.00', 1, 1, '18422520'),
+(102, 'Toko Bintang Elektrik', 'Jalan Mekar Utama', '010', '000', '000', 'Bandung', '40237', 2, 0, '000', '', '085324106262', 'Mr. Bill', '2020-02-04', 1, NULL, NULL, 45, '3000000.00', 1, 1, '56420431'),
+(103, 'Toko Cahaya Abadi', 'Jalan ABC, Pasar Cikapundung Gedung CEC lt.1', '017', '000', '000', 'Bandung', '40111', 4, 0, 'EE', '', '022-84460646', 'Mr. Ari', '2020-02-04', 1, NULL, NULL, 45, '3000000.00', 1, 1, '96303027'),
+(104, 'Toko Cahaya Gemilang', 'Jalan Leuwi Panjang', '059', '000', '000', 'Bandung', '40234', 2, 0, '000', '', '0895807009085', 'Mrs. Paula', '2020-02-04', 1, NULL, NULL, 45, '3000000.00', 1, 1, '43333165'),
+(105, 'Toko Chiefa Elektronik', 'Jalan Pamekar Raya', '001', '000', '000', 'Bandung', '40292', 1, 0, '000', '', '085220056200', 'Mr. Faizin', '2020-02-04', 1, NULL, NULL, 45, '3000000.00', 1, 1, '43114169'),
+(106, 'Toko Ciumbuleuit', 'Jalan Ciumbuleuit', '009', '000', '000', 'Bandung', '40131', 4, 0, '000', '', '022-2032701', 'Mrs. Isan', '2020-02-04', 1, NULL, NULL, 45, '3000000.00', 1, 1, '55778737'),
+(107, 'Toko CN Elektrik', 'Taman Kopo Indah Raya', '184B', '000', '000', 'Bandung', '40228', 3, 0, '000', '', '085100807853', 'Mrs. Michel', '2020-02-04', 1, NULL, NULL, 45, '3000000.00', 1, 1, '17233710'),
+(108, 'Toko Denvar Elektronik', 'Jalan Raya Ujungberung', '367', '000', '000', 'Bandung', '40614', 1, 0, '000', '', '085323469911', 'Mr. Deden', '2020-02-04', 1, NULL, NULL, 45, '3000000.00', 1, 1, '55609139'),
+(109, 'Toko Dragon CCTV', 'Jalan Peta, Komplek Bumi Kopo Kencana', '019', '000', '000', 'Bandung', '40233', 2, 0, 'E', '', '08122002178', 'Mr. Fendi', '2020-02-04', 1, NULL, NULL, 45, '3000000.00', 1, 1, '82745929'),
+(110, 'Toko Dunia Bahan Bangunan Bandung', 'Jalan Raya Derwati', '089', '000', '000', 'Bandung', '40292', 1, 0, '000', '', '081299422379', 'Mr. Aldi', '2020-02-04', 1, NULL, NULL, 45, '3000000.00', 1, 1, '86559407'),
+(111, 'Toko Dunia Electric', 'Jalan Otto Iskandar Dinata', '319', '000', '000', 'Bandung', '40251', 3, 0, '000', '', '022-4230423', 'Mr. Tedy', '2020-02-04', 1, NULL, NULL, 45, '3000000.00', 1, 1, '06580908'),
+(112, 'Toko Fortuna Elektronik', 'Jalan Rancabolang Margahyu Raya', '045', '000', '000', 'Bandung', '40292', 1, 0, '000', '', '0817436868', 'Mrs. Ika', '2020-02-04', 1, NULL, NULL, 45, '3000000.00', 1, 1, '80759977'),
+(113, 'Toko Golden Lite', 'Jalan Banceuy', '100', '000', '000', 'Bandung', '40111', 4, 0, '000', '', '081220016888', 'Mr. Joni', '2020-02-04', 1, NULL, NULL, 45, '3000000.00', 1, 1, '29152644'),
+(114, 'Toko Bangunan Hadap Jaya', 'Jalan Margasari', '082', '000', '000', 'Bandung', '40287', 1, 0, '000', '', '022-7510948', 'Mrs. Suamiati', '2020-02-04', 1, NULL, NULL, 45, '3000000.00', 1, 1, '66270755'),
+(115, 'Toko Bangunan Hadap Jaya II', 'Jalan Ciwastra', '169', '000', '000', 'Bandung', '40287', 1, 0, '000', '', '082115009077', 'Mr. David', '2020-02-04', 1, NULL, NULL, 45, '3000000.00', 1, 1, '39249455'),
+(116, 'Perusahaan Dagang Hasil Jaya', 'Jalan Peta', '210', '000', '000', 'Bandung', '40231', 2, 0, '000', '', '022-6036170', 'Mrs. Sandra', '2020-02-04', 1, NULL, NULL, 45, '100000000.00', 1, 1, '00381476'),
+(117, 'Toko Bangunan Hidup Sejahtera', 'Jalan Raya Barat', '785', '000', '000', 'Cimahi', '40526', 2, 0, '000', '', '081221204121', 'Mr. Sarip', '2020-02-04', 1, NULL, NULL, 45, '3000000.00', 1, 1, '84919567'),
+(118, 'Toko Indo Mitra', 'Jalan Leuwi Panjang', '074', '000', '000', 'Bandung', '40233', 2, 0, '000', '', '081220691333', 'Mr. Chandra', '2020-02-04', 1, NULL, NULL, 45, '3000000.00', 1, 1, '87605194'),
+(119, 'Toko Intio', 'Jalan Babakan Sari I', '105', '000', '000', 'Bandung', '40283', 3, 0, '000', '', '087815400681', 'Mr. Warto', '2020-02-04', 1, NULL, NULL, 45, '3000000.00', 1, 1, '69002776'),
+(120, 'Toko Jatiluhur', 'Jalan Gandawijaya', '103', '000', '000', 'Cimahi', '40523', 2, 0, '000', '', '0811220270', 'Mr. Victor', '2020-02-04', 1, NULL, NULL, 45, '3000000.00', 1, 1, '47961940'),
+(121, 'Toko Jaya Elektrik', 'Jalan Cilengkrang II', '012', '000', '000', 'Bandung', '40615', 1, 0, '000', '', '081313401812', 'Mr. Andi', '2020-02-04', 1, NULL, NULL, 45, '3000000.00', 1, 1, '98594144'),
+(122, 'Toko Jaya Sakti', 'Jalan ABC, Pasar Cikapundung', '007', '000', '000', 'Bandung', '40111', 4, 0, 'Q', '', '081273037722', 'Mr. Teat', '2020-02-04', 1, NULL, NULL, 45, '3000000.00', 1, 1, '59389510'),
+(123, 'Toko Jingga Elektronik', 'Jalan Raya Bojongsoang', '086', '000', '000', 'Bandung', '40288', 3, 0, '000', '', '089626491468', 'Mrs. Mita', '2020-02-04', 1, NULL, NULL, 45, '3000000.00', 1, 1, '36621724'),
+(124, 'PT Kencana Elektrindo', 'Jalan Batununggal Indah I', '2A', '000', '000', 'Bandung', '40266', 2, 0, '000', '', '082217772889', 'Mr. Natanael', '2020-02-07', 1, NULL, NULL, 45, '3000000.00', 1, 1, '91520857'),
+(125, 'Toko Lamora Elektrik', 'Jalan Babakan Sari I', '030', '000', '000', 'Bandung', '40283', 3, 0, '000', '', '081809900750', 'Mr. Andre', '2020-02-07', 1, NULL, NULL, 45, '3000000.00', 1, 1, '80580303'),
+(126, 'Toko Laris Elektrik', 'Jalan Kiaracondong', '192A', '000', '000', 'Bandung', '40283', 3, 0, '000', '', '081220880699', 'Mr. Wili', '2020-02-07', 1, NULL, NULL, 45, '3000000.00', 1, 1, '38912490'),
+(127, 'Toko MM Elektrik', 'Jalan Soekarno Hatta', '841', '000', '000', 'Bandung', '40293', 1, 0, '000', '', '082121977326', 'Mr. Miming', '2020-02-07', 1, NULL, NULL, 45, '3000000.00', 1, 1, '46965304'),
+(128, 'Toko Mega Teknik', 'Jalan Jamika', '151B', '000', '000', 'Bandung', '40232', 2, 0, '000', '', '082124452324', 'Mr. Elvado', '2020-02-07', 1, NULL, NULL, 45, '3000000.00', 1, 1, '90468472'),
+(129, 'Toko Merpati Elektrik', 'Jalan Otto Iskandar Dinata', '339', '000', '000', 'Bandung', '40251', 2, 0, '000', '', '081320663366', 'Mrs. Erline', '2020-02-07', 1, NULL, NULL, 45, '3000000.00', 1, 1, '00984247'),
+(130, 'Toko Nceng', 'Jalan Bojong Koneng', '123', '000', '000', 'Bandung', '40191', 4, 0, '000', '', '081395112236', 'Mr. Enceng', '2020-02-07', 1, NULL, NULL, 45, '3000000.00', 1, 1, '98191337'),
+(131, 'Toko Omega Electric', 'Jalan Indramayu', '012', '000', '000', 'Bandung', '40291', 1, 0, '000', '', '081322922888', 'Mrs. Diana', '2020-02-07', 1, NULL, NULL, 45, '3000000.00', 1, 1, '53714447'),
+(132, 'Toko Panca Mulya', 'Jalan Kopo Sayati', '144', '000', '000', 'Bandung', '40228', 2, 0, '000', '', '022-5420586', 'Mrs. Dede', '2020-02-07', 1, NULL, NULL, 45, '3000000.00', 1, 1, '78507690'),
+(133, 'Toko Pelita Putra', 'Ruko Gunung Batu', '009', '000', '000', 'Bandung', '40175', 2, 0, '000', '', '0811239777', 'Mr. Sunsun', '2020-02-07', 1, NULL, NULL, 45, '3000000.00', 1, 1, '39844658'),
+(134, 'Toko Bangunan Pesantren II', 'Jalan Pagarsih', '339', '000', '000', 'Bandung', '40221', 2, 0, '000', '', '022-6040285', 'Mr. Yanto', '2020-02-07', 1, NULL, NULL, 45, '3000000.00', 1, 1, '61249526'),
+(135, 'Toko Prima Elektrik', 'Jalan ABC Komplek Cikapundung Electronic Center lt.1', '003', '000', '000', 'Bandung', '40111', 4, 0, 'EE', '', '085227160748', 'Mr. Endhi', '2020-02-07', 1, NULL, NULL, 45, '3000000.00', 1, 1, '50445892'),
+(136, 'Toko Purnama Jaya Electronic', 'Jalan Cibodas Raya', '006', '000', '000', 'Bandung', '40291', 1, 0, '000', '', '081224798744', 'Mr. Nurzaki', '2020-02-07', 1, NULL, NULL, 45, '3000000.00', 1, 1, '69926012'),
+(137, 'Toko Echi El', 'Jalan Logam', '7', '000', '000', 'Bandung', '40287', 3, 0, '000', '', '082129554478', 'Bapak Hendar', '2020-03-30', 1, NULL, NULL, 45, '3000000.00', 1, 1, '17759482'),
+(261, 'Toko Sinar Agung', 'Jalan Caringin', '258', '000', '000', 'Bandung', '40223', 2, 0, '000', '', '022-6026321', 'Mr. Miming', '2020-01-24', 1, NULL, NULL, 45, '2500000.00', 1, 1, '54444708'),
+(262, 'Toko Bangunan Sinar Sekelimus', 'Jalan Soekarno Hatta', '569', '000', '000', 'Bandung', '40275', 1, 0, '000', '', '(022) 7300317', 'Bapak Hendra', '2020-08-14', 1, NULL, NULL, 30, '3000000.00', 1, 1, '04770219'),
+(263, 'Toko Bahagia Elektrik', 'Jalan Kopo - Katapang KM 13.6', '', '000', '000', 'Bandung', '', 2, 0, '', '', '085723489618', 'Bapak Sina', '2020-08-19', 1, NULL, NULL, 30, '3000000.00', 1, 1, '04086274'),
+(264, 'Toko Atha Elektrik', 'Jalan Ganda Sari', '71', '000', '000', 'Bandung', '', 2, 0, '', '', '083804987086', 'Bapak Arif', '2020-08-19', 1, NULL, NULL, 30, '3000000.00', 1, 1, '18782587');
+
+-- --------------------------------------------------------
+
+--
+-- Struktur dari tabel `customer_accountant`
+--
+
+CREATE TABLE `customer_accountant` (
+  `id` int(255) NOT NULL,
+  `customer_id` int(255) NOT NULL,
+  `accountant_id` int(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
 
@@ -677,6 +725,21 @@ INSERT INTO `customer_area` (`id`, `name`, `major_id`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Struktur dari tabel `customer_target`
+--
+
+CREATE TABLE `customer_target` (
+  `id` int(255) NOT NULL,
+  `customer_id` int(255) NOT NULL,
+  `month` int(255) NOT NULL,
+  `year` int(255) NOT NULL,
+  `created_by` int(255) NOT NULL,
+  `value` decimal(50,4) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
 -- Struktur dari tabel `debt_type`
 --
 
@@ -693,7 +756,8 @@ CREATE TABLE `debt_type` (
 
 INSERT INTO `debt_type` (`id`, `name`, `description`, `is_operational`) VALUES
 (2, 'Service', 'This account is used for service debt.', 1),
-(3, 'Service ( Non-operational)', 'This account is used for non-operational service debt.', 0);
+(3, 'Service ( Non-operational)', 'This account is used for non-operational service debt.', 0),
+(4, 'Transportation', 'This account is used for transportation debt.', 1);
 
 -- --------------------------------------------------------
 
@@ -722,7 +786,9 @@ INSERT INTO `delivery_order` (`id`, `sales_order_id`, `code_delivery_order_id`, 
 (7, 1, 6, 3),
 (8, 6, 7, 3),
 (9, 7, 8, 4),
-(10, 1, 9, 2);
+(10, 1, 9, 2),
+(11, 10, 10, 10),
+(12, 11, 10, 1);
 
 -- --------------------------------------------------------
 
@@ -832,15 +898,18 @@ CREATE TABLE `fixed_asset` (
   `depreciation_time` int(11) NOT NULL,
   `date` date NOT NULL,
   `type` int(255) NOT NULL,
-  `residue_value` float(50,4) NOT NULL
+  `residue_value` float(50,4) NOT NULL,
+  `sold_value` decimal(50,4) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data untuk tabel `fixed_asset`
 --
 
-INSERT INTO `fixed_asset` (`id`, `name`, `description`, `sold_date`, `value`, `depreciation_time`, `date`, `type`, `residue_value`) VALUES
-(1, 'Meja', 'Meja untuk kerja dibuat dengan tangan manusia.', NULL, '3000000.0000', 4, '2020-08-25', 1, 250000.0000);
+INSERT INTO `fixed_asset` (`id`, `name`, `description`, `sold_date`, `value`, `depreciation_time`, `date`, `type`, `residue_value`, `sold_value`) VALUES
+(1, 'Meja', 'Meja untuk kerja dibuat dengan tangan manusia.', '2020-08-29', '3000000.0000', 4, '2020-08-25', 2, 250000.0000, NULL),
+(2, 'Kursi', 'Kursi misterius yang berada di ruangan tengan', '2020-08-29', '30000000.0000', 0, '2020-08-29', 1, 30000000.0000, NULL),
+(3, 'Mobil Avanza', 'Tahun 2015\r\n1500 CC\r\nBan oke', NULL, '200000000.0000', 48, '2020-08-30', 2, 90000000.0000, NULL);
 
 -- --------------------------------------------------------
 
@@ -971,7 +1040,8 @@ INSERT INTO `invoice` (`id`, `name`, `value`, `date`, `information`, `is_done`, 
 (5, 'INV.DSE202008-00031', '537920.00', '2020-08-19', 'DO-DSE-202008-00031', 0, 0, NULL, NULL, NULL, 0),
 (6, 'INV.DSE202008-00050', '944640.00', '2020-08-21', 'DO-DSE-202008-00050', 0, 1, NULL, NULL, NULL, 0),
 (7, 'INV.DSE202008-00070', '944640.00', '2020-08-21', 'DO-DSE-202008-00070', 0, 0, NULL, NULL, NULL, 0),
-(8, 'INV.DSE202008-00080', '23616000.00', '2020-08-22', 'DO-DSE-202008-00080', 0, 1, NULL, NULL, NULL, 0);
+(8, 'INV.DSE202008-00080', '23616000.00', '2020-08-22', 'DO-DSE-202008-00080', 0, 1, NULL, NULL, NULL, 0),
+(9, 'INV.DSE202008-00100', '2755200.00', '2020-08-30', 'DO-DSE-202008-00100', 0, 1, NULL, NULL, NULL, 0);
 
 -- --------------------------------------------------------
 
@@ -1415,7 +1485,8 @@ CREATE TABLE `receivable` (
 --
 
 INSERT INTO `receivable` (`id`, `bank_id`, `value`, `date`, `invoice_id`) VALUES
-(1, 2, '23000000.00', '2020-08-22', 8);
+(1, 2, '23000000.00', '2020-08-22', 8),
+(2, 5, '275520.00', '2020-08-31', 9);
 
 -- --------------------------------------------------------
 
@@ -1511,7 +1582,11 @@ INSERT INTO `sales_order` (`id`, `price_list_id`, `discount`, `quantity`, `sent`
 (5, 69, '18.0000', 3, 3, 1, 4),
 (6, 69, '18.0000', 3, 3, 1, 5),
 (7, 9, '10.0000', 4, 4, 1, 6),
-(8, 6, '20.0000', 1, 0, 0, 7);
+(8, 6, '20.0000', 1, 0, 0, 7),
+(9, 9, '16.0000', 1, 0, 1, 8),
+(10, 57, '16.0000', 10, 10, 1, 8),
+(11, 57, '100.0000', 1, 1, 1, 8),
+(12, 8, '18.0000', 1, 0, 0, 9);
 
 -- --------------------------------------------------------
 
@@ -1537,7 +1612,9 @@ INSERT INTO `sales_return` (`id`, `delivery_order_id`, `quantity`, `received`, `
 (2, 2, 1, 1, 1, 2),
 (3, 4, 3, 3, 1, 3),
 (4, 6, 3, 3, 1, 4),
-(5, 9, 4, 4, 1, 5);
+(5, 9, 4, 4, 1, 5),
+(6, 11, 1, 1, 1, 6),
+(7, 11, 1, 0, 0, 7);
 
 -- --------------------------------------------------------
 
@@ -1564,7 +1641,8 @@ INSERT INTO `sales_return_received` (`id`, `code_sales_return_received_id`, `sal
 (5, 5, 5, 2),
 (6, 6, 5, 2),
 (7, 7, 3, 2),
-(8, 8, 3, 1);
+(8, 8, 3, 1),
+(9, 9, 6, 1);
 
 -- --------------------------------------------------------
 
@@ -1590,7 +1668,7 @@ CREATE TABLE `stock_in` (
 --
 
 INSERT INTO `stock_in` (`id`, `item_id`, `quantity`, `residue`, `supplier_id`, `customer_id`, `good_receipt_id`, `sales_return_received_id`, `event_id`, `price`) VALUES
-(1, 1, 300, 281, 1, NULL, 1, NULL, NULL, '268960.0000'),
+(1, 1, 300, 270, 1, NULL, 1, NULL, NULL, '268960.0000'),
 (2, 14, 100, 100, 1, NULL, 2, NULL, NULL, '3450560.0000'),
 (3, 16, 50, 50, 1, NULL, 3, NULL, NULL, '492000.0000'),
 (4, 9, 1, 0, 1, NULL, 4, NULL, NULL, '5379200.0000'),
@@ -1604,7 +1682,8 @@ INSERT INTO `stock_in` (`id`, `item_id`, `quantity`, `residue`, `supplier_id`, `
 (12, 9, 1, 1, 1, NULL, 12, NULL, NULL, '5379200.0000'),
 (14, 9, 2, 2, NULL, 87, NULL, 6, NULL, '2689600.0000'),
 (15, 65, 3, 3, NULL, 264, NULL, 4, NULL, '348160.0000'),
-(16, 1, 1, 1, NULL, 124, NULL, 8, NULL, '268960.0000');
+(16, 1, 1, 1, NULL, 124, NULL, 8, NULL, '268960.0000'),
+(17, 1, 1, 1, NULL, 69, NULL, 9, NULL, '268960.0000');
 
 -- --------------------------------------------------------
 
@@ -1642,7 +1721,9 @@ INSERT INTO `stock_out` (`id`, `in_id`, `quantity`, `customer_id`, `supplier_id`
 (16, 9, 0, 6, NULL, 8, NULL, NULL),
 (17, 4, 1, 87, NULL, 9, NULL, NULL),
 (18, 10, 1, 87, NULL, 9, NULL, NULL),
-(19, 11, 2, 87, NULL, 9, NULL, NULL);
+(19, 11, 2, 87, NULL, 9, NULL, NULL),
+(20, 1, 10, 69, NULL, 11, NULL, NULL),
+(21, 1, 1, 69, NULL, 12, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -1701,7 +1782,8 @@ CREATE TABLE `users` (
 INSERT INTO `users` (`id`, `name`, `address`, `bank_account`, `is_active`, `entry_date`, `password`, `email`, `image_url`, `access_level`) VALUES
 (1, 'Daniel Tri', 'Jalan Jamuju no. 18, Bandung', '8090175441', 1, '2020-01-01', '27a9dc715a8e1b472ba494313425de62', 'danielrudianto12@gmail.com', NULL, 5),
 (2, 'Andrew Bambang Rudianto', 'Jalan Jamuju no. 18, Bandung', '8090175441', 1, '2020-07-08', 'df68de1228db0edd7590b6c89f8dab7e', 'andrewbambang@gmail.com', NULL, 5),
-(16, 'Christian Gerald', 'Jalan J', '878684654', 1, '2020-08-24', 'df12f589a16a759053fc605a6c24d32a', 'christiangerald@gmail.com', NULL, 2);
+(16, 'Christian Gerald', 'Jalan J', '878684654', 0, '2020-08-24', 'df12f589a16a759053fc605a6c24d32a', 'christiangerald@gmail.com', NULL, 2),
+(17, 'Daniel Tri 2', 'Jalan Jamuju no. 18, Bandung', '80902495000', 1, '2020-08-30', '27a9dc715a8e1b472ba494313425de62', 'danielrudianto12@gmail.comi', NULL, 1);
 
 -- --------------------------------------------------------
 
@@ -1726,11 +1808,7 @@ INSERT INTO `user_authorization` (`id`, `user_id`, `department_id`) VALUES
 (4, 1, 4),
 (5, 1, 5),
 (6, 1, 6),
-(7, 3, 2),
-(8, 3, 1),
-(9, 3, 3),
-(10, 3, 4),
-(11, 3, 5);
+(12, 17, 2);
 
 --
 -- Indexes for dumped tables
@@ -1746,6 +1824,12 @@ ALTER TABLE `attendance_list`
 -- Indeks untuk tabel `attendance_status`
 --
 ALTER TABLE `attendance_status`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indeks untuk tabel `bank_assignment`
+--
+ALTER TABLE `bank_assignment`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -1829,7 +1913,10 @@ ALTER TABLE `code_purchase_return_sent`
 --
 ALTER TABLE `code_sales_order`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `customer_id` (`customer_id`);
+  ADD UNIQUE KEY `name` (`name`),
+  ADD KEY `customer_id` (`customer_id`),
+  ADD KEY `seller` (`seller`),
+  ADD KEY `confirmed_by` (`confirmed_by`);
 
 --
 -- Indeks untuk tabel `code_sales_order_close_request`
@@ -1859,13 +1946,26 @@ ALTER TABLE `code_sales_return_received`
 ALTER TABLE `customer`
   ADD PRIMARY KEY (`id`),
   ADD KEY `area_id` (`area_id`),
-  ADD KEY `created_by` (`created_by`),
-  ADD KEY `accountant_id` (`accountant_id`);
+  ADD KEY `created_by` (`created_by`);
+
+--
+-- Indeks untuk tabel `customer_accountant`
+--
+ALTER TABLE `customer_accountant`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `accountant_id` (`accountant_id`),
+  ADD KEY `customer_id` (`customer_id`);
 
 --
 -- Indeks untuk tabel `customer_area`
 --
 ALTER TABLE `customer_area`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indeks untuk tabel `customer_target`
+--
+ALTER TABLE `customer_target`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -2157,10 +2257,16 @@ ALTER TABLE `attendance_status`
   MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
+-- AUTO_INCREMENT untuk tabel `bank_assignment`
+--
+ALTER TABLE `bank_assignment`
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT untuk tabel `bank_transaction`
 --
 ALTER TABLE `bank_transaction`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT untuk tabel `benefit`
@@ -2172,19 +2278,19 @@ ALTER TABLE `benefit`
 -- AUTO_INCREMENT untuk tabel `billing`
 --
 ALTER TABLE `billing`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT untuk tabel `code_billing`
 --
 ALTER TABLE `code_billing`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT untuk tabel `code_delivery_order`
 --
 ALTER TABLE `code_delivery_order`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT untuk tabel `code_event`
@@ -2220,25 +2326,25 @@ ALTER TABLE `code_purchase_return_sent`
 -- AUTO_INCREMENT untuk tabel `code_sales_order`
 --
 ALTER TABLE `code_sales_order`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT untuk tabel `code_sales_order_close_request`
 --
 ALTER TABLE `code_sales_order_close_request`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT untuk tabel `code_sales_return`
 --
 ALTER TABLE `code_sales_return`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT untuk tabel `code_sales_return_received`
 --
 ALTER TABLE `code_sales_return_received`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT untuk tabel `customer`
@@ -2247,22 +2353,34 @@ ALTER TABLE `customer`
   MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=265;
 
 --
+-- AUTO_INCREMENT untuk tabel `customer_accountant`
+--
+ALTER TABLE `customer_accountant`
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT untuk tabel `customer_area`
 --
 ALTER TABLE `customer_area`
   MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
+-- AUTO_INCREMENT untuk tabel `customer_target`
+--
+ALTER TABLE `customer_target`
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT untuk tabel `debt_type`
 --
 ALTER TABLE `debt_type`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT untuk tabel `delivery_order`
 --
 ALTER TABLE `delivery_order`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT untuk tabel `department`
@@ -2286,7 +2404,7 @@ ALTER TABLE `expense_class`
 -- AUTO_INCREMENT untuk tabel `fixed_asset`
 --
 ALTER TABLE `fixed_asset`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT untuk tabel `fixed_asset_type`
@@ -2316,7 +2434,7 @@ ALTER TABLE `internal_bank_account`
 -- AUTO_INCREMENT untuk tabel `invoice`
 --
 ALTER TABLE `invoice`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT untuk tabel `item`
@@ -2400,7 +2518,7 @@ ALTER TABLE `purchase_return_sent`
 -- AUTO_INCREMENT untuk tabel `receivable`
 --
 ALTER TABLE `receivable`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT untuk tabel `salary_attendance`
@@ -2424,31 +2542,31 @@ ALTER TABLE `salary_slip`
 -- AUTO_INCREMENT untuk tabel `sales_order`
 --
 ALTER TABLE `sales_order`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT untuk tabel `sales_return`
 --
 ALTER TABLE `sales_return`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT untuk tabel `sales_return_received`
 --
 ALTER TABLE `sales_return_received`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT untuk tabel `stock_in`
 --
 ALTER TABLE `stock_in`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT untuk tabel `stock_out`
 --
 ALTER TABLE `stock_out`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
 -- AUTO_INCREMENT untuk tabel `supplier`
@@ -2460,13 +2578,13 @@ ALTER TABLE `supplier`
 -- AUTO_INCREMENT untuk tabel `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT untuk tabel `user_authorization`
 --
 ALTER TABLE `user_authorization`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- Ketidakleluasaan untuk tabel pelimpahan (Dumped Tables)
@@ -2520,7 +2638,9 @@ ALTER TABLE `code_purchase_return`
 -- Ketidakleluasaan untuk tabel `code_sales_order`
 --
 ALTER TABLE `code_sales_order`
-  ADD CONSTRAINT `code_sales_order_ibfk_1` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`id`);
+  ADD CONSTRAINT `code_sales_order_ibfk_1` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`id`),
+  ADD CONSTRAINT `code_sales_order_ibfk_2` FOREIGN KEY (`seller`) REFERENCES `users` (`id`),
+  ADD CONSTRAINT `code_sales_order_ibfk_3` FOREIGN KEY (`confirmed_by`) REFERENCES `users` (`id`);
 
 --
 -- Ketidakleluasaan untuk tabel `code_sales_return`
@@ -2541,8 +2661,14 @@ ALTER TABLE `code_sales_return_received`
 --
 ALTER TABLE `customer`
   ADD CONSTRAINT `customer_ibfk_1` FOREIGN KEY (`area_id`) REFERENCES `customer_area` (`id`),
-  ADD CONSTRAINT `customer_ibfk_2` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`),
-  ADD CONSTRAINT `customer_ibfk_3` FOREIGN KEY (`accountant_id`) REFERENCES `users` (`id`);
+  ADD CONSTRAINT `customer_ibfk_2` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`);
+
+--
+-- Ketidakleluasaan untuk tabel `customer_accountant`
+--
+ALTER TABLE `customer_accountant`
+  ADD CONSTRAINT `customer_accountant_ibfk_1` FOREIGN KEY (`accountant_id`) REFERENCES `users` (`id`),
+  ADD CONSTRAINT `customer_accountant_ibfk_2` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`id`);
 
 --
 -- Ketidakleluasaan untuk tabel `delivery_order`
@@ -2653,6 +2779,13 @@ ALTER TABLE `stock_out`
   ADD CONSTRAINT `stock_out_ibfk_2` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`id`),
   ADD CONSTRAINT `stock_out_ibfk_3` FOREIGN KEY (`supplier_id`) REFERENCES `supplier` (`id`),
   ADD CONSTRAINT `stock_out_ibfk_4` FOREIGN KEY (`delivery_order_id`) REFERENCES `delivery_order` (`id`);
+
+--
+-- Ketidakleluasaan untuk tabel `user_authorization`
+--
+ALTER TABLE `user_authorization`
+  ADD CONSTRAINT `user_authorization_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
+  ADD CONSTRAINT `user_authorization_ibfk_2` FOREIGN KEY (`department_id`) REFERENCES `department` (`id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

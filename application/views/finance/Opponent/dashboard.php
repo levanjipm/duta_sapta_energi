@@ -83,9 +83,9 @@
 				var opponentCount = 0;
 				$.each(opponents, function(index, opponent){
 					if(type == "other"){
-						var name		= opponent.name;
+						var name			= opponent.name;
 						var description		= opponent.description;
-						var id			= opponent.id;
+						var id				= opponent.id;
 						$('#opponentTableContent').append("<tr><td><label>" + name + "</label><p>" + description + "</p></td><td><button type='button' class='button button_default_dark' title='View " + name + "' onclick='view(`" + type + "`," + id + ")'><i class='fa fa-eye'></i></button></td></tr>");
 					} else {
 						var name		= opponent.name;

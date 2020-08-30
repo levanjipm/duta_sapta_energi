@@ -165,6 +165,7 @@
 				category: $('#category').val()
 			},
 			success:function(response){
+				var receivableCount = 0;
 				$('#receivable_chart').html('');
 				var max_receivable		= 0;
 				$.each(response, function(index,value){
@@ -175,10 +176,19 @@
 					if(receivable > max_receivable){
 						max_receivable = receivable;
 						$('#receivable_chart').prepend("<div class='row' id='receivable-" + id + "'><div class='col-sm-3 col-xs-3 center'><p><strong>" + name + "</strong>, " + city + "</p></div><div class='col-sm-7 col-xs-6'><div class='receivable_line' id='receive-" + id + "' onclick='view_receivable_detail(" + id + ")'></div></div><div class='col-sm-2 col-xs-3 center' style='text-align:right'><p>Rp. " + numeral(receivable).format('0,0.00') + "</p></div></div><br>");
+						receivableCount++;
 					} else {
 						$('#receivable_chart').append("<div class='row' id='receivable-" + id + "'><div class='col-sm-3 col-xs-3 center'><p>" + name + ", " + city + "</p></div><div class='col-sm-7 col-xs-6'><div class='receivable_line' id='receive-" + id + "' onclick='view_receivable_detail(" + id + ")'></div></div><div class='col-sm-2 col-xs-3 center' style='text-align:right'><p>Rp. " + numeral(receivable).format('0,0.00') + "</p></div></div><br>");
+						receivableCount++;
 					}
 				});
+
+				if(receivableCount == 0){
+					$('#receivable_chart').html("There is no receivable found.");
+					$('#receivable_grid').hide();
+				} else {
+					$('#receivable_grid').show();
+				}
 				
 				$.each(response, function(index,value){
 					var id			= value.id;
