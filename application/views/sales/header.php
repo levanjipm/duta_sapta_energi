@@ -57,7 +57,12 @@
 			<a href='<?= site_url('Sales_return/archiveDashboard') ?>'><p>Archive</p></a>	
 		</div>
 		<a href='<?= site_url('Stock/view/Sales') ?>'><button><p>Check stock</p></button></a>
+		<?php if($user_login->access_level > 1){ ?>
+		<a href='<?= site_url('Visit_list') ?>'><button><p>Visit List</p></button></a>
+		<?php } ?>
+		<?php if($user_login->access_level > 2){ ?>
 		<a href='<?= site_url('SalesAnalytics') ?>'><button><p>Analytic</p></button></a>
+		<?php } ?>
 	</div>
 </div>
 <script>
