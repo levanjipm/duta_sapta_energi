@@ -110,6 +110,8 @@
 </div>
 
 <script>
+	var aspect;
+
 	$('#valueButton').click(function(){
 		$('.button_mini_tab').attr('disabled', false);
 		$('.button_mini_tab').removeClass('active');
@@ -117,11 +119,28 @@
 		$('#valueButton').attr('disabled', true);
 		$('#valueButton').addClass('active');
 
+		$('#sales').click();
+
 		$('#customerViewPane').fadeOut(250, function(){
 			$('#valueViewPane').fadeIn(250);
 		})
+	});
+
+	$('#customerButton').click(function(){
+		$('.button_mini_tab').attr('disabled', false);
+		$('.button_mini_tab').removeClass('active');
+
+		$('#customerButton').attr('disabled', true);
+		$('#customerButton').addClass('active');
+
+		$('#valueViewPane').fadeOut(250, function(){
+			$('#customerViewPane').fadeIn(250);
+		})
+	});
+
+	$(document).ready(function(){
+		$('#valueButton').click();
 	})
-	var aspect;
 
 	$('#valueSidePane button').click(function(){
 		$('#valueSidePane button').attr('disabled', false);
