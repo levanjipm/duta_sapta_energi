@@ -195,6 +195,9 @@ class Sales_order extends CI_Controller {
 		$this->load->model('Bank_model');
 		$data['pendingBankData']	= $this->Bank_model->getPendingValueByOpponentId('customer', $customerId);
 		
+		$this->load->model('Delivery_order_model');
+		$data['deliveryOrders'] = $this->Delivery_order_model->getItemBySalesOrderId($sales_order_id);
+
 		$this->load->model('Invoice_model');
 
 		$minimumDate = date('Y-m-d');

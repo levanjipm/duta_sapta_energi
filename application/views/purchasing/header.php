@@ -28,7 +28,8 @@
 	<div class='sidenav_bar_functions'>
 		<button class='container_button'><p style='font-family:museo'>Purchase order</p></button>
 		<div class='container_bar'>
-			<a href='<?= site_url('Purchase_order') ?>'><p>Create</p></a>
+			<a href='<?= site_url('Purchase_order/createDashboard') ?>'><p>Create</p></a>
+			<a href='<?= site_url('Purchase_order/confirmDashboard') ?>'><p>Confirm</p></a>
 			<a href='<?= site_url('Purchase_order/pending') ?>'><p>Pending</p></a>	
 			<a href='<?= site_url('Purchase_order/archiveDashboard') ?>'><p>Archive</p></a>	
 		</div>

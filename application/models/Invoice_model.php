@@ -808,4 +808,42 @@ class Invoice_model extends CI_Model {
 			$this->db->where('id', $id);
 			$this->db->update($this->table_invoice);
 		}
-}
+
+		public function calculateAspect($aspect, $month, $year)
+		{
+			if($aspect == 1)
+			{
+				$query			= $this->db->query("
+					SELECT users.id, SUM(invoice.value) as value, users.image_url, users.name, COALESCE(returnTable.returnValue, 0) as returned
+					FROM invoice
+					JOIN (
+						SELECT DISTINCT(code_delivery_order.invoice_id) as id, code_sales_order.seller
+						FROM code_delivery_order
+						JOIN delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order.id
+						JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
+						JOIN code_sales_order ON code_sales_order.id = sales_order.code_sales_order_id
+					) AS a
+					ON a.id = invoice.id
+					LEFT JOIN users ON a.seller = users.id
+					LEFT JOIN (
+						SELECT COALESCE(SUM(sales_return_received.quantity * price_list.price_list * (100 - discount) / 100),0) as returnValue, code_delivery_order.invoice_id
+						FROM sales_return_received
+						JOIN code_sales_return_received ON sales_return_received.code_sales_return_received_id = code_sales_return_received.id
+						JOIN sales_return ON sales_return_received.sales_return_id = sales_return.id
+						JOIN delivery_order ON sales_return.delivery_order_id = delivery_order.id
+						JOIN code_delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order.id
+						JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
+						JOIN price_list ON sales_order.price_list_id = price_list.id
+						WHERE code_sales_return_received.is_confirm = '1'
+					) as returnTable
+					ON invoice.id = returnTable.invoice_id
+					WHERE MONTH(invoice.date) = '$month' AND YEAR(invoice.date) = '$year'
+					GROUP BY a.seller
+				");
+
+				$result		= $query->result();
+				return $result;
+			}
+		}
+	}
+?>

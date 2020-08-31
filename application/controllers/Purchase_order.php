@@ -9,7 +9,7 @@ class Purchase_order extends CI_Controller {
 		}
 	}
 	
-	public function index()
+	public function confirmDashboard()
 	{
 		$user_id		= $this->session->userdata('user_id');
 		$this->load->model('User_model');
@@ -20,7 +20,7 @@ class Purchase_order extends CI_Controller {
 		
 		$this->load->view('head');
 		$this->load->view('purchasing/header', $data);
-		$this->load->view('Purchasing/PurchaseOrder/dashboard');
+		$this->load->view('Purchasing/PurchaseOrder/confirmDashboard');
 	}
 	
 	public function createDashboard()

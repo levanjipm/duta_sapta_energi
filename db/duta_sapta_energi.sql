@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Waktu pembuatan: 31 Agu 2020 pada 01.51
+-- Waktu pembuatan: 31 Agu 2020 pada 09.24
 -- Versi server: 10.4.13-MariaDB
 -- Versi PHP: 7.2.32
 
@@ -686,7 +686,8 @@ INSERT INTO `customer` (`id`, `name`, `address`, `number`, `rt`, `rw`, `city`, `
 (261, 'Toko Sinar Agung', 'Jalan Caringin', '258', '000', '000', 'Bandung', '40223', 2, 0, '000', '', '022-6026321', 'Mr. Miming', '2020-01-24', 1, NULL, NULL, 45, '2500000.00', 1, 1, '54444708'),
 (262, 'Toko Bangunan Sinar Sekelimus', 'Jalan Soekarno Hatta', '569', '000', '000', 'Bandung', '40275', 1, 0, '000', '', '(022) 7300317', 'Bapak Hendra', '2020-08-14', 1, NULL, NULL, 30, '3000000.00', 1, 1, '04770219'),
 (263, 'Toko Bahagia Elektrik', 'Jalan Kopo - Katapang KM 13.6', '', '000', '000', 'Bandung', '', 2, 0, '', '', '085723489618', 'Bapak Sina', '2020-08-19', 1, NULL, NULL, 30, '3000000.00', 1, 1, '04086274'),
-(264, 'Toko Atha Elektrik', 'Jalan Ganda Sari', '71', '000', '000', 'Bandung', '', 2, 0, '', '', '083804987086', 'Bapak Arif', '2020-08-19', 1, NULL, NULL, 30, '3000000.00', 1, 1, '18782587');
+(264, 'Toko Atha Elektrik', 'Jalan Ganda Sari', '71', '000', '000', 'Bandung', '', 2, 0, '', '', '083804987086', 'Bapak Arif', '2020-08-19', 1, NULL, NULL, 30, '3000000.00', 1, 1, '18782587'),
+(265, 'Toko KS Electric', 'Jalan Lettu Sobri (Odeon)', '3 - 5', '000', '000', 'Sukabumi', '43131', 4, 0, '000', '', '(0266) 222217', 'Bapak Halim Sanjaya', '2020-08-31', 1, '-6.825881100000000000000000000000', '107.002591600000000000000000000000', 30, '3000000.00', 1, 1, '09833784');
 
 -- --------------------------------------------------------
 
@@ -2350,7 +2351,7 @@ ALTER TABLE `code_sales_return_received`
 -- AUTO_INCREMENT untuk tabel `customer`
 --
 ALTER TABLE `customer`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=265;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=267;
 
 --
 -- AUTO_INCREMENT untuk tabel `customer_accountant`

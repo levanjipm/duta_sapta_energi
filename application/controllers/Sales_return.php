@@ -51,20 +51,16 @@ class Sales_return extends CI_Controller {
 		$deliveryOrder = (array) $this->Delivery_order_detail_model->getByCodeDeliveryOrderId($deliveryOrderId);
 
 		$this->load->model('Sales_return_detail_model');
-		$returnDeliveryOrder = (array)$this->Sales_return_detail_model->getByCodeDeliveryOrderId($deliveryOrderId);
-
-		$returnDeliveryOrderArray = array();
-		foreach($returnDeliveryOrder as $returnItem)
-		{
-			$returnDeliveryOrderArray[$returnItem->id] = $returnItem->quantity;
-			next($returnDeliveryOrder);
+		$returnDeliveryOrders = (array)$this->Sales_return_detail_model->getByCodeDeliveryOrderId($deliveryOrderId);
+		$returnArray = array();
+		foreach($returnDeliveryOrders as $returnDeliveryOrder){
+			$returnArray[$returnDeliveryOrder->id] = $returnDeliveryOrder->quantity;
 		}
 
 		$resultArray = array();
-
 		foreach($deliveryOrder as $item){
 			$batchArray = (array) $item;
-			$batchArray['returned'] = array_key_exists($item->id,$returnDeliveryOrder)? $returnDeliveryOrder[$item->id]: 0;
+			$batchArray['returned'] = array_key_exists($item->id,$returnArray)? $returnArray[$item->id]: 0;
 
 			array_push($resultArray, $batchArray);
 			next($deliveryOrder);

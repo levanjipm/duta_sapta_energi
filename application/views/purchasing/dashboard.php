@@ -122,6 +122,11 @@
         calculatePendingOrders();
     })
 
+	$('#purchaseOrderForm').validate({
+		ignore:"",
+		rules: {"hidden_field": {min: 1}}
+	});
+
 	function calculateNeeds(){
 		$.ajax({
 			url:'<?= site_url('Purchasing/calculateNeeds') ?>',
@@ -168,9 +173,9 @@
     }
 
     $('#createPurchaseOrderButton').click(function(){
-        $('#payableDetailWrapper').fadeIn(300, function(){
-            $('#payableDetailWrapper .alert_box_slide').show("slide", { direction: "right" }, 250);
-        });
+		if($('#purchaseOrderForm').valid()){
+			$('#purchaseOrderForm').submit();
+		};
     })
 
     function calculatePendingOrders(){

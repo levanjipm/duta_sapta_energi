@@ -1,16 +1,12 @@
 <head>
-	<title>Purchase order</title>
+	<title>Purchase order - Confirm</title>
 </head>
 <div class='dashboard'>
 	<div class='dashboard_head'>
-		<p style='font-family:museo'><a href='<?= site_url('Purchasing') ?>' title='Purchasing'><i class='fa fa-briefcase'></i></a> /Purchase order</p>
+		<p style='font-family:museo'><a href='<?= site_url('Purchasing') ?>' title='Purchasing'><i class='fa fa-briefcase'></i></a> /Purchase order / Confirm</p>
 	</div>
 	<br>
 	<div class='dashboard_in'>
-		<a href='<?= site_url('Purchase_order/createDashboard') ?>'>
-			<button type='button' class='button button_default_dark'>Create purchase order</button>
-		</a>
-		<br><br>
 		<div id='purchaseOrderTable'>
 			<table class='table table-bordered'>
 				<tr>
@@ -23,7 +19,7 @@
 			</table>
 		</div>
 
-		<p id='purchaseOrderTableText'>There is no unconfirmed purchase order found.</p>
+		<p id='purchaseOrderTableText'>There is no unconfirmed purchase order found.</p><p>Create a <a href='<?= site_url('Purchase_order/createDashboard') ?>'>new one</a>.</p>
 	</div>
 </div>
 	

@@ -73,4 +73,19 @@ class Sales extends CI_Controller {
 		header('Content-Type: application/json');
 		echo json_encode(array_reverse($result));
 	}
+
+	public function getByAspect()
+	{
+		$aspect			= $this->input->get('aspect');
+		$month			= $this->input->get('month');
+		$year			= $this->input->get('year');
+		if($aspect == "sales")
+		{
+			$this->load->model("Invoice_model");
+			$data		= $this->Invoice_model->calculateAspect(1, $month, $year);
+		}
+
+		header('Content-Type: application/json');
+		echo json_encode($data);
+	}
 }

@@ -92,6 +92,19 @@
 			</tr>
 			<tbody id='sales_order_table'></tbody>
 		</table>
+
+		<label>Delivery history</label>
+		<div id='deliveryOrderTable'>
+			<table class='table table-bordered' id='delivery_order_history_table'>
+				<tr>
+					<th>Date</th>
+					<th>Name</th>
+					<th>Status</th>
+				</tr>
+				<tbody id='deliveryOrderTableContent'></tbody>
+			</table>
+		</div>
+		<p style='font-family:museo' id='deliveryOrderTableText' style='display:none'>There is no delivery history found</p>
 	</div>
 </div>
 
@@ -200,6 +213,7 @@
 				id:n
 			},
 			success:function(response){
+				console.log(response);
 				var general					= response.general;
 				var sales_order_date		= general.date;
 				var sales_order_name		= general.name;
@@ -284,6 +298,32 @@
 				});
 				
 				$('#sales_order_table').append("<tr><td colspan='4'></td><td colspan='2'>Total</td><td>Rp. " + numeral(sales_order_value).format('0,0.00') + "</td></tr>");
+
+				var deliveryOrders = response.deliveryOrders;
+				var deliveryOrderCount = 0;
+				$('#deliveryOrderTableContent').html('');
+				$.each(deliveryOrders, function(index, deliveryOrder){
+					var is_confirm = deliveryOrder.is_confirm;
+					var name = deliveryOrder.name;
+					var date = deliveryOrder.date;
+					
+					if(is_confirm == 0){
+						var status = "Pending";
+					} else if(is_confirm == 1){
+						var status = "Sent";
+					}
+
+					$('#deliveryOrderTableContent').append("<tr><td>" + my_date_format(date) + "</td><td>" + name + "</td><td>" + status + "</td></tr>");
+					deliveryOrderCount++;
+				});
+
+				if(deliveryOrderCount > 0){
+					$('#deliveryOrderTable').show();
+					$('#deliveryOrderTableText').hide();
+				} else {
+					$('#deliveryOrderTable').hide();
+					$('#deliveryOrderTableText').show();
+				}
 				
 				$('#viewSalesOrderWrapper').fadeIn(300, function(){
 					$('#viewSalesOrderWrapper .alert_box_slide').show("slide", { direction: "right" }, 250);

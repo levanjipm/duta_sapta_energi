@@ -230,7 +230,9 @@
 					customer_npwp: $('#customer_npwp').val(),
 					customer_phone: $('#customer_phone').val(),
 					customer_pic: $('#customer_pic').val(),
-					term_of_payment: $('#term_of_payment').val()
+					term_of_payment: $('#term_of_payment').val(),
+					latitude: $('#latitude').val(),
+					longitude: $("#longitude").val()
 				},
 				type:'POST',
 				beforeSend:function(){
@@ -265,8 +267,8 @@
 			},
 			success:function(response){
 				$('button').attr('disabled', false);
+				refresh_view();
 				if(response == 1){
-					refresh_view();
 					$('#delete_customer_wrapper').fadeOut();
 				} else {
 					$('#error_delete_customer').fadeTo(250, 1);

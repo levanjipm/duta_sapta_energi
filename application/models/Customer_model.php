@@ -198,7 +198,7 @@ class Customer_model extends CI_Model {
 				$this->area_id				= $this->input->post('area_id');
 				$this->npwp					= $this->input->post('customer_npwp');
 				$this->phone_number			= $this->input->post('customer_phone');
-				$this->latitude				= $this->input->post('customer_latitude');
+				$this->latitude				= $this->input->post('latitude');
 				$this->longitude			= $this->input->post('longitude');
 				$this->pic_name				= $this->input->post('customer_pic');
 				$this->date_created			= date('Y-m-d');
