@@ -840,10 +840,42 @@ class Invoice_model extends CI_Model {
 					WHERE MONTH(invoice.date) = '$month' AND YEAR(invoice.date) = '$year'
 					GROUP BY a.seller
 				");
-
-				$result		= $query->result();
-				return $result;
+			} else if($aspect == 2)
+			{
+				$query			= $this->db->query("
+					SELECT customer_area.name, SUM(invoice.value) as value, COALESCE(SUM(returnTable.returnValue),0) as returned FROM invoice
+					JOIN (
+						SELECT DISTINCT(code_delivery_order.invoice_id) as id, customer.area_id
+						FROM code_delivery_order
+						JOIN delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order.id
+						JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
+						JOIN code_sales_order ON code_sales_order.id = sales_order.code_sales_order_id
+						JOIN customer ON code_sales_order.customer_id = customer.id
+						WHERE code_delivery_order.is_sent = '1'
+					) AS a
+					ON a.id = invoice.id
+					LEFT JOIN (
+						SELECT COALESCE(SUM(sales_return_received.quantity * price_list.price_list * (1 - discount / 100)),0) as returnValue, code_delivery_order.invoice_id
+						FROM sales_return_received
+						JOIN code_sales_return_received ON sales_return_received.code_sales_return_received_id = code_sales_return_received.id
+						JOIN sales_return ON sales_return_received.sales_return_id = sales_return.id
+						JOIN delivery_order ON sales_return.delivery_order_id = delivery_order.id
+						JOIN code_delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order.id
+						JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
+						JOIN price_list ON sales_order.price_list_id = price_list.id
+						WHERE code_sales_return_received.is_confirm = '1'
+						GROUP BY code_delivery_order.invoice_id
+					) as returnTable
+					ON invoice.id = returnTable.invoice_id
+					JOIN customer_area ON a.area_id = customer_area.id
+					WHERE MONTH(invoice.date) = '$month' AND YEAR(invoice.date) = '$year'
+					AND invoice.is_confirm = '1'
+					GROUP BY customer_area.id
+				");
 			}
+
+			$result		= $query->result();
+			return $result;
 		}
 	}
 ?>

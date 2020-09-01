@@ -83,6 +83,18 @@ class Sales extends CI_Controller {
 		{
 			$this->load->model("Invoice_model");
 			$data		= $this->Invoice_model->calculateAspect(1, $month, $year);
+		} else if($aspect == "area")
+		{
+			$this->load->model("Invoice_model");
+			$data		= $this->Invoice_model->calculateAspect(2, $month, $year);
+		} else if($aspect == "type")
+		{
+			$this->load->model("Invoice_model");
+			$data		= $this->Invoice_model->calculateAspect(3, $month, $year);
+		} else if($aspect == "customer")
+		{
+			$this->load->model("Invoice_model");
+			$data		= $this->Invoice_model->calculateAspect(4, $month, $year);
 		}
 
 		header('Content-Type: application/json');

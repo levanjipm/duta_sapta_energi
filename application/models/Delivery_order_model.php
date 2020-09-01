@@ -244,7 +244,7 @@ class Delivery_order_model extends CI_Model {
 			return $insert_id;
 		}
 		
-		public function show_uninvoiced_delivery_order($type, $offset = 0, $filter = '', $limit = 25)
+		public function getUninvoicedDeliveryOrders($type, $offset = 0, $filter = '', $limit = 10, $accountant = null)
 		{
 			$this->db->select('DISTINCT(code_delivery_order.id) as id, , code_delivery_order.date, code_delivery_order.name, code_delivery_order.is_confirm, code_delivery_order.is_sent, code_delivery_order.guid, code_delivery_order.invoice_id, customer.name as customer_name, customer.address as customer_address, customer.city as customer_city');
 			$this->db->from('code_delivery_order');
@@ -252,10 +252,16 @@ class Delivery_order_model extends CI_Model {
 			$this->db->join('sales_order', 'delivery_order.sales_order_id = sales_order.id');
 			$this->db->join('code_sales_order', 'sales_order.code_sales_order_id = code_sales_order.id', 'inner');
 			$this->db->join('customer', 'code_sales_order.customer_id = customer.id');
+			$this->db->join('customer_accountant', 'customer.id = customer_accountant.customer_id');
+
 			$this->db->where('code_sales_order.invoicing_method', $type);
 			$this->db->where('code_delivery_order.is_confirm', 1);
 			$this->db->where('code_delivery_order.is_delete', 0);
 			$this->db->where('code_delivery_order.invoice_id', null);
+
+			if($accountant != null){
+				$this->db->where('customer_accountant.accountant_id', $accountant);
+			}
 			$this->db->like('code_delivery_order.name', null);
 			$this->db->limit($limit, $offset);
 			$query		= $this->db->get();
@@ -265,17 +271,22 @@ class Delivery_order_model extends CI_Model {
 			return $result;
 		}
 		
-		public function count_uninvoiced_delivery_order($type, $term = '')
+		public function countUninvoicedDeliveryOrders($type, $term = '', $accountant =  null)
 		{
 			$this->db->select('code_delivery_order.id');
 			$this->db->from('code_delivery_order');
 			$this->db->join('delivery_order', 'delivery_order.code_delivery_order_id = code_delivery_order.id', 'inner');
 			$this->db->join('sales_order', 'delivery_order.sales_order_id = sales_order.id');
 			$this->db->join('code_sales_order', 'sales_order.code_sales_order_id = code_sales_order.id');
+			$this->db->join('customer_accountant', 'code_sales_order.customer_id = customer_accountant.customer_id');
+
 			$this->db->where('code_sales_order.invoicing_method', $type);
 			$this->db->where('code_delivery_order.is_confirm', 1);
 			$this->db->where('code_delivery_order.is_delete', 0);
 			$this->db->where('code_delivery_order.invoice_id', null);
+			if($accountant != null){
+				$this->db->where('customer_accountant.accountant_id', $accountant);
+			}
 			$query	= $this->db->get();
 
 			$result		= $query->num_rows();

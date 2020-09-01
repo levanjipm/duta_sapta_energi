@@ -170,4 +170,36 @@ class Customer extends CI_Controller {
 
 		$this->load->view('sales/Customer/detailDashboard', $data);
 	}
+
+	public function showCustomerAccountantItems()
+	{
+		$term		= $this->input->get('term');
+		$page		= $this->input->get('page');
+		$offset		= ($page - 1) * 10;
+		$user		= $this->input->get('accountant_id');
+
+		if(!isset($term)){
+			$this->load->model('Customer_model');
+			$data['customers'] = $this->Customer_model->showCustomerAccountantItems(0, "", $user, 0);
+		} else {
+			$this->load->model('Customer_model');
+			$data['customers'] = $this->Customer_model->showCustomerAccountantItems($offset, $term, $user);
+			$item = $this->Customer_model->countItems($term);
+			$data['pages'] = max(1, ceil($item / 10));
+		}
+		
+		header('Content-Type: application/json');
+		echo json_encode($data);
+	}
+
+	public function assignAccountant()
+	{
+		$includedCustomerArray = $this->input->post('included');
+		$excludedCustomerArray = $this->input->post('excluded');
+		$accountantId			= $this->input->post('accountant');
+
+		$this->load->model("Customer_accountant_model");
+		$includedResult = $this->Customer_accountant_model->updateByAccountant(1, $includedCustomerArray, $accountantId);
+		$excludedResult = $this->Customer_accountant_model->updateByAccountant(0, $excludedCustomerArray, $accountantId);
+	}
 }

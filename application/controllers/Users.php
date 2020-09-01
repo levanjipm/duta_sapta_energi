@@ -45,7 +45,20 @@ class Users extends CI_Controller {
 		$this->load->model("User_model");
 
 		$data['users'] = $this->User_model->getSalesItems($offset);
-		$data['pages'] = $this->User_model->countSalesItems();
+		$data['pages'] = max(1, ceil($this->User_model->countSalesItems() / 10));
+
+		header('Content-Type: application/json');
+		echo json_encode($data);
+	}
+
+	public function getAccountantItems()
+	{
+		$page		= $this->input->get('page');
+		$offset		= ($page - 1) * 10;
+		$this->load->model("User_model");
+
+		$data['users'] = $this->User_model->getAccountantItems($offset);
+		$data['pages'] = max(1, ceil($this->User_model->countAccountantItems() / 10));
 
 		header('Content-Type: application/json');
 		echo json_encode($data);

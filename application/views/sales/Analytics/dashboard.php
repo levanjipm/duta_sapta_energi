@@ -112,6 +112,10 @@
 <script>
 	var aspect;
 
+	$(document).ready(function(){
+		$('#valueButton').click();
+	})
+
 	$('#valueButton').click(function(){
 		$('.button_mini_tab').attr('disabled', false);
 		$('.button_mini_tab').removeClass('active');
@@ -119,27 +123,9 @@
 		$('#valueButton').attr('disabled', true);
 		$('#valueButton').addClass('active');
 
-		$('#sales').click();
-
 		$('#customerViewPane').fadeOut(250, function(){
 			$('#valueViewPane').fadeIn(250);
 		})
-	});
-
-	$('#customerButton').click(function(){
-		$('.button_mini_tab').attr('disabled', false);
-		$('.button_mini_tab').removeClass('active');
-
-		$('#customerButton').attr('disabled', true);
-		$('#customerButton').addClass('active');
-
-		$('#valueViewPane').fadeOut(250, function(){
-			$('#customerViewPane').fadeIn(250);
-		})
-	});
-
-	$(document).ready(function(){
-		$('#valueButton').click();
 	})
 
 	$('#valueSidePane button').click(function(){
@@ -191,7 +177,9 @@
 							var id = item.id;
 							var salesman = (item.name == null)? "Office" : item.name;
 							var value = parseFloat(item.value);
-							var returnValue = parseFloat(item.returned)
+							var returnValue = parseFloat(item.returned);
+							console.log(value);
+							console.log(returnValue);
 							if(item.image_url == null){
 								var imageUrl = "<?= base_url() . '/assets/ProfileImages/defaultImage.png' ?>";
 							} else {
@@ -211,15 +199,41 @@
 								width: percentage + "%"
 							}, 1000);
 						});
+					} else {
+						var itemCount = 0;
+						var totalValue = 0;
+						$.each(response, function(index, item){
+							var id = item.id;
+							var areaName = (item.name == null)? "Office" : item.name;
+							var value = parseFloat(item.value);
+							var returnValue = parseFloat(item.returned)
+							if(item.image_url == null){
+								var imageUrl = "<?= base_url() . '/assets/ProfileImages/defaultImage.png' ?>";
+							} else {
+								var imageUrl = "<?= base_url() . '/assets/ProfileImages/' ?>" + item.image_url;
+							}
 
-						if(itemCount > 0){
-							$('#valueAnalyticTable').fadeIn();
-							$('#valueAnalyticTableText').hide();
-						} else {
-							$('#valueAnalyticTableText').hide();
-							$('#valueAnalyticTable').fadeIn();
-						}
-						
+							$('#tableAnalyticBody').append("<tr><td>"+ areaName + "</td><td>Rp. " + numeral(value - returnValue).format("0,0.00") + "<div class='progressBarWrapper'><p></p><div class='progressBar' data-value='" + (value - returnValue) + "'></div></div></td></tr>");
+							itemCount++;
+							totalValue += value - returnValue;
+						});
+
+						$('.progressBar').each(function(){
+							var value = $(this).attr('data-value');
+							var percentage = value * 100 / totalValue;
+							$(this).siblings("p").html(numeral(percentage).format('0,0.00') + "%");
+							$(this).animate({
+								width: percentage + "%"
+							}, 1000);
+						});
+					}
+
+					if(itemCount > 0){
+						$('#valueAnalyticTable').fadeIn();
+						$('#valueAnalyticTableText').hide();
+					} else {
+						$('#valueAnalyticTableText').hide();
+						$('#valueAnalyticTable').fadeIn();
 					}
 				}
 			})

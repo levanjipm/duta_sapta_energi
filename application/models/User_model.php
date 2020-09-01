@@ -211,6 +211,37 @@ class User_model extends CI_Model {
 			return $result;
 		}
 
+		public function getAccountantItems($offset = 0, $limit = 10)
+		{
+			$query		= $this->db->query("
+				SELECT users.* FROM users
+				JOIN (
+					SELECT user_authorization.user_id FROM user_authorization
+					WHERE department_id = '1'
+				) AS a
+				ON a.user_id = users.id
+				LIMIT $limit OFFSET $offset
+			");
+
+			$result		= $query->result();
+			return $result;
+		}
+
+		public function countAccountantItems()
+		{
+			$query		= $this->db->query("
+				SELECT users.* FROM users
+				JOIN (
+					SELECT user_authorization.user_id FROM user_authorization
+					WHERE department_id = '1'
+				) AS a
+				ON a.user_id = users.id
+			");
+
+			$result		= $query->num_rows();
+			return $result;
+		}
+
 		public function countActiveUser()
 		{
 			$this->db->where("is_active", 1);

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Waktu pembuatan: 31 Agu 2020 pada 09.24
+-- Waktu pembuatan: 01 Sep 2020 pada 10.31
 -- Versi server: 10.4.13-MariaDB
 -- Versi PHP: 7.2.32
 
@@ -700,6 +700,21 @@ CREATE TABLE `customer_accountant` (
   `customer_id` int(255) NOT NULL,
   `accountant_id` int(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data untuk tabel `customer_accountant`
+--
+
+INSERT INTO `customer_accountant` (`id`, `customer_id`, `accountant_id`) VALUES
+(9, 6, 1),
+(10, 7, 1),
+(11, 11, 1),
+(12, 74, 1),
+(13, 75, 1),
+(15, 1, 1),
+(16, 5, 1),
+(17, 8, 1),
+(18, 9, 1);
 
 -- --------------------------------------------------------
 
@@ -2357,7 +2372,7 @@ ALTER TABLE `customer`
 -- AUTO_INCREMENT untuk tabel `customer_accountant`
 --
 ALTER TABLE `customer_accountant`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
 -- AUTO_INCREMENT untuk tabel `customer_area`

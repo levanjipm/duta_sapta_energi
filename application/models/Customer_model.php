@@ -376,4 +376,28 @@ class Customer_model extends CI_Model {
 				$this->db->update($this->table_customer);
 			}
 		}
+
+		public function showCustomerAccountantItems($offset = 0, $term = "", $accountantId, $limit = 10)
+		{
+			if($limit == 0){
+				$query			= $this->db->query("
+					SELECT customer.*, IF(customer_accountant.id IS NULL, 0, 1) as accountantStatus
+					FROM customer
+					LEFT JOIN customer_accountant
+					ON customer.id = customer_accountant.customer_id
+				");
+			} else {
+				$query			= $this->db->query("
+					SELECT customer.*, IF(customer_accountant.id IS NULL, 0, 1) as accountantStatus
+					FROM customer
+					LEFT JOIN customer_accountant
+					ON customer.id = customer_accountant.customer_id
+					WHERE customer.name LIKE '%$term%' OR customer.address LIKE '%$term%' OR customer.city LIKE '%$term%'
+					LIMIT $limit OFFSET $offset;
+				");
+			}
+			
+			$result		= $query->result();
+			return $result;
+		}
 }

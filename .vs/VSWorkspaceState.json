@@ -2,15 +2,15 @@
   "ExpandedNodes": [
     "",
     "\\application",
+    "\\application\\controllers",
     "\\application\\models",
     "\\application\\views",
-    "\\application\\views\\purchasing",
     "\\application\\views\\sales",
     "\\application\\views\\sales\\Analytics",
     "\\application\\views\\sales\\Customer",
     "\\application\\views\\sales\\SalesOrder",
-    "\\system"
+    "\\css"
   ],
-  "SelectedNode": "\\application\\views\\sales\\SalesOrder\\trackDashboard.php",
+  "SelectedNode": "\\application\\views\\sales\\Analytics\\dashboard.php",
   "PreviewInSolutionExplorer": false
 }

@@ -30,13 +30,15 @@ class Invoice extends CI_Controller {
 		$type		= $this->input->get('type');
 		$term		= $this->input->get('term');
 		$page		= $this->input->get('page');
-		$offset		= ($page - 1) * 25;
+		$offset		= ($page - 1) * 10;
+		$accountant	= $this->session->userdata('user_id');
+
 		$this->load->model('Delivery_order_model');
-		$result = $this->Delivery_order_model->show_uninvoiced_delivery_order($type, $offset, $term);
+		$result = $this->Delivery_order_model->getUninvoicedDeliveryOrders($type, $offset, $term, $accountant);
 		$data['delivery_orders'] = $result;
 		
-		$result = $this->Delivery_order_model->count_uninvoiced_delivery_order($type, $term);
-		$data['pages'] = max(1, ceil($result / 25));
+		$result = $this->Delivery_order_model->countUninvoicedDeliveryOrders($type, $term, $accountant);
+		$data['pages'] = max(1, ceil($result / 10));
 		
 		header('Content-Type: application/json');
 		echo json_encode($data);
