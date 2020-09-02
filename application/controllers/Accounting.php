@@ -21,6 +21,7 @@ class Accounting extends CI_Controller {
 		
 		$this->load->view('head');
 		$this->load->view('accounting/header', $data);
+		$this->load->view('accounting/dashboard');
 	}
 
 	public function salesReturn()
@@ -35,5 +36,30 @@ class Accounting extends CI_Controller {
 		$this->load->view('head');
 		$this->load->view('accounting/header', $data);
 		$this->load->view('accounting/return/salesReturnDashboard');
+	}
+
+	public function getPendingInvoice()
+	{
+		$this->load->model("Delivery_order_model");
+		$result			= $this->Delivery_order_model->countUninvoicedDeliveryOrders(0);
+		echo $result;
+	}
+
+	public function getPendingDebt()
+	{
+		$this->load->model("Good_receipt_model");
+		$result			= $this->Good_receipt_model->count_uninvoiced_documents(0);
+		echo $result;
+	}
+
+	public function getPendingCustomers()
+	{
+		$this->load->model("Customer_accountant_model");
+		$result			= $this->Customer_accountant_model->countUnassignedCustomers();
+		$data['unassigned'] = $result[0]->customerCount;
+		$data['total'] = $result[1]->customerCount;
+
+		header('Content-Type: application/json');
+		echo json_encode($data);
 	}
 }

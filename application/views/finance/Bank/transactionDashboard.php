@@ -17,9 +17,18 @@
 			
 			<label>Value</label>
 			<input type='number' class='form-control' required min='1' name='value' id='value'>
+
+			<div id='otherAccountWrapper' style='display:none'>
+				<label>Other Internal Account</label>
+				<button type='button' class='form-control' id='otherAccountButton' style='text-align:left!important'></button>
+				<input type='hidden' id='otherAccount' name='otherAccount'>
+			</div>
 			
 			<label>
 				<input type='checkbox' name='petty_cash_transfer' id='petty_cash_transfer' onchange='adjust_form()'> Petty cash</input>
+			</label>
+			<label>
+				<input type='checkbox' name='internalAccountTransfer' id='internalAccountTransfer' onchange='adjustInternalForm()'> Internal Transfer</input>
 			</label>
 			<br>
 			<div id='operational'>
@@ -121,15 +130,42 @@
 	</div>
 </div>
 <script>
+	var mode;
 	function adjust_form(){
 		if($('#petty_cash_transfer').prop('checked') == true){
 			$('#operational').hide();
 			$('#transaction').val(2);
+
+			$('#internalAccountTransfer').prop('checked', false);
 			$('#opponent_id').attr('required', false);
+
+			$('#otherAccount').attr('required', false);
+			$('#otherAccountWrapper').hide();
 		} else {
 			$('#operational').show();
 			$('#transaction').val(1);
 			$('#opponent_id').attr('required', true);
+		}
+	}
+
+	function adjustInternalForm()
+	{
+		if($('#internalAccountTransfer').prop('checked') == true){
+			$('#operational').hide();
+			$('#transaction').val(2);
+
+			$('#petty_cash_transfer').prop('checked', false);
+			$('#opponent_id').attr('required', false);
+
+			$('#otherAccount').attr('required', true);
+			$('#otherAccountWrapper').show();
+		} else {
+			$('#operational').show();
+			$('#transaction').val(1);
+			$('#opponent_id').attr('required', true);
+
+			$('#otherAccount').attr('required', false);
+			$('#otherAccountWrapper').hide();
 		}
 	}
 	
@@ -214,6 +250,15 @@
 	}
 
 	$("#accountButton").click(function(){
+		mode = 1;
+		$('#searchAccountBar').val("");
+		refreshAccount(1);
+		$('#bankAccountWrapper').fadeIn();
+	});
+
+	$("#otherAccountButton").click(function(){
+		mode = 2;
+		$('#searchAccountBar').val("");
 		refreshAccount(1);
 		$('#bankAccountWrapper').fadeIn();
 	})
@@ -278,8 +323,14 @@
 			success:function(response){
 				var name = response.name;
 				var number = response.number;
-				$('#accountButton').text(name + " - " + number);
-				$('#account').val(n);
+
+				if(mode == 1){
+					$('#accountButton').text(name + " - " + number);
+					$('#account').val(n);
+				} else if(mode == 2){
+					$('#otherAccountButton').text(name + " - " + number);
+					$('#otherAccount').val(n);
+				}
 
 				$('#bankAccountWrapper').fadeOut();
 			}

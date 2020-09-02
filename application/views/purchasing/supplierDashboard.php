@@ -13,17 +13,20 @@
 			</div>
 		</div>
 		<br>
-		<table class='table table-bordered'>
-			<tr>
-				<th>Supplier name</th>
-				<th>Address</th>
-				<th>Action</th>
-			</tr>
-			<tbody id='supplier_table'></tbody>
-		</table>
-	<select class='form-control' id='page' style='width:100px'>
-		<option value='1'>1</option>
-	</select>
+		<div id='supplierTable'>
+			<table class='table table-bordered'>
+				<tr>
+					<th>Supplier name</th>
+					<th>Address</th>
+					<th>Action</th>
+				</tr>
+				<tbody id='supplierTableContent'></tbody>
+			</table>
+			<select class='form-control' id='page' style='width:100px'>
+				<option value='1'>1</option>
+			</select>
+		</div>
+		<p id='supplierTableText'>There is no supplier found.</p>
 	</div>
 </div>
 
@@ -257,7 +260,8 @@
 					}
 				}
 				
-				$('#supplier_table').html('');
+				$('#supplierTableContent').html('');
+				var supplierCount = 0;
 				
 				var items		= response.suppliers;
 				$.each(items, function(index, item){
@@ -292,8 +296,17 @@
 						complete_address	+= ', ' + supplier_postal;
 					}
 					
-					$('#supplier_table').append("<tr><td>" + supplier_name + "</td><td><p>" + complete_address + "</p><p>" + supplier_city + "</p></td><td><button type='button' class='button button_success_dark' onclick='open_edit_form(" + supplier_id + ")'><i class='fa fa-pencil'></i></button> <button type='button' class='button button_danger_dark' onclick='confirm_delete(" + supplier_id + ")'><i class='fa fa-trash'></i></button> <button type='button' class='button button_default_dark'><i class='fa fa-eye'></i></button></td></tr>");
+					$('#supplierTableContent').append("<tr><td>" + supplier_name + "</td><td><p>" + complete_address + "</p><p>" + supplier_city + "</p></td><td><button type='button' class='button button_success_dark' onclick='open_edit_form(" + supplier_id + ")'><i class='fa fa-pencil'></i></button> <button type='button' class='button button_danger_dark' onclick='confirm_delete(" + supplier_id + ")'><i class='fa fa-trash'></i></button> <button type='button' class='button button_default_dark'><i class='fa fa-eye'></i></button></td></tr>");
+					supplierCount++;
 				});
+
+				if(supplierCount > 0){
+					$('#supplierTable').show();
+					$("#supplierTableText").hide();
+				} else {
+					$('#supplierTable').hide();
+					$("#supplierTableText").show();
+				}
 			}
 		});
 	}

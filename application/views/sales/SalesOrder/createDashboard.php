@@ -1,4 +1,4 @@
-s<head>
+<head>
 	<title>Create sales order</title>
 </head>
 <div class='dashboard'>

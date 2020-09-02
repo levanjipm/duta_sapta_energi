@@ -67,4 +67,42 @@ class Authorization_model extends CI_Model {
 			
 			return $result;
 		}
+
+		public function getAllFilterByUserId($userId)
+		{
+			$query			= $this->db->query("
+				SELECT department.*, IF(a.id IS NULL, 0, 1) as status FROM
+				department
+				LEFT JOIN(
+					SELECT user_authorization.id, users.name, user_authorization.department_id
+					FROM user_authorization
+					JOIN users ON user_authorization.user_id = users.id
+					WHERE users.id = '$userId'
+				) AS a
+				ON department.id = a.department_id
+				ORDER BY department.name ASC
+			");
+
+			$result = $query->result();
+			return $result;
+		}
+
+		public function updateByUserId($userId, $departmentIdArray)
+		{
+			$this->db->where('user_id', $userId);
+			$this->db->delete($this->table_user);
+
+			$batch = array();
+			foreach($departmentIdArray as $departmentId)
+			{
+				$batch[] = array(
+					"id" => "",
+					"user_id" => $userId,
+					"department_id" => $departmentId
+				);
+			}
+
+			$this->db->insert_batch($this->table_user, $batch);
+			
+		}
 }

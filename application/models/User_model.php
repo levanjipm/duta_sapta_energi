@@ -113,13 +113,13 @@ class User_model extends CI_Model {
 			return $items;
 		}
 		
-		public function getById($id)
+		public function getById($userId)
 		{
-			$this->db->where('id',$id);
+			$this->db->where('id',$userId);
 			$query = $this->db->get($this->table_user);
-			$user = $query->row();
+			$result = $query->row();
 			
-			return $user;
+			return $result;
 		}
 		
 		public function getItems($offset = 0, $term = "", $limit = 10)

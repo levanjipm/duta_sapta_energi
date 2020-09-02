@@ -36,7 +36,7 @@
 <div class='alert_wrapper' id='addOpponentWrapper'>
 	<button class='slide_alert_close_button'>&times;</button>
 	<div class='alert_box_slide'>
-		<h3 style='font-family:bebasneue'>Add Opponent Type</h3>
+		<h3 style='font-family:bebasneue'>Add Opponent</h3>
 		<hr>
 		<form id='opponentForm'>
 			<label>Name</label>
@@ -46,7 +46,7 @@
 			<textarea class='form-control' rows='3' style='resize:none' name='description' required minlength='25'></textarea><br>
 
             <label>Type</label>
-			<button class='form-control' id='opponentTypeButton' style='text-align:left!important'></button>
+			<button type='button' class='form-control' id='opponentTypeButton' style='text-align:left!important'></button>
 			<input type='hidden' id='opponentType' name='type' required>
 
 			<button type='button' class='button button_default_dark' id='submitOpponentButton'><i class='fa fa-long-arrow-right'></i></button>
@@ -57,6 +57,27 @@
 </div>
 
 <div class='alert_wrapper' id='opponentTypeWrapper'>
+	<div class='alert_box_full'>
+		<button class='button alert_full_close_button'>&times;</button>
+		<h3 style='font-family:bebasneue'>Select Opponent Type</h3>
+		<hr>
+		<input type='text' class='form-control' id='typeSearchBar'><br>
+		<div id='opponentTypeTable'>
+			<table class='table table-bordered'>
+				<tr>
+					<th>Name</th>
+					<th>Description</th>
+					<th>Action</th>
+				</tr>
+				<tbody id='opponentTypeTableContent'></tbody>
+			</table>
+
+			<select class='form-control' id='opponentTypePage' style='width:100px'>
+				<option value='1'>1</option>
+			</select>
+		</div>
+		<p id='opponentTypeTableText'>There is no opponent type found.</p>
+	</div>
 </div>
 
 <div class='alert_wrapper' id='updateOpponentWrapper'>
@@ -116,25 +137,74 @@
 
 	$('#page').change(function(){
 		refreshView();
-    })
+    });
+
+	$("#opponentTypeButton").click(function(){
+		$('#typeSearchBar').val("");
+		refreshOpponentType(1);
+		$('#opponentTypeWrapper').fadeIn();
+	});
+
+	$('#typeSearchBar').change(function(){
+		refreshOpponentType(1);
+	});
+
+	$('#opponentTypePage').change(function(){
+		refreshOpponentType();
+	});
     
-    function getOpponentType(appendedElement){
-        $('#' + appendedElement).html("");
+    function refreshOpponentType(page = $('#opponentTypePage').val()){
         $.ajax({
-            url:"<?= site_url('Opponent_type/getAllItems') ?>",
+            url:"<?= site_url('Opponent_type/getItems') ?>",
+			data:{
+				page: page,
+				term: $('#typeSearchBar').val()
+			},
             success:function(response){
-                $.each(response, function(index, value){
-                    var id = value.id;
-                    var name = value.name;
-                    $('#' + appendedElement).append("<option value='" + id + "'>" + name + "</option>")
-                })
+                var items = response.items;
+				var itemCount = 0;
+				$('#opponentTypeTableContent').html("");
+				$.each(items, function(index, item){
+					var id = item.id;
+					var name = item.name;
+					var description = item.description;
+
+					$('#opponentTypeTableContent').append("<tr><td>" + name + "</td><td>" + description + "</td><td><button class='button button_default_dark' type='button' id='selectOpponentTypeButton-" + id + "'><i class='fa fa-long-arrow-right'></i></button>");
+					$('#selectOpponentTypeButton-' + id).click(function(){
+						$('#opponentTypeButton').html(name);
+						$('#opponentType').val(id);
+						$('#opponentTypeWrapper .alert_full_close_button').click();
+					});
+					itemCount++;
+				});
+
+				var pages = response.pages;
+				$('#opponentTypePage').html("");
+				for(i = 1; i <= pages; i++){
+					if(i == page){
+						$('#opponentTypePage').append("<option value='" + i + "' selected>" + i + "</option>");
+					} else {
+						$('#opponentTypePage').append("<option value='" + i + "'>" + i + "</option>");
+					}
+				}
+
+				if(itemCount > 0){
+					$('#opponentTypeTable').show();
+					$('#opponentTypeTableText').hide();
+				} else {
+					$('#opponentTypeTable').hide();
+					$('#opponentTypeTableText').show();
+				}
             }
         })
     }
 
+	$('.alert_full_close_button').click(function(){
+		$(this).parent().parent().fadeOut();
+	})
+
 	$('#addOpponentButton').click(function(){
         $('#opponentForm').trigger("reset");
-        getOpponentType('opponentType');
 		$('#addOpponentWrapper').fadeIn(300, function(){
 			$('#addOpponentWrapper .alert_box_slide').show("slide", { direction: "right" }, 250);
 		});

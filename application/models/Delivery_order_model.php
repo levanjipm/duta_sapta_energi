@@ -271,7 +271,7 @@ class Delivery_order_model extends CI_Model {
 			return $result;
 		}
 		
-		public function countUninvoicedDeliveryOrders($type, $term = '', $accountant =  null)
+		public function countUninvoicedDeliveryOrders($type = 0, $term = '', $accountant =  null)
 		{
 			$this->db->select('code_delivery_order.id');
 			$this->db->from('code_delivery_order');
@@ -280,7 +280,9 @@ class Delivery_order_model extends CI_Model {
 			$this->db->join('code_sales_order', 'sales_order.code_sales_order_id = code_sales_order.id');
 			$this->db->join('customer_accountant', 'code_sales_order.customer_id = customer_accountant.customer_id');
 
-			$this->db->where('code_sales_order.invoicing_method', $type);
+			if($type != 0){
+				$this->db->where('code_sales_order.invoicing_method', $type);
+			}
 			$this->db->where('code_delivery_order.is_confirm', 1);
 			$this->db->where('code_delivery_order.is_delete', 0);
 			$this->db->where('code_delivery_order.invoice_id', null);

@@ -86,7 +86,60 @@ class Customer_accountant_model extends CI_Model {
 				$this->db->where_in('customer_id', $customerIdArray);
 				$this->db->where('accountant_id', $accountantId);
 				$this->db->delete($this->table_customer_accountant);
+			} else if($type == 2){
+				$batch			= array();
+				$customerIdArray = array();
+				$this->load->model("Customer_model");
+				$customerObjects = $this->Customer_model->showCustomerAccountantItems(0, "", $accountantId, 0);
+				foreach($customerObjects as $customerObject)
+				{
+					array_push($customerIdArray, $customerObject->id);
+				}
+				
+				$this->db->where_in('customer_id', $customerIdArray);
+				$this->db->where('accountant_id', $accountantId);
+				$query			= $this->db->get($this->table_customer_accountant);
+				$result			= $query->result();
+
+				$customerIdArrayExist = array();
+				foreach($result as $item){
+					array_push($customerIdArrayExist, $item->customer_id);
+				}
+
+				foreach($customerIdArray as $customerId){
+					if(!in_array($customerId, $customerIdArrayExist)){
+						$batch[] = array(
+							"id" => '',
+							"customer_id" => $customerId,
+							"accountant_id" => $accountantId
+						);
+					}
+				}
+
+				$this->db->insert_batch($this->table_customer_accountant, $batch);
 			}
+		}
+
+		public function countUnassignedCustomers()
+		{
+			$query			= $this->db->query("
+				SELECT COUNT(customer.id) AS customerCount FROM customer
+				JOIN (
+					SELECT DISTINCT(customer_accountant.customer_id) as id
+					FROM customer_accountant
+					JOIN users ON customer_accountant.accountant_id = users.id
+					JOIN user_authorization ON user_authorization.user_id = users.id
+					WHERE user_authorization.department_id = '1'
+					AND users.is_active = '1'
+				) AS a
+				ON customer.id = a.id
+				UNION (
+					SELECT COUNT(id) AS customerCount FROM customer
+				)
+			");
+
+			$result = $query->result();
+			return $result;
 		}
 
 }

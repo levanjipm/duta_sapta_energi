@@ -11,9 +11,11 @@ class Bank_model extends CI_Model {
 		public $customer_id;
 		public $supplier_id;
 		public $other_id;
+		public $internal_account_id;
 		public $is_done;
 		public $is_delete;
 		public $bank_transaction_major;
+		public $account_id;
 
 		public function __construct()
 		{
@@ -29,9 +31,11 @@ class Bank_model extends CI_Model {
 			$this->customer_id				= $db_item->customer_id;
 			$this->supplier_id				= $db_item->supplier_id;
 			$this->other_id					= $db_item->other_id;
+			$this->internal_account_id		= $db_item->internal_account_id;
 			$this->is_done					= $db_item->is_done;
 			$this->is_delete				= $db_item->is_delete;
 			$this->bank_transaction_major	= $db_item->bank_transaction_major;
+			$this->account_id				= $db_item->account_id;
 			
 			return $this;
 		}
@@ -47,9 +51,11 @@ class Bank_model extends CI_Model {
 			$db_item->customer_id				= $this->customer_id;
 			$db_item->supplier_id				= $this->supplier_id;
 			$db_item->other_id					= $this->other_id;
+			$db_item->internal_account_id		= $this->internal_account_id;
 			$db_item->is_done					= $this->is_done;
 			$db_item->is_delete					= $this->is_delete;
 			$db_item->bank_transaction_major	= $this->bank_transaction_major;
+			$db_item->account_id				= $this->account_id;
 			
 			return $db_item;
 		}
@@ -65,9 +71,11 @@ class Bank_model extends CI_Model {
 			$db_item->customer_id				= $this->customer_id;
 			$db_item->supplier_id				= $this->supplier_id;
 			$db_item->other_id					= $this->other_id;
+			$db_item->internal_account_id		= $this->internal_account_id;
 			$db_item->is_done					= $this->is_done;
 			$db_item->is_delete					= $this->is_delete;
 			$db_item->bank_transaction_major	= $this->bank_transaction_major;
+			$db_item->account_id				= $this->account_id;
 			
 			return $db_item;
 		}
@@ -83,9 +91,11 @@ class Bank_model extends CI_Model {
 			$stub->customer_id				= $db_item->customer_id;
 			$stub->supplier_id				= $db_item->supplier_id;
 			$stub->other_id					= $db_item->other_id;
+			$stub->internal_account_id		= $db_item->internal_account_id;
 			$stub->is_done					= $db_item->is_done;
 			$stub->is_delete				= $db_item->is_delete;
 			$stub->bank_transaction_major	= $db_item->bank_transaction_major;
+			$stub->account_id				= $db_item->account_id;
 			
 			return $stub;
 		}
@@ -112,6 +122,7 @@ class Bank_model extends CI_Model {
 						'supplier_id' => NULL,
 						'other_id' => NULL,
 						'account_id' => $account,
+						'internal_account_id' => NULL,
 						'bank_transaction_major' => $major_id,
 						'is_done' => $isDone,
 						'is_delete' => $isDelete
@@ -126,6 +137,7 @@ class Bank_model extends CI_Model {
 						'customer_id' => NULL,
 						'other_id' => NULL,
 						'account_id' => $account,
+						'internal_account_id' => NULL,
 						'bank_transaction_major' => $major_id,
 						'is_done' => $isDone,
 						'is_delete' => $isDelete
@@ -140,6 +152,22 @@ class Bank_model extends CI_Model {
 						'customer_id' => NULL,
 						'other_id' => $opponent_id,
 						'account_id' => $account,
+						'internal_account_id' => NULL,
+						'bank_transaction_major' => $major_id,
+						'is_done' => $isDone,
+						'is_delete' => $isDelete
+					);
+				break;
+				case 'internal':
+					$db_item	= array(
+						'date'=> $date,
+						'value' => $value,
+						'transaction' => $transaction,
+						'supplier_id' => NULL,
+						'customer_id' => NULL,
+						'other_id' => NULL,
+						'account_id' => $account,
+						'internal_account_id' => $opponent_id,
 						'bank_transaction_major' => $major_id,
 						'is_done' => $isDone,
 						'is_delete' => $isDelete
@@ -407,11 +435,13 @@ class Bank_model extends CI_Model {
 		
 		public function getMutation($account, $start_date, $end_date, $offset = 0, $limit = 25)
 		{
-			$this->db->select('bank_transaction.*, COALESCE(`customer`.`name`, supplier.name, `other_opponent`.`name`, "PT Duta Sapta Energi") as name');
+			$this->db->select('bank_transaction.*, COALESCE(`customer`.`name`, supplier.name, `other_opponent`.`name`, `internal_bank_account`.`name`, "PT Duta Sapta Energi") as name');
 			$this->db->from('bank_transaction');
 			$this->db->join('customer', 'bank_transaction.customer_id = customer.id', 'left');
 			$this->db->join('supplier', 'bank_transaction.supplier_id = supplier.id', 'left');
 			$this->db->join('other_opponent', 'bank_transaction.other_id = other_opponent.id', 'left');
+			$this->db->join('internal_bank_account', 'bank_transaction.internal_account_id = internal_bank_account.id', 'left');
+
 			$this->db->where('bank_transaction.account_id', $account);
 			$this->db->where('bank_transaction.date >=', $start_date);
 			$this->db->where('bank_transaction.date <=', $end_date);

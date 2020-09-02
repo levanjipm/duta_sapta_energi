@@ -249,17 +249,29 @@ class Bank extends CI_Controller {
 		$type			= $this->input->post('type');
 		$opponent_id	= $this->input->post('id');
 		$petty_cash		= $this->input->post('petty_cash_transfer');
+		$internal		= $this->input->post('internalAccountTransfer');
+		$otherAccount	= $this->input->post('otherAccount');
+
 		if($petty_cash	== 'on'){
 			$opponent_id	= NULL;
 			$type			= 'other';
+		} else if($internal == 'on'){
+			$opponent_id	= $otherAccount;
+			$type			= 'internal';
 		}
 		
 		$this->load->model('Bank_model');
-		$insert_id		= $this->Bank_model->insertItem($date, $value, $transaction, $type, $opponent_id, $account);
+		
 		
 		if($petty_cash	== 'on'){
+			$insert_id		= $this->Bank_model->insertItem($date, $value, $transaction, $type, $opponent_id, $account, NULL, 1);
 			$this->load->model('Petty_cash_model');
 			$this->Petty_cash_model->insert_income($insert_id, $value, $date);
+		} else if($internal == 'on'){
+			$this->Bank_model->insertItem($date, $value, 2, $type, $opponent_id, $account, NULL, 1);
+			$this->Bank_model->insertItem($date, $value, 1, $type, $account, $opponent_id, NULL, 1);
+		} else {
+			$this->Bank_model->insertItem($date, $value, $transaction, $type, $opponent_id, $account);
 		}
 	}
 

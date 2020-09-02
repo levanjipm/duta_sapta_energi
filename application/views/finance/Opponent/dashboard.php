@@ -35,19 +35,6 @@
 	</div>
 </div>
 
-<div class='alert_wrapper' id='add_other_opponent_wrapper'>
-	<button type='button' class='alert_close_button'>&times </button>
-	<div class='alert_box_default'>
-		<h3 style='font-family:bebasneue'>Add Opponent</h3>
-		<form action='<?= site_url('Bank/add_other_opponent') ?>' method='POST' id='add_other_opponent_form'>
-			<label>Name</label>
-			<input type='text' class='form-control' name='name' required><br>
-			
-			<button class='button button_default_dark'><i class='fa fa-long-arrow-right'></i></button>
-		</form>
-	</div>
-</div>
-
 <script>
 	$('#add_other_opponent_form').validate();
 	

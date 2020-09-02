@@ -202,4 +202,11 @@ class Customer extends CI_Controller {
 		$includedResult = $this->Customer_accountant_model->updateByAccountant(1, $includedCustomerArray, $accountantId);
 		$excludedResult = $this->Customer_accountant_model->updateByAccountant(0, $excludedCustomerArray, $accountantId);
 	}
+
+	public function assignAllCustomersToAccountant()
+	{
+		$accountantId = $this->input->post('accountant');
+		$this->load->model("Customer_accountant_model");
+		$includedResult = $this->Customer_accountant_model->updateByAccountant(2, array(), $accountantId);
+	}
 }

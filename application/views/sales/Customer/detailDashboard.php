@@ -74,7 +74,7 @@
 				<label>Location</label>
 				<p>Latitude: <?= ($customer->latitude == null || $customer->latitude == "")? "<i>Not available</i>" : number_format($customer->latitude, 8) ?></p>
 				<p>Longitude: <?= ($customer->longitude == null || $customer->longitude == "")? "<i>Not available</i>" : number_format($customer->longitude, 8) ?></p>
-				<?php if($customer->latitude != "" && $customer->latitude != NULL && $customer->longitude != "" && $customer->longitude != null){ ?><a href='https://maps.google.com/?q=<?= $customer->latitude ?>,<?= $customer->longitude ?>'><button class='button button_transparent'>View on Maps</button></a><?php } ?>
+				<?php if($customer->latitude != "" && $customer->latitude != NULL && $customer->longitude != "" && $customer->longitude != null){ ?><a href='https://maps.google.com/?q=<?= $customer->latitude ?>,<?= $customer->longitude ?>' target='_blank'>View on Maps</a><br><br><?php } ?>
 
 				<label>Contact</label>
 				<p><?= $customer->pic_name ?></p>

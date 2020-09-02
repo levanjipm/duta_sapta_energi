@@ -10,7 +10,7 @@
 		<div class='input_group'>
 			<input type='text' class='form-control input-lg' id='search_bar' placeholder="Search user">
 			<div class='input_group_append'>
-				<button class='button button_default_dark' id='add_new_user_button'>Add new user</button>
+				<button class='button button_default_dark' id='add_new_user_button'><i class='fa fa-plus'></i> Add User</button>
 			</div>
 		</div>
 		<br>
@@ -60,10 +60,11 @@
 				<label>Status</label><br>
 				<div id='active_button'><button class='button button_verified'><i class='fa fa-check'></i></button> Active</div>
 			</div>
-		<br><br>
+			<br><br>
 		
-		<input type='hidden' id='user_id'>
-		<button class='button button_danger_dark' onclick='update_status()' id='update_status_button'>Set as inactive</button>
+			<input type='hidden' id='user_id'>
+			<button class='button button_danger_dark' onclick='update_status()' id='update_status_button'>Set as inactive</button>
+		</div>
 	</div>
 </div>
 
