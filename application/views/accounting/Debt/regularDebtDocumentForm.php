@@ -229,6 +229,8 @@
 						var goodReceiptValue 	= 0;
 						
 						$("<label>Date</label><p>" + my_date_format(date) + "</p><label>Name</label><p>" + name + "</p><label>Purchase order</label><p>" + purchaseOrderName + "</p><label>Received date</label><p>" + my_date_format(receivedDate) + "</p><div class='table-responsive-sm'><table class='table table-bordered'><tr><th>Reference</th><th>Name</th><th>Price</th><th>Quantity</th><th>Total price</th><tbody id='goodReceiptTable-" + id + "' required min='0'></tbody></table></div>").appendTo(goodReceiptsTable);
+
+						$('#goodReceiptTable-' + id).html("");
 						
 						var items = goodReceipt.detail;
 						$.each(items, function(index, item){
