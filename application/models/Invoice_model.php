@@ -803,10 +803,23 @@ class Invoice_model extends CI_Model {
 		}
 
 		public function updateBillingDate($id, $lastBillingDate, $nextBillingDate = null){
-			$this->db->set('lastBillingDate', $lastBillingDate);
-			$this->db->set('nextBillingDate', $nextBillingDate);
-			$this->db->where('id', $id);
-			$this->db->update($this->table_invoice);
+			if($nextBillingDate == null){
+				$formatedLastBillingDate = date("Y-m-d", strtotime($lastBillingDate));
+				$query		= $this->db->query("
+					UPDATE invoice JOIN billing ON (billing.invoice_id = invoice.id)
+					SET invoice.lastBillingDate = '$formatedLastBillingDate'
+					WHERE billing.id = '$id';
+				");
+			 } else {
+				$formatedLastBillingDate = date("Y-m-d", strtotime($lastBillingDate));
+				$formatedNextBillingDate = date("Y-m-d", strtotime($nextBillingDate));
+
+				$query		= $this->db->query("
+					UPDATE invoice JOIN billing ON (billing.invoice_id = invoice.id)
+					SET invoice.lastBillingDate = '$formatedLastBillingDate', invoice.nextBillingDate = '$formatedNextBillingDate'
+					WHERE billing.id = '$id';
+				");
+			 }
 		}
 
 		public function calculateAspect($aspect, $month, $year)

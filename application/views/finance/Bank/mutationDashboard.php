@@ -191,7 +191,7 @@
 				$.each(transactions, function(index, transaction){
 					var date		= transaction.date;
 					var id			= transaction.id;
-					var value		= transaction.value;
+					var value		= parseFloat(transaction.value);
 					var type		= transaction.transaction;
 					var name		= transaction.name;
 					
@@ -200,7 +200,7 @@
 						$('#mutationTableContent').append("<tr><td>" + my_date_format(date) + "</td><td>" + name + "</td><td>Rp. " + numeral(0).format('0,0.00') + "</td><td>Rp. " + numeral(value).format('0,0.00') + "</td><td>Rp. " + numeral(current_balance).format('0,0.00') + "</td></tr>");
 					} else {
 						current_balance -= parseFloat(value);
-						$('#mutationTableContent').append("<tr><td>" + my_date_format(date) + "</td><td>" + name + "</td><td>Rp. " + numeral(value).format('0,0.00') + "</td><td>Rp. " + numeral(0).format('0,0.00') + "</td><td>Rp. " + numeral( ).format('0,0.00') + "</td></tr>"); 
+						$('#mutationTableContent').append("<tr><td>" + my_date_format(date) + "</td><td>" + name + "</td><td>Rp. " + numeral(value).format('0,0.00') + "</td><td>Rp. " + numeral(0).format('0,0.00') + "</td><td>Rp. " + numeral(current_balance).format('0,0.00') + "</td></tr>"); 
 					}
 					mutationCount++;			
 				});

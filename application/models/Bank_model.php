@@ -472,7 +472,7 @@ class Bank_model extends CI_Model {
 			$this->db->select_sum('value');
 			$this->db->select('transaction');
 			$this->db->where('account_id', $account);
-			$this->db->where('date <', $date);
+			$this->db->where('date <', date("Y-m-d", strtotime($date)));
 			$this->db->group_by('transaction');
 			$query	= $this->db->get($this->table_bank);
 			$result	= $query->result();

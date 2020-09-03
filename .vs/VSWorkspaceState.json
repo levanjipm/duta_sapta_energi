@@ -2,15 +2,14 @@
   "ExpandedNodes": [
     "",
     "\\application",
+    "\\application\\controllers",
+    "\\application\\models",
     "\\application\\views",
-    "\\application\\views\\accounting\\Opponent",
     "\\application\\views\\finance",
-    "\\application\\views\\finance\\Billing",
-    "\\application\\views\\sales",
-    "\\application\\views\\sales\\Analytics",
-    "\\application\\views\\sales\\Customer",
+    "\\application\\views\\finance\\Bank",
+    "\\application\\views\\human_resource\\Users",
     "\\css"
   ],
-  "SelectedNode": "\\application\\views\\finance\\Billing\\createForm.php",
+  "SelectedNode": "\\application\\views\\finance\\Bank\\mutationDashboard.php",
   "PreviewInSolutionExplorer": false
 }
