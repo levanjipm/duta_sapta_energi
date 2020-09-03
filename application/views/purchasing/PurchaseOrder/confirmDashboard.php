@@ -19,7 +19,7 @@
 			</table>
 		</div>
 
-		<p id='purchaseOrderTableText'>There is no unconfirmed purchase order found.</p><p>Create a <a href='<?= site_url('Purchase_order/createDashboard') ?>'>new one</a>.</p>
+		<div id='purchaseOrderTableText'><p>There is no unconfirmed purchase order found.</p><p>Create a <a href='<?= site_url('Purchase_order/createDashboard') ?>'>new one</a>.</p></div>
 	</div>
 </div>
 	

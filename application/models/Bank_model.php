@@ -182,11 +182,12 @@ class Bank_model extends CI_Model {
 		
 		public function getUnassignedTransactions($account, $type, $offset = 0, $limit = 10)
 		{
-			$this->db->select('bank_transaction.*, COALESCE(`customer`.`name`, `supplier`.`name`, `other_opponent`.`name`) as name');
+			$this->db->select('bank_transaction.*, COALESCE(`customer`.`name`, `supplier`.`name`, `other_opponent`.`name`, `internal_bank_account`.`name`) as name');
 			
 			$this->db->join('customer', 'bank_transaction.customer_id = customer.id', 'left');
 			$this->db->join('supplier', 'bank_transaction.supplier_id = supplier.id', 'left');
 			$this->db->join('other_opponent', 'bank_transaction.other_id = other_opponent.id', 'left');
+			$this->db->join('internal_bank_account', 'bank_transaction.internal_account_id = internal_bank_account.id', 'left');
 			
 			$this->db->where('bank_transaction.account_id', $account);
 			$this->db->where('bank_transaction.transaction', $type);
@@ -390,7 +391,8 @@ class Bank_model extends CI_Model {
 								'bank_id' => $insert_id,
 								'value' => $difference,
 								'date' => $date,
-								'purchase_id' => $purchase_id
+								'purchase_id' => $purchase_id,
+								'other_purchase_id' => NULL,
 							);
 							
 							$this->db->insert('payable', $db_item);
@@ -414,7 +416,8 @@ class Bank_model extends CI_Model {
 							'bank_id' => $bank_id,
 							'value' => $difference,
 							'date' => $date,
-							'purchase_id' => $purchase_id
+							'purchase_id' => $purchase_id,
+							'other_purchase_id' => NULL,
 						);
 						
 						$this->db->insert('payable', $db_item);

@@ -72,7 +72,7 @@ class Purchase_order extends CI_Controller {
 			$this->Purchase_order_detail_model->insert_from_post($purchase_order_id);
 		}
 		
-		redirect(site_url('Purchase_order'));
+		redirect(site_url('Purchase_order/createDashboard'));
 	}
 	
 	public function getById($id)

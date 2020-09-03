@@ -71,7 +71,7 @@
 			$request				= '';
 		}
 	?>
-	<title><?= $purchase_order_name . ' ' . $supplier->supplier_name ?></title>
+	<title><?= $purchase_order_name . ' ' . $supplier->name ?></title>
 </head>
 <div class='row' style='margin:0'>	
 	<div class='col-sm-10 col-sm-offset-1' style='background-color:white;padding:20px' id='printable'>
@@ -197,7 +197,7 @@
 <div class='row' style='margin:0'>
 	<div class='col-xs-12' style='text-align:center'>
 		<button type='button' class='button button_default_light' onclick='print_purchase_order()' id='print_button'><i class='fa fa-print'></i></button>
-		<button type='button' class='button button_success_dark' onclick='window.location.href="<?= site_url('Purchase_order') ?>"' id='back_button' style='display:none'><i class='fa fa-long-arrow-left'></i></button>
+		<button type='button' class='button button_success_dark' onclick='window.location.href="<?= site_url('Purchase_order/confirmDashboard') ?>"' id='back_button' style='display:none'><i class='fa fa-long-arrow-left'></i></button>
 	</div>
 </div>
 <script>

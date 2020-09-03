@@ -802,24 +802,33 @@ class Invoice_model extends CI_Model {
 			return $result;
 		}
 
-		public function updateBillingDate($id, $lastBillingDate, $nextBillingDate = null){
+		public function updateBillingDate($billingId, $lastBillingDate, $nextBillingDate = null){
 			if($nextBillingDate == null){
-				$formatedLastBillingDate = date("Y-m-d", strtotime($lastBillingDate));
 				$query		= $this->db->query("
-					UPDATE invoice JOIN billing ON (billing.invoice_id = invoice.id)
-					SET invoice.lastBillingDate = '$formatedLastBillingDate'
-					WHERE billing.id = '$id';
+					UPDATE invoice 
+					INNER JOIN (
+						SELECT billing.invoice_id
+						FROM billing
+						WHERE id = '$billingId'
+					) billingTable
+					ON billingTable.invoice_id = invoice.id
+					SET invoice.lastBillingDate = '$lastBillingDate'
+					WHERE invoice.id = '$id'
 				");
-			 } else {
-				$formatedLastBillingDate = date("Y-m-d", strtotime($lastBillingDate));
-				$formatedNextBillingDate = date("Y-m-d", strtotime($nextBillingDate));
+			} else {
+				$query		= $this->db->query("
+					UPDATE invoice 
+					INNER JOIN (
+						SELECT billing.invoice_id
+						FROM billing
+						WHERE id = '$billingId'
+					) billingTable
+					ON billingTable.invoice_id = invoice.id
+					SET invoice.lastBillingDate = '$lastBillingDate', invoice.nextBillingDate = '$nextBillingDate'
+				");
+			}
 
-				$query		= $this->db->query("
-					UPDATE invoice JOIN billing ON (billing.invoice_id = invoice.id)
-					SET invoice.lastBillingDate = '$formatedLastBillingDate', invoice.nextBillingDate = '$formatedNextBillingDate'
-					WHERE billing.id = '$id';
-				");
-			 }
+			$result = $query->result();
 		}
 
 		public function calculateAspect($aspect, $month, $year)
