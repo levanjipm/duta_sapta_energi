@@ -1,3 +1,43 @@
+<head>
+	<title>Expense Report</title>
+	<style>
+		.progressBarWrapper{
+			width:100%;
+			height:30px;
+			background-color:white;
+			border-radius:10px;
+			padding:5px;
+			position:relative;
+		}
+
+		.progressBar{
+			width:0;
+			height:20px;
+			background-color:#01bb00;
+			position:relative;
+			border-radius:10px;
+			cursor:pointer;
+			opacity:0.4;
+			transition:0.3s all ease;
+		}
+
+		.progressBar:hover{
+			opacity:1;
+			transition:0.3s all ease;
+		}
+
+		.progressBarWrapper p{
+			font-family:museo;
+			color:black;
+			font-weight:700;
+			z-index:50;
+			position:absolute;
+			right:10px;
+		}
+	</style>
+	
+	<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+</head>
 <div class='dashboard'>
 	<div class='dashboard_head'>
 		<p style='font-family:museo'><a href='<?= site_url('Expense') ?>' title='Expense'><i class='fa fa-briefcase'></i></a>/ Expense/ Report</p>
@@ -24,124 +64,154 @@
 			<div class='col-md-2 col-sm-3 col-xs-4'>
 				<select class='form-control' id='year'>
 <?php
-	foreach($years as $year){
+	for($i = 2020; $i <= date("Y"); $i++){
 ?>
-					<option value='<?= $year->year ?>'><?= $year->year ?></option>
+					<option value='<?= $i ?>'><?= $i ?></option>
 <?php
 	}
 ?>
 				</select>
 			</div>
-			<div class='col-md-4 col-sm-4 col-xs-4 col-sm-offset-2 col-md-offset-4' style='text-align:right' id='filter_button_wrapper'>
-				<button class='button button_rounded_dark' onclick='view_filter()'><i class='fa fa-filter'></i></button>
-			</div>
-			<div class='filter_form_wrapper'>
-				<div class='filter_form'>
-					<button type='button' class='button button_mini_tab active' id='class_button' disabled>Class</button>
-					<button type='button' class='button button_mini_tab' id='order_button'>Order</button>
-					<br><br>
-					<div id='view_pane_class'>
-						<table class='table table-bordered'>
-							<tr>
-								<th>Name</th>
-								<th>Action</th>
-							</tr>
-							<tbody id='petty_table'></tbody>
-						</table>
-						
-						<div style='text-align:center'><button class='button button_rounded_dark'>Apply filter</button></div>
-					</div>
-					<div id='view_pane_order' style='display:none'>
-						<label>Sort by</label>
-						<select class='form-control' id='order_select'>
-							<option value='1'>Date</option>
-							<option value='2'>Value</option>
-							<option value='2'>Information</option>
-						</select>
-						
-						<label>Sort type</label>
-						<select class='form-control' id='type_order_select'>
-							<option value='1'>Ascending</option>
-							<option value='2'>Descending</option>
-						</select>
-						<br>
-						
-						<div style='text-align:center'><button class='button button_rounded_dark'>Apply sort</button></div>
-					</div>
-				</div>
+		</div>
+		<div class='row'>
+			<div class='col-sm-12'>
+				<br>
+				<table class='table table-bordered'>
+					<tr>
+						<th>Name</th>
+						<th>Description</th>
+						<th>Value</th>
+					</tr>
+					<tbody id='expenseTableContent'></tbody>
+				</table>
 			</div>
 		</div>
 	</div>
 </div>
+
+<div class='alert_wrapper' id='viewDetailWrapper'>
+	<button class='slide_alert_close_button'>&times;</button>
+	<div class='alert_box_slide'>
+		<h3>Expense detail</h3>
+		<div class='row'>
+			<div class='col-sm-6'>
+				<label id='parentNameLabel'></label>
+				<div id='donutchart' style='width:100%;max-height:500px'></div>
+			</div>
+			<div class='col-sm-6'>
+				<div class='table-responsive-md'>
+					<table class='table table-bordered'>
+						<tr>
+							<th>Name</th>
+							<th>Description</th>
+							<th>Value</th>
+						</tr>
+						<tbody id='expenseDetailTableContent'></tbody>
+					</table>
+				</div>
+			</div>
+	</div>
+</div>
 <script>
-	$('#order_button').click(function(){
-		$('#class_button').removeClass('active');
-		$('#class_button').attr('disabled', false);
-		$('#order_button').attr('disabled', true);
-		$('#order_button').addClass('active');
-		
-		$('#view_pane_class').fadeOut(300, function(){
-			setTimeout(function(){
-				$('#view_pane_order').fadeIn();
-			},300);
-		});
+	google.charts.load("current", {packages:["corechart"]});
+	$(document).ready(function(){
+		refresh_view();
 	});
-	
-	$('#class_button').click(function(){
-		$('#order_button').removeClass('active');
-		$('#order_button').attr('disabled', false);
-		$('#class_button').attr('disabled', true);
-		$('#class_button').addClass('active');
-		
-		$('#view_pane_order').fadeOut(300, function(){
-			setTimeout(function(){
-				$('#view_pane_class').fadeIn();
-			},300);
-		});
+
+	$('#month').change(function(){
+		refresh_view();
 	});
+
+	$('#year').change(function(){
+		refresh_view();
+	})
 	
-	function view_filter(){
+	function refresh_view(){
 		$.ajax({
-			url:'<?= site_url('Expense/view_class') ?>',
+			url:"<?= site_url('Expense/getExpensesByParentClass') ?>",
+			data:{
+				month: $('#month').val(),
+				year: $('#year').val(),
+			},
 			success:function(response){
-				$('#petty_table').html('');
-				var classes	= response.classes;
-				$.each(classes, function(index, value){
-					var name			= value.name;
-					var id				= value.id;
-					var parent_id		= value.parent_id;
-					
-					if(parent_id == null){
-						$('#petty_table').append("<tr id='parent_tr-" + id + "'><td><strong>" + name + "</strong></td><td></td></tr>");
-						
-						$('#parent_id').append("<option value='" + id + "'>" + name + "</option>");
-						$('#parent_update_id').append("<option value='" + id + "'>" + name + "</option>");
-					} else {
-						$('#parent_tr-' + parent_id).after("<tr><td style='padding-left:25px'>" + name + "</td><td><input type='checkbox' id='checkbox-" + id + "' checked></td></tr>");
-					}
-					
-					
+				var totalExpense = 0;
+				$('#expenseTableContent').html("");
+				groupNameArray = [];
+				$.each(response, function(index, value){
+					var groupId = value.id;
+					var groupExpense = parseFloat(value.value);
+					var groupName = value.name;
+					var groupDescription = value.description;
+					groupNameArray[groupId] = groupName;
+
+					$('#expenseTableContent').append("<tr><td>" + groupName + "</td><td>" + groupDescription + "</td><td>Rp. " + numeral(groupExpense).format('0,0.00') + "<div class='progressBarWrapper'><p id='progressBarText-" + groupId + "'></p><div class='progressBar' data-value='" + groupExpense + "' id='progressBar-" + groupId + "'></div></td></tr>");
+					totalExpense += groupExpense;
+				});
+
+				$('#expenseTableContent').append("<tr><td colspan='2'><strong>Total</strong></td><td>Rp. " + numeral(totalExpense).format('0,0.00') + "</td></tr>");
+
+				$('.progressBar').each(function(){
+					var id = $(this).attr('id');
+					var uid = parseInt(id.substring(12, 267));
+					var percentage = 100 * parseFloat($(this).attr('data-value')) / totalExpense;
+					$('#progressBarText-' + uid).html(numeral(percentage).format('0,0.00') + "%");
+					$(this).animate({
+						width:percentage + "%"
+					}, 1000);
+
+					$(this).click(function(){
+						getExpenseByParentClass(uid, groupNameArray[uid]);
+					});
 				});
 			}
 		});
-		
-		var position	= $('#filter_button_wrapper').position();
-		var width		= $('#filter_button_wrapper').outerWidth();
-		var height		= $('#filter_button_wrapper').height();
-		var css_margin	= $('#filter_button_wrapper').css('margin-left');
-		
-		var margin		= parseFloat(css_margin.substring(0, css_margin.length -2));
-		var window_width	= $(window).outerWidth();
-		var far_left	= window_width - position.left - width - margin;
-		var far_top		= position.top + height;
-		
-		$('.filter_form_wrapper').css('right', far_left);
-		$('.filter_form_wrapper').css('top', far_top);
-		$('.filter_form_wrapper').toggle(450);
 	}
-	
-	function refresh_view(page = $('#page').val()){
+
+	function getExpenseByParentClass(id, parentName){
 		$.ajax({
-		});
+			url:"<?= site_url('Expense/getExpenseByParentId') ?>",
+			data:{
+				month: $('#month').val(),
+				year: $('#year').val(),
+				id: id
+			},
+			success:function(response){
+				$('#parentNameLabel').html(parentName);
+				google.charts.setOnLoadCallback(drawChart);
+				var data = new google.visualization.DataTable();
+				data.addColumn('string', 'Name');
+				data.addColumn('number', 'Value');
+
+				$('#expenseDetailTableContent').html("");
+				$.each(response, function(index, value){
+					var groupValue = parseInt(value.value);
+					var groupName = value.name;
+					var groupDescription = value.description;
+					data.addRow([groupName, groupValue]);
+
+					$('#expenseDetailTableContent').append("<tr><td>" + groupName + "</td><td>" + groupDescription + "</td><td>Rp. " + numeral(groupValue).format('0,0.00') + "</td></tr>")
+				});
+
+				function drawChart(){
+					var options = {
+						color:"black",
+						pieHole: 0.2,
+						height:$('#donutchart').height(),
+						width:$('#donutchart').width()
+					};
+
+					var chart = new google.visualization.PieChart(document.getElementById('donutchart'));
+					chart.draw(data, options);
+				}
+
+				$('#viewDetailWrapper').fadeIn(300, function(){
+					$('#viewDetailWrapper .alert_box_slide').show("slide", { direction: "right" }, 250);
+				});
+			}
+		})
+	}
+
+	function drawChart(data, parentName){
+		
 	}
 </script>

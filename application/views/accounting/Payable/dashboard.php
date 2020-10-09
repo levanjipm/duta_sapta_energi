@@ -72,6 +72,24 @@
 	</div>
 	<br>
 	<div class='dashboard_in'>
+		<div class='row'>
+			<div class='col-xs-4'>
+				<select class='form-control' id='category'>
+					<option value='1'>-- Default --</option>
+					<option value='2'>Past due date</option>
+					<option value='3'>Less than 30 days</option>
+					<option value='4'>30 - 45 days</option>
+					<option value='5'>45 - 60 days</option>
+					<option value='6'>More than 60 days</option>
+				</select>
+			</div>
+			<div class='col-xs-4 col-xs-offset-4'>
+				<button class='form-control' style='text-align:left' id='searchSupplierButton'>Search Supplier</button>
+			</div>
+			<div class='col-xs-12'>
+				<hr>
+			</div>
+		</div>
 		<div id='payable_view_pane'>
 			<div id='payable_chart'></div>
 			<div id='payable_grid'>
@@ -117,23 +135,65 @@
 				<tbody id='payableTableContent'></tbody>
 			</table>
 		</div>
+
+		<button type='button' id='viewPayableButton' class='button button_default_dark'><i class='fa fa-eye'></i></button>
 	</div>
 </div>
+
+<div class='alert_wrapper' id='selectSupplierWrapper'>
+	<div class='alert_box_full'>
+		<button class='button alert_full_close_button'>&times;</button>
+		<h3 style='font-family:bebasneue'>Select Supplier</h3>
+		<hr>
+		<input type='text' class='form-control' id='searchSupplierBar'>
+
+		<br>
+		<div id='supplierTable'>
+			<table class='table table-bordered'>
+				<tr>
+					<th>Name</th>
+					<th>Information</th>
+					<th>Action</th>
+				</tr>
+				<tbody id='supplierTableContent'></tbody>
+			</table>
+
+			<select class='form-control' id='supplierPage' style='width:100px'>
+				<option value='1'>1</option>
+			</select>
+		</div>
+		<p id='supplierTableText'>There is no supplier found.</p>
+	</div>
+</div>
+
 <script>
+	var supplierId;
+	var opponentId;
+
 	$(document).ready(function(){
 		refresh_view();
+		adjust_grid();
 	});
 
 	$(window).resize(function(){
 		adjust_grid();
+	});
+
+	$("#category").change(function(){
+		refresh_view();
+	});
+
+	$("#searchSupplierButton").click(function(){
+		$('#selectSupplierWrapper').fadeIn();
+		$('#searchSupplierBar').val("");
+		refreshSupplierView();
 	})
 	
-	function refresh_view(date_1 = 0, date_2 = 0){
+	function refresh_view(){
 		$.ajax({
 			url:'<?= site_url('Payable/viewPayable') ?>',
 			data:{
-				date_1:date_1,
-				date_2:date_2
+				category: $("#category").val()
 			},
 			success:function(response){
 				$('#payable_chart').html('');
@@ -180,10 +240,12 @@
 				$.each(supplierPayableArray, function(index, supplierPayable){
 					payableArray.push(supplierPayable);
 				});
+
 				$.each(otherPayableArray, function(index, otherPayable){
 					payableArray.push(otherPayable);
 				});
 
+				var payableCount = 0;
 				payableArray.sort(sortArray);
 				var maxPayable = 0;
 				$.each(payableArray, function(index, payable){
@@ -192,27 +254,39 @@
 						var name = payable[1];
 						var id	= payable[3];
 						if(value > maxPayable){
-							maxpayable = value;
+							maxPayable = value;
 						}
-						$('#payable_chart').append("<div class='row' id='supplierPayable-" + id + "'><div class='col-sm-3 col-xs-3 center'><p><strong>" + name + "</strong></div><div class='col-sm-7 col-xs-6'><div class='Payable_line' id='supplierPayableLine-" + id + "' onclick='viewSupplierPayableDetail(" + id + ")' data-value='" + value + "'></div></div><div class='col-sm-2 col-xs-3 center' style='text-align:right'><p>Rp. " + numeral(value).format('0,0.00') + "</p></div></div><br>")
+						$('#payable_chart').append("<div class='row' style='cursor:pointer' id='supplierPayable-" + id + "' onclick='viewSupplierPayableDetail(" + id + ")' ><div class='col-sm-3 col-xs-3 center'><p><strong>" + name + "</strong></div><div class='col-sm-7 col-xs-6'><div class='Payable_line' id='supplierPayableLine-" + id + "' data-value='" + value + "'></div></div><div class='col-sm-2 col-xs-3 center' style='text-align:right'><p>Rp. " + numeral(value).format('0,0.00') + "</p></div></div><br>");
+						payableCount++;
 					} else {
-						if(value > maxPayable){
-							maxpayable = value;
-						}
 						var value= payable[0];
 						var name = payable[1];
 						var id	= payable[4];
-						$('#payable_chart').append("<div class='row' id='otherPayable-" + id + "'><div class='col-sm-3 col-xs-3 center'><p><strong>" + name + "</strong></div><div class='col-sm-7 col-xs-6'><div class='Payable_line' id='otherPayableLine-" + id + "' onclick='viewOtherPayableDetail(" + id + ")' data-value='" + value + "'></div></div><div class='col-sm-2 col-xs-3 center' style='text-align:right'><p>Rp. " + numeral(value).format('0,0.00') + "</p></div></div><br>")
+						if(value > maxPayable){
+							maxPayable = value;
+						}
+
+						$('#payable_chart').append("<div class='row' style='cursor:pointer' id='otherPayable-" + id + "' onclick='viewOtherPayableDetail(" + id + ")' ><div class='col-sm-3 col-xs-3 center'><p><strong>" + name + "</strong></div><div class='col-sm-7 col-xs-6'><div class='Payable_line' id='otherPayableLine-" + id + "' data-value='" + value + "'></div></div><div class='col-sm-2 col-xs-3 center' style='text-align:right'><p>Rp. " + numeral(value).format('0,0.00') + "</p></div></div><br>");
+						payableCount++;
 					}
+
+					console.log(maxPayable);
 				});
+
 				$('.Payable_line').each(function(){
-					var percentage = $(this).attr('data-value') * 100 / maxpayable;
+					var percentage = $(this).attr('data-value') * 100 / maxPayable;
 					$(this).animate({
 						'width': percentage + "%"
 					},300);
-				})
+				});
 
-				adjust_grid();
+				if(payableCount == 0){
+					$('#payable_chart').html("<p>There is no payable found.</p>");
+					$('#grid_wrapper').hide();
+				} else {
+					adjust_grid();
+					$('#grid_wrapper').show();
+				}
 			}
 		});
 	}
@@ -241,6 +315,8 @@
 				id: n
 			},
 			success:function(response){
+				supplierId = n;
+				opponentId = null;
 				$('#payableTableContent').html("");
 				var totalRemainder = 0;
 
@@ -314,6 +390,8 @@
 				id: n
 			},
 			success:function(response){
+				opponentId = n;
+				supplierId = null;
 				$('#payableTableContent').html("");
 				var totalRemainder = 0;
 
@@ -353,4 +431,106 @@
 			}
 		})
 	}
+
+	$('#viewPayableButton').click(function(){
+		if(supplierId == null){
+			window.location.href="<?= site_url('Payable/viewByOpponentId/') ?>" + opponentId;
+		} else {
+			window.location.href="<?= site_url('Payable/viewBySupplierId/') ?>" + supplierId;
+		}
+		
+	})
+
+	function refreshSupplierView(page = $('#supplierPage').val()){
+		$.ajax({
+			url:"<?= site_url('Payable/getSupplierOpponentItems') ?>",
+			data:{
+				page: page,
+				term: $('#searchSupplierBar').val()
+			},
+			success:function(response){
+				var items = response.items;
+				var supplierCount = 0;
+				$('#supplierTableContent').html("");
+				$.each(items, function(index, item){
+					var opponentType = item.opponentType;
+					if(opponentType == 1){
+						var supplierName			= item.name;
+						var complete_address		= item.address;
+						var supplier_city			= item.city;
+						var supplier_number			= item.number;
+						var supplier_rt				= item.rt;
+						var supplier_rw				= item.rw;
+						var supplier_postal			= item.postal_code;
+						var supplier_block			= item.block;
+						var id						= item.id;
+	
+						if(supplier_number != null){
+							complete_address	+= ' No. ' + supplier_number;
+						}
+				
+						if(supplier_block != null){
+							complete_address	+= ' Blok ' + supplier_block;
+						}
+			
+						if(supplier_rt != '000'){
+							complete_address	+= ' RT ' + supplier_rt;
+						}
+				
+						if(supplier_rw != '000' && supplier_rt != '000'){
+							complete_address	+= ' /RW ' + supplier_rw;
+						}
+				
+						if(supplier_postal != null){
+							complete_address	+= ', ' + supplier_postal;
+						}
+
+						$('#supplierTableContent').append("<tr><td>" + supplierName + "</td><td><p>" + complete_address + "</p><p>" + supplier_city + "</p></td><td><button class='button button_default_dark' id='viewSupplierButton-" + id + "'><i class='fa fa-long-arrow-right'></i></button></td></tr>");
+						supplierCount++;
+						$('#viewSupplierButton-' + id).click(function(){
+							window.location.href="<?= site_url('Payable/viewBySupplierId/') ?>" + id;
+						})
+
+					} else if(opponentType == 2){
+						var supplierName		= item.name;
+						var complete_address	= item.address;
+						var supplier_city		= item.city;
+						var id					= item.id;
+
+						$('#supplierTableContent').append("<tr><td>" + supplierName + "</td><td><p>" + complete_address + "</p><p>" + supplier_city + "</p></td><td><button class='button button_default_dark' id='viewOpponentButton-" + id + "'><i class='fa fa-long-arrow-right'></i></button></td></tr>");
+						supplierCount++;
+						$('#viewOpponentButton-' + id).click(function(){
+							window.location.href="<?= site_url('Payable/viewByOpponentId/') ?>" + id;
+						})
+					}
+				});
+
+				if(supplierCount > 0){
+					$('#supplierTable').show();
+					$('#supplierTableText').hide();
+				} else {
+					$('#supplierTable').hide();
+					$('#supplierTableText').show();
+				}
+
+				var pages = response.pages;
+				$('#supplierPage').html("");
+				for(i = 1; i <= pages; i++){
+					if(i == page){
+						$('#supplierPage').append("<option value='" + i + "' selected>" + i + "</option>");
+					} else {
+						$('#supplierPage').append("<option value='" + i + "'>" + i + "</option>");
+					}
+				}
+			}
+		})
+	}
+
+	$('#searchSupplierBar').change(function(){
+		refreshSupplierView(1);
+	})
+
+	$('.alert_full_close_button').click(function(){
+		$(this).parent().parent().fadeOut();
+	})
 </script>

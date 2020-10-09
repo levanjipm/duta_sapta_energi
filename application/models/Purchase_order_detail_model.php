@@ -273,4 +273,35 @@ class Purchase_order_detail_model extends CI_Model {
 			$result = $query->row();
 			return $result;
 		}
+
+		public function closeByCodeId($id)
+		{
+			$this->db->set('status', 1);
+			$this->db->where('code_purchase_order_id', $id);
+			$this->db->update($this->table_purchase_order);
+		}
+
+		public function updateByCodeGoodReceiptIdCancel($id)
+		{
+			$query		= $this->db->query("
+				SELECT purchase_order.received, purchase_order.id, good_receipt.quantity
+				FROM good_receipt
+				JOIN purchase_order ON purchase_order.id = good_receipt.purchase_order_id
+				WHERE good_receipt.code_good_receipt_id = '$id'
+			");
+
+			$result		= $query->result();
+			$batch		= array();
+			foreach($result as $data){
+				$batch[] = array(
+					"id" => $data->id,
+					"received" => (int)$data->received - (int)$data->quantity,
+					"status" => 0
+				);
+
+				next($result);
+			}
+
+			$this->db->update_batch($this->table_purchase_order, $batch, "id");
+		}
 }

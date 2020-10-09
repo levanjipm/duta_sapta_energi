@@ -18,8 +18,13 @@ class Welcome extends CI_Controller {
 		
 		$this->load->model('Authorization_model');
 		$data['departments']	= $this->Authorization_model->getByUserId($user_id);
-		
-		$this->load->view('head');
-		$this->load->view('header', $data);
+		if(count($data['departments']) > 1){
+			$this->load->view('head');
+			$this->load->view('header', $data);
+		} else if(count($data['departments']) > 0) {
+			redirect(site_url($data['departments'][0]->index_url));
+		} else {
+			redirect(site_url('Profile'));
+		}
 	}
 }

@@ -124,17 +124,19 @@
 				<p style='font-family:museo'><?= $sales ?></p>
 			</div>
 		</div>
-		
-		<table class='table table-bordered'>
-			<tr>
-				<th>Reference</th>
-				<th>Description</th>
-				<th>Price list</th>
-				<th>Discount</th>
-				<th>Quantity</th>
-				<th>Net unit price</th>
-				<th>Price</th>
-			</tr>
+		<div class='row'>
+			<div class='col-sm-12'>
+				<div class='table-responsive-lg'>
+					<table class='table table-bordered'>
+						<tr>
+							<th>Reference</th>
+							<th>Description</th>
+							<th>Price list</th>
+							<th>Discount</th>
+							<th>Quantity</th>
+							<th>Net unit price</th>
+							<th>Price</th>
+						</tr>
 <?php
 	$sales_order_value		= 0;
 	foreach($details as $detail){
@@ -142,27 +144,32 @@
 		$price		= $unit_price * $detail->quantity;
 		$sales_order_value	+= $price;
 ?>
-			<tr>
-				<td><?= $detail->reference ?></td>
-				<td><?= $detail->name ?></td>
-				<td>Rp. <?= number_format($detail->price_list,2) ?></td>
-				<td><?= number_format($detail->discount,2) ?> %</td>
-				<td><?= number_format($detail->quantity) ?></td>
-				<td>Rp. <?= number_format($unit_price,2) ?></td>
-				<td>Rp. <?= number_format($price,2) ?></td>
-			</tr>
+						<tr>
+							<td><?= $detail->reference ?></td>
+							<td><?= $detail->name ?></td>
+							<td>Rp. <?= number_format($detail->price_list,2) ?></td>
+							<td><?= number_format($detail->discount,2) ?> %</td>
+							<td><?= number_format($detail->quantity) ?></td>
+							<td>Rp. <?= number_format($unit_price,2) ?></td>
+							<td>Rp. <?= number_format($price,2) ?></td>
+						</tr>
 <?php
 	}
 ?>
-			<tr>
-				<td colspan='3'></td>
-				<td colspan='2'>Total</td>
-				<td colspan='2'>Rp. <?= number_format($sales_order_value,2) ?></td>
-			</tr>
-		</table>
-		<div class='notificationText success' id='successCopyNotification'><p>Sales order number has been copied.</p></div>
+						<tr>
+							<td colspan='3'></td>
+							<td colspan='2'>Total</td>
+							<td colspan='2'>Rp. <?= number_format($sales_order_value,2) ?></td>
+						</tr>
+					</table>
+				</div>
+				<label>Note</label>
+				<p><?= ($general->note == null || $general->note == "") ? "<i>Not available</i>" : $general->note ?></p>
+				<div class='notificationText success' id='successCopyNotification'><p>Sales order number has been copied.</p></div>
 		
-		<a href='<?= site_url('Sales_order/createDashboard') ?>'><button class='button button_default_dark'><i class='fa fa-long-arrow-left'></i></button></a>
+				<a href='<?= site_url('Sales_order/createDashboard') ?>'><button class='button button_default_dark'><i class='fa fa-long-arrow-left'></i></button></a>
+			</div>
+		</div>
 	</div>
 </div>
 <script>
@@ -171,6 +178,12 @@
 		var difference		= window_width * 0.5 - 200;		
 		$('.logo_wrapper').css('margin-left', difference, 'important');
 	});
+
+	$(window).resize(function(){
+		var window_width	= $(document).width() - 200;
+		var difference		= window_width * 0.5 - 200;		
+		$('.logo_wrapper').css('margin-left', difference, 'important');
+	})
 
 	function copySalesOrderName(){
 		var copyText = document.getElementById("salesOrderNameInput");

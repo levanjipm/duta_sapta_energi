@@ -207,4 +207,12 @@ class Asset_model extends CI_Model {
 			return $this->db->affected_rows();
 		}
 
+		public function calculateValue($date)
+		{
+			$this->db->where('date <=', $date);
+			$query			= $this->db->get($this->table_asset);
+			$result			= $query->result();
+			return $result;
+		}
+
 }

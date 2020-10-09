@@ -285,4 +285,118 @@ class Stock_in_model extends CI_Model {
 			$result = $query->affected_rows();
 			return $result;
 		}
+
+		public function calculateValue($date)
+		{
+			$query		= $this->db->query("
+				SELECT SUM(stock_in.price * (stock_in.quantity - stockOutTable.quantity)) AS value
+				FROM stock_in
+				LEFT JOIN (
+					SELECT SUM(stock_out.quantity) AS quantity, stock_out.in_id, COALESCE(deliveryOrderTable.date, eventTable.date) as date 
+					FROM stock_out
+					LEFT JOIN 
+					(
+						SELECT code_delivery_order.date, delivery_order.id 
+						FROM delivery_order
+						JOIN code_delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order.id
+					) deliveryOrderTable
+					ON stock_out.delivery_order_id = deliveryOrderTable.id
+					LEFT JOIN (
+						SELECT code_event.date, event.id
+						FROM event
+						JOIN code_event ON event.code_event_id = code_event.id
+					) eventTable
+					ON eventTable.id = stock_out.event_id
+					WHERE COALESCE(deliveryOrderTable.date, eventTable.date) <= '$date'
+					GROUP BY stock_out.in_id
+				) AS stockOutTable
+				ON stockOutTable.in_id = stock_in.id
+				LEFT JOIN (
+					SELECT code_good_receipt.date, good_receipt.id
+					FROM good_receipt
+					JOIN code_good_receipt ON good_receipt.code_good_receipt_id = code_good_receipt.id
+				) AS goodReceiptTable
+				ON goodReceiptTable.id = stock_in.good_receipt_id
+				LEFT JOIN (
+					SELECT code_sales_return_received.date, sales_return_received.id
+					FROM sales_return_received
+					JOIN code_sales_return_received ON sales_return_received.code_sales_return_received_id = code_sales_return_received.id
+				) AS salesReturnTable
+				ON salesReturnTable.id = stock_in.sales_return_received_id
+				LEFT JOIN (
+					SELECT code_event.date, event.id
+					FROM event
+					JOIN code_event ON event.code_event_id = code_event.id
+				) eventTable
+				ON stock_in.event_id = eventTable.id
+				WHERE COALESCE(eventTable.date, goodReceiptTable.date, salesReturnTable.date) <= '$date'
+			");
+
+			$result			= $query->row();
+			return $result->value;
+		}
+
+		public function updateStockByStockOutBatch($stockBatch)
+		{
+			foreach($stockBatch as $stockItem)
+			{
+				$id			= $stockItem['id'];
+				$quantity	= $stockItem['quantity'];
+
+				$this->db->where('id', $id);
+				$query		= $this->db->get($this->table_stock_in);
+				$result		= $query->row();
+
+				$currentResidue = $result->residue;
+				$finalResidue = $currentResidue + $quantity;
+				
+				$this->db->set('residue', $finalResidue);
+				$this->db->where('id', $id);
+				$this->db->update($this->table_stock_in);
+
+				next($stockBatch);
+			}
+		}
+
+		public function checkItemsByCodeGoodReceiptId($id)
+		{
+			$query			= $this->db->query("
+				SELECT * FROM stock_in
+				WHERE good_receipt_id IN (
+					SELECT id FROM good_receipt
+					WHERE good_receipt.code_good_receipt_id = '$id'
+				)
+			");
+
+			$total			= $query->num_rows();
+			
+			$query			= $this->db->query("
+				SELECT * FROM stock_in
+				WHERE good_receipt_id IN (
+					SELECT id FROM good_receipt
+					WHERE good_receipt.code_good_receipt_id = '$id'
+				)
+				AND stock_in.quantity = stock_in.residue
+			");
+
+			$counted			= $query->num_rows();
+			
+			if($total == $counted){
+				return true;
+			} else {
+				return false;
+			}
+		}
+
+		public function deleteByCodeGoodReceiptId($id)
+		{
+			$query		= $this->db->query("
+				DELETE FROM stock_in
+				WHERE good_receipt_id IN
+				(
+					SELECT id FROM good_receipt
+					WHERE good_receipt.code_good_receipt_id = '$id'
+				)
+			");
+		}
 }

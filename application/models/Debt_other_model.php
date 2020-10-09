@@ -112,7 +112,6 @@ class Debt_other_model extends CI_Model {
 			
 			$query = $this->db->get();
 			$result	= $query->row();
-			
 			return $result;
 		}
 		
@@ -158,7 +157,7 @@ class Debt_other_model extends CI_Model {
 			$this->taxing				= $this->input->post('taxing');
 			$this->information			= $this->input->post('information');
 			$this->value				= $this->input->post('value');
-			$this->type					= $this->input->post('type');
+			$this->type					= $this->input->post('debtType');
 
 			$db_item 					= $this->get_db_from_stub($this);
 			$this->db->insert($this->table_purchase_invoice, $db_item);
@@ -168,10 +167,26 @@ class Debt_other_model extends CI_Model {
 
 		public function getIncompletedTransaction($otherOpponentId)
 		{
-			$this->db->where('other_opponent_id', $otherOpponentId);
-			$this->db->where('is_done', 0);
-			$query	= $this->db->get($this->table_purchase_invoice);
+			$query		= $this->db->query("
+				SELECT purchase_invoice_other.*, purchase_invoice_other.invoice_document AS name, COALESCE(payableTable.value, 0) AS paid, '2' AS type
+				FROM purchase_invoice_other
+				LEFT JOIN (
+					SELECT SUM(value) AS value, other_purchase_id 
+					FROM payable
+					GROUP BY other_purchase_id
+				) payableTable
+				ON purchase_invoice_other.id = payableTable.other_purchase_id
+				WHERE purchase_invoice_other.other_opponent_id = '$otherOpponentId'
+			");
+
 			$result	= $query->result();
 			return $result;
+		}
+
+		public function updateDoneStatusByIdArray($idArray)
+		{
+			$this->db->set('is_done', 0);
+			$this->db->where_in("id", $idArray);
+			$this->db->update($this->table_purchase_invoice);
 		}
 }

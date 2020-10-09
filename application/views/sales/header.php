@@ -26,7 +26,13 @@
 ?>
 	</div>
 	<div class='sidenav_bar_functions'>
-		<button class='container_button'><p style='font-family:museo'>Customer <i class='fa fa-caret-down'></i></p></button>
+		<button class='container_button'><p>Quotation</p><i class='fa fa-caret-down'></i></button>
+		<div class='container_bar'>
+			<a href='<?= site_url("Quotation/createDashboard") ?>'><button><p>Create</p></button></a>
+			<a href='<?= site_url("Quotation/confirmDashboard") ?>'><button><p>Confirm</p></button></a>
+			<a href='<?= site_url("Quotation/archiveDashboard") ?>'><button><p>Archive</p></button></a>
+		</div>
+		<button class='container_button'><p>Customer</p><i class='fa fa-caret-down'></i></button>
 		<div class='container_bar'>
 			<a href='<?= site_url('Customer') ?>'><button><p>Manage</p></button></a>
 			<a href='<?= site_url('Plafond') ?>'><button><p>Plafond</p></button></a>
@@ -37,7 +43,7 @@
 		<a href='<?= site_url('Area') ?>'><button><p>Area</p></button></a>
 		<a href='<?= site_url('Item') ?>'><button><p>Item</p></button></a>
 		<a href='<?= site_url('Item_class') ?>'><button><p>Item class</p></button></a>
-		<button class='container_button'><p style='font-family:museo'>Sales order  <i class='fa fa-caret-down'></i></p></button>
+		<button class='container_button'><p>Sales order</p><i class='fa fa-caret-down'></i></button>
 		<div class='container_bar'>
 			<a href='<?= site_url('Sales_order/createDashboard') ?>'><p>Create</p></a>
 			<?php if($user_login->access_level > 1){ ?>
@@ -50,7 +56,7 @@
 		<?php } ?>
 			<a href='<?= site_url('Sales_order/archiveDashboard') ?>'>Archive</a>
 		</div>
-		<button class='container_button'><p style='font-family:museo'>Return  <i class='fa fa-caret-down'></i></p></button>
+		<button class='container_button'><p>Return</p><i class='fa fa-caret-down'></i></button>
 		<div class='container_bar'>
 			<a href='<?= site_url('Sales_return/createDashboard') ?>'><p>Create</p></a>
 			<a href='<?= site_url('Sales_return/confirmDashboard') ?>'><p>Confirm</p></a>
@@ -58,7 +64,13 @@
 		</div>
 		<a href='<?= site_url('Stock/view/Sales') ?>'><button><p>Check stock</p></button></a>
 		<?php if($user_login->access_level > 1){ ?>
-		<a href='<?= site_url('Visit_list') ?>'><button><p>Visit List</p></button></a>
+		<button class='container_button'><p>Visit List</p><i class='fa fa-caret-down'></i></button>
+		<div class='container_bar'>
+			<a href='<?= site_url('Visit_list/createDashboard') ?>'><p>Create</p></a>
+			<a href='<?= site_url('Visit_list/confirmDashboard') ?>'><p>Confirm</p></a>
+			<a href='<?= site_url('Visit_list/reportDashboard') ?>'><p>Report</p></a>
+			<a href='<?= site_url('Visit_list/archiveDashboard') ?>'><p>Archive</p></a>	
+		</div>
 		<?php } ?>
 		<?php if($user_login->access_level > 2){ ?>
 		<a href='<?= site_url('SalesAnalytics') ?>'><button><p>Analytic</p></button></a>
@@ -67,10 +79,19 @@
 </div>
 <script>
 	$('.container_button').click(function(){
-		$('.container_bar').hide(300);
-		$(this).next('.container_bar').toggle(300);
 		$('.active').removeClass('active');
-		$(this).addClass('active');
+		$('.container_bar').hide(400);
+		if($(this).next('.container_bar').is(':hidden')){
+			$(this).addClass('active');
+			var containerBox = $(this).next('.container_bar');
+			containerBox.toggle(400);
+			containerBox.children().css("opacity", 0);
+			var time = 300;
+			containerBox.children().each(function(index, child){
+				$(child).fadeTo(time, 1);
+				time += 300;
+			});
+		}
 	});
 	
 	$('#hide_side_nav_button').click(function(){

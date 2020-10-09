@@ -7,9 +7,12 @@
 	</div>
 	<br>
 	<div class='dashboard_in'>
-		<button type='button' class='button button_default_dark' id='create_account_button'><i class='fa fa-plus'></i> Create new class</button>
-		<br><br>
-		<input type='text' class='form-control' id='search_bar'>
+		<div class='input_group'>
+			<input type='text' class='form-control' id='search_bar'>
+			<div class='input_group_append'>
+				<button type='button' class='button button_default_dark' id='create_account_button'><i class='fa fa-plus'></i> Create new class</button>
+			</div>
+		</div>
 		<br>
 		<table class='table table-bordered'>
 			<tr>

@@ -1,5 +1,5 @@
 <head>
-    <title>Return - Sales</title>
+    <title>Return - Purchase</title>
 </head>
 <div class='dashboard'>
 	<div class='dashboard_head'>

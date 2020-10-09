@@ -31,6 +31,7 @@
 			<a href='<?= site_url('Bank/transactionDashboard') ?>'><button><p style='font-family:museo'>Transaction</p></button></a>
 			<a href='<?= site_url('Bank/accountDashboard') ?>'><button><p style='font-family:museo'>Account</p></button></a>
 			<a href='<?= site_url('Bank/mutationDashboard') ?>'><button><p style='font-family:museo'>Mutation</p></button></a>
+			<a href='<?= site_url('Bank/assignDashboard') ?>'><button><p style='font-family:museo'>Assign</p></button></a>
 			<a href='<?= site_url('Bank/opponent') ?>'><button><p style='font-family:museo'>Opponent</p></button></a>
 		</div>
 		<button class='container_button'><p style='font-family:museo'>Petty cash</p></button>
@@ -46,7 +47,7 @@
 		<button class='container_button'><p style='font-family:museo'>Income</p></button>
 		<div class='container_bar'>
 			<a href='<?= site_url('Income/class') ?>'><button><p style='font-family:museo'>Class</p></button></a>
-			<a href='<?= site_url('Income/report') ?>'><button><p style='font-family:museo'>Report</p></button></a>
+			<a href='<?= site_url('Income/reportDashboard') ?>'><button><p style='font-family:museo'>Report</p></button></a>
 		</div>
 		<button class='container_button'><p style='font-family:museo'>Billing</p></button>
 		<div class='container_bar'>
@@ -59,6 +60,23 @@
 </div>
 <script>
 	$('.container_button').click(function(){
-		$(this).next('.container_bar').toggle(300);
+		$('.active').removeClass('active');
+		$('.container_bar').hide(400);
+		if($(this).next('.container_bar').is(':hidden')){
+			$(this).addClass('active');
+			var containerBox = $(this).next('.container_bar');
+			containerBox.toggle(400);
+			containerBox.children().css("opacity", 0);
+			var time = 300;
+			containerBox.children().each(function(index, child){
+				$(child).fadeTo(time, 1);
+				time += 300;
+			});
+		}
+	});
+	
+	$('#hide_side_nav_button').click(function(){
+		$('.sidenav_bar').toggle(300);
+		$('.dashboard').css('margin-left',0);
 	});
 </script>

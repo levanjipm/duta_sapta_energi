@@ -47,7 +47,7 @@
     <div class='dashboard_in'>
         <div class='row'>
             <div class='col-md-4 col-sm-12 col-xs-12'>
-                <div class='dashboardBox clickable' onclick='viewPendingSalesOrders()' >
+                <div class='dashboardBox clickable' onclick='window.location.href="<?= site_url('Invoice') ?>"'>
                     <div class='leftSide'>
                         <h4><b>Pending</b></h4>
                         <p>Invoice</p>
@@ -117,7 +117,7 @@
 			success:function(response){
 				var unassigned = response.unassigned;
 				var total = response.total;
-				$('#pendingCustomers').html(numeral(parseInt(total) - parseInt(unassigned)).format('0,0') + " / " + numeral(total).format('0,0'));
+				$('#pendingCustomers').html(numeral(unassigned).format('0,0') + " / " + numeral(total).format('0,0'));
 			}
 		})
 	}

@@ -38,6 +38,14 @@ class Income extends CI_Controller {
 		header('Content-Type: application/json');
 		echo json_encode($data);
 	}
+
+	public function getAllItems()
+	{
+		$this->load->model('Income_class_model');
+		$data = $this->Income_class_model->getItems(0, "", 0);
+		header('Content-Type: application/json');
+		echo json_encode($data);
+	}
 	
 	public function insertItem()
 	{
@@ -73,5 +81,44 @@ class Income extends CI_Controller {
 		$this->load->model('Income_class_model');
 		$result = $this->Income_class_model->deleteById($id);
 		echo $result;
+	}
+
+	public function reportDashboard()
+	{
+		$user_id		= $this->session->userdata('user_id');
+		$this->load->model('User_model');
+		$data['user_login'] = $this->User_model->getById($user_id);
+		
+		$this->load->model('Authorization_model');
+		$data['departments']	= $this->Authorization_model->getByUserId($user_id);
+		
+		$this->load->view('head');
+		$this->load->view('finance/header', $data);
+
+		$this->load->view('finance/income/reportDashboard');
+	}
+
+	public function getItemsByClass()
+	{
+		$month			= $this->input->get('month');
+		$year			= $this->input->get('year');
+		$this->load->model("Bank_model");
+		$data = $this->Bank_model->getIncomeByClass($month, $year);
+
+		header('Content-Type: application/json');
+		echo json_encode($data);
+	}
+
+	public function getByClassId()
+	{
+		$id				= $this->input->get('id');
+		$month			= $this->input->get('month');
+		$year			= $this->input->get('year');
+
+		$this->load->model("Bank_model");
+		$data = $this->Bank_model->getIncomeByClassId($id, $month, $year);
+
+		header('Content-Type: application/json');
+		echo json_encode($data);
 	}
 }

@@ -7,12 +7,7 @@
 	</div>
 	<br>
 	<div class='dashboard_in'>
-		<div class='input_group'>
-			<input type='text' class='form-control' id='search_bar'>
-			<div class='input_group_append'>
-				<button class="button button_default_dark" title="Add an asset" id='addAssetButton'><i class='fa fa-plus'></i> Add asset</button>
-			</div>
-		</div>
+		<input type='text' class='form-control' id='search_bar'>
 		<br>
 		<div id='assetTable'>
 			<table class='table table-bordered'>

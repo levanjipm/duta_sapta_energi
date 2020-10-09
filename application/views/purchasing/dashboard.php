@@ -69,6 +69,18 @@
                     </div>
                 </div>
             </div>
+			<div class='col-lg-4 col-md-6 col-sm-12 col-xs-12'>
+                <div class='dashboardBox'>
+                    <div class='leftSide'>
+                        <h4><b>Restock</b></h4>
+                        <p>Items</p>
+                    </div>
+                    <div class='rightSide'>
+                        <h3 id='restock'></h3>
+                        <p class='subtitleText'>&nbsp;</p>
+                    </div>
+                </div>
+            </div>
 		</div>
 	</div>
 </div>
@@ -115,11 +127,33 @@
         </table>
     </div>
     <p id='pendingPurchaseOrderTableText'>There is no pending purchase order.</p>
+</div>
 
+<div class='alert_wrapper' id='restockItemsWrapper'>
+	<button class='slide_alert_close_button'>&times;</button>
+    <div class='alert_box_slide'>
+		<h3 style='font-family:bebasneue'>Restock Items</h3>
+		<hr>
+		<div id='restockTable'>
+			<table class='table table-bordered'>
+				<tr>
+					<th>Reference</th>
+					<th>Name</th>
+					<th>3 months</th>
+					<th>6 months</th>
+					<th>Stock</th>
+				</tr>
+				<tbody id='restockTableContent'></tbody>
+			</table>
+		</div>
+		<p id='restockTableContent'>There is no item to be restocked.</p>
+	</div>
+</div>
 <script>
     $(document).ready(function(){
         calculateNeeds();
         calculatePendingOrders();
+		calculateRestockItems();
     })
 
 	$('#purchaseOrderForm').validate({
@@ -130,6 +164,9 @@
 	function calculateNeeds(){
 		$.ajax({
 			url:'<?= site_url('Purchasing/calculateNeeds') ?>',
+			beforeSend:function(){
+				$('#needs').html("<i class='fa fa-spin fa-spinner'></i>")
+			},
 			success:function(response){
 				var needs		= response.length;
                 $('#needs').text(needs);
@@ -181,11 +218,27 @@
     function calculatePendingOrders(){
         $.ajax({
             url:"<?= site_url('Purchasing/countIncompletePurchaseOrders') ?>",
+			beforeSend:function(){
+				$('#orders').html("<i class='fa fa-spin fa-spinner'></i>")
+			},
             success:function(response){
                 $('#orders').text(response);
             }
         })
     }
+
+	function calculateRestockItems(){
+		$.ajax({
+			url:"<?= site_url('Purchasing/countRestockItems') ?>",
+			beforeSend:function(){
+				$('#restock').html("<i class='fa fa-spin fa-spinner'></i>")
+			},
+			success:function(response){
+				var items = response.length;
+				$('#restock').html(numeral(items).format('0,0'));
+			}
+		})
+	}
 
     function viewPendingItems(){
         $('#pendingItemsWraper').fadeIn(300, function(){

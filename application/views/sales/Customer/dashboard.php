@@ -7,7 +7,7 @@
 	</div>
 	<br>
 	<div class='dashboard_in'>
-		<div class='input_group input-group-lg'>
+		<div class='input_group'>
 			<input for="customer" type='text' class='form-control' id='search_bar' style='border-radius:0' placeholder="Search customer">
 			<div class='input_group_append'>
 				<button type='button' class='button button_default_dark' id='add_customer_button'><i class='fa fa-plus'></i> Add customer</button>
@@ -17,7 +17,7 @@
 		<div id='customerTable'>
 			<table class='table table-bordered'>
 				<tr>
-					<th>Customer name</th>
+					<th>Name</th>
 					<th>Address</th>
 					<th>Action</th>
 				</tr>

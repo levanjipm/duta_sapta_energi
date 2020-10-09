@@ -279,4 +279,37 @@ class Good_receipt extends CI_Controller {
 		header('Content-Type: application/json');
 		echo json_encode($data);
 	}
+
+	public function deleteDashboard()
+	{
+		$user_id		= $this->session->userdata('user_id');
+		$this->load->model('User_model');
+		$data['user_login'] = $this->User_model->getById($user_id);
+		
+		$this->load->model('Authorization_model');
+		$data['departments']	= $this->Authorization_model->getByUserId($user_id);
+		
+		$this->load->model('Good_receipt_model');
+		$data['years']	= $this->Good_receipt_model->show_years();
+		
+		if($data['user_login']->access_level > 3){
+			$this->load->view('head');
+			$this->load->view('administrator/header', $data);
+			$this->load->view('administrator/GoodReceipt/deleteDashboard', $data);
+		} else {
+			redirect(site_url('Welcome'));
+		}
+	}
+
+	public function getUninvoicedItems()
+	{
+		$page			= $this->input->get('page');
+		$offset			= ($page - 1) * 10;
+		$this->load->model("Good_receipt_model");
+		$data['items'] = $this->Good_receipt_model->getUninvoicedItems($offset);
+		$data['pages'] = max(1, ceil($this->Good_receipt_model->countUninvoicedItems()/10));
+
+		header('Content-Type: application/json');
+		echo json_encode($data);
+	}
 }

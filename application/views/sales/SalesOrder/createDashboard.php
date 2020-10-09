@@ -41,6 +41,9 @@
 				<option value='1'>Retail</option>
 				<option value='2'>Coorporate</option>
 			</select>
+
+			<label>Note</label>
+			<textarea class='form-control' style='resize:none' rows='3' name='note' id='note'></textarea>
 			
 			<br>
 			<button type='button' class='button button_default_dark' id='add_item_button'><i class='fa fa-shopping-cart'></i> Add item</button>
@@ -100,18 +103,21 @@
 		<br>
 		<input type='text' class='form-control' id='search_customer'>
 		<br>
-		<table class='table table-bordered'>
-			<tr>
-				<th>Name</th>
-				<th>Address</th>
-				<th>Action</th>
-			</tr>
-			<tbody id='customer_table'></tbody>
-		</table>
+		<div id='customerTable'>
+			<table class='table table-bordered'>
+				<tr>
+					<th>Name</th>
+					<th>Address</th>
+					<th>Action</th>
+				</tr>
+				<tbody id='customerTableContent'></tbody>
+			</table>
 		
-		<select class='form-control' id='customer_page' style='width:100px'>
-			<option value='1'>1</option>
-		</select>
+			<select class='form-control' id='customer_page' style='width:100px'>
+				<option value='1'>1</option>
+			</select>
+		</div>
+		<p id='customerTableText'>There is no customer found.</p>
 	</div>
 </div>
 
@@ -147,6 +153,8 @@
 <div class='alert_wrapper' id='validate_sales_order_wrapper'>
 	<button class='slide_alert_close_button'>&times;</button>
 	<div class='alert_box_slide' id='validate_sales_order_box'>
+		<h3 style='font-family:bebasneue'>Create Sales Order</h3>
+		<hr>
 		<label>Date</label>
 		<p id='date'></p>
 		
@@ -154,7 +162,7 @@
 		<p id='taxing_p'></p>
 		
 		<label>Seller</label>
-		<p id='seller_p'></p>
+		<p id='seller_p'>None</p>
 		
 		<label>Customer</label>
 		<p id='customer_p'></p>
@@ -176,9 +184,12 @@
 			<tbody id='table_item_confirm'></tbody>
 		</table>
 
+		<label>Note</label>
+		<p id='salesOrderNote_p'></p>
+
 		<div class='notificationText warning' id='warningDebtText'><i class='fa fa-exclamation-triangle'></i> Warning! We found a problem while checking customer's account.</p></div><br>
 		
-		<button class='button button_default_dark' onclick='submit_form()'>Submit</button>
+		<button class='button button_default_dark' onclick='submit_form()' id='submitFormButton'>Submit</button>
 	</div>
 </div>
 <script>
@@ -322,11 +333,13 @@
 			var date 		= $("#sales_order_date").val();
 			var customer	= $("#select_customer_button").text();
 			var method		= $("#method option:selected").html();
+			var note		= $('#note').val();
 			
 			$('#customer_p').html(customer);
 			$('#customer_address_p').html(customer_address_select);
 			$('#date').html(my_date_format(date));
 			$('#taxing_p').html(taxing);
+			$('#salesOrderNote_p').html((note == "") ? "<i>Not available</i>" : note);
 			
 			$('#invoicing_p').html(method);
 			
@@ -395,7 +408,7 @@
 	
 	function submit_form(){
 		$("#sales_order_form").validate();
-		
+		$('#submitFormButton').attr('disabled', true);
 		if($("#sales_order_form").valid()){
 			$('#sales_order_form').submit();
 		};
@@ -417,7 +430,8 @@
 				term:$('#search_customer').val(),
 			},
 			success:function(response){
-				$('#customer_table').html('');
+				$('#customerTableContent').html('');
+				var customerCount = 0;
 				var customer_array	= response.customers;
 				var pages			= response.pages;
 				$.each(customer_array, function(index, customer){
@@ -450,7 +464,8 @@
 					
 					complete_address += ', ' + customer_city;
 					
-					$('#customer_table').append("<tr><td id='customer_name-" + customer_id + "'>" + customer_name + "</td><td id='customer_address-" + customer_id + "'>" + complete_address + "</td><td><button type='button' class='button button_success_dark' onclick='selectCustomer(" + customer_id + ")'><i class='fa fa-check'></i></button></td>");
+					$('#customerTableContent').append("<tr><td id='customer_name-" + customer_id + "'>" + customer_name + "</td><td id='customer_address-" + customer_id + "'>" + complete_address + "</td><td><button type='button' class='button button_success_dark' onclick='selectCustomer(" + customer_id + ")'><i class='fa fa-check'></i></button></td>");
+					customerCount++;
 					
 					var page		= $('#customer_page').val();
 					$('#customer_page').html('');
@@ -460,6 +475,14 @@
 						} else {
 							$('#customer_page').append("<option value='" + i + "'>" + i + "</option>");
 						}
+					}
+
+					if(customerCount > 0){
+						$('#customerTable').show();
+						$('#customerTableText').hide();
+					} else {
+						$('#customerTable').hide();
+						$('#customerTableText').show();
 					}
 				});
 			}
@@ -472,59 +495,8 @@
 	
 	$('#select_customer_button').click(function(){
 		$('#select_customer_wrapper').slideToggle(300);
-		$.ajax({
-			url:'<?= site_url('Customer/showItems') ?>',
-			data:{
-				page:1,
-				term:'',
-			},
-			success:function(response){
-				var customer_array	= response.customers;
-				var pages			= response.pages;
-				$.each(customer_array, function(index, customer){
-					var customer_id		= customer.id;
-					var customer_name	= customer.name;
-					var customer_address	= customer.address;
-					var customer_number		= customer.number;
-					var customer_block		= customer.block;
-					var customer_rt			= customer.rt;
-					var customer_rw			= customer.rw;
-					var customer_city		= customer.city;
-					var customer_postal		= customer.postal_code;
-					var customer_pic		= customer.pic_name;
-					var complete_address	= customer_address;
-					if(customer_number != null && customer_number != ''){
-						complete_address	+= ' no. ' + customer_number;
-					};
-					
-					if(customer_block != null && customer_block != '000' && customer_block != ''){
-						complete_address	+= ', blok ' + customer_block;
-					};
-					
-					if(customer_rt != '000'){
-						complete_address	+= ', RT ' + customer_rt + ', RW ' + customer_rw;
-					}
-					
-					if(customer_postal != ''){
-						complete_address += ', ' + customer_postal;
-					}
-					
-					complete_address += ', ' + customer_city;
-					
-					$('#customer_table').append("<tr><td id='customer_name-" + customer_id + "'>" + customer_name + "</td><td id='customer_address-" + customer_id + "'>" + complete_address + "</td><td><button type='button' class='button button_success_dark' onclick='selectCustomer(" + customer_id + ")'><i class='fa fa-check'></i></button></td>");
-					
-					var page		= $('#customer_page').val();
-					$('#customer_page').html('');
-					for(i = 1; i <= pages; i++){
-						if(i == page){
-							$('#customer_page').append("<option value='" + i + "' selected>" + i + "</option>");
-						} else {
-							$('#customer_page').append("<option value='" + i + "'>" + i + "</option>");
-						}
-					}
-				});
-			}
-		});
+		$('#search_customer').val("");
+		refresh_customer_view(1);
 	});
 	
 	function selectCustomer(n){

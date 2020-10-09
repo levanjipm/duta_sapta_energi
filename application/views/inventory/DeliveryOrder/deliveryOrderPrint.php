@@ -14,6 +14,7 @@
 			position: absolute;
 			left: 0;
 			top: 0;
+			font-size:10pt;
 		}
 		
 		@page {
@@ -40,16 +41,31 @@
 ?>
 <div class='row' style='margin:0'>	
 	<div class='col-sm-10 col-sm-offset-1' style='background-color:white;padding:20px' id='printable'>
-		<div class='row' style='border-bottom:2px solid black;padding:15px'>
-			<div class='col-xs-1'><img src='<?= base_url('assets/Logo.png') ?>' style='width:90%'></img></div>
-			<div class='col-xs-5' style='padding:0'>
-				<h3 style='margin-top:0'><b>PT Duta Sapta Energi</b></h3>
-				<p style='margin:0'>Jalan Babakan Hantap no. 23</p>
-				<p style='margin:0'>Bandung, 40281</p>
-				<p style='margin:0'><b>Ph. </b>(022) 7102225</p>
-				<p style='margin:0'><b>Email </b>marketing@dutasaptaenergi.com</p>
+		<div class='row' style='padding:15px'>
+			<div class='col-xs-5'>
+				<div style='display:inline-block'>
+					<p style='margin-top:0'><b>PT Duta Sapta Energi</b></p>
+					<p style='margin:0'>Jalan Babakan Hantap no. 23</p>
+					<p style='margin:0'>Bandung, 40281</p>
+					<p style='margin:0'><b>Ph. </b>(022) 7102225</p>
+					<p style='margin:0'><b>Email </b>marketing@dutasaptaenergi.com</p>
+				</div>
+				<table style='width:100%'>
+					<tr>
+						<td>SO NO. </td>
+						<td><?= $general->sales_order_name ?></td>
+					</tr>
+					<tr>
+						<td>Tanggal Pengiriman</td>
+						<td><?= date('d M Y', strtotime($general->date)) ?></td>
+					</tr>
+				</table>
 			</div>
-			<div class='col-xs-4 col-xs-offset-2'>
+			<div class='col-xs-3'>
+				<h3 style='margin:0;text-align:center;letter-spacing:0.5pt'>SURAT JALAN</h3>
+				<p style='margin:0;text-align:center'><?= $general->name ?></p>
+			</div>
+			<div class='col-xs-4'>
 				<div style='line-height:1;text-align:left'>
 					<p>Bandung, <?= date('d M Y',strtotime($general->date));?></p>
 					<p>Kepada Yth.</p>
@@ -59,20 +75,16 @@
 				</div>
 			</div>
 		</div>
-		<br><br>
 		<div class='row'>
 			<div class='col-xs-12'>
-				<p style='margin:5px'><strong>Nomor Surat Jalan : </strong><?= $general->name ?></p>
-				<p style='margin:5px'><strong>Nomor Order Penjualan : </strong><?= $general->sales_order_name ?></p>
 				<br>
-				<table class='table'>
-					<tr>
+				<table class="table">
+					<tr style='border-top:2px solid black;border-bottom:2px solid black'>
 						<th>Referensi</th>
 						<th>Nama barang</th>
 						<th>Jumlah</th>
 					</tr>
 <?php
-	$total_quantity = 0;
 	foreach($items as $item){
 ?>
 					<tr>
@@ -81,31 +93,27 @@
 						<td><?= number_format($item->quantity) ?></td>
 					</tr>
 <?php
-		$total_quantity += $item->quantity;
 	}
 ?>
-					<tr>
-						<td colspan='3'><p>Jumlah barang : <?= number_format($total_quantity) ?></td>
-					</tr>
 				</table>
 			</div>
 		</div>
 		<br><br>
 		<div class='row'>
 			<div class='col-xs-12'>
-				<table style='width:100%;text-align:center;border:1px solid #ccc'>
+				<table style='width:100%;text-align:center'>
 					<tr>
-						<td style='width:33%;padding:5px 60px;border:1px solid #ccc'>
+						<td style='width:33%;padding:5px 60px'>
 							<p>Penerima</p>
 							<br><br><br>
 							<hr style='border-top:2px solid black'>
 						</td>
-						<td style='width:33%;padding:5px 60px;border:1px solid #ccc'>
+						<td style='width:33%;padding:5px 60px'>
 							<p>Pengirim</p>
 							<br><br><br>
 							<hr style='border-top:2px solid black'>
 						</td>
-						<td style='width:33%;padding:5px 60px;border:1px solid #ccc'>
+						<td style='width:33%;padding:5px 60px'>
 							<p>Hormat kami</p>
 							<br><br><br>
 							<hr style='border-top:2px solid black'>

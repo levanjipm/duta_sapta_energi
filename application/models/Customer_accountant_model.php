@@ -123,7 +123,7 @@ class Customer_accountant_model extends CI_Model {
 		public function countUnassignedCustomers()
 		{
 			$query			= $this->db->query("
-				SELECT COUNT(customer.id) AS customerCount FROM customer
+				SELECT customer.id FROM customer
 				JOIN (
 					SELECT DISTINCT(customer_accountant.customer_id) as id
 					FROM customer_accountant
@@ -133,12 +133,22 @@ class Customer_accountant_model extends CI_Model {
 					AND users.is_active = '1'
 				) AS a
 				ON customer.id = a.id
-				UNION (
-					SELECT COUNT(id) AS customerCount FROM customer
-				)
+				WHERE customer.is_black_list = '0'
 			");
 
-			$result = $query->result();
+			$assignedCustomers = $query->num_rows();
+
+			$query			= $this->db->query("
+				SELECT id FROM customer
+				WHERE customer.is_black_list = '0'
+			");
+
+			$totalCustomers = $query->num_rows();
+			$result = array(
+				'assignedCustomers' => $assignedCustomers,
+				'totalCustomers' => $totalCustomers
+			);
+
 			return $result;
 		}
 

@@ -230,4 +230,11 @@ class Petty_cash_model extends CI_Model {
 
 			return $income - $expense;
 		}
+
+		public function deleteByBankId($bankId)
+		{
+			$this->db->where('bank_id', $bankId);
+			$this->db->delete($this->table_petty_cash);
+			return $this->db->affected_rows();
+		}
 }

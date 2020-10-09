@@ -9,7 +9,7 @@
 			<tr>
 				<th>Date</th>
 				<th>Document</th>
-				<th>Informaction</th>
+				<th>Information</th>
 				<th>Action</th>
 			</tr>
 			<tbody id='goodReceiptTableContent'></tbody>

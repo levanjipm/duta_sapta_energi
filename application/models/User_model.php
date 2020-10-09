@@ -89,6 +89,7 @@ class User_model extends CI_Model {
 			$this->db->from($this->table_user);
 			$this->db->where('email =', $this->input->post('email'));
 			$this->db->where('password =', md5($this->input->post('password')));
+			$this->db->where('is_active', 1);
 			$items = $this->db->get();
 			$count = $items->num_rows();
 			
@@ -256,5 +257,14 @@ class User_model extends CI_Model {
 			$query		= $this->db->get($this->table_user);
 			$result		= $query->result();
 			return $result;
+		}
+
+		public function updateAccessLevelById($userId, $accessLevel)
+		{
+			if($accessLevel <=5 && $accessLevel > 0){
+				$this->db->set('access_level', $accessLevel);
+				$this->db->where('id', $userId);
+				$this->db->update($this->table_user);
+			}
 		}
 }

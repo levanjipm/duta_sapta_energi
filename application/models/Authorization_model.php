@@ -92,17 +92,18 @@ class Authorization_model extends CI_Model {
 			$this->db->where('user_id', $userId);
 			$this->db->delete($this->table_user);
 
-			$batch = array();
-			foreach($departmentIdArray as $departmentId)
-			{
-				$batch[] = array(
-					"id" => "",
-					"user_id" => $userId,
-					"department_id" => $departmentId
-				);
-			}
+			if(count($departmentIdArray) > 0){
+				$batch = array();
+				foreach($departmentIdArray as $departmentId)
+				{
+					$batch[] = array(
+						"id" => "",
+						"user_id" => $userId,
+						"department_id" => $departmentId
+					);
+				}
 
-			$this->db->insert_batch($this->table_user, $batch);
-			
+				$this->db->insert_batch($this->table_user, $batch);
+			}
 		}
 }

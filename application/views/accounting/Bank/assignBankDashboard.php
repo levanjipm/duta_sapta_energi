@@ -1,3 +1,4 @@
+<title>Assign bank</title>
 <div class='dashboard'>
 	<div class='dashboard_head'>
 		<p style='font-family:museo'><a href='<?= site_url('Accounting') ?>' title='Accounting'><i class='fa fa-briefcase'></i></a> / Bank/ Assign bank</p>
@@ -202,4 +203,8 @@
 			}
 		})
 	}
+
+	$('.alert_full_close_button').click(function(){
+		$(this).parent().parent().fadeOut();
+	})
 </script>

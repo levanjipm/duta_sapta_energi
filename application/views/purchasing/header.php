@@ -31,22 +31,38 @@
 			<a href='<?= site_url('Purchase_order/createDashboard') ?>'><p>Create</p></a>
 			<a href='<?= site_url('Purchase_order/confirmDashboard') ?>'><p>Confirm</p></a>
 			<a href='<?= site_url('Purchase_order/pending') ?>'><p>Pending</p></a>	
+			<?php if($user_login->access_level > 2){ ?>
+			<a href='<?= site_url('Purchase_order/closeDashboard') ?>'><p>Close</p></a>
+			<?php } ?>
 			<a href='<?= site_url('Purchase_order/archiveDashboard') ?>'><p>Archive</p></a>	
 		</div>
 		<a href='<?= site_url('Supplier') ?>'><button><p>Supplier</p></button></a>
 		<button class='container_button'><p style='font-family:museo'>Return</p></button>
 		<div class='container_bar'>
 			<a href='<?= site_url('Purchase_return') ?>'><p>Create</p></a>
-			<a href='<?= site_url('Purchase_return/confirmDashboard') ?>'><p>Confirm</p></a>	
+			<?php if($user_login->access_level > 2){ ?>
+			<a href='<?= site_url('Purchase_return/confirmDashboard') ?>'><p>Confirm</p></a>
+			<?php } ?>
+			<a href='<?= site_url('Purchase_return/archiveDashboard') ?>'><p>Archive</p></a>	
 		</div>
+		<a href='<?= site_url('PurchaseReport') ?>'><button><p>Report</p></button></a>
 	</div>
 </div>
 <script>
 	$('.container_button').click(function(){
-		$('.container_bar').hide(300);
-		$(this).next('.container_bar').toggle(300);
 		$('.active').removeClass('active');
-		$(this).addClass('active');
+		$('.container_bar').hide(400);
+		if($(this).next('.container_bar').is(':hidden')){
+			$(this).addClass('active');
+			var containerBox = $(this).next('.container_bar');
+			containerBox.toggle(400);
+			containerBox.children().css("opacity", 0);
+			var time = 300;
+			containerBox.children().each(function(index, child){
+				$(child).fadeTo(time, 1);
+				time += 300;
+			});
+		}
 	});
 	
 	$('#hide_side_nav_button').click(function(){

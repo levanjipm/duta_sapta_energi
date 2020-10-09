@@ -31,7 +31,11 @@
 			<a href='<?= site_url('Users') ?>'><button><p style='font-family:museo'>Manage</p></button></a>
 			<a href='<?= site_url('Users_authorization') ?>'><button><p style='font-family:museo'>Authorization</p></button></a>
 		</div>
-		<a href='<?= site_url('Salary_slip') ?>'><button><p style='font-family:museo'>Salary Slip</p></button></a>
+		<button class='container_button'><p style='font-family:museo'>Salary Slip</p></button>
+		<div class='container_bar'>
+			<a href='<?= site_url('Salary_slip') ?>'><button><p style='font-family:museo'>Create</p></button></a>
+			<a href='<?= site_url('Salary_slip/ArchiveDashboard') ?>'><button><p style='font-family:museo'>Archive</p></button></a>
+		</div>
 		<button class='container_button'><p style='font-family:museo'>Attendance</p></button>
 		<div class='container_bar'>
 			<a href='<?= site_url('Attendance') ?>'><button><p style='font-family:museo'>List</p></button></a>
@@ -43,10 +47,19 @@
 </div>
 <script>
 	$('.container_button').click(function(){
-		$('.container_bar').hide(300);
-		$(this).next('.container_bar').toggle(300);
 		$('.active').removeClass('active');
-		$(this).addClass('active');
+		$('.container_bar').hide(400);
+		if($(this).next('.container_bar').is(':hidden')){
+			$(this).addClass('active');
+			var containerBox = $(this).next('.container_bar');
+			containerBox.toggle(400);
+			containerBox.children().css("opacity", 0);
+			var time = 300;
+			containerBox.children().each(function(index, child){
+				$(child).fadeTo(time, 1);
+				time += 300;
+			});
+		}
 	});
 	
 	$('#hide_side_nav_button').click(function(){

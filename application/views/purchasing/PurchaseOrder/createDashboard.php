@@ -23,6 +23,9 @@
 				<label>Send date request</label>
 				<input type='date' class='form-control' name='request_date' required min='2020-01-01'>
 			</div>
+
+			<label>Payment</label>
+			<input type='number' class='form-control' id='payment' name='payment' required>
 			
 			<label>Supplier</label>
 			<button type='button' class='form-control' id='supplierButton' onclick='openSupplierView()' style='text-align:left!important'></button>
@@ -146,6 +149,9 @@
 		<hr>
 		<label>Date</label>
 		<p id='date'></p>
+
+		<label>Payment</label>
+		<p><span id='paymentP'></span> days</p>
 		
 		<label>Taxing</label>
 		<p id='taxing_p'></p>
@@ -268,6 +274,9 @@
 			} else {
 				var taxing_p	= 'Non-taxable purchase';
 			}
+
+			var payment		= $('#payment').val();
+			$('#paymentP').html(numeral(payment).format('0,0'));
 			
 			var date 		= $("#purchase_order_date").val();
 			var supplier	= $("#supplier").val();

@@ -38,6 +38,20 @@ class Accounting extends CI_Controller {
 		$this->load->view('accounting/return/salesReturnDashboard');
 	}
 
+	public function purchaseReturn()
+	{
+		$user_id		= $this->session->userdata('user_id');
+		$this->load->model('User_model');
+		$data['user_login'] = $this->User_model->getById($user_id);
+		
+		$this->load->model('Authorization_model');
+		$data['departments']	= $this->Authorization_model->getByUserId($user_id);
+		
+		$this->load->view('head');
+		$this->load->view('accounting/header', $data);
+		$this->load->view('accounting/return/purchaseReturnDashboard');
+	}
+
 	public function getPendingInvoice()
 	{
 		$this->load->model("Delivery_order_model");
@@ -56,8 +70,9 @@ class Accounting extends CI_Controller {
 	{
 		$this->load->model("Customer_accountant_model");
 		$result			= $this->Customer_accountant_model->countUnassignedCustomers();
-		$data['unassigned'] = $result[0]->customerCount;
-		$data['total'] = $result[1]->customerCount;
+
+		$data['unassigned']	= $result['totalCustomers'] - $result['assignedCustomers'];
+		$data['total']		= $result['totalCustomers'];
 
 		header('Content-Type: application/json');
 		echo json_encode($data);

@@ -171,4 +171,52 @@ class Asset extends CI_Controller {
 		
 		$this->load->view('accounting/Asset/archiveDashboard');
 	}
+
+	public function valueDashboard()
+	{
+		$user_id		= $this->session->userdata('user_id');
+		$this->load->model('User_model');
+		$data['user_login'] = $this->User_model->getById($user_id);
+		
+		$this->load->model('Authorization_model');
+		$data['departments']	= $this->Authorization_model->getByUserId($user_id);
+		
+		$this->load->view('head');
+		$this->load->view('accounting/header', $data);
+		$this->load->view('accounting/asset/valueDashboard');
+	}
+
+	public function calculateAsset()
+	{
+		$date		= $this->input->get('date');
+		$this->load->model("Stock_in_model");
+		$data['stock'] = (float)$this->Stock_in_model->calculateValue($date);
+
+		$this->load->model("Asset_model");
+		$assets = $this->Asset_model->calculateValue($date);
+		$assetValue = 0;
+		foreach($assets as $asset){
+			$soldDate			= $asset->sold_date;
+			if($soldDate == null || $soldDate > $date){
+				$purchaseDate		= $asset->date;
+				$depreciation		= $asset->depreciation_time;
+				$value				= $asset->value;
+				$residueValue		= $asset->residue_value;
+				$yearParameter		= date('Y',strtotime($date));
+				$year				= date('Y', strtotime($purchaseDate));
+
+				$monthParameter		= date('m', strtotime($date));
+				$month				= date('m', strtotime($purchaseDate));
+
+				$diff				= (($yearParameter - $year) * 12) + ($monthParameter - $month);
+				$estimatedValue		= max(0, $value - $diff * ($value - $residueValue) / $depreciation);
+				$assetValue += $estimatedValue;
+			}
+		}
+
+		$data['asset'] = $assetValue;
+
+		header('Content-Type: application/json');
+		echo json_encode($data);
+	}
 }

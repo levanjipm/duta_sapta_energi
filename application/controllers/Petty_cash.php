@@ -65,4 +65,35 @@ class Petty_cash extends CI_Controller {
 		header('Content-Type: application/json');
 		echo json_encode($data);
 	}
+
+	public function resetByBankId()
+	{
+		$bankId			= $this->input->post('id');
+		$this->load->model("Bank_model");
+		$this->load->model("Petty_cash_model");
+		$bank		= $this->Bank_model->getById($bankId);
+		$parentId	= $bank->bank_transaction_major;
+		if($parentId == NULL){
+			$status = false;
+		} else {
+			$bankChildData		= $this->Bank_model->getChildByParentId($parentId, $bankId);
+			$status				= true;
+			foreach($bankChildData as $bankChild){
+				if($bankChild->is_done != 0 || $bankChild->is_delete != 0){
+					$status		= false;
+					break;
+				}
+				next($bankChildData);
+			}
+		}
+
+		$result		= $this->Petty_cash_model->deleteByBankId($bankId);
+		if($result == 1){
+			$this->Bank_model->deleteById($bankId);
+		}
+
+		if($status){
+			$this->Bank_model->mergeByParentId($parentId);
+		}
+	}
 }

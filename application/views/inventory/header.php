@@ -43,7 +43,7 @@
 		<button class='container_button'><p style='font-family:museo'>Return</p></button>
 		<div class='container_bar'>
 			<a href='<?= site_url('Sales_return/receiveDashboard') ?>'><p>Sales</p></a>
-			<a href='<?= site_url('Purchase_return/receiveDashboard') ?>'><p>Purchase</p></a>
+			<a href='<?= site_url('Purchase_return/sendDashboard') ?>'><p>Purchase</p></a>
 		</div>
 		<a href='<?= site_url('Stock/view/Inventory') ?>'><button><p>Check stock</p></button></a>
 		<button class='container_button'><p style='font-family:museo'>Cases</p></button>
@@ -55,10 +55,19 @@
 </div>
 <script>
 	$('.container_button').click(function(){
-		$('.container_bar').hide(300);
-		$(this).next('.container_bar').toggle(300);
 		$('.active').removeClass('active');
-		$(this).addClass('active');
+		$('.container_bar').hide(400);
+		if($(this).next('.container_bar').is(':hidden')){
+			$(this).addClass('active');
+			var containerBox = $(this).next('.container_bar');
+			containerBox.toggle(400);
+			containerBox.children().css("opacity", 0);
+			var time = 300;
+			containerBox.children().each(function(index, child){
+				$(child).fadeTo(time, 1);
+				time += 300;
+			});
+		}
 	});
 	
 	$('#hide_side_nav_button').click(function(){

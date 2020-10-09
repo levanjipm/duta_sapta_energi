@@ -90,7 +90,7 @@
 
 	function refresh_view(page = $('#page').val()){
 		$.ajax({
-			url:'<?= site_url('Sales_order/getIncompleteSalesOrder') ?>',
+			url:'<?= site_url('Sales_order/getUnclosedSalesOrders') ?>',
 			data:{
 				term:$('#search_bar').val(),
 				page: page

@@ -26,16 +26,17 @@
 ?>
 	</div>
 	<div class='sidenav_bar_functions'>
-		<button class='container_button'><p>Invoice</p></button>
+		<button class='container_button'><p>Invoice</p><i class='fa fa-caret-down'></i></button>
 		<div class='container_bar'>
 			<a href='<?= site_url('Invoice') ?>'><button><p style='font-family:museo'>Create</p></button></a>
+			<a href='<?= site_url('Invoice/createBlankDashboard') ?>'><button><p style='font-family:museo'>Blank</p></button></a>
 			<?php if($user_login->access_level > 1){ ?>
 			<a href='<?= site_url('Invoice/confirmDashboard') ?>'><button><p>Confirm</p></button></a>
 			<?php } ?>
 			<a href='<?= site_url('Invoice/archiveDashboard') ?>'><button><p style='font-family:museo'>Archive</p></button></a>
 		</div>
 		
-		<button class='container_button'><p>Debt Document</p></button>
+		<button class='container_button'><p>Debt Document</p><i class='fa fa-caret-down'></i></button>
 		<div class='container_bar'>
 			<a href='<?= site_url('Debt') ?>'><button><p style='font-family:museo'>Create</p></button></a>
 			<a href='<?= site_url('Debt/confirmDashboard') ?>'><button><p style='font-family:museo'>Confirm</p></button></a>
@@ -44,20 +45,24 @@
 		</div>
 		<a href='<?= site_url('Receivable') ?>'><button><p style='font-family:museo'>Receivable</p></button></a>
 		<a href='<?= site_url('Payable') ?>'><button><p style='font-family:museo'>Payable</p></button></a>
-		<a href='<?= site_url('Bank/assignDashboard') ?>'><button><p style='font-family:museo'>Assign bank</p></button></a>
-		<button class='container_button'><p>Return</p></button>
+		<button class='container_button'><p>Bank</p><i class='fa fa-caret-down'></i></button>
+		<div class='container_bar'>
+			<a href='<?= site_url('Bank/assignDashboard') ?>'><button><p>Assign</p></button></a>
+			<a href='<?= site_url('Bank/resetDashboard') ?>'><button><p>Reset</p></button></a>
+		</div>
+		<button class='container_button'><p>Return</p><i class='fa fa-caret-down'></i></button>
 		<div class='container_bar'>
 			<a href='<?= site_url('Accounting/salesReturn') ?>'><button><p style='font-family:museo'>Sales</p></button></a>
 			<a href='<?= site_url('Accounting/purchaseReturn') ?>'><button><p style='font-family:museo'>Purchasing</p></button></a>
 		</div>
-		<button class='container_button'><p>Asset</p></button>
+		<button class='container_button'><p>Asset</p><i class='fa fa-caret-down'></i></button>
 		<div class='container_bar'>
 			<a href='<?= site_url('Asset') ?>'><button><p style='font-family:museo'>List</p></button></a>
-			<a href='<?= site_url('Asset/calculateValue') ?>'><button><p style='font-family:museo'>Value</p></button></a>
+			<a href='<?= site_url('Asset/valueDashboard') ?>'><button><p style='font-family:museo'>Value</p></button></a>
 			<a href='<?= site_url('Asset/classDashboard') ?>'><button><p style='font-family:museo'>Class</p></button></a>
 			<a href='<?= site_url('Asset/archiveDashboard') ?>'><button><p style='font-family:museo'>Archive</p></button></a>
 		</div>
-		<button class='container_button'><p>Opponent</p></button>
+		<button class='container_button'><p>Opponent</p><i class='fa fa-caret-down'></i></button>
 		<div class='container_bar'>
 			<a href='<?= site_url('Opponent') ?>'><button><p>Manage</p></button></a>
 			<a href='<?= site_url('Opponent_type') ?>'><button><p>Type</p></button></a>
@@ -69,10 +74,19 @@
 </div>
 <script>
 	$('.container_button').click(function(){
-		$('.container_bar').hide(300);
-		$(this).next('.container_bar').toggle(300);
 		$('.active').removeClass('active');
-		$(this).addClass('active');
+		$('.container_bar').hide(400);
+		if($(this).next('.container_bar').is(':hidden')){
+			$(this).addClass('active');
+			var containerBox = $(this).next('.container_bar');
+			containerBox.toggle(400);
+			containerBox.children().css("opacity", 0);
+			var time = 300;
+			containerBox.children().each(function(index, child){
+				$(child).fadeTo(time, 1);
+				time += 300;
+			});
+		}
 	});
 	
 	$('#hide_side_nav_button').click(function(){

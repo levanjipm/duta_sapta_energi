@@ -77,4 +77,32 @@ class Salary_attendance_model extends CI_Model {
 
 			$this->db->insert_batch($this->table_salary, $batch);
 		}
+
+		public function getByCodeId($salarySlipId)
+		{
+			$query		= $this->db->query("
+				SELECT attendanceTable.count, attendance_status.name, attendance_status.description, COALESCE(salary_attendance.value, 0) AS value
+				FROM salary_slip
+				JOIN (
+					SELECT COUNT(attendance_list.id) AS count, attendance_list.status, attendance_list.user_id, MONTH(attendance_list.date) AS month, YEAR(attendance_list.date) AS year
+					FROM attendance_list
+					GROUP BY user_id, status, MONTH(attendance_list.date), YEAR(attendance_list.date)
+				) attendanceTable
+				ON salary_slip.month = attendanceTable.month AND salary_slip.year = attendanceTable.year
+				JOIN attendance_status ON attendanceTable.status = attendance_status.id
+				LEFT JOIN salary_attendance ON salary_attendance.status_id = attendanceTable.status
+				WHERE salary_slip.id = '$salarySlipId'
+			");
+
+			$result			= $query->result();
+			return $result;
+		}
+
+		public function deleteByCodeId($salarySlipId)
+		{
+			$this->db->where('salary_attendance.salary_slip_id', $salarySlipId);
+			$this->db->delete($this->table_salary);
+			$result		= $this->db->affected_rows();
+			return $result;
+		}
 }

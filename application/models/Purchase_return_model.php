@@ -152,16 +152,19 @@ class Purchase_return_model extends CI_Model {
 
 		public function getIncompletedReturn($offset = 0, $term = "", $limit = 10)
 		{
-			$this->db->select('code_purchase_return.*');
-			$this->db->from('code_purchase_return');
-			$this->db->join('supplier', 'code_purchase_return.supplier_id = supplier.id');
-			if($term != ""){
-				$this->db->like('code_purchase_return.name', $term);
-				$this->db->like('supplier.name', $term);
-			}
-			$this->db->where('code_purchase_return.is_confirm', 1);
-			$this->db->limit($limit, $offset);
-			$query		 = $this->db->get();
+			$query			= $this->db->query("
+				SELECT code_purchase_return.*
+				FROM
+				code_purchase_return
+				JOIN supplier ON code_purchase_return.supplier_id = supplier.id
+				WHERE code_purchase_return.id IN (
+					SELECT DISTINCT(purchase_return.code_purchase_return_id ) as id
+					FROM purchase_return
+					WHERE purchase_return.status = '0'
+				)
+				AND (code_purchase_return.name LIKE '%$term%' OR supplier.name LIKE '%$term%') AND code_purchase_return.is_confirm = '1'
+			");
+
 			$result		= $query->result();
 			return $result;
 		}
@@ -180,9 +183,11 @@ class Purchase_return_model extends CI_Model {
 		public function updateById($status, $id)
 		{
 			if($status == 0){
+				$this->db->set('confirmed_by', $this->session->userdata("user_id"));
 				$this->db->set('is_delete', 1);
 				$this->db->where('is_confirm', 0);
 			} else if($status == 1){
+				$this->db->set('confirmed_by', $this->session->userdata("user_id"));
 				$this->db->set('is_confirm', 1);
 				$this->db->where('is_delete', 0);
 			}
@@ -190,5 +195,38 @@ class Purchase_return_model extends CI_Model {
 			$this->db->where('id', $id);
 			$this->db->update($this->table_return);
 			return $this->db->affected_rows();
+		}
+
+		public function getYears()
+		{
+			$this->db->select('DISTINCT(YEAR(created_date)) AS year');
+			$this->db->from('code_purchase_return');
+			$this->db->order_by('code_purchase_return.created_date');
+			$query		= $this->db->get();
+			$result		= $query->result();
+			return $result;
+		}
+
+		public function getItems($month, $year, $offset = 0, $limit = 10)
+		{
+			$this->db->select('code_purchase_return.*, supplier.name as supplierName, supplier.city as supplierCity');
+			$this->db->from('code_purchase_return');
+			$this->db->join('supplier', 'code_purchase_return.supplier_id = supplier.id');
+			$this->db->where('MONTH(created_date)', $month);
+			$this->db->where('YEAR(created_date)', $year);
+			$this->db->limit($limit, $offset);
+			$this->db->order_by('created_date');
+			$query		= $this->db->get();
+			$result		= $query->result();
+			return $result;
+		}
+
+		public function countItems($month, $year)
+		{
+			$this->db->where('MONTH(created_date)', $month);
+			$this->db->where('YEAR(created_date)', $year);
+			$query		= $this->db->get($this->table_return);
+			$result		= $query->num_rows();
+			return $result;
 		}
 }

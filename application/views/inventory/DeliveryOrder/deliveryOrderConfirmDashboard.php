@@ -12,7 +12,6 @@
 		<hr>
 		<div id='confirmWrapper'>
 			<div id='confirmDeliveryOrderTable'>
-				<h4><strong>Confirm delivery order</strong></h4>
 				<table class='table table-bordered'>
 					<tr>
 						<th>Date</th>
@@ -32,7 +31,6 @@
 
 		<div id='sentWrapper' style='display:none'>
 			<div id='sentDeliveryOrderTable'>
-				<h4><strong>Confirm sent delivery order</strong></h4>
 				<table class='table table-bordered'>
 					<tr>
 						<th>Date</th>
@@ -347,7 +345,7 @@
 			},
 			success:function(response){
 				$("button").attr('disabled', false);
-
+				refresh_view();
 				if(response == 1){
 					loadTab(eventChosen, 1);
 					$('#viewSentDeliveryOrderWrapper .slide_alert_close_button').click();
@@ -373,7 +371,7 @@
 			},
 			success:function(response){
 				$("button").attr('disabled', false);
-
+				refresh_view();
 				if(response == 1){
 					loadTab(eventChosen, 1);
 					$('#viewSentDeliveryOrderWrapper .slide_alert_close_button').click();

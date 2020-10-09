@@ -2,14 +2,15 @@
   "ExpandedNodes": [
     "",
     "\\application",
-    "\\application\\controllers",
-    "\\application\\models",
     "\\application\\views",
-    "\\application\\views\\finance",
-    "\\application\\views\\finance\\Bank",
-    "\\application\\views\\human_resource\\Users",
-    "\\css"
+    "\\application\\views\\accounting",
+    "\\application\\views\\accounting\\Bank",
+    "\\application\\views\\accounting\\Payable",
+    "\\application\\views\\inventory",
+    "\\application\\views\\inventory\\DeliveryOrder",
+    "\\application\\views\\sales",
+    "\\application\\views\\sales\\Customer"
   ],
-  "SelectedNode": "\\application\\views\\finance\\Bank\\mutationDashboard.php",
+  "SelectedNode": "\\application\\views\\accounting\\Bank\\resetBankDashboard.php",
   "PreviewInSolutionExplorer": false
 }

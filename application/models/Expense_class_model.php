@@ -153,4 +153,75 @@ class Expense_class_model extends CI_Model {
 			$result = $this->db->delete($this->table_expense);
 			return $result;
 		}
+
+		public function getExpensesByParentClass($month, $year)
+		{
+			$query		= $this->db->query("
+				SELECT (overallTable.bankValue + overallTable.pettyValue) as value, expense_class.name, expense_class.description, expense_class.id
+				FROM expense_class
+				LEFT JOIN
+				(
+					SELECT COALESCE(SUM(bankTable.value),0) as bankValue, COALESCE(SUM(pettyTable.value),0) as pettyValue, expense_class.parent_id
+					FROM
+					expense_class
+					LEFT JOIN(
+						SELECT SUM(bank_transaction.value) AS value, bank_assignment.expense_id
+						FROM bank_assignment
+						JOIN bank_transaction ON bank_assignment.bank_id = bank_transaction.id
+						JOIN expense_class ON bank_assignment.expense_id = expense_class.id
+						WHERE MONTH(bank_transaction.date) = '$month' AND YEAR(bank_transaction.date) = '$year'
+						GROUP BY bank_assignment.expense_id
+					) AS bankTable
+					ON bankTable.expense_id = expense_class.id
+					LEFT JOIN (
+						SELECT SUM(petty_cash.value) AS value, petty_cash.expense_class
+						FROM petty_cash
+						WHERE MONTH(petty_cash.date) = '$month' AND YEAR(petty_cash.date) = '$year'
+						GROUP BY petty_cash.expense_class
+					) AS pettyTable
+					ON pettyTable.expense_class = expense_class.id
+					GROUP BY expense_class.parent_id
+				) overallTable
+				ON expense_class.id = overallTable.parent_id
+				WHERE expense_class.parent_id IS NULL
+				ORDER BY expense_class.name
+			");
+			$result = $query->result();
+			return $result;
+		}
+
+		public function getExpenseByParentId($parentId, $month, $year)
+		{
+			$query		= $this->db->query("
+				SELECT COALESCE(overallTable.bankValue + overallTable.pettyValue, 0) as value, expense_class.name, expense_class.description, expense_class.id
+				FROM expense_class
+				LEFT JOIN (
+					SELECT COALESCE(SUM(bankTable.value),0) as bankValue, COALESCE(SUM(pettyTable.value),0) as pettyValue, expense_class.id
+					FROM
+					expense_class
+					LEFT JOIN(
+						SELECT SUM(bank_transaction.value) AS value, bank_assignment.expense_id
+						FROM bank_assignment
+						JOIN bank_transaction ON bank_assignment.bank_id = bank_transaction.id
+						JOIN expense_class ON bank_assignment.expense_id = expense_class.id
+						WHERE MONTH(bank_transaction.date) = '$month' AND YEAR(bank_transaction.date) = '$year'
+						GROUP BY bank_assignment.expense_id
+					) AS bankTable
+					ON bankTable.expense_id = expense_class.id
+					LEFT JOIN (
+						SELECT SUM(petty_cash.value) AS value, petty_cash.expense_class
+						FROM petty_cash
+						WHERE MONTH(petty_cash.date) = '$month' AND YEAR(petty_cash.date) = '$year'
+						GROUP BY petty_cash.expense_class
+					) AS pettyTable
+					ON pettyTable.expense_class = expense_class.id
+					GROUP BY expense_class.id
+				) overallTable
+				ON expense_class.id = overallTable.id
+				WHERE expense_class.parent_id = '$parentId'
+				ORDER BY expense_class.name
+			");
+			$result = $query->result();
+			return $result;
+		}
 }

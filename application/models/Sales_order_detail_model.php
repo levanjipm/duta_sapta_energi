@@ -142,13 +142,23 @@ class Sales_order_detail_model extends CI_Model {
 		
 		public function show_by_code_sales_order_id($id)
 		{
-			$query = $this->db->query("SELECT sales_order.id, item.name, item.reference, price_list.price_list, sales_order.quantity, stock_table.stock, sales_order.sent, sales_order.discount
+			$query = $this->db->query("SELECT sales_order.id, item.name, item.reference, price_list.price_list, sales_order.quantity, (stock_table.stock - sendingTable.sending) AS stock, sales_order.sent, sales_order.discount
 				FROM sales_order JOIN price_list ON price_list.id = sales_order.price_list_id
 				JOIN item ON price_list.item_id = item.id
 				LEFT JOIN (
 					SELECT SUM(residue) as stock, item_id FROM stock_in GROUP BY item_id
 				) as stock_table
 				ON item.id = stock_table.item_id
+				LEFT JOIN (
+					SELECT SUM(delivery_order.quantity) AS sending, price_list.item_id
+					FROM delivery_order
+					JOIN code_delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order.id
+					JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
+					JOIN price_list ON sales_order.price_list_id = price_list.id
+					WHERE code_delivery_order.is_confirm = '0' AND code_delivery_order.is_delete = '0'
+					GROUP BY price_list.item_id
+				) sendingTable
+				ON item.id = sendingTable.item_id
 				WHERE sales_order.code_sales_order_id = '$id'
 			");			
 			$items	= $query->result();
@@ -265,5 +275,27 @@ class Sales_order_detail_model extends CI_Model {
 			$this->db->set('status', 1);
 			$this->db->where('code_sales_order_id', $sales_order_id);
 			$this->db->update($this->table_sales_order);
+		}
+
+		public function updateByCodeDeliveryOrderIdCancel($deliveryOrderId)
+		{
+			$query			= $this->db->query("
+				SELECT delivery_order.quantity, sales_order.id, sales_order.sent FROM delivery_order 
+				JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
+				WHERE delivery_order.code_delivery_order_id = '$deliveryOrderId'
+			");
+			$result			= $query->result();
+			$batch			= array();
+			foreach($result as $data){
+				$batch[] = array(
+					"id" => $data->id,
+					"sent" => (int)$data->sent - (int)$data->quantity,
+					"status" => 0,
+				);
+
+				next($result);
+			}
+
+			$this->db->update_batch($this->table_sales_order, $batch, 'id');
 		}
 }

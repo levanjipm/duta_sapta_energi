@@ -22,9 +22,21 @@ class Inventory extends CI_Controller {
 		$this->load->view('head');
 		$this->load->view('inventory/header', $data);
 
-		// $this->load->model('Sales_order_model');
-		// $data['incompleteSalesOrder'] = $this->Sales_order_model->countIncompletedSalesOrder();
+		$this->load->view('inventory/dashboard');
+	}
 
-		// $this->load->view('inventory/dashboard', $data);
+	public function getDashboardItems()
+	{
+		$this->load->model("Sales_order_model");
+		$data['salesOrders']	= $this->Sales_order_model->countIncompletedSalesOrder();
+
+		$this->load->model("Purchase_order_model");
+		$data['purchaseOrders']	= $this->Purchase_order_model->countIncompletePurchaseOrder();
+
+		$this->load->model("Delivery_order_model");
+		$data['deliveryOrders']	= $this->Delivery_order_model->countUnsentDeliveryOrder();
+
+		header("Content-Type:application/json");
+		echo json_encode($data);
 	}
 }

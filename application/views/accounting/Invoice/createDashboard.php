@@ -1,3 +1,6 @@
+<head>
+	<title>Create Invoice</title>
+</head>
 <div class='dashboard'>
 	<div class='dashboard_head'>
 		<p style='font-family:museo'><a href='<?= site_url('Accounting') ?>' title='Accounting'><i class='fa fa-bar-chart'></i></a> /<a href='<?= site_url('Invoice') ?>'>Invoice </a> /Create invoice</p>
@@ -41,20 +44,22 @@
 
 	$('#retail_button').click(function(){
 		$('#search_bar').val('');
-		$('#retail_button').attr('disabled', true);
-		$('#coorporate_button').attr('disabled', false);
-		$('#retail_button').addClass('active');
-		$('#coorporate_button').removeClass('active');
+		$('.button_mini_tab').attr('disabled', false);
+		$('.button_mini_tab').removeClass('active');
+
+		$(this).addClass('active');
+		$(this).attr('disabled', true);
 		refreshView(1, 1);
 	});
 	
 	$('#coorporate_button').click(function(){
 		$('#search_bar').val('');
-		$('#retail_button').attr('disabled', false);
-		$('#coorporate_button').attr('disabled', true);
-		$('#retail_button').removeClass('active');
-		$('#coorporate_button').addClass('active');
-		refreshView(2,1);
+		$('.button_mini_tab').attr('disabled', false);
+		$('.button_mini_tab').removeClass('active');
+
+		$(this).addClass('active');
+		$(this).attr('disabled', true);
+		refreshView(2, 1);
 	});
 	
 	function refreshView(type = 1, page = $('#page').val()){

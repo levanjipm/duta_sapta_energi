@@ -8,9 +8,9 @@
 	<br>
 	<div class='dashboard_in'>
 		<div class='input_group'>
-			<input type='text' class='form-control input-lg' id='search_bar' placeholder="Search benefits">
+			<input type='text' class='form-control' id='search_bar' placeholder="Search benefits">
 			<div class='input_group_append'>
-				<button class='button button_default_dark' id='add_new_benefit_button'>Add new class</button>
+				<button class='button button_default_dark' id='add_new_benefit_button'><i class='fa fa-plus'></i> Add new class</button>
 			</div>
 		</div>
 		<br>

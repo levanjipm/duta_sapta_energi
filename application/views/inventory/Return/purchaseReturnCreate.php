@@ -14,19 +14,20 @@
 </div>
 <p id='returnCreateTableText'>There is no purchase return to be created.</p>
 
-<div class='alert_wrapper' id='salesReturnWrapper'>
+<div class='alert_wrapper' id='purchaseReturnWrapper'>
 	<button class='slide_alert_close_button'>&times;</button>
 	<div class='alert_box_slide'>
 		<h3 style='font-family:bebasneue'>Confirm return</h3>
 		<hr>
-		<label>Customer</label>
+		<label>Supplier</label>
 		<p id='supplierName_p'></p>
 		<p id='supplierAddress_p'></p>
 		<p id='supplierCity_p'></p>
 
-		<label>Delivery order</label>
-		<p id='deliveryOrderName_p'></p>
-		<p id='deliveryOrderDate_p'></p>
+		<label>Purchase Return</label>
+		<p id='purchaseReturnName_p'></p>
+		<p>Created by <span id='purchaseReturnCreator_p'></span></p>
+		<p>Created on <span id='purchaseReturnCreateDate_p'></span></p>
 
 		<form id='purchaseReturnForm'>
 			<label>Return data</label>
@@ -38,25 +39,24 @@
 					<th>Reference</th>
 					<th>Name</th>
 					<th>Quantity</th>
-					<th>Received</th>
+					<th>Sent</th>
 					<th>Action</th>
 				</tr>
 				<tbody id='itemTableContent'></tbody>
 			</table>
 
 
-			<button type='button' class='button button_default_dark' onclick='confirmSalesReturn()'><i class='fa fa-long-arrow-right'></i></button>
-			<button type='button' class='button button_danger_dark' onclick='deleteSalesReturn()'><i class='fa fa-trash'></i></button>
+			<button type='button' class='button button_default_dark' onclick='createPurchaseReturn()'><i class='fa fa-long-arrow-right'></i></button>
 
-			<input type='hidden' id='salesReturnQuantity' min='1' required>
-			<div class='notificationText danger' id='failedConfirmNotification'><p>Failed to create sales return.</p></div>
+			<input type='hidden' id='purchaseReturnQuantity' min='1' value='0' required>
+			<div class='notificationText danger' id='failedConfirmNotification'><p>Failed to create purchase return.</p></div>
 		</form>
 	</div>
 </div>
 <script>
-	$("#salesReturnForm").validate({
+	$("#purchaseReturnForm").validate({
 		ignore:"",
-		rules: {"hidden_field": {required: true}}
+		rules: {"hidden_field": {required: true, "min": 1}}
 	});
 	
     $(document).ready(function(){
@@ -79,40 +79,45 @@
 				var items = response.items;
 				var itemCount = 0;
 				$.each(items, function(index, item){
-					var customer_name = item.name;
-					var complete_address = item.address;
-					var customer_number = item.number;
-					var customer_block = item.block;
-					var customer_rt = item.rt;
-					var customer_rw = item.rw;
-					var customer_city = item.city;
-					var customer_postal = item.postal;
+					var name = item.name;
+
+					var supplier = item.supplier;
+
+					var supplierName = supplier.name;
+
+					var complete_address = supplier.address;
+					var supplier_number = supplier.number;
+					var supplier_block = supplier.block;
+					var supplier_rt = supplier.rt;
+					var supplier_rw = supplier.rw;
+					var supplier_city = supplier.city;
+					var supplier_postal = supplier.postal;
 					
-					if(customer_number != null){
-						complete_address	+= ' No. ' + customer_number;
+					if(supplier_number != null){
+						complete_address	+= ' No. ' + supplier_number;
 					}
 					
-					if(customer_block != null && customer_block != "000"){
-						complete_address	+= ' Blok ' + customer_block;
+					if(supplier_block != null && supplier_block != "000"){
+						complete_address	+= ' Blok ' + supplier_block;
 					}
 				
-					if(customer_rt != '000'){
-						complete_address	+= ' RT ' + customer_rt;
+					if(supplier_rt != '000'){
+						complete_address	+= ' RT ' + supplier_rt;
 					}
 					
-					if(customer_rw != '000' && customer_rt != '000'){
-						complete_address	+= ' /RW ' + customer_rw;
+					if(supplier_rw != '000' && supplier_rt != '000'){
+						complete_address	+= ' /RW ' + supplier_rw;
 					}
 					
-					if(customer_postal != null){
-						complete_address	+= ', ' + customer_postal;
+					if(supplier_postal != null){
+						complete_address	+= ', ' + supplier_postal;
 					}
 
-					var documentName 	= item.documentName;
+					var documentName 	= item.name;
 					var date			= item.created_date;
 					var id				= item.id;
 
-					$('#returnCreateTableContent').append("<tr><td>" + my_date_format(date) + "</td><td><label>" + customer_name + "</label><p>" + complete_address + "</p><p>" + customer_city + "</p></td><td><button class='button button_default_dark' onclick='viewSubmission(" + id + ")'><i class='fa fa-eye'></i></button>");
+					$('#returnCreateTableContent').append("<tr><td><label>" + documentName + "</label><p>" + my_date_format(date) + "</p></td><td><label>" + supplierName + "</label><p>" + complete_address + "</p><p>" + supplier_city + "</p></td><td><button class='button button_default_dark' onclick='viewSubmission(" + id + ")'><i class='fa fa-eye'></i></button>");
 					itemCount++;
 				})
 
@@ -137,101 +142,91 @@
     }
 
     function viewSubmission(n){
-		$("#salesReturnQuantity").val(0);
         $.ajax({
-            url:"<?= site_url('Sales_return/getById') ?>",
+            url:"<?= site_url('Purchase_return/getById') ?>",
             data:{
                 id: n
             },
             success:function(response){
-                var customer = response.customer;
-				var customer_name = customer.name;
-				var complete_address = customer.address;
-				var customer_number = customer.number;
-				var customer_block = customer.block;
-				var customer_rt = customer.rt;
-				var customer_rw = customer.rw;
-				var customer_city = customer.city;
-				var customer_postal = customer.postal;
-				
-				if(customer_number != null){
-					complete_address	+= ' No. ' + customer_number;
+				var supplier = response.supplier;
+				var supplierName = supplier.name;
+
+				var complete_address = supplier.address;
+				var supplier_number = supplier.number;
+				var supplier_block = supplier.block;
+				var supplier_rt = supplier.rt;
+				var supplier_rw = supplier.rw;
+				var supplier_city = supplier.city;
+				var supplier_postal = supplier.postal;
+					
+				if(supplier_number != null){
+					complete_address	+= ' No. ' + supplier_number;
+				}
+					
+				if(supplier_block != null && supplier_block != "000"){
+					complete_address	+= ' Blok ' + supplier_block;
 				}
 				
-				if(customer_block != null && customer_block != "000"){
-					complete_address	+= ' Blok ' + customer_block;
+				if(supplier_rt != '000'){
+					complete_address	+= ' RT ' + supplier_rt;
 				}
-			
-				if(customer_rt != '000'){
-					complete_address	+= ' RT ' + customer_rt;
+					
+				if(supplier_rw != '000' && supplier_rt != '000'){
+					complete_address	+= ' /RW ' + supplier_rw;
 				}
-				
-				if(customer_rw != '000' && customer_rt != '000'){
-					complete_address	+= ' /RW ' + customer_rw;
-				}
-				
-				if(customer_postal != null){
-					complete_address	+= ', ' + customer_postal;
+					
+				if(supplier_postal != null){
+					complete_address	+= ', ' + supplier_postal;
 				}
 
-				$('#customerName_p').html(customer_name);
-				$('#customerAddress_p').html(complete_address);
-				$('#customerCity_p').html(customer_city);
+				$('#supplierName_p').html(supplierName);
+				$('#supplierAddress_p').html(complete_address);
+				$('#supplierCity_p').html(supplier_city);
 
-				var deliveryOrder			= response.deliveryOrder;
-				var deliveryOrderName		= deliveryOrder.name;
-				var deliveryOrderDate		= deliveryOrder.date;
-				
-				$('#deliveryOrderName_p').html(deliveryOrderName);
-				$('#deliveryOrderDate_p').html(my_date_format(deliveryOrderDate));
+				var general = response.general;
+				var name = general.name;
+				var created_by = general.created_by;
+				var created_date = general.created_date;
 
-				var salesReturn		= response.salesReturn;
-				var documentName		= salesReturn.documentName;
-				var date				= salesReturn.date;
-				var createdBy			= salesReturn.created_by;
+				$('#purchaseReturnName_p').html(name);
+				$('#purchaseReturnCreator_p').html(created_by);
+				$('#purchaseReturnCreateDate_p').html(my_date_format(created_date));
 
-				$('#returnDocumentName_p').html(documentName);
-				$('#returnDocumentDate_p').html(my_date_format(date));
-				$('#returnDocumentCreatedBy_p').html(createdBy);
-
-				$('#itemTableContent').html("");
 				var items = response.items;
-				var returnValue = 0;
+				$('#itemTableContent').html("");
 				$.each(items, function(index, item){
-                    var id              = item.id;
-					var reference 		= item.reference;
-					var description		= item.name;
-					var quantity		= parseInt(item.quantity);
-                    var received        = parseInt(item.received);
-                    var status          = parseInt(item.is_done);
-                    var remainder       = quantity - received;
+					var reference = item.reference;
+					var name = item.name;
+					var id = item.id;
+					var sent = parseInt(item.sent);
+					var quantity = parseInt(item.quantity);
+					var status = item.status;
 
-                    if(status == 0 && quantity > received){
-                        $('#itemTableContent').append("<tr><td>" + reference + "</td><td>" + description + "</td><td>" + numeral(quantity).format('0,0') + "</td><td>" + numeral(received).format('0,0') + "</td><td><input type='number' class='form-control' name='quantity[" + id + "]' id='quantity-" + id + "' max='" + remainder + "' value='0' required></td></tr>");
-						
-						$("#quantity-" + id).change(function(){
+					if(status == 0){
+						$('#itemTableContent').append("<tr><td>" + reference + "</td><td>" + name + "</td><td>" + numeral(quantity).format('0,0') + "</td><td>" + numeral(sent).format('0,0') + "</td><td><input type='number' class='form-control' id='sentQuantity-" + id + "' name='sentQuantity[" + id + "]' max='" + (quantity - sent) + "' min='0'></td></tr>");
+						$('#sentQuantity-' + id).change(function(){
 							var totalQuantity = 0;
-							$("input[id^='quantity-']").each(function(){
+							$('input[id^="sentQuantity-"]').each(function(){
 								totalQuantity += parseInt($(this).val());
-							})
-
-							$('#salesReturnQuantity').val(totalQuantity);
-						})
-					}					
+							});
+							$('#purchaseReturnQuantity').val(totalQuantity);						
+						});
+					}
 				});
 
-				$('#salesReturnWrapper').fadeIn(300, function(){
-					$('#salesReturnWrapper .alert_box_slide').show("slide", { direction: "right" }, 250);
+				$('#purchaseReturnQuantity').val(0);
+				$('#purchaseReturnWrapper').fadeIn(300, function(){
+					$('#purchaseReturnWrapper .alert_box_slide').show("slide", { direction: "right" }, 250);
 				});
             }
         })
     }
 
-	function confirmSalesReturn(){
-		if($('#salesReturnForm').valid()){
+	function createPurchaseReturn(){
+		if($('#purchaseReturnForm').valid()){
 			$.ajax({
-				url:"<?= site_url('Sales_return/receiveItem') ?>",
-				data:$('#salesReturnForm').serialize(),
+				url:"<?= site_url('Purchase_return/sendItem') ?>",
+				data:$('#purchaseReturnForm').serialize(),
 				type:'POST',
 				beforeSend:function(){
 					$("button").attr('disabled', true);
@@ -240,7 +235,7 @@
 					$("button").attr('disabled', false);
 					refreshView();
 					if(response == 1){
-						$('#salesReturnWrapper .slide_alert_close_button').click();
+						$('#purchaseReturnWrapper .slide_alert_close_button').click();
 						$('#itemTableContent').html("");
 					} else {
 						$('#failedConfirmNotification').fadeIn(250);

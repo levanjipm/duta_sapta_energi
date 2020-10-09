@@ -151,6 +151,8 @@ class Stock_out_model extends CI_Model {
 						$quantity = $quantity - $residue;
 					}
 				}
+
+				next($eventItemArray);
 			}
 		}
 		
@@ -169,4 +171,112 @@ class Stock_out_model extends CI_Model {
 			$this->db->insert($this->table_stock_out, $db_item);
 			return $this->db->affected_rows();
 		}
-}
+
+		public function insertFromPurchaseReturn($stockOutArray)
+		{
+			$this->load->model('Stock_in_model');
+			foreach($eventItemArray as $event){
+				$item_id				= $event['item_id'];
+				$quantity				= $event['quantity'];
+				$purchase_return_id		= $event['id'];
+
+				while($quantity > 0){
+					$stock_in				= $this->Stock_in_model->getResidueByItemId($item_id);
+					$residue				= $stock_in->residue;
+					$in_id					= $stock_in->id;
+					
+					if($residue	> $quantity){
+						$current_residue	= $residue - $quantity;
+						$this->Stock_in_model->updateById($in_id, $current_residue);
+						$result = $this->Stock_out_model->insertStockOutFromPurchaseReturn($in_id, $quantity, $purchase_return_id); 
+						break;
+					} else {
+						$current_residue		= $quantity - $residue;
+						$this->Stock_in_model->updateById($in_id, 0);
+						$result = $this->Stock_out_model->insertStockOutFromPurchaseReturn($in_id, $current_residue, $purchase_return_id);
+						$quantity = $quantity - $residue;
+					}
+				}
+			}
+		}
+
+		public function insertStockOutFromPurchaseReturn($in_id, $quantity, $purchase_return_id)
+		{
+			$db_item		= array(
+				'in_id' => $in_id,
+				'quantity' => $quantity,
+				'event_id' => null,
+				'customer_id' => null,
+				'supplier_id' => null,
+				'purchase_return_id' => $purchase_return_id,
+				'delivery_order_id' => null
+			);
+				
+			$this->db->insert($this->table_stock_out, $db_item);
+			return $this->db->affected_rows();
+		}
+
+		public function countRestockItems()
+		{
+			$query			= $this->db->query("
+				SELECT b.id as item_id, b.name, b.reference, b.sumQuantity, b.confidence_level, b.month, b.year, c.residue
+				FROM (
+					SELECT item.id, item.reference, item.name, item.confidence_level, SUM(sales_order.quantity) AS sumQuantity, MONTH(code_sales_order.date) as month, YEAR(code_sales_order.date) as year
+					FROM sales_order
+					JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
+					JOIN price_list ON sales_order.price_list_id = price_list.id
+					JOIN item ON price_list.item_id = item.id
+					WHERE item.is_notified_stock = '1' AND code_sales_order.is_confirm = '1' AND code_sales_order.id NOT IN (
+						SELECT code_sales_order_id FROM code_sales_order_close_request
+						WHERE is_approved = '1'
+					)
+					AND code_sales_order.date BETWEEN DATE_ADD(CURDATE(),INTERVAL -6 MONTH) AND CURDATE()
+					GROUP BY YEAR(code_sales_order.date), MONTH(code_sales_order.date), price_list.item_id
+					ORDER BY code_sales_order.date ASC
+				) AS b
+				JOIN (
+					SELECT SUM(residue) as residue, item_id as id 
+					FROM stock_in
+					GROUP BY item_id
+				) AS c
+				ON b.id = c.id
+			");
+
+			$result		= $query->result();
+			return $result;
+		}
+
+		public function deleteByCodeDeliveryOrderId($deliveryOrderId)
+		{
+			$query			= $this->db->query("
+				SELECT * FROM stock_out WHERE id IN (
+					SELECT stock_out.id 
+					FROM stock_out
+					JOIN delivery_order ON stock_out.delivery_order_id = delivery_order.id
+					JOIN code_delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order.id
+					WHERE code_delivery_order.id = '$deliveryOrderId'
+				)
+			");
+
+			$result			= $query->result();
+
+			$query			= $this->db->query("
+				DELETE FROM stock_out WHERE id IN (
+					SELECT stock_out.id 
+					FROM stock_out
+					JOIN delivery_order ON stock_out.delivery_order_id = delivery_order.id
+					JOIN code_delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order.id
+					WHERE code_delivery_order.id = '$deliveryOrderId'
+				)
+			");
+
+			$deleteResult			= $this->db->affected_rows();
+			if($deleteResult > 0){
+				return $result;
+			} else {
+				return NULL;
+			}
+			
+		}
+	}
+?>

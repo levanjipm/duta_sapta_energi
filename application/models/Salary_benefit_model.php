@@ -61,20 +61,41 @@ class Salary_benefit_model extends CI_Model {
 		public function insertItem($salarySlipId)
 		{
 			$benefitArray = $this->input->post('benefit');
-			$batch		= array();
-			foreach($benefitArray as $benefitId => $benefitValue)
-			{
-				if($benefitValue > 0){
-					$batch[] = array(
-						'id' => "",
-						'benefit_id' => $benefitId,
-						'salary_slip_id' => $salarySlipId,
-						'value' => $benefitValue
-					);
+			if(count($benefitArray) > 0){
+				$batch		= array();
+				foreach($benefitArray as $benefitId => $benefitValue)
+				{
+					if($benefitValue > 0){
+						$batch[] = array(
+							'id' => "",
+							'benefit_id' => $benefitId,
+							'salary_slip_id' => $salarySlipId,
+							'value' => $benefitValue
+						);
+					}
+					next($benefitArray);
 				}
-				next($benefitArray);
-			}
 
-			$this->db->insert_batch($this->table_salary, $batch);
+				$this->db->insert_batch($this->table_salary, $batch);
+			}
+		}
+
+		public function getByCodeId($salarySlipId)
+		{
+			$this->db->select('benefit.name, benefit.information, salary_benefit.value');
+			$this->db->from('salary_benefit');
+			$this->db->join('benefit', 'salary_benefit.benefit_id = benefit.id');
+			$this->db->where("salary_benefit.salary_slip_id", $salarySlipId);
+			$query			= $this->db->get();
+			$result			= $query->result();
+			return $result;
+		}
+
+		public function deleteByCodeId($salarySlipId)
+		{
+			$this->db->where('salary_benefit.salary_slip_id', $salarySlipId);
+			$this->db->delete($this->table_salary);
+			$result		= $this->db->affected_rows();
+			return $result;
 		}
 }

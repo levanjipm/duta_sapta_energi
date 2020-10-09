@@ -21,6 +21,7 @@ class Purchase_order_model extends CI_Model {
 		public $supplier_id;
 		public $is_delete;
 		public $note;
+		public $payment;
 		
 		public $supplier_name;
 		public $supplier_address;
@@ -48,6 +49,7 @@ class Purchase_order_model extends CI_Model {
 			$this->is_delete              	='';
 			$this->status              		= NULL;
 			$this->note						= "";
+			$this->payment					= 60;
 		}
 		
 		public function get_stub_from_db($db_item)
@@ -70,6 +72,7 @@ class Purchase_order_model extends CI_Model {
 			$this->is_delete	            = $db_item->is_delete;              
 			$this->status	              	= $db_item->status; 
 			$this->note						= $db_item->note;             
+			$this->payment					= $db_item->payment;             
 			
 			return $this;
 		}
@@ -96,6 +99,7 @@ class Purchase_order_model extends CI_Model {
 			$db_item->is_delete	               = $this->is_delete;
 			$db_item->status	               = $this->status;
 			$db_item->note						= $this->note;
+			$db_item->payment					= $this->payment;
 			
 			return $db_item;
 		}
@@ -122,6 +126,7 @@ class Purchase_order_model extends CI_Model {
 			$stub->is_delete	              = $db_item->is_delete;     
 			$stub->status		              = $db_item->status;
 			$stub->note						= $db_item->note;
+			$stub->payment					= $db_item->payment;
 			
 			return $stub;
 		}
@@ -151,6 +156,7 @@ class Purchase_order_model extends CI_Model {
 			$stub->is_delete	       		 = $db_item->is_delete;    
 			$stub->status		       		 = $db_item->status;
 			$stub->note						= $db_item->note;    
+			$stub->payment					= $db_item->payment;    
 			
 			return $stub;
 		}
@@ -231,6 +237,7 @@ class Purchase_order_model extends CI_Model {
 				$this->date_send_request	= $date_send;
 				$this->status				= $stat;
 				$this->note					= $this->input->post('note');
+				$this->payment				= $this->input->post('payment');
 				
 				if($this->input->post('dropship_address') != ''){
 					$this->dropship_address			= $this->input->post('dropship_address');
@@ -247,20 +254,33 @@ class Purchase_order_model extends CI_Model {
 			}
 		}
 		
-		public function getIncompletePurchaseOrder($offset = 0, $supplier_id, $limit = 10)
+		public function getIncompletePurchaseOrder($offset = 0, $supplier_id = null, $limit = 10)
 		{
-			$query = $this->db->query("
-				SELECT code_purchase_order.* FROM code_purchase_order
-				JOIN (
-					SELECT DISTINCT(purchase_order.code_purchase_order_id) as id FROM purchase_order
-					WHERE purchase_order.status= '0'
-				) as a
-				ON a.id = code_purchase_order.id
-				WHERE code_purchase_order.supplier_id = '$supplier_id'
-				LIMIT $limit OFFSET $offset
-			");
-			$result	 	= $query->result();
-			
+			if($supplier_id == null){
+				$query = $this->db->query("
+					SELECT code_purchase_order.* FROM code_purchase_order
+					JOIN (
+						SELECT DISTINCT(purchase_order.code_purchase_order_id) as id FROM purchase_order
+						WHERE purchase_order.status= '0'
+					) as a
+					ON a.id = code_purchase_order.id
+					WHERE code_purchase_order.is_confirm = '1'
+					LIMIT $limit OFFSET $offset
+				");
+			} else {
+				$query = $this->db->query("
+					SELECT code_purchase_order.* FROM code_purchase_order
+					JOIN (
+						SELECT DISTINCT(purchase_order.code_purchase_order_id) as id FROM purchase_order
+						WHERE purchase_order.status= '0'
+					) as a
+					ON a.id = code_purchase_order.id
+					WHERE code_purchase_order.supplier_id = '$supplier_id' AND code_purchase_order.is_confirm = '1'
+					LIMIT $limit OFFSET $offset
+				");
+			}
+
+			$result	 	= $query->result();		
 			return $result;
 		}
 
@@ -301,7 +321,7 @@ class Purchase_order_model extends CI_Model {
 					WHERE purchase_order.status= '0'
 				) as a
 				ON a.id = code_purchase_order.id
-				WHERE code_purchase_order.supplier_id = '$supplier_id'
+				WHERE code_purchase_order.supplier_id = '$supplier_id' AND code_purchase_order.is_confirm = '1'
 			");
 			$result	 	= $query->result();
 			
@@ -318,6 +338,7 @@ class Purchase_order_model extends CI_Model {
 						WHERE purchase_order.status = '0'
 					) as a
 					ON code_purchase_order.id = a.id
+					WHERE code_purchase_order.is_confirm = '1'
 				) as c
 				JOIN supplier ON c.id = supplier.id
 			");
@@ -432,4 +453,15 @@ class Purchase_order_model extends CI_Model {
 			$result = $query->result();
 			return $result;
 		}
-}
+
+		public function closeById($id)
+		{
+			$this->db->set('is_closed', 1);
+			$this->db->where('is_confirm', 1);
+			$this->db->where('id', $id);
+			$this->db->update($this->table_purchase_order);
+			$result = $this->db->affected_rows();
+			return $result;
+		}
+	}
+?>

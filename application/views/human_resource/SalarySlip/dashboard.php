@@ -7,35 +7,10 @@
 	</div>
 	<br>
 	<div class='dashboard_in'>
-		<button class='button button_default_dark' id='createSalarySlipButton'><i class='fa fa-plus'></i> Create salary slip</button>
-		<br><br>
-		<div id='salaryTable'>
-			<table class='table table-bordered'>
-				<tr>
-					<th>User</th>
-					<th>Period</th>
-					<th>Action</th>
-				</tr>
-				<tbody id='salaryTableContent'></tbody>
-			</table>
-
-			<select class='form-control' id='page' style='width:100px'>
-				<option value='1'>1</option>
-			</select>
-		</div>
-		<p id='salaryTableText'>There is no salary slip found.</p>
-	</div>
-</div>
-
-<div class='alert_wrapper' id='createSalaryWrapper'>
-	<button class='slide_alert_close_button'>&times;</button>
-	<div class='alert_box_slide'>
-		<h3 style='font-family:bebasneue'>Create salary slip</h3>
-		<hr>
 		<form id='salarySlipForm'>
 			<label>User</label>
 			<button type='button' class='form-control' id='userButton' style='text-align:left!important'></button>
-			<input type='hidden' id='user' required>
+			<input type='hidden' id='user' name='user' required>
 
 			<label>Period</label>
 			<div class='input_group'>
@@ -74,7 +49,7 @@
 					<tr><td colspan='2'></td><td>Total</td><td>Rp. <span id='attendanceWage'></span></td></tr>
 				</table>
 
-				<button type='button' class='button button_default_dark' id='addBenefitButton'><i class='fa fa-plus'></i> Add benefit</button><br>
+				<button type='button' class='button button_default_dark' id='addBenefitButton'><i class='fa fa-plus'></i> Add benefit</button><br><br>
 				<div id='salaryBenefitTable' style='display:none'>
 					<table class='table table-bordered'>
 						<tr>
@@ -88,11 +63,49 @@
 				</div>
 				<br>
 
-				<button type='button' class='button button_default_dark' onclick='createSalarySlip()'><i class='fa fa-long-arrow-right'></i></button>
+				<button type='button' class='button button_default_dark' onclick='validateSalarySlip()'><i class='fa fa-long-arrow-right'></i></button>
 
 				<div class='notificationText danger' id='failedInsertSalarySlip'><p>Failed to insert salary slip.</p></div>
 			</div>
 		</form>
+	</div>
+</div>
+
+<div class='alert_wrapper' id='validateSalarySlipWrapper'>
+	<button class='slide_alert_close_button'>&times;</button>
+	<div class='alert_box_slide'>
+		<h3 style='font-family:bebasneue'>Create Salary Slip</h3>
+		<hr>
+		<label>User</label>
+		<p id='userName_p'></p>
+		<p id='userEmail_p'></p>
+
+		<label>Salary</label>
+		<table class='table table-bordered'>
+			<tr>
+				<th>Information</th>
+				<th>Unit Wage</th>
+				<th>Quantity</th>
+				<th>Total Wage</th>
+			</tr>
+			<tbody id='salarySlipDetailTableContent'></tbody>
+		</table>
+
+		<div id='benefitTablePreview'>
+			<label>Benefits Detail</label>
+			<table class='table table-bordered'>
+				<tr>
+					<th>Name</th>
+					<th>Description</th>
+					<th>Value</th>
+				</tr>
+				<tbody id='benefitTablePreviewContent'></tbody>
+			</table>
+		</div>
+
+		<button class="button button_default_dark" onclick='submitSalarySlip()' type='button'><i class='fa fa-long-arrow-right'></i></button>
+
+		<div class='notificationText danger' id='failedInsertNotification'><p>Failed to insert salary slip.</p></div>
 	</div>
 </div>
 
@@ -147,14 +160,13 @@
 
 <script>
 	var totalValueArray = [];
+	var salaryValueArray = [];
+	var benefitArray = [];
+
 	$('#salarySlipForm').validate({
 		ignore: '',
 		rules: {"hidden_field": "required"}
 	});
-
-	$(document).ready(function(){
-		refreshView();
-	})
 
 	$('#salarySlipDetailForm').validate();
 
@@ -223,11 +235,12 @@
 						var count = parseInt(value.count);
 						if(count == 0){
 							$('#attendanceTableContent').append("<tr><td>" + name + "</td><td>" + numeral(count).format("0,0") + "</td><td>Rp. 0.00</td><td>Rp. 0.00</tr>");
+							salaryValueArray[id] = {"name": name, "count": 0, "value": 0};
 						} else if(count > 0){
 							$('#attendanceTableContent').append("<tr><td>" + name + "</td><td>" + numeral(count).format("0,0") + "</td><td><input class='form-control' id='value-" + id + "' name='value[" + id + "]'  required min='0'></td><td id='totalWage-" + id + "'></td></tr>");
 								$('#value-' + id).change(function(){
 									var totalValue = parseInt(count) * $(this).val();
-									totalValueArray[id] = totalValue;
+									salaryValueArray[id] = {"name": name, "count": count, "value": totalValue};
 									$('#totalWage-' + id).html("Rp. " + numeral(totalValue).format('0,0.00'));
 									calculateWage();
 								})
@@ -267,10 +280,19 @@
 
 	function calculateWage(){
 		var attendanceWage = 0;
-		$.each(totalValueArray, function(index, value){
-			attendanceWage += value;
-		})
-		$('#attendanceWage').html(numeral(attendanceWage).format("0,0.00"));
+		for (var key in salaryValueArray) {
+			attendanceWage += Math.max(0, parseFloat(salaryValueArray[key].value));
+		}
+
+		var basic		= Math.max(0, parseFloat(totalValueArray['basic']));
+		var bonus		= Math.max(0, parseFloat(totalValueArray['bonus']));
+		var deduction	= Math.min(0, parseFloat(totalValueArray['deduction']));
+			
+		var otherWage = basic + bonus + deduction;
+		console.log(otherWage);
+		var wage = attendanceWage + otherWage;
+
+		$('#attendanceWage').html(numeral(wage).format("0,0.00"));
 	}
 
 	function refreshUsers(page = $('#userPage').val()){
@@ -345,14 +367,20 @@
 
 					$('#addBenefitButton-' + id).click(function(){
 						if($('#benefit-' + id).length == 0){
-							$('#salaryBenefitTableContent').append("<tr id='benefit-" + id + "'><td>" + name + "</td><td>" + description + "</td><td><input type='number' class='form-control' id='salaryBenefit-" + id + "' name='benefit[" + id + "]' required min='1'></td><td><button class='button button_danger_dark' onclick='removeBenefit(" + id + ")'><i class='fa fa-trash'></i></button></td></tr>");
+							$('#salaryBenefitTableContent').append("<tr id='benefit-" + id + "'><td>" + name + "</td><td>" + description + "</td><td><input type='number' class='form-control' id='salaryBenefit-" + id + "' name='benefit[" + id + "]' required min='1'></td><td><button class='button button_danger_dark' type='button' onclick='removeBenefit(" + id + ")'><i class='fa fa-trash'></i></button></td></tr>");
 						}
+
+						benefitArray[id] = {"name": name, "description": description, "value": 0};
 
 						if($("#salaryBenefitTableContent tr").length == 0){
 							$('#salaryBenefitTable').hide();
 						} else {
 							$('#salaryBenefitTable').show();
 						}
+
+						$('#salaryBenefit-' + id).change(function(){
+							benefitArray[id].value = $('#salaryBenefit-' + id).val();
+						})
 
 						$('#benefitWrapper .alert_full_close_button').click();
 					})
@@ -381,6 +409,8 @@
 
 	function removeBenefit(n){
 		$('#benefit-' + n).remove();
+		benefitArray[n] = null;
+
 		if($("#salaryBenefitTableContent tr").length == 0){
 			$('#salaryBenefitTable').hide();
 		} else {
@@ -394,102 +424,75 @@
 		$('#benefitWrapper').fadeIn();
 	})
 
-	$('#createSalarySlipButton').click(function(){
-		$('#attendanceTable').hide();
-		$('#salarySlipForm')[0].reset();
+	function validateSalarySlip(){
+		$('#salarySlipDetailTableContent').html("");
+		var attendanceWage = 0;
+		for (var key in salaryValueArray) {
+			var name= salaryValueArray[key].name;
+			var totalValue = salaryValueArray[key].value;
+			var count = salaryValueArray[key].count;
+			var unitValue = totalValue / count;
 
-		$('#salaryBenefitTableContent').html("");
-		$('#salaryBenefitTable').hide();
-		
-		$("#userButton").html("");
-		$('#createSalaryWrapper').fadeIn(300, function(){
-			$('#createSalaryWrapper .alert_box_slide').show("slide", { direction: "right" }, 250);
+			$('#salarySlipDetailTableContent').append("<tr><td>" + name + "</td><td>Rp. " + numeral(unitValue).format('0,0.00') + "</td><td>" + count + "</td><td>Rp. " + numeral(totalValue).format('0,0.00'));
+			attendanceWage += parseFloat(totalValue);
+		}
+
+		var basic = totalValueArray['basic'];
+		var bonus = totalValueArray['bonus'];
+		var deduction = totalValueArray['deduction'];
+
+		$('#salarySlipDetailTableContent').append("<tr><td>Basic wage</td><td>Rp. " + numeral(basic).format('0,0.00') + "</td><td>1</td><td>Rp. " + numeral(basic).format('0,0.00'));
+		$('#salarySlipDetailTableContent').append("<tr><td>Bonus wage</td><td>Rp. " + numeral(bonus).format('0,0.00') + "</td><td>1</td><td>Rp. " + numeral(bonus).format('0,0.00'));
+		$('#salarySlipDetailTableContent').append("<tr><td>Wage deduction</td><td>Rp. " + numeral(deduction).format('0,0.00') + "</td><td>1</td><td>Rp. " + numeral(deduction).format('0,0.00'));
+
+		$('#benefitTablePreviewContent').html("");
+		if(benefitArray.length > 0){
+			var benefitCountTable = 0;
+			for(var key in benefitArray){
+				if(benefitArray[key] != null){
+					var name			= benefitArray[key].name;
+					var description		= benefitArray[key].description;
+					var value			= benefitArray[key].value;
+					var id				= benefitArray[key].id;
+					$('#benefitTablePreviewContent').append("<tr><td>" + name + "</td><td>" + description + "</td><td>Rp. " + numeral(value).format('0,0.00') + "</td></tr>");
+				}
+			}
+		}
+
+		if($('#benefitTablePreviewContent tr').length > 0){
+			$('#benefitTablePreview').show();
+		} else {
+			$('#benefitTablePreview').hide();
+		}
+
+		$('#validateSalarySlipWrapper').fadeIn(300, function(){
+			$('#validateSalarySlipWrapper .alert_box_slide').show("slide", { direction: "right" }, 250);
 		});
-	})
+	}
 
-	function createSalarySlip(){
-		if($('#salarySlipDetailForm').valid() && $('#salarySlipForm').valid()){
-			var formData = $('#salarySlipDetailForm').serializeArray();
-			var userArray = {name: "user", value: $('#user').val()};
-			var monthArray = {name: "month", value: $('#month').val()};
-			var yearArray = {name: "year", value: $('#year').val()};
-
-			formData.push(userArray);
-			formData.push(monthArray);
-			formData.push(yearArray);
-
+	function submitSalarySlip(){
+		if($('#salarySlipForm').valid() && $('#salarySlipDetailForm').valid()){
+			var data = $('#salarySlipDetailForm').serialize() + "&" + $('#salarySlipForm').serialize();
+			console.log(data);
 			$.ajax({
 				url:"<?= site_url('Salary_slip/insertItem') ?>",
-				data:formData,
+				data:data,
 				type:"POST",
 				beforeSend:function(){
 					$('button').attr('disabled', true);
-					$('input').attr('readonly', true);
 				},
 				success:function(response){
 					$('button').attr('disabled', false);
-					$('input').attr('readonly', false);
-					refreshView();
-					if(response == 1){
-						$('#createSalaryWrapper .slide_alert_close_button').click();
-					} else {
-						$('#failedInsertSalarySlip').fadeIn();
+					if(response == 0){
+						$('#failedInsertNotification').fadeIn(250);
 						setTimeout(function(){
-							$('#failedInsertSalarySlip').fadeOut();
+							$("#failedInsertNotification").fadeOut(250);
 						}, 1000);
+					} else {
+						location.reload();
 					}
 				}
 			})
-			
 		}
-	}
-
-	$('#page').change(function(){refreshView()});
-
-	function refreshView(page = $('#page').val()){
-		$.ajax({
-			url:"<?= site_url('Salary_slip/getItems') ?>",
-			data:{
-				page: page,
-			},
-			success:function(response){
-				var items = response.items;
-				var salarySlipCount = 0;
-				$('#salaryTableContent').html("");
-				$.each(items, function(index, item){
-					var name = item.name;
-					var month = item.month;
-					var year = item.year;
-					mlist = [ "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" ];
-					var period = mlist[month - 1] + " " + year;
-					if(item.image_url == null){
-						var imageUrl = "<?= base_url() . '/assets/ProfileImages/defaultImage.png' ?>";
-					} else {
-						var imageUrl = "<?= base_url() . '/assets/ProfileImages/' ?>" + item.image_url;
-					};
-
-					$('#salaryTableContent').append("<tr><td><img src='" + imageUrl + "' style='border-radius:50%;width:30px;height:30px'> " + name + "</td><td>" + period + "</td><td><button class='button button_default_dark'><i class='fa fa-eye'></i></button></td></tr>")
-					salarySlipCount++;
-				})
-
-				if(salarySlipCount > 0){
-					$('#salaryTable').show();
-					$('#salaryTableText').hide();
-				} else {
-					$('#salaryTable').hide();
-					$('#salaryTableText').show();
-				}
-
-				var pages = response.pages;
-				$('#page').html("");
-				for(i = 1; i <= pages; i++){
-					if(i == page){
-						$('#page').append("<option value='" + i + "' selected>" + i + "</option>");
-					} else {
-						$('#page').append("<option value='" + i + "'>" + i + "</option>");
-					}
-				}
-			}
-		})
 	}
 </script>

@@ -36,6 +36,14 @@
 		<label>Purchase order</label>
 		<p style='font-family:museo' id='purchase_order_name_p'></p>
 		<p style='font-family:museo' id='purchase_order_date_p'></p>
+		<p style='font-family:museo' id='purchase_order_payment_p'></p>
+		<p style='font-family:museo' id='purchase_order_taxing_p'></p>
+
+		<p style='font-family:museo'>Created by <span id='createdBy_p'></span></p>
+
+		<label>Status</label>
+		<p style='font-family:museo' id='purchase_order_status_p'></p>
+		<p style='font-family:museo' id='purchase_order_date_send_p'></p>
 		
 		<table class='table table-bordered'>
 			<tr>
@@ -132,6 +140,17 @@
 				var general_data		= response.general;
 				var purchase_order_id	= general_data.id;
 				var note				= general_data.note;
+				var status				= general_data.status;
+				var date_send_request	= general_data.date_send_request;
+				var creator				= general_data.created_by;
+				var taxing				= general_data.taxing;
+
+				$('#purchase_order_taxing_p').html((taxing == 1) ? "( Taxable purchase )" : "( Non taxable purchase )");
+
+				$('#createdBy_p').html((creator == "" || creator == null) ? "<i>Not available</i>" : creator);
+
+				$('#purchase_order_status_p').html((status == "" || status == null)? "<i>-</i>" : status);
+				$('#purchase_order_date_send_p').html((date_send_request == "" || date_send_request == null)? "<i>-</i>" : my_date_format(date_send_request));
 
 				if(note == ""){
 					var noteText = "<i>Not availble</i>";
@@ -183,6 +202,8 @@
 				
 				$('#purchase_order_name_p').html(purchase_order_name);
 				$('#purchase_order_date_p').html(my_date_format(purchase_order_date));
+
+				$('#purchase_order_payment_p').html(numeral(general_data.payment).format('0,0') + " day(s)");
 				
 				var detail_data			= response.detail;
 				var purchase_order_value = 0;

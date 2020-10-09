@@ -304,10 +304,14 @@ class Good_receipt_model extends CI_Model {
 		
 		public function getByInvoiceId($invoice_id)
 		{
-			$this->db->where('invoice_id', $invoice_id);
-			$this->db->where('is_confirm', 1);
-			$this->db->where('is_delete', 0);
-			$query	= $this->db->get($this->table_good_receipt);
+			$this->db->select('code_good_receipt.*, users.name as created_by');
+			$this->db->from('code_good_receipt');
+			$this->db->join('users', 'code_good_receipt.created_by = users.id');
+			$this->db->where('code_good_receipt.invoice_id', $invoice_id);
+			$this->db->where('code_good_receipt.is_confirm', 1);
+			$this->db->where('code_good_receipt.is_delete', 0);
+
+			$query	= $this->db->get();
 			$item	= $query->result();
 			
 			return $item;
@@ -402,5 +406,42 @@ class Good_receipt_model extends CI_Model {
 		public function create_guid()
 		{	
 			return sprintf('%04X%04X-%04X-%04X-%04X-%04X%04X%04X', mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(16384, 20479), mt_rand(32768, 49151), mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(0, 65535));
+		}
+
+		public function getUninvoicedItems($offset = 0, $limit = 10)
+		{
+			$query			= $this->db->query("
+				SELECT code_good_receipt.* FROM code_good_receipt
+				JOIN good_receipt ON good_receipt.code_good_receipt_id = code_good_receipt.id
+				WHERE code_good_receipt.is_confirm ='1'
+				AND code_good_receipt.invoice_id IS NULL
+				LIMIT $limit OFFSET $offset
+			");
+			$result			= $query->result();
+			return $result;
+		}
+
+		public function countUninvoicedItems()
+		{
+			$this->db->where('is_confirm', 1);
+			$this->db->where('invoice_id', NULL);
+			$query			= $this->db->get($this->table_good_receipt);
+			$result			= $query->num_rows();
+			return $result;
+		}
+
+		public function unsetInvoiceByInvoiceId($id)
+		{
+			$this->db->set('invoice_id', NULL);
+			$this->db->where('invoice_id', $id);
+			$this->db->update($this->table_good_receipt);
+		}
+
+		public function deleteById($id)
+		{
+			$this->db->set('is_delete', 1);
+			$this->db->set('is_confirm', 0);
+			$this->db->where('id', $id);
+			$this->db->update($this->table_good_receipt);
 		}
 }

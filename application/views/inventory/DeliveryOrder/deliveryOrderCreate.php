@@ -7,6 +7,9 @@
 	</div>
 	<br>
 	<div class='dashboard_in'>
+		<button class='button button_mini_tab' onclick="$('#areaFilter').toggle(300)"><i class='fa fa-filter'></i></button>
+		<div class='row' id='areaFilter' style='display:none'>
+		</div>
 		<div id='salesOrderTable'>
 			<table class='table table-bordered'>
 				<tr>
@@ -70,6 +73,9 @@
 				</tr>
 				<tbody id='sales_order_table'></tbody>
 			</table>
+
+			<label>Note</label>
+			<p id='salesOrderNote_p'></p>
 			<div style='padding:2px 10px;background-color:#ffc107;width:100%;display:none' id='warning_text'>
 				<p ><i class='fa fa-exclamation-triangle'></i> Customer's plafond exceeded</p>
 			</div>
@@ -89,9 +95,11 @@
 	var receivable;
 	var customerPlafond;
 	var accessLevel;
+	var includedAreas		= [];
+	var areas				= [];
 
 	$(document).ready(function(){
-		refresh_view(1);
+		viewAreas();
 	})
 
 	$('#page').change(function(){
@@ -115,6 +123,7 @@
 				var sales_order_date		= sales_order_array.date;
 				var taxing_code				= sales_order_array.taxing;
 				var invoicing_method		= sales_order_array.invoicing_method;
+				var note					= sales_order_array.note;
 				
 				var customer_array			= response.customer;
 				var complete_address		= '';
@@ -161,6 +170,7 @@
 				}
 
 				$('#taxing').val(taxing_code);
+				$('#salesOrderNote_p').html((note == "" || note == null) ? "<i>Not available</i>" : note);
 				
 				$('#customer_name_p').html(customer_name);
 				$('#customer_address_p').html(complete_address);
@@ -240,6 +250,41 @@
 		ignore: '',
 		rules: {"hidden_field": {min:1}}
 	});
+
+	function viewAreas(){
+		$.ajax({
+			url:"<?= site_url('Area/getAllItems') ?>",
+			success:function(response){
+				$.each(response, function(index, value){
+					includedAreas.push(parseInt(value.id));
+					areas[value.id]	= value.name;
+				});
+
+				updateAreasView();
+			}
+		})
+	}
+
+	function updateAreasView(){
+		$('#areaFilter').html("");
+		$.each(includedAreas, function(index, id){
+			var name		= areas[id];
+			$('#areaFilter').append("<div class='col-sm-4'><label><input type='checkbox' id='checkBox-" + id + "' onchange='updateIncludedAreas(" + id + ")'' checked> " + name + "</label></div>");
+		})
+
+		refresh_view(1);
+	}
+
+	function updateIncludedAreas(n){
+		if($('#checkBox-' + n).is(':checked')){
+			includedAreas.push(n);
+		} else {
+			var index = includedAreas.indexOf(n);
+			includedAreas.splice(index, 1);
+		}
+
+		refresh_view(1);
+	}
 	
 	function changeTotalValue(){
 		total_delivery_order = 0;
@@ -280,9 +325,10 @@
 
 	function refresh_view(page = $('#page').val()){
 		$.ajax({
-			url:'<?= site_url('Sales_order/getIncompleteSalesOrder') ?>',
+			url:'<?= site_url('Sales_order/getIncompleteSalesOrderDelivery') ?>',
 			data:{
-				page: page
+				page: page,
+				areas: includedAreas
 			},
 			success:function(response){
 				var sales_orders = response.items;

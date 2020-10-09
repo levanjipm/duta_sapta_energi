@@ -55,7 +55,18 @@
 	</div>
 <?php
 	}
+
+	if($user_login->access_level == 5){
 ?>
+	<div class='col-lg-3 col-md-3 col-sm-4 col-xs-6 department_box_wrapper' onclick='window.location.href="<?= site_url('Administrators') ?>"'>
+		<div class='department_box'>
+			<div class='department_box_head'>Administrators</div>
+			<div class='department_box_body'>
+				<img src='<?= base_url() . 'assets/' . $department->icon . '.png'; ?>' class='department_image'>
+			</div>
+		</div>
+	</div>
+<?php } ?>
 </div>
 <script>	
 	function adjust_size(){

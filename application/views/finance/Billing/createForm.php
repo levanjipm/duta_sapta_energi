@@ -218,6 +218,10 @@
 
 	$('#recommendedPage').change(function(){
 		fetchRecommendationList();
+	});
+
+	$('#recommendedSearchBar').change(function(){
+		fetchRecommendationList(1);
 	})
 
 	$('#searchSearchBar').change(function(){
@@ -247,13 +251,13 @@
 
 					var customerName = item.customerName;
 					var customerAddress = item.address;
-					var complete_address = customer.address;
-					var customer_number = customer.number;
-					var customer_block = customer.block;
-					var customer_rt = customer.rt;
-					var customer_rw = customer.rw;
-					var customer_city = customer.city;
-					var customer_postal = customer.postal_code;
+					var complete_address = item.address;
+					var customer_number = item.number;
+					var customer_block = item.block;
+					var customer_rt = item.rt;
+					var customer_rw = item.rw;
+					var customer_city = item.city;
+					var customer_postal = item.postal_code;
 				
 					if(customer_number != null){
 						complete_address	+= ' No. ' + customer_number;
@@ -277,6 +281,9 @@
 
 					if(!includedInvoice.includes("" + id + "")){
 						$('#recommendedTableContent').append("<tr id='row-" + id + "'><td>" + my_date_format(date) +"</td><td>" + invoiceName + "</td><td><label>" + customerName + "</label><p>" + complete_address + "</p><p>" + customer_city + "</p></td><td><button class='button button_default_dark' onclick='selectRecommendedInvoice(" + id + ")' id='selectInvoiceButtonRecommended-" + id + "'><i class='fa fa-long-arrow-right'></i></button><button class='button button_danger_dark' onclick='removeRecommendedInvoice(" + id + ")' id='removeInvoiceButtonRecommended-" + id + "' style='display:none'><i class='fa fa-trash'></i></button></td></tr>");
+						invoiceCount++;
+					} else {
+						$('#recommendedTableContent').append("<tr id='row-" + id + "'><td>" + my_date_format(date) +"</td><td>" + invoiceName + "</td><td><label>" + customerName + "</label><p>" + complete_address + "</p><p>" + customer_city + "</p></td><td><button class='button button_default_dark' onclick='selectRecommendedInvoice(" + id + ")' id='selectInvoiceButtonRecommended-" + id + "' style='display:none'><i class='fa fa-long-arrow-right'></i></button><button class='button button_danger_dark' onclick='removeRecommendedInvoice(" + id + ")' id='removeInvoiceButtonRecommended-" + id + "'><i class='fa fa-trash'></i></button></td></tr>");
 						invoiceCount++;
 					}
 				});
@@ -496,7 +503,7 @@
 					var paid = item.paid;
 					var id 		= item.id;
 
-					var lastBillingDate = customer.lastBillingDate;
+					var lastBillingDate = item.lastBillingDate;
 					if(lastBillingDate == null){
 						var lastBillingDateText = "<i>Never</i>";
 					} else if(lastBillingDate == new Date(<?= $date ?>)){

@@ -182,6 +182,7 @@ class Delivery_order_model extends CI_Model {
 			");
 
 			$result	 	= $query->num_rows();
+			return $result;
 		}
 		
 		public function generateName($date, $taxing)
@@ -244,7 +245,7 @@ class Delivery_order_model extends CI_Model {
 			return $insert_id;
 		}
 		
-		public function getUninvoicedDeliveryOrders($type, $offset = 0, $filter = '', $limit = 10, $accountant = null)
+		public function getUninvoicedDeliveryOrders($type, $offset = 0, $filter = '', $accountant = null, $limit = 10)
 		{
 			$this->db->select('DISTINCT(code_delivery_order.id) as id, , code_delivery_order.date, code_delivery_order.name, code_delivery_order.is_confirm, code_delivery_order.is_sent, code_delivery_order.guid, code_delivery_order.invoice_id, customer.name as customer_name, customer.address as customer_address, customer.city as customer_city');
 			$this->db->from('code_delivery_order');
@@ -273,7 +274,7 @@ class Delivery_order_model extends CI_Model {
 		
 		public function countUninvoicedDeliveryOrders($type = 0, $term = '', $accountant =  null)
 		{
-			$this->db->select('code_delivery_order.id');
+			$this->db->select('DISTINCT(code_delivery_order.id)');
 			$this->db->from('code_delivery_order');
 			$this->db->join('delivery_order', 'delivery_order.code_delivery_order_id = code_delivery_order.id', 'inner');
 			$this->db->join('sales_order', 'delivery_order.sales_order_id = sales_order.id');
@@ -283,8 +284,10 @@ class Delivery_order_model extends CI_Model {
 			if($type != 0){
 				$this->db->where('code_sales_order.invoicing_method', $type);
 			}
+
 			$this->db->where('code_delivery_order.is_confirm', 1);
 			$this->db->where('code_delivery_order.is_delete', 0);
+
 			$this->db->where('code_delivery_order.invoice_id', null);
 			if($accountant != null){
 				$this->db->where('customer_accountant.accountant_id', $accountant);
@@ -456,7 +459,7 @@ class Delivery_order_model extends CI_Model {
 		public function getByInvoiceId($invoiceId)
 		{
 			$query = $this->db->query("
-				SELECT code_sales_order.id as code_sales_order_id, code_sales_order.customer_id, code_delivery_order.* FROM code_delivery_order
+				SELECT code_sales_order.name AS sales_order_name, code_sales_order.id as code_sales_order_id, code_sales_order.customer_id, code_delivery_order.* FROM code_delivery_order
 				JOIN delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order.id
 				JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
 				JOIN code_sales_order ON code_sales_order.id = sales_order.code_sales_order_id
@@ -465,6 +468,46 @@ class Delivery_order_model extends CI_Model {
 
 			$result = $query->row();
 
+			return $result;
+		}
+
+		public function getUninvoicedItems($offset = 0, $limit = 10)
+		{
+			$this->db->select('code_delivery_order.*, code_sales_order.customer_id');
+			$this->db->from('code_delivery_order');
+			$this->db->join('delivery_order', 'code_delivery_order.id = delivery_order.code_delivery_order_id');
+			$this->db->join('sales_order', 'delivery_order.sales_order_id = sales_order.id');
+			$this->db->join('code_sales_order', 'sales_order.code_sales_order_id = code_sales_order.id');
+
+			$this->db->where('code_delivery_order.invoice_id', NULL);
+			$this->db->where('code_delivery_order.is_confirm', 1);
+			$this->db->where('code_delivery_order.is_sent', 1);
+			$this->db->limit($limit, $offset);
+
+			$query			= $this->db->get();
+			$result			= $query->result();
+			return $result;
+		}
+
+		public function countUninvoicedItems()
+		{
+			$this->db->where('code_delivery_order.invoice_id', NULL);
+			$this->db->where('code_delivery_order.is_confirm', 1);
+			$this->db->where('code_delivery_order.is_sent', 1);
+
+			$query			= $this->db->get($this->table_delivery_order);
+			$result			= $query->num_rows();
+			return $result;
+		}
+
+		public function deleteById($deliveryOrderId)
+		{
+			$this->db->set('is_confirm', 0);
+			$this->db->set('is_sent', 0);
+			$this->db->set('is_delete', 1);
+			$this->db->where('id', $deliveryOrderId);
+			$query			= $this->db->update($this->table_delivery_order);
+			$result			= $this->db->affected_rows();
 			return $result;
 		}
 }

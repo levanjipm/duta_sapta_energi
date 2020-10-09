@@ -3,8 +3,11 @@
 	$delivery_order_date		= $deliveryOrder->date;
 	$sales_order_name			= $deliveryOrder->sales_order_name;
 	$seller						= $deliveryOrder->seller;
+	
+	$invoiceDiscount					= $invoice->discount;
+	$invoiceDelivery					= $invoice->delivery;
 	if(empty($seller)){
-		$seller			= "<i>Not assigned</i>";
+		$seller			= "<i>-</i>";
 	};
 	
 	$complete_address		= '';
@@ -38,6 +41,7 @@
 		$complete_address	.= ', ' . $customer_postal;
 	}
 ?>
+<title><?= $invoice->name . " - " . $customer_name ?></title>
 <style>
 @media print {
 	body * {
@@ -84,23 +88,23 @@
 		</div>
 		<div class='row'>
 			<div class='col-xs-4'>
-				<label>Customer</label>
+				<label>Konsumen</label>
 				<p><?= $customer_name ?></p>
 				<p><?= $complete_address ?></p>
 				<p><?= $customer_city ?></p>
 			</div>
 			<div class='col-xs-4'>
-				<label>Invoice number</label>
+				<label>Nomor Faktur</label>
 				<p>INV.DSE<?= $delivery_order_name ?></p>
 				
-				<label>Date</label>
-				<p><?= $delivery_order_date ?></p>
+				<label>Tanggal</label>
+				<p><?= date('d M Y', strtotime($delivery_order_date)) ?></p>
 			</div>
 			<div class='col-xs-4'>
 				<label>Sales order</label>
 				<p><?= $sales_order_name ?></p>
 				
-				<label>Seller</label>
+				<label>Sales</label>
 				<p><?= $seller ?></p>
 			</div>
 		</div>
@@ -143,8 +147,18 @@
 ?>
 					<tr>
 						<td colspan='4'><p>Barang yang sudah dibeli tidak dapat dikembalikan. Harap periksa barang pada saat penerimaan.</p><label>Terbilang</label><p id='value_say'></p></td>
-						<td colspan='2'>Total</td>
-						<td>Rp. <?= number_format($invoice_value,2) ?></td>
+						<td colspan='2'>
+							<p>Total</p>
+							<p>Potongan Harga</p>
+							<p>Ongkos Pengiriman</p>
+							<p>Grand total</p>
+						</td>
+						<td>
+							<p>Rp. <?= number_format($invoice_value,2) ?></p>
+							<p>Rp. <?= number_format($invoiceDiscount,2) ?></p>
+							<p>Rp. <?= number_format($invoiceDelivery,2) ?></p>
+							<p>Rp. <?= number_format($invoice_value - $invoiceDiscount + $invoiceDelivery,2) ?></p>
+						</td>
 					</tr>
 					<tr>
 						<td colspan='7'>Pembayaran dengan menggunakan cek atau giro dianggap sah setelah berhasil dicairkan.</td>

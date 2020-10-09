@@ -512,4 +512,53 @@ class Delivery_order extends CI_Controller {
 		header('Content-Type: application/json');
 		echo json_encode($data);
 	}
+
+	public function deleteDashboard()
+	{
+		$user_id		= $this->session->userdata('user_id');
+		$this->load->model('User_model');
+		$data['user_login'] = $this->User_model->getById($user_id);
+
+		if($data['user_login']->access_level > 3){
+			$this->load->model('Authorization_model');
+			$data['departments']	= $this->Authorization_model->getByUserId($user_id);
+		
+			$this->load->view('head');
+			$this->load->view('administrator/header', $data);
+			$this->load->view('administrator/DeliveryOrder/deleteDashboard');
+		} else {
+			redirect(site_url("Welcome"));
+		}
+	}
+
+	public function getUninvoicedItems()
+	{
+		$user_id		= $this->session->userdata('user_id');
+		$this->load->model('User_model');
+		$user			= $this->User_model->getById($user_id);
+
+		if($user->access_level > 3){
+			$page			= $this->input->get('page');
+			$offset			= ($page - 1) * 10;
+			$this->load->model("Delivery_order_model");
+			$deliveryOrderArray		= $this->Delivery_order_model->getUninvoicedItems($offset);
+			$itemBatch					= array();
+
+			$this->load->model("Customer_model");
+			foreach($deliveryOrderArray as $deliveryOrder){
+				$customerId			= $deliveryOrder->customer_id;
+				$item				= (array) $deliveryOrder;
+				$item['customer']	= (array) $this->Customer_model->getById($customerId);
+				$itemBatch[]		= $item;
+			}
+
+			$data['items'] = (object)$itemBatch;
+			$data['pages'] = max(1, ceil($this->Delivery_order_model->countUninvoicedItems()/10));
+		} else {
+			$data = array();
+		}
+
+		header('Content-Type: application/json');
+		echo json_encode($data);
+	}
 }

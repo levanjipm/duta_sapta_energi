@@ -1,5 +1,5 @@
 <head>
-	<title>Petty cash transaction</title>
+	<title>Bank transaction</title>
 </head>
 <div class='dashboard'>
 	<div class='dashboard_head'>
@@ -119,12 +119,17 @@
 		<hr>
 		<label>Transaction</label>
 		<p style='font-family:museo' id='transaction_date_p'></p>
-		<p style='font-family:museo' id='bank_name_p'></p>
 		<p style='font-family:museo' id='transaction_value_p'></p>
 		<p style='font-family:museo' id='transaction_type_p'></p>
+
+		<label>Account</label>
+		<p style='font-family:museo' id='bankName_p'></p>
+		<p style='font-family:museo' id='bankNumber_p'></p>
 		
 		<label>Opponent</label>
-		<p style='font-family:museo' id='opponent_name_p'></p>
+		<p style='font-family:museo' id='opponentName_p'></p>
+		<p style='font-family:museo' id='opponentAddress_p'></p>
+		<p style='font-family:museo' id='opponentCity_p'></p>
 		
 		<button type='button' class='button button_default_dark' id='submitTransactionButton'><i class='fa fa-long-arrow-right'></i></button>
 	</div>
@@ -200,22 +205,115 @@
 				var opponents	= response.opponents;
 				var pages		= response.pages;
 				var opponentCount = 0;
-				if($('#opponent_type').val() != "other"){
+				if($('#opponent_type').val() == "customer"){
 					$.each(opponents, function(index, opponent){
-						var name		= opponent.name;
-						var address		= opponent.address;
-						var city		= opponent.city;
-						var id			= opponent.id;
-						$('#opponentTableContent').append("<tr><td><p id='opponent_name-" + id + "'>" + name + "</p><p>" + address + "</p><p>" + city + "</p></td><td><button type='button' class='button button_default_dark' onclick='add_opponent(" + id + ")' title='Choose " + name + "'><i class='fa fa-long-arrow-right'></i></button></td></tr>");
+						var complete_address		= '';
+						var customer_name			= opponent.name;
+						complete_address			+= opponent.address;
+						var customer_city			= opponent.city;
+						var customer_number			= opponent.number;
+						var customer_rt				= opponent.rt;
+						var customer_rw				= opponent.rw;
+						var customer_postal			= opponent.postal_code;
+						var customer_block			= opponent.block;
+						var customer_id				= opponent.id;
+		
+						if(customer_number != null){
+							complete_address	+= ' No. ' + customer_number;
+						}
+					
+						if(customer_block != null && customer_block != "000"){
+							complete_address	+= ' Blok ' + customer_block;
+						}
+				
+						if(customer_rt != '000'){
+							complete_address	+= ' RT ' + customer_rt;
+						}
+					
+						if(customer_rw != '000' && customer_rt != '000'){
+							complete_address	+= ' /RW ' + customer_rw;
+						}
+					
+						if(customer_postal != null){
+							complete_address	+= ', ' + customer_postal;
+						}
+
+						$('#opponentTableContent').append("<tr><td><p>" + customer_name + "</p><p>" + complete_address + "</p><p>" + customer_city + "</p></td><td><button type='button' class='button button_default_dark' id='addCustomerButton-" + customer_id + "' title='Choose " + customer_name + "'><i class='fa fa-long-arrow-right'></i></button></td></tr>");
+						$('#addCustomerButton-' + customer_id).click(function(){
+							$('#opponent_id').val(customer_id);
+
+							$('#opponentName_p').html(customer_name);
+							$('#opponentAddress_p').html(complete_address);
+							$('#opponentCity_p').html(customer_city);
+
+							$('#opponent_selector_view').html(customer_name);
+							$('.alert_full_close_button').click();
+						})
 						opponentCount++;
 					});
-				} else {
+				} else if($('#opponent_type').val() == "supplier") {
+					$.each(opponents, function(index, item){
+						var complete_address		= '';
+						var supplier_name			= item.name;
+						complete_address			+= item.address;
+						var supplier_city			= item.city;
+						var supplier_number			= item.number;
+						var supplier_rt				= item.rt;
+						var supplier_rw				= item.rw;
+						var supplier_postal			= item.postal_code;
+						var supplier_block			= item.block;
+						var supplier_id				= item.id;
+			
+						if(supplier_number != null){
+							complete_address	+= ' No. ' + supplier_number;
+						}
+					
+						if(supplier_block != null){
+							complete_address	+= ' Blok ' + supplier_block;
+						}
+					
+						if(supplier_rt != '000'){
+							complete_address	+= ' RT ' + supplier_rt;
+						}
+					
+						if(supplier_rw != '000' && supplier_rt != '000'){
+							complete_address	+= ' /RW ' + supplier_rw;
+						}
+					
+						if(supplier_postal != null){
+							complete_address	+= ', ' + supplier_postal;
+						}
+
+						$('#opponentTableContent').append("<tr><td><p>" + supplier_name + "</p><p>" + complete_address + "</p><p>" + supplier_city + "</p></td><td><button type='button' class='button button_default_dark' id='addSupplierButton-" + supplier_id + "' title='Choose " + supplier_name + "'><i class='fa fa-long-arrow-right'></i></button></td></tr>");
+						$('#addSupplierButton-' + supplier_id).click(function(){
+							$('#opponent_id').val(supplier_id);
+
+							$('#opponentName_p').html(supplier_name);
+							$('#opponentAddress_p').html(complete_address);
+							$('#opponentCity_p').html(supplier_city);
+
+							$('#opponent_selector_view').html(supplier_name);
+							$('.alert_full_close_button').click();
+						})
+						opponentCount++;
+					})
+				} else if($('#opponent_type').val() == "other") {
 					$.each(opponents, function(index, opponent){
 						var name		= opponent.name;
 						var type		= opponent.type;
 						var description	= opponent.description;
 						var id			= opponent.id;
-						$('#opponentTableContent').append("<tr><td><p id='opponent_name-" + id + "'>" + name + "</p><p>" + description + "</p><p>" + type + "</p></td><td><button type='button' class='button button_default_dark' onclick='add_opponent(" + id + ")' title='Choose " + name + "'><i class='fa fa-long-arrow-right'></i></button></td></tr>");
+						$('#opponentTableContent').append("<tr><td><p id='opponent_name-" + id + "'>" + name + "</p><p>" + description + "</p><p>" + type + "</p></td><td><button type='button' class='button button_default_dark' id='addOtherButton-" + id + "' title='Choose " + name + "'><i class='fa fa-long-arrow-right'></i></button></td></tr>");
+						$('#addOtherButton-' + id).click(function(){
+							$('#opponent_id').val(id);
+
+							$('#opponentName_p').html(name);
+							$('#opponentAddress_p').html(description);
+							$('#opponentCity_p').html(type);
+
+							$('#opponent_selector_view').html(name);
+							$('.alert_full_close_button').click();
+						})
 						opponentCount++;
 					});
 				}
@@ -241,13 +339,6 @@
 		
 		$('#opponentAlertWrapper').fadeIn(300);
 	};
-	
-	function add_opponent(n, type){
-		var opponent_name = $('#opponent_name-' + n).html();
-		$('#opponent_id').val(n);
-		$('#opponent_selector_view').html(opponent_name);
-		$('.alert_full_close_button').click();
-	}
 
 	$("#accountButton").click(function(){
 		mode = 1;
@@ -321,15 +412,22 @@
 				id: n
 			},
 			success:function(response){
-				var name = response.name;
-				var number = response.number;
+				var name	= response.name;
+				var number	= response.number;
+				var branch	= response.branch;
 
 				if(mode == 1){
 					$('#accountButton').text(name + " - " + number);
 					$('#account').val(n);
+					$('#bankName_p').html(name);
+					$('#bankNumber_p').html(number);
+
 				} else if(mode == 2){
 					$('#otherAccountButton').text(name + " - " + number);
 					$('#otherAccount').val(n);
+					$('#opponentName_p').html(name);
+					$('#opponentAddress_p').html(number);
+					$('#opponentCity_p').html(branch);
 				}
 
 				$('#bankAccountWrapper').fadeOut();

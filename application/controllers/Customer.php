@@ -34,8 +34,14 @@ class Customer extends CI_Controller {
 	{
 		$this->load->model('Customer_model');
 		$result = $this->Customer_model->insertItem();
-		
-		echo $result;
+		if($result != NULL){
+			$this->load->model("Customer_target_model");
+			$date		= date("Y-m-d", mktime(0, 0, 0, date('m'), 1, date('Y')));
+			$this->Customer_target_model->insertItem($result, 3000000, $date);
+			echo 1;
+		} else {
+			echo 0;
+		}
 	}
 	
 	public function deleteById()
@@ -72,6 +78,20 @@ class Customer extends CI_Controller {
 		$this->load->model('Customer_model');
 		$data['customers'] = $this->Customer_model->showItems($offset, $term);
 		$item = $this->Customer_model->countItems($term);
+		$data['pages'] = max(1, ceil($item / 25));
+		
+		header('Content-Type: application/json');
+		echo json_encode($data);
+	}
+
+	public function showActiveItems()
+	{
+		$term		= $this->input->get('term');
+		$page		= $this->input->get('page');
+		$offset		= ($page - 1) * 25;
+		$this->load->model('Customer_model');
+		$data['customers'] = $this->Customer_model->showActiveItems($offset, $term);
+		$item = $this->Customer_model->countActiveItems($term);
 		$data['pages'] = max(1, ceil($item / 25));
 		
 		header('Content-Type: application/json');
@@ -165,9 +185,6 @@ class Customer extends CI_Controller {
 		$this->load->model("Area_model");
 		$data['area'] = $this->Area_model->getItemById($customer->area_id);
 
-		$this->load->model("Sales_order_model");
-		$data['salesOrders'] = $this->Sales_order_model->getPendingSalesOrdersByCustomerId($customerId);
-
 		$this->load->view('sales/Customer/detailDashboard', $data);
 	}
 
@@ -208,5 +225,110 @@ class Customer extends CI_Controller {
 		$accountantId = $this->input->post('accountant');
 		$this->load->model("Customer_accountant_model");
 		$includedResult = $this->Customer_accountant_model->updateByAccountant(2, array(), $accountantId);
+	}
+
+	public function getCurrentTarget()
+	{
+		$customerId = $this->input->get('id');
+		$this->load->model("Customer_model");
+		$data['customer'] = $this->Customer_model->getById($customerId);
+
+		$this->load->model("Customer_target_model");
+		$data['target'] = $this->Customer_target_model->getCurrentTarget($customerId);
+		$data['items'] = $this->Customer_target_model->getByCustomerId($customerId);
+
+		$this->load->model("Sales_order_model");
+		$salesOrderyArray = array();
+		$countArray = array();
+		$salesOrders = $this->Sales_order_model->getByCustomerIdWeekly($customerId);
+		foreach($salesOrders as $salesOrder){
+			$week		= $salesOrder->week;
+			$year		= $salesOrder->year;
+			$count		= $salesOrder->count;
+			$date		= date("Y-m-d", strtotime($year . "W" . str_pad($week, 2, "0", STR_PAD_LEFT)));
+			$todayWeek	= date('W');
+			$todayYear	= date('Y');
+			$todayDate	= date("Y-m-d", strtotime($todayYear . "W" . str_pad($todayWeek, 2, "0", STR_PAD_LEFT)));
+
+			$difference	= date_diff(new DateTime($todayDate), new DateTime($date));
+			$dayDifference = $difference->d;
+			$weekDifference	= $dayDifference / 7;
+
+			$countArray[$weekDifference] = $count;
+
+			next($salesOrders);
+		}
+
+		for($i = 0; $i < 12; $i++){
+			if(!array_key_exists($i, $countArray)){
+				$salesOrderArray[$i] = array(
+					"count" => 0,
+					"week" => date('W', strtotime("-" . $i . " weeks")),
+					"year" => date('Y', strtotime("-" . $i . " weeks")),
+				);
+			} else {
+				$salesOrderArray[$i] = array(
+					"count" => $countArray[$i],
+					"week" => date('W', strtotime("-" . $i . " weeks")),
+					"year" => date('Y', strtotime("-" . $i . " weeks")),
+				);
+			}
+		};
+
+		$data['salesOrders'] = array_reverse($salesOrderArray);
+
+		header('Content-Type: application/json');
+		echo json_encode($data);
+	}
+
+	public function updateCustomerTarget()
+	{
+		$customerId		= $this->input->post('customerId');
+		$value			= $this->input->post('value');
+		$date			= $this->input->post('date');
+
+		if($customerId != null && $value > 0){
+			$this->load->model("Customer_target_model");
+			$result = $this->Customer_target_model->insertItem($customerId, $value, date('Y-m-01', strtotime($date)));
+			echo $result;
+		} else {
+			echo 0;
+		}
+	}
+
+	public function salesOrderArchive($customerId)
+	{
+		$user_id		= $this->session->userdata('user_id');
+		$this->load->model('User_model');
+		$data['user_login'] = $this->User_model->getById($user_id);
+		
+		$this->load->model('Authorization_model');
+		$data['departments']	= $this->Authorization_model->getByUserId($user_id);
+		
+		$this->load->view('head');
+		$this->load->view('sales/header', $data);
+		$data			= array();
+
+		$this->load->model("Customer_model");
+		$data['customer'] = $this->Customer_model->getById($customerId);
+		
+		$this->load->view('sales/customer/salesOrderArchive', $data);
+	}
+
+	public function updateVisitFrequency()
+	{
+		$id			= $this->input->get('id');
+		$visit		= $this->input->get('visit');
+		$this->load->model("Customer_model");
+		$result	= $this->Customer_model->updateVisitById($id, $visit);
+		echo $result;
+	}
+
+	public function deleteTargetByid()
+	{
+		$id			= $this->input->get('id');
+		$this->load->model("Customer_target_model");
+		$result		= $this->Customer_target_model->deleteById($id);
+		echo $result;
 	}
 }

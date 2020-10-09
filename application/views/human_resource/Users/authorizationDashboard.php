@@ -35,7 +35,7 @@
 		<h3 style='font-family:bebasneue'>Authorizations</h3>
 		<hr>
 		<label>User</label><br>
-		<img id='userProfileImage' style='width:40px;height:40px;border-radius:50%;display:inline-block'> <p id='userName_p' style='display:inline-block'></p><br>
+		<img id='userProfileImage' style='width:40px;height:40px;border-radius:50%;display:inline-block'> <p id='userName_p' style='display:inline-block'></p><br><br>
 
 		<table class='table table-bordered'>
 			<tr>
@@ -44,6 +44,15 @@
 			</tr>
 			<tbody id='authorizationTable'></tbody>
 		</table>
+
+		<label>Access level</label>
+		<select class='form-control' id='access_level'>
+			<option value='1'>1</option>
+			<option value='2'>2</option>
+			<option value='3'>3</option>
+			<option value='4'>4</option>
+			<option value='5'>5</option>
+		</select><br>
 
 		<button class='button button_default_dark' id='submitChangeButton'><i class='fa fa-long-arrow-right'></i></button>
 	</div>
@@ -118,6 +127,8 @@
 				departmentArray = [];
 				userId = n;
 				var user = response.user;
+				var access_level = user.access_level;
+				$('#access_level').val(access_level);
 				if(user.image_url == null){
 					var imageUrl = '<?= base_url() . "/assets/ProfileImages/defaultImage.png" ?>';
 				} else {
@@ -170,7 +181,8 @@
 			url:"<?= site_url('Users_authorization/updateByUserId') ?>",
 			data:{
 				userId: userId,
-				departments: departmentArray
+				departments: departmentArray,
+				access_level: $('#access_level').val()
 			},
 			type:"POST",
 			beforeSend:function(){
@@ -180,6 +192,7 @@
 			success:function(){
 				$("button").attr('disabled', false);
 				$("input").attr('readonly', false);
+				refresh_view();
 
 				$('#viewAuthorizationWrapper .slide_alert_close_button').click();
 				if(<?= $this->session->userdata('user_id') ?> == userId){

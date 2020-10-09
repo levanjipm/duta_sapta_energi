@@ -40,8 +40,13 @@ class Users_authorization extends CI_Controller {
 	public function updateByUserId()
 	{
 		$userId			= $this->input->post('userId');
-		$departmentArray		= $this->input->post('departments');
+		$departmentArray		= (array)$this->input->post('departments');
+		$accessLevel			= $this->input->post('access_level');
+
 		$this->load->model("Authorization_model");
 		$this->Authorization_model->updateByUserId($userId, $departmentArray);
+
+		$this->load->model("User_model");
+		$this->User_model->updateAccessLevelById($userId, $accessLevel);
 	}
 }

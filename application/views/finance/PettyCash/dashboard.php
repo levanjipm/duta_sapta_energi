@@ -116,7 +116,7 @@
 				url:"<?= site_url('Petty_cash/insertItem') ?>",
 				data:{
 					date				: $('#transaction_date').val(),
-					class				: $('#transaction_class').val(),
+					class				: $('#class').val(),
 					value				: $('#transaction_value').val(),
 					information			: $('#information').val(),
 				},

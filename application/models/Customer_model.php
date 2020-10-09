@@ -25,6 +25,7 @@ class Customer_model extends CI_Model {
 		public $longitude;
 		public $plafond;
 		public $uid;
+		public $password;
 		
 		public $complete_address;
 		
@@ -56,6 +57,7 @@ class Customer_model extends CI_Model {
 			$this->longitude			= $db_item->longitude;
 			$this->term_of_payment		= $db_item->term_of_payment;
 			$this->uid					= $db_item->uid;
+			$this->password				= $db_item->password;
 			
 			return $this;
 		}
@@ -85,6 +87,7 @@ class Customer_model extends CI_Model {
 			$db_item->is_black_list			= $this->is_black_list;
 			$db_item->term_of_payment		= $this->term_of_payment;
 			$db_item->uid					= $this->uid;
+			$db_item->password				= $this->password;
 			
 			return $db_item;
 		}
@@ -114,6 +117,7 @@ class Customer_model extends CI_Model {
 			$stub->plafond				= $db_item->plafond;
 			$stub->term_of_payment		= $db_item->term_of_payment;
 			$stub->uid					= $db_item->uid;
+			$stub->password				= $db_item->password;
 			
 			return $stub;
 		}
@@ -150,6 +154,36 @@ class Customer_model extends CI_Model {
 				$this->db->or_like('address', $filter, 'both');
 			}
 			
+			$query		= $this->db->get($this->table_customer);
+			$result		= $query->num_rows();
+			
+			return $result;
+		}
+
+		public function showActiveItems($offset = 0, $filter = '', $limit = 25)
+		{
+			if($filter != ''){
+				$this->db->like('name', $filter, 'both');
+				$this->db->or_like('address', $filter, 'both');
+				$this->db->or_like('city', $filter, 'both');
+			}
+
+			$this->db->where('is_black_list',0);
+			$this->db->order_by('name');
+			$this->db->limit($limit, $offset);			
+			$query 		= $this->db->get($this->table_customer);
+			$items	 	= $query->result();
+			
+			return $items;
+		}
+		
+		public function countActiveItems($filter = '')
+		{
+			if($filter != ''){
+				$this->db->like('name', $filter, 'both');
+				$this->db->or_like('address', $filter, 'both');
+			}
+			$this->db->where('is_black_list', 0);
 			$query		= $this->db->get($this->table_customer);
 			$result		= $query->num_rows();
 			
@@ -207,11 +241,12 @@ class Customer_model extends CI_Model {
 				$this->term_of_payment		= $this->input->post('term_of_payment');
 				$this->plafond				= '3000000';
 				$this->uid					= $this->Customer_model->generateUid();
+				$this->password				= NULL;
 				
 				$db_item 					= $this->get_db_from_stub($this);
 				$db_result 					= $this->db->insert($this->table_customer, $db_item);
 				
-				return $this->db->affected_rows();
+				return ($this->db->affected_rows() == 0) ? NULL : $this->db->insert_id();
 			} else {
 				return 0;
 			}
@@ -399,5 +434,32 @@ class Customer_model extends CI_Model {
 			
 			$result		= $query->result();
 			return $result;
+		}
+
+		public function getVisitRecommendedList($offset = 0, $limit = 10)
+		{
+			$query			= $this->db->query("
+				SELECT customer.*, code_visit_list.date 
+				FROM customer
+				JOIN (
+					SELECT visit_list.customer_id, code_visit_list.id
+					FROM visit_list
+					JOIN code_visit_list ON visit_list.code_visit_list_id
+					WHERE result <> 0
+					GROUP BY customer_id
+					ORDER BY date DESC
+				) visitListTable
+				ON customer.id = visitListTable.customer_id
+				JOIN code_visit_list ON visitListTable.id = code_visit_list.id
+			");
+		}
+
+		public function updateVisitById($id, $visit)
+		{
+			$this->db->set('visiting_frequency', $visit);
+			$this->db->where('id', $id);
+			$this->db->update($this->table_customer);
+
+			return $this->db->affected_rows();
 		}
 }

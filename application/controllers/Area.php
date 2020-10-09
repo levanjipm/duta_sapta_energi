@@ -65,6 +65,15 @@ class Area extends CI_Controller {
 		header('Content-Type: application/json');
 		echo json_encode($data);
 	}
+
+	public function getAllItems()
+	{
+		$this->load->model("Area_model");
+		$data		= $this->Area_model->getAllItems();
+
+		header('Content-Type: application/json');
+		echo json_encode($data);
+	}
 	
 	public function getItemById()
 	{

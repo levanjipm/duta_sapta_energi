@@ -107,4 +107,28 @@ class Expense extends CI_Controller {
 		$result		= $this->Expense_class_model->deleteById($id);
 		echo $result;
 	}
+
+	public function getExpensesByParentClass(){
+		$month		= $this->input->get('month');
+		$year		= $this->input->get('year');
+
+		$this->load->model("Expense_class_model");
+		$data = $this->Expense_class_model->getExpensesByParentClass($month, $year);
+
+		header('Content-Type: application/json');
+		echo json_encode($data);
+	}
+
+	public function getExpenseByParentId()
+	{
+		$id			= $this->input->get('id');
+		$month		= $this->input->get('month');
+		$year		= $this->input->get('year');
+
+		$this->load->model("Expense_class_model");
+		$data = $this->Expense_class_model->getExpenseByParentId($id, $month, $year);
+
+		header('Content-Type: application/json');
+		echo json_encode($data);
+	}
 }

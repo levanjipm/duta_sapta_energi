@@ -76,14 +76,22 @@ class Income_class_model extends CI_Model {
 		}
 		
 		public function getItems($offset = 0, $term = '', $limit = 25)
-		{			
-			if($term != ''){
-				$this->db->like('name', $term, 'both');
-				$this->db->or_like('description', $term, 'both');
+		{
+			if($limit == 0){
+				$this->db->order_by('name', 'asc');
+				$query	= $this->db->get($this->table_income, $limit, $offset);
+				$result	= $query->result();
+			} else {
+				if($term != ''){
+					$this->db->like('name', $term, 'both');
+					$this->db->or_like('description', $term, 'both');
+				}
+				$this->db->order_by('name', 'asc');
+			
+				$query	= $this->db->get($this->table_income, $limit, $offset);
+				$result	= $query->result();
 			}
 			
-			$query	= $this->db->get($this->table_income, $limit, $offset);
-			$result	= $query->result();
 			
 			return $result;
 		}

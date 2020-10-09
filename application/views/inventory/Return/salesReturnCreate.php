@@ -46,7 +46,6 @@
 
 
 			<button type='button' class='button button_default_dark' onclick='confirmSalesReturn()'><i class='fa fa-long-arrow-right'></i></button>
-			<button type='button' class='button button_danger_dark' onclick='deleteSalesReturn()'><i class='fa fa-trash'></i></button>
 
 			<input type='hidden' id='salesReturnQuantity' min='1' required>
 			<div class='notificationText danger' id='failedConfirmNotification'><p>Failed to create sales return.</p></div>

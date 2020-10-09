@@ -126,6 +126,10 @@
                 var headerArray = ["Customer", "Sales", { role: 'style'}];
                 customerData.push(headerArray);
                 var opacity = 1;
+				if(response.length <= 5){
+					var repeatEmpty = 5 - response.length
+				};
+
                 $.each(response, function(index, item){
                     var value = parseFloat(item.value);
                     var label = item.name;
@@ -137,6 +141,16 @@
 
                     opacity = opacity - 0.1;
                 });
+
+				if(response.length <= 5){
+					for(i = 1; i <= repeatEmpty; i++){
+						var value = 0;
+						var label = "";
+						var styleString = "color: #01bb00; opacity: " + opacity;
+						var array = [label, value, styleString];
+						customerData.push(array);
+					}
+				}
 
                 if(customerData.length == 1){
                     $('#customerChart').hide();
@@ -175,6 +189,7 @@
         var options = {
             bar: {groupWidth: "95%"},
             legend: { position: "none" },
+			hAxis: {minValue: 0}
         };
 
         var customerChart = new google.visualization.BarChart(document.getElementById("customerChart"));
@@ -182,6 +197,6 @@
     }
 
     function viewPendingSalesOrders(){
-        
+		window.location.href="<?= site_url('Sales_order/trackDashboard') ?>"   
     }
 </script>

@@ -42,26 +42,6 @@ class Purchase_order extends CI_Controller {
 		$this->load->view('Purchasing/PurchaseOrder/createDashboard', $data);
 	}
 	
-	public function addItemToCart()
-	{
-		$item_id	= $this->input->post('item_id');
-		$this->load->model('Item_model');
-		$item = $this->Item_model->showById($item_id);
-		
-		header('Content-Type: application/json');
-		echo json_encode($item);
-	}
-	
-	public function addBonusItemToCart()
-	{
-		$item_id	= $this->input->post('item_id');
-		$this->load->model('Item_model');
-		$item = $this->Item_model->showById($item_id);
-		
-		header('Content-Type: application/json');
-		echo json_encode($item);
-	}
-	
 	public function insertItem()
 	{
 		$this->load->model('Purchase_order_model');
@@ -263,5 +243,60 @@ class Purchase_order extends CI_Controller {
 		$data = $_POST;
 
 		$this->load->view('purchasing/PurchaseOrder/createFromDashboard', $data);
+	}
+	
+	public function closeDashboard()
+	{
+		$user_id		= $this->session->userdata('user_id');
+		$this->load->model('User_model');
+		$data['user_login'] = $this->User_model->getById($user_id);
+		
+		$this->load->model('Authorization_model');
+		$data['departments']	= $this->Authorization_model->getByUserId($user_id);
+		
+		$this->load->view('head');
+		$this->load->view('purchasing/header', $data);
+		$this->load->view('purchasing/PurchaseOrder/closeDashboard');
+	}
+
+	public function getPendingItems()
+	{
+		$page		= $this->input->get('page');
+		$offset		= ($page - 1) * 10;
+
+		$this->load->model("Purchase_order_model");
+
+		$this->load->model("Supplier_model");
+
+		$resultArray = array();
+		$purchaseOrders = $this->Purchase_order_model->getIncompletePurchaseOrder($offset);
+		foreach($purchaseOrders as $purchaseOrder){
+			$supplierId = $purchaseOrder->supplier_id;
+			$supplier = $this->Supplier_model->getById($supplierId);
+			$batch = (array)$purchaseOrder;
+			$batch['supplier'] = (array)$supplier;
+			array_push($resultArray, $batch);
+		}
+
+		$data['items'] = $resultArray;
+		$data['pages'] = max(1, ceil($this->Purchase_order_model->countIncompletePurchaseOrder()/10));
+
+		header('Content-Type: application/json');
+		echo json_encode($data);
+	}
+
+	public function closePurchaseOrder()
+	{
+		$id			= $this->input->post('id');
+		$this->load->model("Purchase_order_model");
+
+		$result = $this->Purchase_order_model->closeById($id);
+		if($result == 1){
+			$this->load->model("Purchase_order_detail_model");
+			$this->Purchase_order_detail_model->closeByCodeId($id);
+			echo 1;
+		} else {
+			echo 0;
+		}
 	}
 }

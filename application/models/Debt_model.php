@@ -1,3 +1,4 @@
+
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
@@ -188,36 +189,192 @@ class Debt_model extends CI_Model {
 			return $this->db->affected_rows();
 		}
 		
-		public function viewPayableChart()
+		public function viewPayableChart($category)
 		{
-			$query		= $this->db->query("
-				SELECT SUM(good_receipt.billed_price * good_receipt.quantity) as value, supplier.name, COALESCE(a.value,0) as paid, code_purchase_order.supplier_id, NULL as other_opponent_id
-				FROM good_receipt 
-				INNER JOIN code_good_receipt ON good_receipt.code_good_receipt_id = code_good_receipt.id 
-				JOIN purchase_order ON good_receipt.purchase_order_id = purchase_order.id
-				INNER JOIN code_purchase_order ON purchase_order.code_purchase_order_id = code_purchase_order.id
-				JOIN supplier ON code_purchase_order.supplier_id = supplier.id
-				JOIN purchase_invoice ON code_good_receipt.invoice_id = purchase_invoice.id
-				LEFT JOIN
-					(SELECT SUM(value) as value, purchase_id FROM payable GROUP BY purchase_id) a
-				ON a.purchase_id = purchase_invoice.id
-				WHERE purchase_invoice.is_done = '0'
-				GROUP BY code_purchase_order.supplier_id
-				UNION
-				(
-					SELECT SUM(purchase_invoice_other.value) as value, COALESCE(supplier.name, other_opponent.name) as name, COALESCE(b.value,0) as paid, purchase_invoice_other.supplier_id, purchase_invoice_other.other_opponent_id
-					FROM purchase_invoice_other
-					LEFT JOIN supplier ON purchase_invoice_other.supplier_id = supplier.id
-					LEFT JOIN other_opponent ON purchase_invoice_other.other_opponent_id = other_opponent.id
-					LEFT JOIN (
-						SELECT SUM(value) AS value, other_purchase_id FROM payable GROUP BY other_purchase_id
-					) b
-					ON b.other_purchase_id = purchase_invoice_other.id
-					WHERE purchase_invoice_other.is_done = '0'
-					AND purchase_invoice_other.is_confirm = '1'
-					GROUP BY IF(purchase_invoice_other.supplier_id = null, purchase_invoice_other.other_opponent_id, purchase_invoice_other.supplier_id)
-				)
-			");
+			if($category == 1){
+				$query		= $this->db->query("
+					SELECT SUM(good_receipt.billed_price * good_receipt.quantity) as value, supplier.name, COALESCE(a.value,0) as paid, code_purchase_order.supplier_id, NULL as other_opponent_id
+					FROM good_receipt 
+					INNER JOIN code_good_receipt ON good_receipt.code_good_receipt_id = code_good_receipt.id 
+					JOIN purchase_order ON good_receipt.purchase_order_id = purchase_order.id
+					INNER JOIN code_purchase_order ON purchase_order.code_purchase_order_id = code_purchase_order.id
+					JOIN supplier ON code_purchase_order.supplier_id = supplier.id
+					JOIN purchase_invoice ON code_good_receipt.invoice_id = purchase_invoice.id
+					LEFT JOIN
+						(SELECT SUM(value) as value, purchase_id FROM payable GROUP BY purchase_id) a
+					ON a.purchase_id = purchase_invoice.id
+					WHERE purchase_invoice.is_done = '0'
+					GROUP BY code_purchase_order.supplier_id
+					UNION
+					(
+						SELECT SUM(purchase_invoice_other.value) as value, COALESCE(supplier.name, other_opponent.name) as name, COALESCE(b.value,0) as paid, purchase_invoice_other.supplier_id, purchase_invoice_other.other_opponent_id
+						FROM purchase_invoice_other
+						LEFT JOIN supplier ON purchase_invoice_other.supplier_id = supplier.id
+						LEFT JOIN other_opponent ON purchase_invoice_other.other_opponent_id = other_opponent.id
+						LEFT JOIN (
+							SELECT SUM(value) AS value, other_purchase_id FROM payable GROUP BY other_purchase_id
+						) b
+						ON b.other_purchase_id = purchase_invoice_other.id
+						WHERE purchase_invoice_other.is_done = '0'
+						AND purchase_invoice_other.is_confirm = '1'
+						GROUP BY IF(purchase_invoice_other.supplier_id = null, purchase_invoice_other.other_opponent_id, purchase_invoice_other.supplier_id)
+					)
+				");
+			} else if($category == 2){
+				$query		= $this->db->query("
+					SELECT SUM(good_receipt.billed_price * good_receipt.quantity) as value, supplier.name, COALESCE(a.value,0) as paid, code_purchase_order.supplier_id, NULL as other_opponent_id
+					FROM good_receipt 
+					INNER JOIN code_good_receipt ON good_receipt.code_good_receipt_id = code_good_receipt.id 
+					JOIN purchase_order ON good_receipt.purchase_order_id = purchase_order.id
+					INNER JOIN code_purchase_order ON purchase_order.code_purchase_order_id = code_purchase_order.id
+					JOIN supplier ON code_purchase_order.supplier_id = supplier.id
+					JOIN purchase_invoice ON code_good_receipt.invoice_id = purchase_invoice.id
+					LEFT JOIN
+						(SELECT SUM(value) as value, purchase_id FROM payable GROUP BY purchase_id) a
+					ON a.purchase_id = purchase_invoice.id
+					WHERE purchase_invoice.is_done = '0'
+					AND purchase_invoice.date >= DATE_ADD(CURDATE(), INTERVAL - code_purchase_order.payment DAY)
+					GROUP BY code_purchase_order.supplier_id
+					UNION
+					(
+						SELECT SUM(purchase_invoice_other.value) as value, COALESCE(supplier.name, other_opponent.name) as name, COALESCE(b.value,0) as paid, purchase_invoice_other.supplier_id, purchase_invoice_other.other_opponent_id
+						FROM purchase_invoice_other
+						LEFT JOIN supplier ON purchase_invoice_other.supplier_id = supplier.id
+						LEFT JOIN other_opponent ON purchase_invoice_other.other_opponent_id = other_opponent.id
+						LEFT JOIN (
+							SELECT SUM(value) AS value, other_purchase_id FROM payable GROUP BY other_purchase_id
+						) b
+						ON b.other_purchase_id = purchase_invoice_other.id
+						WHERE purchase_invoice_other.is_done = '0'
+						AND purchase_invoice_other.is_confirm = '1'
+						GROUP BY IF(purchase_invoice_other.supplier_id = null, purchase_invoice_other.other_opponent_id, purchase_invoice_other.supplier_id)
+					)
+				");
+			} else if($category == 3){
+				$query		= $this->db->query("
+					SELECT SUM(good_receipt.billed_price * good_receipt.quantity) as value, supplier.name, COALESCE(a.value,0) as paid, code_purchase_order.supplier_id, NULL as other_opponent_id
+					FROM good_receipt 
+					INNER JOIN code_good_receipt ON good_receipt.code_good_receipt_id = code_good_receipt.id 
+					JOIN purchase_order ON good_receipt.purchase_order_id = purchase_order.id
+					INNER JOIN code_purchase_order ON purchase_order.code_purchase_order_id = code_purchase_order.id
+					JOIN supplier ON code_purchase_order.supplier_id = supplier.id
+					JOIN purchase_invoice ON code_good_receipt.invoice_id = purchase_invoice.id
+					LEFT JOIN
+						(SELECT SUM(value) as value, purchase_id FROM payable GROUP BY purchase_id) a
+					ON a.purchase_id = purchase_invoice.id
+					WHERE purchase_invoice.is_done = '0'
+					AND purchase_invoice.date >= DATE_ADD(CURDATE(), INTERVAL - 30 DAY)
+					GROUP BY code_purchase_order.supplier_id
+					UNION
+					(
+						SELECT SUM(purchase_invoice_other.value) as value, COALESCE(supplier.name, other_opponent.name) as name, COALESCE(b.value,0) as paid, purchase_invoice_other.supplier_id, purchase_invoice_other.other_opponent_id
+						FROM purchase_invoice_other
+						LEFT JOIN supplier ON purchase_invoice_other.supplier_id = supplier.id
+						LEFT JOIN other_opponent ON purchase_invoice_other.other_opponent_id = other_opponent.id
+						LEFT JOIN (
+							SELECT SUM(value) AS value, other_purchase_id FROM payable GROUP BY other_purchase_id
+						) b
+						ON b.other_purchase_id = purchase_invoice_other.id
+						WHERE purchase_invoice_other.is_done = '0'
+						AND purchase_invoice_other.is_confirm = '1'
+						AND purchase_invoice_other.date >= DATE_ADD(CURDATE(), INTERVAL - 30 DAY)
+						GROUP BY IF(purchase_invoice_other.supplier_id = null, purchase_invoice_other.other_opponent_id, purchase_invoice_other.supplier_id)
+					)
+				");
+			} else if($category == 4){
+				$query		= $this->db->query("
+					SELECT SUM(good_receipt.billed_price * good_receipt.quantity) as value, supplier.name, COALESCE(a.value,0) as paid, code_purchase_order.supplier_id, NULL as other_opponent_id
+					FROM good_receipt 
+					INNER JOIN code_good_receipt ON good_receipt.code_good_receipt_id = code_good_receipt.id 
+					JOIN purchase_order ON good_receipt.purchase_order_id = purchase_order.id
+					INNER JOIN code_purchase_order ON purchase_order.code_purchase_order_id = code_purchase_order.id
+					JOIN supplier ON code_purchase_order.supplier_id = supplier.id
+					JOIN purchase_invoice ON code_good_receipt.invoice_id = purchase_invoice.id
+					LEFT JOIN
+						(SELECT SUM(value) as value, purchase_id FROM payable GROUP BY purchase_id) a
+					ON a.purchase_id = purchase_invoice.id
+					WHERE purchase_invoice.is_done = '0'
+					AND purchase_invoice.date < DATE_ADD(CURDATE(), INTERVAL - 45 DAY) AND purchase_invoice.date >= DATE_ADD(CURDATE(), INTERVAL - 30 DAY)
+					GROUP BY code_purchase_order.supplier_id
+					UNION
+					(
+						SELECT SUM(purchase_invoice_other.value) as value, COALESCE(supplier.name, other_opponent.name) as name, COALESCE(b.value,0) as paid, purchase_invoice_other.supplier_id, purchase_invoice_other.other_opponent_id
+						FROM purchase_invoice_other
+						LEFT JOIN supplier ON purchase_invoice_other.supplier_id = supplier.id
+						LEFT JOIN other_opponent ON purchase_invoice_other.other_opponent_id = other_opponent.id
+						LEFT JOIN (
+							SELECT SUM(value) AS value, other_purchase_id FROM payable GROUP BY other_purchase_id
+						) b
+						ON b.other_purchase_id = purchase_invoice_other.id
+						WHERE purchase_invoice_other.is_done = '0'
+						AND purchase_invoice_other.is_confirm = '1'
+						AND purchase_invoice_other.date < DATE_ADD(CURDATE(), INTERVAL - 45 DAY) AND purchase_invoice_other.date >= DATE_ADD(CURDATE(), INTERVAL - 30 DAY)
+						GROUP BY IF(purchase_invoice_other.supplier_id = null, purchase_invoice_other.other_opponent_id, purchase_invoice_other.supplier_id)
+					)
+				");
+			} else if($category == 5){
+				$query		= $this->db->query("
+					SELECT SUM(good_receipt.billed_price * good_receipt.quantity) as value, supplier.name, COALESCE(a.value,0) as paid, code_purchase_order.supplier_id, NULL as other_opponent_id
+					FROM good_receipt 
+					INNER JOIN code_good_receipt ON good_receipt.code_good_receipt_id = code_good_receipt.id 
+					JOIN purchase_order ON good_receipt.purchase_order_id = purchase_order.id
+					INNER JOIN code_purchase_order ON purchase_order.code_purchase_order_id = code_purchase_order.id
+					JOIN supplier ON code_purchase_order.supplier_id = supplier.id
+					JOIN purchase_invoice ON code_good_receipt.invoice_id = purchase_invoice.id
+					LEFT JOIN
+						(SELECT SUM(value) as value, purchase_id FROM payable GROUP BY purchase_id) a
+					ON a.purchase_id = purchase_invoice.id
+					WHERE purchase_invoice.is_done = '0'
+					AND purchase_invoice.date < DATE_ADD(CURDATE(), INTERVAL - 60 DAY) AND purchase_invoice.date >= DATE_ADD(CURDATE(), INTERVAL - 45 DAY)
+					GROUP BY code_purchase_order.supplier_id
+					UNION
+					(
+						SELECT SUM(purchase_invoice_other.value) as value, COALESCE(supplier.name, other_opponent.name) as name, COALESCE(b.value,0) as paid, purchase_invoice_other.supplier_id, purchase_invoice_other.other_opponent_id
+						FROM purchase_invoice_other
+						LEFT JOIN supplier ON purchase_invoice_other.supplier_id = supplier.id
+						LEFT JOIN other_opponent ON purchase_invoice_other.other_opponent_id = other_opponent.id
+						LEFT JOIN (
+							SELECT SUM(value) AS value, other_purchase_id FROM payable GROUP BY other_purchase_id
+						) b
+						ON b.other_purchase_id = purchase_invoice_other.id
+						WHERE purchase_invoice_other.is_done = '0'
+						AND purchase_invoice_other.is_confirm = '1'
+						AND purchase_invoice_other.date < DATE_ADD(CURDATE(), INTERVAL - 60 DAY) AND purchase_invoice_other.date >= DATE_ADD(CURDATE(), INTERVAL - 45 DAY)
+						GROUP BY IF(purchase_invoice_other.supplier_id = null, purchase_invoice_other.other_opponent_id, purchase_invoice_other.supplier_id)
+					)
+				");
+			} else if($category == 6){
+				$query		= $this->db->query("
+					SELECT SUM(good_receipt.billed_price * good_receipt.quantity) as value, supplier.name, COALESCE(a.value,0) as paid, code_purchase_order.supplier_id, NULL as other_opponent_id
+					FROM good_receipt 
+					INNER JOIN code_good_receipt ON good_receipt.code_good_receipt_id = code_good_receipt.id 
+					JOIN purchase_order ON good_receipt.purchase_order_id = purchase_order.id
+					INNER JOIN code_purchase_order ON purchase_order.code_purchase_order_id = code_purchase_order.id
+					JOIN supplier ON code_purchase_order.supplier_id = supplier.id
+					JOIN purchase_invoice ON code_good_receipt.invoice_id = purchase_invoice.id
+					LEFT JOIN
+						(SELECT SUM(value) as value, purchase_id FROM payable GROUP BY purchase_id) a
+					ON a.purchase_id = purchase_invoice.id
+					WHERE purchase_invoice.is_done = '0'
+					AND purchase_invoice.date < DATE_ADD(CURDATE(), INTERVAL - 60 DAY)
+					GROUP BY code_purchase_order.supplier_id
+					UNION
+					(
+						SELECT SUM(purchase_invoice_other.value) as value, COALESCE(supplier.name, other_opponent.name) as name, COALESCE(b.value,0) as paid, purchase_invoice_other.supplier_id, purchase_invoice_other.other_opponent_id
+						FROM purchase_invoice_other
+						LEFT JOIN supplier ON purchase_invoice_other.supplier_id = supplier.id
+						LEFT JOIN other_opponent ON purchase_invoice_other.other_opponent_id = other_opponent.id
+						LEFT JOIN (
+							SELECT SUM(value) AS value, other_purchase_id FROM payable GROUP BY other_purchase_id
+						) b
+						ON b.other_purchase_id = purchase_invoice_other.id
+						WHERE purchase_invoice_other.is_done = '0'
+						AND purchase_invoice_other.is_confirm = '1'
+						AND purchase_invoice_other.date < DATE_ADD(CURDATE(), INTERVAL - 60 DAY)
+						GROUP BY IF(purchase_invoice_other.supplier_id = null, purchase_invoice_other.other_opponent_id, purchase_invoice_other.supplier_id)
+					)
+				");
+			}
 			$result		= $query->result();
 			
 			return $result;
@@ -226,7 +383,8 @@ class Debt_model extends CI_Model {
 		public function getPayableBySupplierId($supplierId)
 		{
 			$query = $this->db->query("
-				SELECT purchase_invoice.*, SUM(good_receipt.billed_price * good_receipt.quantity) as value, COALESCE(a.value,0) AS paid FROM good_receipt
+				SELECT purchase_invoice.*, SUM(good_receipt.billed_price * good_receipt.quantity) as value, COALESCE(a.value,0) AS paid, 1 AS type 
+				FROM good_receipt
 				INNER JOIN code_good_receipt ON good_receipt.code_good_receipt_id = code_good_receipt.id 
 				JOIN purchase_order ON good_receipt.purchase_order_id = purchase_order.id
 				INNER JOIN code_purchase_order ON purchase_order.code_purchase_order_id = code_purchase_order.id
@@ -239,7 +397,7 @@ class Debt_model extends CI_Model {
 				AND code_purchase_order.supplier_id = '$supplierId'
 				GROUP BY code_good_receipt.invoice_id
 				UNION (
-					SELECT purchase_invoice_other.id, purchase_invoice_other.date,  purchase_invoice_other.tax_document, purchase_invoice_other.invoice_document, purchase_invoice_other.created_by, purchase_invoice_other.is_confirm, purchase_invoice_other.is_delete, purchase_invoice_other.confirmed_by, purchase_invoice_other.is_done, purchase_invoice_other.value, COALESCE(b.value,0) as paid
+					SELECT purchase_invoice_other.id, purchase_invoice_other.date,  purchase_invoice_other.tax_document, purchase_invoice_other.invoice_document, purchase_invoice_other.created_by, purchase_invoice_other.is_confirm, purchase_invoice_other.is_delete, purchase_invoice_other.confirmed_by, purchase_invoice_other.is_done, purchase_invoice_other.value, COALESCE(b.value,0) as paid, 2 AS type
 					FROM purchase_invoice_other
 					LEFT JOIN (
 						SELECT SUM(value) as value, payable.other_purchase_id FROM payable GROUP BY payable.other_purchase_id
@@ -250,6 +408,36 @@ class Debt_model extends CI_Model {
 			");
 
 			$result = $query->result();
+			return $result;
+		}
+
+		public function getCompletePayableBySupplierId($supplierId)
+		{
+			$query = $this->db->query("
+				SELECT purchase_invoice.*, SUM(good_receipt.billed_price * good_receipt.quantity) as value, COALESCE(a.value,0) AS paid, 1 AS type 
+				FROM good_receipt
+				INNER JOIN code_good_receipt ON good_receipt.code_good_receipt_id = code_good_receipt.id 
+				JOIN purchase_order ON good_receipt.purchase_order_id = purchase_order.id
+				INNER JOIN code_purchase_order ON purchase_order.code_purchase_order_id = code_purchase_order.id
+				JOIN supplier ON code_purchase_order.supplier_id = supplier.id
+				JOIN purchase_invoice ON code_good_receipt.invoice_id = purchase_invoice.id
+				LEFT JOIN
+					(SELECT SUM(value) as value, purchase_id FROM payable GROUP BY purchase_id) a
+				ON a.purchase_id = purchase_invoice.id
+				AND code_purchase_order.supplier_id = '$supplierId'
+				GROUP BY code_good_receipt.invoice_id
+				UNION (
+					SELECT purchase_invoice_other.id, purchase_invoice_other.date,  purchase_invoice_other.tax_document, purchase_invoice_other.invoice_document, purchase_invoice_other.created_by, purchase_invoice_other.is_confirm, purchase_invoice_other.is_delete, purchase_invoice_other.confirmed_by, purchase_invoice_other.is_done, purchase_invoice_other.value, COALESCE(b.value,0) as paid, 2 AS type
+					FROM purchase_invoice_other
+					LEFT JOIN (
+						SELECT SUM(value) as value, payable.other_purchase_id FROM payable GROUP BY payable.other_purchase_id
+					) AS b
+					ON b.other_purchase_id = purchase_invoice_other.id
+					WHERE purchase_invoice_other.supplier_id = '$supplierId'
+				)
+			");
+
+			$result		= $query->result();
 			return $result;
 		}
 
@@ -271,7 +459,7 @@ class Debt_model extends CI_Model {
 		public function getIncompletedTransaction($supplier_id)
 		{
 			$query		= $this->db->query("
-				SELECT a.value as value, COALESCE(b.paid,0) as paid, purchase_invoice.id, purchase_invoice.date, purchase_invoice.invoice_document as name, purchase_invoice.tax_document
+				SELECT a.value as value, COALESCE(b.paid,0) as paid, purchase_invoice.id, purchase_invoice.date, purchase_invoice.invoice_document as name, purchase_invoice.tax_document, 1 AS type
 				FROM (
 					SELECT SUM(good_receipt.quantity * good_receipt.billed_price) as value, code_good_receipt.invoice_id
 					FROM good_receipt
@@ -287,7 +475,18 @@ class Debt_model extends CI_Model {
 					GROUP BY purchase_id
 					) b
 				ON a.invoice_id = b.purchase_id
-				WHERE purchase_invoice.is_done = '0'				
+				WHERE purchase_invoice.is_done = '0'
+				UNION (
+					SELECT purchase_invoice_other.value, COALESCE(payableTable.paid, 0) AS paid, purchase_invoice_other.id, purchase_invoice_other.date, purchase_invoice_other.invoice_document as name, purchase_invoice_other.tax_document, 2 AS type
+					FROM purchase_invoice_other
+					LEFT JOIN (
+						SELECT SUM(payable.value) AS paid, payable.other_purchase_id
+						FROM payable
+						GROUP BY payable.other_purchase_id
+					) payableTable
+					ON payableTable.other_purchase_id = purchase_invoice_other.id
+					WHERE purchase_invoice_other.is_done = '0'
+				)
 			");
 			
 			$result	= $query->result();
@@ -359,4 +558,136 @@ class Debt_model extends CI_Model {
 
 			return $result;
 		}
-}
+
+		public function getConfirmedItems($month, $year, $offset = 0, $limit = 10)
+		{
+			$query			= $this->db->query("
+				SELECT purchase_invoice.id, purchase_invoice.date, purchase_invoice.tax_document, purchase_invoice.invoice_document, supplier.name as supplierName, supplier.city as type, 'regular' as class
+				FROM purchase_invoice
+				JOIN (
+					SELECT DISTINCT(code_good_receipt.invoice_id) AS id, code_purchase_order.supplier_id 
+					FROM code_good_receipt
+					JOIN good_receipt ON good_receipt.code_good_receipt_id = code_good_receipt.id
+					JOIN purchase_order ON good_receipt.purchase_order_id = purchase_order.id
+					JOIN code_purchase_order ON purchase_order.code_purchase_order_id = code_purchase_order.id
+					GROUP BY code_good_receipt.invoice_id
+				) AS a
+				ON a.id = purchase_invoice.id
+				JOIN supplier ON a.supplier_id = supplier.id
+				WHERE MONTH(purchase_invoice.date) = '$month' AND YEAR(purchase_invoice.date) = '$year'
+				AND purchase_invoice.is_delete = '0'
+				AND purchase_invoice.is_confirm = '1'
+				UNION (
+					SELECT purchase_invoice_other.id, purchase_invoice_other.date, purchase_invoice_other.tax_document, purchase_invoice_other.invoice_document, COALESCE(supplier.name, other_opponent.name) AS supplierName, COALESCE(supplier.city, other_opponent.description) AS type, 'blank' as class
+					FROM purchase_invoice_other
+					JOIN debt_type ON purchase_invoice_other.type = debt_type.id
+					LEFT JOIN supplier ON purchase_invoice_other.supplier_id = supplier.id
+					LEFT JOIN other_opponent ON purchase_invoice_other.other_opponent_id = other_opponent.id
+					WHERE MONTH(purchase_invoice_other.date) = '$month' AND YEAR(purchase_invoice_other.date) = '$year'
+					AND purchase_invoice_other.is_delete = '0'
+					AND purchase_invoice_other.is_confirm = '1'
+				)
+				ORDER BY date ASC
+				LIMIT $limit OFFSET $offset
+			");
+
+			$result			= $query->result();
+			return $result;
+		}
+		
+		public function countConfirmedItems($month, $year)
+		{
+			$query			= $this->db->query("
+				SELECT purchase_invoice.id
+				FROM purchase_invoice
+				WHERE MONTH(purchase_invoice.date) = '$month' AND YEAR(purchase_invoice.date) = '$year'
+				AND purchase_invoice.is_delete = '0'
+				AND purchase_invoice.is_confirm = '1'
+				UNION (
+					SELECT purchase_invoice_other.id
+					FROM purchase_invoice_other
+					WHERE MONTH(purchase_invoice_other.date) = '$month' AND YEAR(purchase_invoice_other.date) = '$year'
+					AND purchase_invoice_other.is_delete = '0'
+					AND purchase_invoice_other.is_confirm = '1'
+				)
+			");
+
+			$result			= $query->num_rows();
+			return $result;
+		}
+
+		public function deleteDebtById($id)
+		{
+			$this->db->select('payable.*');
+			$this->db->from('payable');
+			$this->db->where('payable.purchase_id', $id);
+			$query			= $this->db->get();
+			$result			= $query->num_rows();
+
+			if($result == 0){
+				$this->db->set('is_delete', 1);
+				$this->db->set('is_confirm ', 0);
+				$this->db->set('confirmed_by', $this->session->userdata('user_id'));
+				$this->db->where('is_confirm', 1);
+				$this->db->where('id', $id);
+
+				$query		= $this->db->update($this->table_purchase_invoice);
+				$result		= $this->db->affected_rows();
+				return $result;
+			} else {
+				return 0;
+			}
+		}
+
+		public function setInvoiceAsDone($invoiceId, $date)
+		{
+			$query			= $this->db->query("
+				SELECT goodReceiptTable.value, COALESCE(payableTable.value, 0) AS paid
+				FROM (
+					SELECT SUM(good_receipt.quantity * good_receipt.billed_price) AS value, code_good_receipt.invoice_id
+					FROM good_receipt
+					JOIN code_good_receipt
+					ON good_receipt.code_good_receipt_id = code_good_receipt_id
+					GROUP BY code_good_receipt.invoice_id
+				) goodReceiptTable
+				LEFT JOIN (
+					SELECT SUM(value) AS value, purchase_id FROM payable
+					GROUP BY purchase_id
+				) payableTable
+				ON payableTable.purchase_id = goodReceiptTable.invoice_id
+			");
+
+			$result			= $query->row();
+			$value			= $result->value;
+			$paid			= $result->paid;
+			if($value > $paid){
+				$db_item		= array(
+					"id" => "",
+					"value" => ($value - $paid),
+					"bank_id" => NULL,
+					"date" => $date,
+					"purchase_id" => $invoiceId,
+					"other_purchase_id" => NULL
+				);
+
+				$this->db->insert("payable", $db_item);
+				if($this->db->affected_rows() == 1){
+					$this->db->set('is_done', 1);
+					$this->db->where('id', $invoiceId);
+					$this->db->update($this->table_purchase_invoice);
+				}
+
+				return 1;
+			} else {
+				return 0;
+			}
+		}
+
+		public function updateDoneStatusByIdArray($idArray)
+		{
+			$this->db->set('is_done', 0);
+			$this->db->where_in("id", $idArray);
+			$this->db->update($this->table_purchase_invoice);
+		}
+	}
+?>

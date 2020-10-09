@@ -14,6 +14,7 @@ class Sales_order_model extends CI_Model {
 		public $guid;
 		public $invoicing_method;
 		public $created_by;
+		public $note;
 		
 		public $customer_name;
 		public $customer_address;
@@ -36,6 +37,7 @@ class Sales_order_model extends CI_Model {
 			$this->guid					= $db_item->guid;
 			$this->invoicing_method		= $db_item->invoicing_method;
 			$this->created_by			= $db_item->created_by;
+			$this->note					= $db_item->note;
 			
 			return $this;
 		}
@@ -54,6 +56,7 @@ class Sales_order_model extends CI_Model {
 			$db_item->guid					= $this->guid;
 			$db_item->invoicing_method		= $this->invoicing_method;
 			$db_item->created_by			= $this->created_by;
+			$db_item->note					= $this->note;
 			
 			return $db_item;
 		}
@@ -72,6 +75,7 @@ class Sales_order_model extends CI_Model {
 			$stub->guid					= $db_item->guid;
 			$stub->invoicing_method		= $db_item->invoicing_method;
 			$stub->created_by			= $db_item->created_by;
+			$stub->note					= $db_item->note;
 			
 			$stub->customer_name 		= $db_item->customer_name;
 			$stub->customer_address 	= $db_item->customer_address;
@@ -92,6 +96,7 @@ class Sales_order_model extends CI_Model {
 			$stub->is_confirm			= $db_item->is_confirm;
 			$stub->guid					= $db_item->guid;
 			$stub->invoicing_method		= $db_item->invoicing_method;
+			$stub->note					= $db_item->note;
 			return $stub;
 		}
 		
@@ -139,7 +144,7 @@ class Sales_order_model extends CI_Model {
 				) as sellerTable
 				ON code_sales_order.seller = sellerTable.id
 				JOIN (
-					SELECT sales_order.code_sales_order_id, SUM(sales_order.quantity) AS quantity, IF(sales_order.status = 1, SUM(sales_order.quantity), SUM(sales_order.sent)) as sent
+					SELECT sales_order.code_sales_order_id, SUM(sales_order.quantity) AS quantity, SUM(IF(sales_order.status = 1, sales_order.quantity, sales_order.sent)) as sent
 					FROM sales_order
 					GROUP BY sales_order.code_sales_order_id
 				) as salesOrderTable
@@ -150,7 +155,13 @@ class Sales_order_model extends CI_Model {
 				ON code_sales_order.id = incompletedSalesOrderTable.id
 				JOIN customer ON code_sales_order.customer_id = customer.id
 				WHERE code_sales_order.is_confirm = '1'
+				AND code_sales_order.id NOT IN (
+					SELECT code_sales_order_close_request.id
+					FROM code_sales_order_close_request
+					WHERE is_confirm = '1'	
+				)
 				AND (code_sales_order.name LIKE '%$term%' OR customer.name LIKE '%$term%' OR customer.city LIKE '%$term%');
+				LIMIT 10 OFFSET $offset
 			");
 
 			$result = $query->result();
@@ -168,6 +179,140 @@ class Sales_order_model extends CI_Model {
 				ON a.id = code_sales_order.id
 				WHERE code_sales_order.is_confirm = '1'
 				AND code_sales_order.name LIKE '%$term%'
+			");
+
+			$result = $query->num_rows();
+			return $result;
+		}
+
+		public function getIncompleteSalesOrderDelivery($offset, $term = "", $areaArray)
+		{
+			$inString = "(";
+			foreach($areaArray as $area){
+				$inString .= "'" . $area . "',";
+			}
+
+			$inString = substr($inString, 0, -1);
+			$inString .= ")";
+			
+			$query = $this->db->query("
+				SELECT code_sales_order.*, sellerTable.name as seller, salesOrderTable.quantity, salesOrderTable.sent
+				FROM code_sales_order
+				LEFT JOIN (
+					SELECT id, name FROM users
+				) as sellerTable
+				ON code_sales_order.seller = sellerTable.id
+				JOIN (
+					SELECT sales_order.code_sales_order_id, SUM(sales_order.quantity) AS quantity, SUM(IF(sales_order.status = 1, sales_order.quantity, sales_order.sent)) as sent
+					FROM sales_order
+					GROUP BY sales_order.code_sales_order_id
+				) as salesOrderTable
+				ON salesOrderTable.code_sales_order_id = code_sales_order.id
+				JOIN (
+					SELECT DISTINCT(sales_order.code_sales_order_id) as id FROM sales_order WHERE status = '0'
+				) as incompletedSalesOrderTable
+				ON code_sales_order.id = incompletedSalesOrderTable.id
+				JOIN customer ON code_sales_order.customer_id = customer.id
+				WHERE code_sales_order.is_confirm = '1'
+				AND code_sales_order.id NOT IN (
+					SELECT code_sales_order_close_request.id
+					FROM code_sales_order_close_request
+					WHERE is_confirm = '1'	
+				)
+				AND (code_sales_order.name LIKE '%$term%' OR customer.name LIKE '%$term%' OR customer.city LIKE '%$term%')
+				AND customer.area_id IN $inString
+				LIMIT 10 OFFSET $offset
+			");
+
+			$result = $query->result();
+			return $result;
+		}
+
+		public function countIncompleteSalesOrderDelivery($term = "", $areaArray)
+		{
+			$inString = "(";
+			foreach($areaArray as $area){
+				$inString .= "'" . $area . "',";
+			}
+
+			$inString = substr($inString, 0, -1);
+			$inString .= ")";
+
+			$query = $this->db->query("
+				SELECT code_sales_order.* 
+				FROM code_sales_order 
+				JOIN (
+					SELECT DISTINCT(sales_order.code_sales_order_id) as id FROM sales_order
+					WHERE status = '0' 	
+				) as a
+				ON a.id = code_sales_order.id
+				JOIN customer ON code_sales_order.customer_id = customer.id
+				WHERE code_sales_order.is_confirm = '1'
+				AND code_sales_order.name LIKE '%$term%'
+				AND (code_sales_order.name LIKE '%$term%' OR customer.name LIKE '%$term%' OR customer.city LIKE '%$term%')
+				AND code_sales_order.id NOT IN (
+					SELECT code_sales_order_close_request.id
+					FROM code_sales_order_close_request
+					WHERE is_confirm = '1'	
+				)
+				AND customer.area_id IN $inString
+			");
+
+			$result = $query->num_rows();
+			return $result;
+		}
+
+		public function getUnclosedSalesOrders($offset, $term = "")
+		{
+			$query = $this->db->query("
+				SELECT code_sales_order.*, sellerTable.name as seller, salesOrderTable.quantity, salesOrderTable.sent
+				FROM code_sales_order
+				LEFT JOIN (
+					SELECT id, name 
+					FROM users
+				) AS sellerTable
+				ON code_sales_order.seller = sellerTable.id
+				JOIN (
+					SELECT sales_order.code_sales_order_id, SUM(sales_order.quantity) AS quantity, IF(sales_order.status = 1, SUM(sales_order.quantity), SUM(sales_order.sent)) as sent
+					FROM sales_order
+					GROUP BY sales_order.code_sales_order_id
+				) as salesOrderTable
+				ON salesOrderTable.code_sales_order_id = code_sales_order.id
+				JOIN (
+					SELECT DISTINCT(sales_order.code_sales_order_id) as id FROM sales_order WHERE status = '0'
+				) as incompletedSalesOrderTable
+				ON code_sales_order.id = incompletedSalesOrderTable.id
+				JOIN customer ON code_sales_order.customer_id = customer.id
+				WHERE code_sales_order.is_confirm = '1'
+				AND (code_sales_order.name LIKE '%$term%' OR customer.name LIKE '%$term%' OR customer.city LIKE '%$term%')
+				AND code_sales_order.id NOT IN (
+					SELECT DISTINCT(code_sales_order_close_request.code_sales_order_id) AS id
+					FROM code_sales_order_close_request
+					WHERE is_approved IS NULL
+				);
+			");
+
+			$result = $query->result();
+			return $result;
+		}
+
+		public function countUnclosedSalesOrders($term = "")
+		{
+			$query = $this->db->query("
+				SELECT code_sales_order.id
+				FROM code_sales_order
+				JOIN (
+					SELECT DISTINCT(sales_order.code_sales_order_id) as id FROM sales_order WHERE status = '0'
+				) as incompletedSalesOrderTable
+				ON code_sales_order.id = incompletedSalesOrderTable.id
+				JOIN customer ON code_sales_order.customer_id = customer.id
+				WHERE code_sales_order.is_confirm = '1'
+				AND (code_sales_order.name LIKE '%$term%' OR customer.name LIKE '%$term%' OR customer.city LIKE '%$term%')
+				AND code_sales_order.id NOT IN (
+					SELECT DISTINCT(code_sales_order_close_request.code_sales_order_id) AS id
+					FROM code_sales_order_close_request
+					WHERE is_approved IS NULL
+				);
 			");
 
 			$result = $query->num_rows();
@@ -255,6 +400,7 @@ class Sales_order_model extends CI_Model {
 				$this->guid				= $guid;
 				$this->invoicing_method	= $this->input->post('method');
 				$this->created_by		= $this->session->userdata('user_id');
+				$this->note				= $this->input->post('note');
 				
 				$db_item 				= $this->get_db_from_stub();
 				$db_result 				= $this->db->insert($this->table_sales_order, $db_item);
@@ -328,15 +474,14 @@ class Sales_order_model extends CI_Model {
 			$this->db->join('users', 'code_sales_order.seller = users.id', 'left');
 			$this->db->join('customer', 'code_sales_order.customer_id = customer.id');
 			
+			$this->db->where('sales_order.status', 0);
+			$this->db->where('code_sales_order.is_confirm', 0);
+			$this->db->where('code_sales_order.is_delete', 0);
 			if($filter != ''){
 				$this->db->like('customer.name', $filter,'both');
 				$this->db->or_like('customer.address', $filter,'both');
 				$this->db->or_like('code_sales_order.name', $filter, 'both');
 			}
-			
-			$this->db->where('sales_order.status', 0);
-			$this->db->where('code_sales_order.is_confirm', 0);
-			$this->db->where('code_sales_order.is_delete', 0);
 			$this->db->order_by('code_sales_order.date');
 			$this->db->limit($limit, $offset);
 			$query 		= $this->db->get();
@@ -466,6 +611,62 @@ class Sales_order_model extends CI_Model {
 				WHERE code_sales_order.customer_id = '$customerId';
 			");
 			$result = $query->result();
+			return $result;
+		}
+
+		public function getCountByCustomerId($customerId)
+		{
+			$query			= $this->db->query("
+				SELECT COUNT(code_sales_order.id) AS count, MONTH(code_sales_order.date) AS month, YEAR(code_sales_order.date) AS year, a.value
+				FROM code_sales_order
+				JOIN (
+					SELECT SUM(price_list.price_list * (100 - sales_order.discount) * sales_order.quantity / 100) AS value, sales_order.code_sales_order_id
+					FROM sales_order
+					JOIN price_list ON price_list.id = sales_order.price_list_id
+					GROUP BY sales_order.code_sales_order_id
+				) a
+				ON a.code_sales_order_id = code_sales_order.id
+				WHERE code_sales_order.customer_id = '$customerId' AND code_sales_order.date >= DATE_ADD(CURDATE(), INTERVAL -12 MONTH)
+				GROUP BY MONTH(code_sales_order.date), YEAR(code_sales_order.date)
+				ORDER BY code_sales_order.date DESC
+			");
+
+			$result = $query->result();
+			return $result;
+		}
+
+		public function getByCustomerIdWeekly($customerId)
+		{
+			$query			= $this->db->query("
+				SELECT COUNT(code_sales_order.id) AS count, CONCAT(YEAR(date), '/', WEEK(date)) AS week_name, YEAR(code_sales_order.date)  AS year, WEEK(code_sales_order.date) AS week
+				FROM code_sales_order
+				WHERE code_sales_order.customer_id = '$customerId' AND code_sales_order.is_confirm = '1' AND code_sales_order.date >= NOW() - INTERVAL 12 WEEK
+				GROUP BY week_name
+				ORDER BY YEAR(code_sales_order.date) ASC, WEEK(code_sales_order.date) ASC
+			");
+
+			$result		= $query->result();
+			return $result;
+		}
+
+		public function getConfirmedByCustomerId($customerId, $offset = 0, $limit = 10)
+		{
+			$this->db->where('customer_id', $customerId);
+			$this->db->where('is_confirm', 1);
+			$this->db->limit($limit, $offset);
+
+			$query		= $this->db->get($this->table_sales_order);
+			$result		= $query->result();
+			return $result;
+		}
+
+		public function countConfirmedByCustomerId($customerId)
+		{
+			$this->db->where('customer_id', $customerId);
+			$this->db->where('is_confirm', 1);
+
+			$query		= $this->db->get($this->table_sales_order);
+			$result		= $query->num_rows();
 			return $result;
 		}
 }

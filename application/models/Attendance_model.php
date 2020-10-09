@@ -115,4 +115,38 @@ class Attendance_model extends CI_Model {
 			$result = $query->result();
 			return $result;
 		}
+
+		public function getItems($userId, $offset = 0, $limit = 10)
+		{
+			$this->db->select('attendance_status.name, attendance_status.description, attendance_status.point, attendance_list.date, attendance_list.time, attendance_list.id');
+			$this->db->from('attendance_list');
+			$this->db->join('attendance_status', 'attendance_list.status = attendance_status.id');
+			$this->db->where('attendance_list.user_id', $userId);
+			$this->db->order_by('attendance_list.date', "DESC");
+			$this->db->limit($limit, $offset);
+
+			$query			= $this->db->get();
+			$result			= $query->result();
+			return $result;
+		}
+
+		public function countItems($userId)
+		{
+			$this->db->where('user_id', $userId);
+			$query		= $this->db->get($this->table_attendance);
+			$result		= $query->num_rows();
+			return $result;
+		}
+
+		public function getById($id)
+		{
+			$this->db->select('attendance_status.name, attendance_status.description, attendance_status.point, attendance_list.date, attendance_list.time, attendance_list.id');
+			$this->db->from('attendance_list');
+			$this->db->join('attendance_status', 'attendance_list.status = attendance_status.id');
+			$this->db->where("attendance_list.id", $id);
+
+			$query			= $this->db->get();
+			$result			= $query->row();
+			return $result;
+		}
 }

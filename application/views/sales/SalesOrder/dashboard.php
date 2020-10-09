@@ -7,7 +7,7 @@
 	</div>
 	<br>
 	<div class='dashboard_in'>
-		<input type='text' class='form-control input-lg' id='search_bar' placeholder="Search sales order">
+		<input type='text' class='form-control' id='search_bar' placeholder="Search sales order">
 		<br>
 		
 		<div id='empty_text'>
@@ -74,6 +74,9 @@
 			<tbody id='sales_order_item_table'></tbody>
 		</table>
 
+		<label>Note</label>
+		<p style='font-family:museo' id='salesOrderNote_p'></p>
+
 		<div class='notificationText danger' id='warningDebtText'><i class='fa fa-exclamation-triangle'></i> Warning! We found a problem while checking customer's account.</p></div>
 		<div class='notificationText warning' id='warningPlafondText'><i class='fa fa-exclamation-triangle'></i> Warning! Plafond exceeded with current sales order.</p></div>
 
@@ -123,6 +126,8 @@
 					var sales_order_name	= sales_order.name;
 					var sales_order_id		= sales_order.id;
 					var seller				= sales_order.seller;
+					var note				= sales_order.note;
+					$('#salesOrderNote_p').html((note == "" || note == null) ? "<i>Not available</i>" : note);
 					if(seller == null){
 						seller		= "<i>Not available</i>";
 					}

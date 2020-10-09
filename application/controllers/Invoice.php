@@ -91,16 +91,25 @@ class Invoice extends CI_Controller {
 			$this->load->model('Delivery_order_detail_model');
 			$data['details'] = $this->Delivery_order_detail_model->getByCodeDeliveryOrderId($deliveryOrderId);
 			
-			$this->load->model('Delivery_order_model');
-	
-			$this->load->model('Invoice_model');
-			$resultInsertInvoice = $this->Invoice_model->insertFromDeliveryOrder($result);
-			if($resultInsertInvoice){
-				$this->Delivery_order_model->updateInvoiceId($deliveryOrderId, $resultInsertInvoice);
-				$this->load->view('head');
-				$this->load->view('accounting/invoice/printRetailInvoice', $data);			
+			$deliveryOrder		= $this->Delivery_order_model->getById($deliveryOrderId);
+			if($deliveryOrder->invoice_id == NULL){
+				$this->load->model('Invoice_model');
+				$resultInsertInvoice = $this->Invoice_model->insertFromDeliveryOrder($result);
+				if($resultInsertInvoice){
+					$this->Delivery_order_model->updateInvoiceId($deliveryOrderId, $resultInsertInvoice);
+					
+					$data['invoice'] = $this->Invoice_model->getById($resultInsertInvoice);
+					$this->load->view('head');
+					$this->load->view('accounting/invoice/printRetailInvoice', $data);
+
+				} else {
+					redirect(site_url('Invoice'));
+				}	
 			} else {
-				redirect(site_url('Invoice'));
+				$this->load->model('Invoice_model');
+				$data['invoice'] = $this->Invoice_model->getById($deliveryOrder->invoice_id);
+				$this->load->view('head');
+				$this->load->view('accounting/invoice/printRetailInvoice', $data);
 			}
 		}
 	}
@@ -113,6 +122,39 @@ class Invoice extends CI_Controller {
 		$result = $this->Delivery_order_model->getById($deliveryOrderId);
 		if($result->invoicing_method != 2 && $result->invoice_id == null){
 			redirect(site_url('Invoice'));
+		} else {
+			$user_id		= $this->session->userdata('user_id');
+			$this->load->model('User_model');
+			$data['user_login'] = $this->User_model->getById($user_id);
+		
+			$this->load->model('Authorization_model');
+			$data['departments']	= $this->Authorization_model->getByUserId($user_id);
+		
+			$this->load->view('head');
+			$this->load->view('accounting/header', $data);
+
+			$data = array();
+
+			$data['deliveryOrder'] = $result;
+
+			$customer_id	= $result->customer_id;
+			$this->load->model('Customer_model');
+			$data['customer'] = $this->Customer_model->getById($customer_id);
+	
+			$this->load->model('Delivery_order_detail_model');
+			$data['details'] = $this->Delivery_order_detail_model->getByCodeDeliveryOrderId($deliveryOrderId);
+			$this->load->view('accounting/invoice/createCoorporateInvoice', $data);			
+		}
+	}
+	
+	public function insertCoorporateInvoice()
+	{
+		$deliveryOrderId = $this->input->post('id');
+
+		$this->load->model('Delivery_order_model');
+		$result = $this->Delivery_order_model->getById($deliveryOrderId);
+		if($result->invoicing_method != 2 && $result->invoice_id != null){
+			redirect(site_url('Invoice/createCoorporateInvoice'));
 		} else {
 			$data['deliveryOrder'] = $result;
 
@@ -129,14 +171,51 @@ class Invoice extends CI_Controller {
 			$resultInsertInvoice = $this->Invoice_model->insertFromDeliveryOrder($result);
 			if($resultInsertInvoice){
 				$this->Delivery_order_model->updateInvoiceId($deliveryOrderId, $resultInsertInvoice);
-				$this->load->view('head');
-				$this->load->view('accounting/invoice/printCoorporateInvoice', $data);			
+				redirect(site_url('Invoice/printCoorporateInvoice/') . $resultInsertInvoice);			
 			} else {
-				redirect(site_url('Invoice'));
+				redirect(site_url('Invoice/createCoorporateInvoice'));
 			}
 		}
 	}
-	
+
+	public function printCoorporateInvoice($invoiceId)
+	{
+		$user_id		= $this->session->userdata('user_id');
+		$this->load->model('User_model');
+		$data['user_login'] = $this->User_model->getById($user_id);
+		
+		$this->load->model('Authorization_model');
+		$data['departments']	= $this->Authorization_model->getByUserId($user_id);
+		
+		$this->load->view('head');
+		$this->load->view('accounting/header', $data);
+		$data = array();
+
+		$this->load->model("Delivery_order_model");
+		$deliveryOrder = $this->Delivery_order_model->getByInvoiceId($invoiceId);
+
+		$customerId			= $deliveryOrder->customer_id;
+		$deliveryOrderId	= $deliveryOrder->id;
+		$salesOrderId		= $deliveryOrder->code_sales_order_id;
+
+		$data['deliveryOrder'] = $deliveryOrder;
+
+		$this->load->model("Sales_order_model");
+		$data['salesOrder'] = $this->Sales_order_model->getById($salesOrderId);
+
+		$this->load->model("Customer_model");
+		$data['customer'] = $this->Customer_model->getById($customerId);
+
+		$this->load->model('Invoice_model');
+		$data['invoice'] = $this->Invoice_model->getById($invoiceId);
+
+		$this->load->model("Delivery_order_detail_model");
+		$data['items'] = $this->Delivery_order_detail_model->getByCodeDeliveryOrderId($deliveryOrderId);
+
+		$this->load->view('head');
+		$this->load->view('accounting/invoice/printCoorporateInvoice', $data);
+	}
+
 	public function convertNumberToWords()
 	{
 		$value		= $this->input->get('value');
@@ -186,6 +265,7 @@ class Invoice extends CI_Controller {
 		$data = $this->Invoice_model->getUnconfirmedInvoice();
 
 		$this->load->model('Customer_model');
+		$this->load->model('Opponent_model');
 		$this->load->model('Delivery_order_model');
 
 		$finalArray = array();
@@ -194,11 +274,15 @@ class Invoice extends CI_Controller {
 		foreach($resultArray as $result){
 			$arrayResult = (array) $result;
 			$customer_id = $result->customer_id;
+			$opponent_id	= $result->opponent_id;
 			$deliveryOrderId = $result->code_delivery_order_id;
+
 			$customer = (array) $this->Customer_model->getById($customer_id);
+			$opponent = (array) $this->Opponent_model->getById($opponent_id);
 			$deliveryOrder = (array) $this->Delivery_order_model->getById($deliveryOrderId);
 
 			$arrayResult['customer'] = $customer;
+			$arrayResult['opponent'] = $opponent;
 			$arrayResult['deliveryOrder'] = $deliveryOrder;
 
 			array_push($finalArray, $arrayResult);
@@ -214,24 +298,37 @@ class Invoice extends CI_Controller {
 		
 		$this->load->model('Invoice_model');
 		$this->load->model('Customer_model');
+		$this->load->model("Opponent_model");
 
 		$this->load->model('Delivery_order_model');
 		$this->load->model('Delivery_order_detail_model');
 
 		$this->load->model('Sales_order_model');
 
-		$data['invoice'] = $this->Invoice_model->getById($invoiceId);
+		$invoice = $this->Invoice_model->getById($invoiceId);
+		$data['invoice'] = $invoice;
+		if($invoice->customer_id != null || $invoice->opponent_id != null){
+			//Blank invoice//
+			$data['customer'] = $this->Customer_model->getById($invoice->customer_id);
+			$data['opponent'] = $this->Opponent_model->getById($invoice->opponent_id);
+			$data['items']		= null;
+			$data['delivery_order'] = null;
+			$data['sales_order'] = null;
+		} else {
+			$deliveryOrder = $this->Delivery_order_model->getByInvoiceId($invoiceId);
+			$deliveryOrderId = $deliveryOrder->id;
+			$salesOrderId = $deliveryOrder->code_sales_order_id;
+			$customerId = $deliveryOrder->customer_id;
 
-		$deliveryOrder = $this->Delivery_order_model->getByInvoiceId($invoiceId);
+			$data['customer'] = $this->Customer_model->getById($customerId);
+			$data['opponent'] = null;
+			$data['items'] = $this->Delivery_order_detail_model->getByCodeDeliveryOrderId($deliveryOrderId);
+			$data['delivery_order'] = $deliveryOrder;
+			$data['sales_order'] = $this->Sales_order_model->getById($salesOrderId);
+		}
 
-		$customerId = $deliveryOrder->customer_id;
-		$deliveryOrderId = $deliveryOrder->id;
-		$salesOrderId = $deliveryOrder->code_sales_order_id;
-
-		$data['customer'] = $this->Customer_model->getById($customerId);
-		$data['items'] = $this->Delivery_order_detail_model->getByCodeDeliveryOrderId($deliveryOrderId);
-		$data['delivery_order'] = $deliveryOrder;
-		$data['sales_order'] = $this->Sales_order_model->getById($salesOrderId);
+		$this->load->model("Receivable_model");
+		$data['receivable'] = $this->Receivable_model->getByInvoiceId($invoiceId);
 
 		header('Content-Type: application/json');
 		echo json_encode($data);
@@ -242,28 +339,37 @@ class Invoice extends CI_Controller {
 		$invoiceId = $this->input->post('id');
 		$taxInvoice = $this->input->post('taxInvoice');
 
-		$this->load->model('Delivery_order_model');
-		$deliveryOrder = $this->Delivery_order_model->getByInvoiceId($invoiceId);
-		$salesOrderId = $deliveryOrder->code_sales_order_id;
+		$this->load->model("Invoice_model");
+		$invoice = $this->Invoice_model->getById($invoiceId);
+		if($invoice->opponent_id == null && $invoice->customer_id == null){
+			$this->load->model('Delivery_order_model');
+			$deliveryOrder = $this->Delivery_order_model->getByInvoiceId($invoiceId);
+			$salesOrderId = $deliveryOrder->code_sales_order_id;
 
-		$this->load->model('Sales_order_model');
-		$salesOrder = $this->Sales_order_model->getById($salesOrderId);
+			$this->load->model('Sales_order_model');
+			$salesOrder = $this->Sales_order_model->getById($salesOrderId);
 
-		$taxing		= $salesOrder->taxing;
-		$invoicingMethod = $salesOrder->invoicing_method;
+			$taxing		= $salesOrder->taxing;
+			$invoicingMethod = $salesOrder->invoicing_method;
 
-		$sentStatus = $deliveryOrder->is_sent;
-		$confirmStatus = $deliveryOrder->is_confirm;
-
-		if($sentStatus == 1 && $confirmStatus == 1){
-			$this->load->model('Invoice_model');
-			if($taxing == 1){
+			$sentStatus = $deliveryOrder->is_sent;
+			$confirmStatus = $deliveryOrder->is_confirm;
+			if($sentStatus == 1 && $confirmStatus == 1){
+				if($taxing == 1){
+					$result = $this->Invoice_model->updateById($invoiceId, $taxInvoice);
+				} else {
+					$result = $this->Invoice_model->updateById($invoiceId);
+				}
+			} else {
+				$result = 0;
+			}
+		} else {
+			if($taxInvoice != null && $taxInvoice != ""){
 				$result = $this->Invoice_model->updateById($invoiceId, $taxInvoice);
 			} else {
 				$result = $this->Invoice_model->updateById($invoiceId);
 			}
-		} else {
-			$result = 0;
+			
 		}
 
 		echo $result;
@@ -272,15 +378,20 @@ class Invoice extends CI_Controller {
 	public function deleteById()
 	{
 		$invoiceId = $this->input->post('id');
-		$this->load->model('Delivery_order_model');
-		$result = $this->Delivery_order_model->unassignInvoiceById($invoiceId);
-		if($result == 1){
-			$this->load->model('Invoice_model');
-			$invoiceResult = $this->Invoice_model->deleteById($invoiceId);
-			
-			echo $invoiceResult;
+		$this->load->model("Invoice_model");
+		$invoice = $this->Invoice_model->getById($invoiceId);
+		if($invoice->opponent_id == null && $invoice->customer_id == null){
+			$this->load->model('Delivery_order_model');
+			$result = $this->Delivery_order_model->unassignInvoiceById($invoiceId);
+			if($result == 1){
+				$invoiceResult = $this->Invoice_model->deleteById($invoiceId);
+				echo $invoiceResult;
+			} else {
+				echo 0;
+			}
 		} else {
-			echo 0;
+			$invoiceResult = $this->Invoice_model->deleteById($invoiceId);
+			echo $invoiceResult;
 		}
 	}
 
@@ -292,22 +403,82 @@ class Invoice extends CI_Controller {
 
 		$this->load->model('Invoice_model');
 		$this->load->model('Customer_model');
+		$this->load->model("Opponent_model");
 
 		$invoices = $this->Invoice_model->getItems($offset, $month, $year);
 		$result = array();
 		foreach($invoices as $invoice){
 			$itemArray = array();
 			$customerId = $invoice->customer_id;
-
-			$customerObject = (array) $this->Customer_model->getById($customerId);
+			$opponentId	= $invoice->opponent_id;
 			$itemArray = (array) $invoice;
-			$itemArray['customer'] = $customerObject;
+			if($customerId != NULL){
+				$customerObject = (array) $this->Customer_model->getById($customerId);
+				$itemArray['customer'] = $customerObject;
+				$itemArray['opponent'] = NULL;
+			} else {
+				$opponentObject	= (array) $this->Opponent_model->getById($opponentId);
+				$itemArray['opponent']	= $opponentObject;
+				$itemArray['customer']	= NULL;
+			}
 
 			array_push($result, $itemArray);
 		};
 
 		$data['items'] = (object) $result;
 		$data['pages'] = max(1, ceil($this->Invoice_model->countItems($month, $year) / 10));
+
+		header('Content-Type: application/json');
+		echo json_encode($data);
+	}
+
+	public function createBlankDashboard()
+	{
+		$user_id		= $this->session->userdata('user_id');
+		$this->load->model('User_model');
+		$data['user_login'] = $this->User_model->getById($user_id);
+		
+		$this->load->model('Authorization_model');
+		$data['departments']	= $this->Authorization_model->getByUserId($user_id);
+		
+		$this->load->view('head');
+		$this->load->view('accounting/header', $data);
+		$this->load->view('accounting/Invoice/createBlankDashboard');
+	}
+
+	public function insertBlankItem()
+	{
+		$this->load->model("Invoice_model");
+		$this->Invoice_model->insertBlankItem();
+		redirect(site_url("invoice/createBlankDashboard"));
+	}
+
+	public function deleteDashboard()
+	{
+		$user_id		= $this->session->userdata('user_id');
+		$this->load->model('User_model');
+		$data['user_login'] = $this->User_model->getById($user_id);
+		if($data['user_login']->access_level > 3){
+			$this->load->model('Authorization_model');
+			$data['departments']	= $this->Authorization_model->getByUserId($user_id);
+		
+			$this->load->view('head');
+			$this->load->view('administrator/header', $data);
+			$this->load->view('administrator/Invoice/deleteDashboard');
+		 } else {
+			  redirect(site_url("Welcome"));
+		 }
+	}
+
+	public function getConfirmedItems()
+	{
+		$page			= $this->input->get('page');
+		$month			= $this->input->get('month');
+		$year			= $this->input->get('year');
+		$offset			= ($page - 1) * 10;
+		$this->load->model("Invoice_model");
+		$data['items'] = $this->Invoice_model->getConfirmedItems($month, $year, $offset);
+		$data['pages'] = max(1, ceil($this->Invoice_model->countConfirmedItems($month, $year)/10));
 
 		header('Content-Type: application/json');
 		echo json_encode($data);

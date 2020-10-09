@@ -118,27 +118,43 @@ class Salary_slip_model extends CI_Model {
 			}
 		}
 
-		public function getItems($offset = 0, $limit = 10)
+		public function getItems($month, $year, $offset = 0, $limit = 10)
 		{
-			$query		= $this->db->query("
-				SELECT users.name, users.image_url, salary_slip.*, a.name as created_by
-				FROM salary_slip
-				JOIN users ON salary_slip.user_id = users.id
-				JOIN (
-					SELECT id, name FROM users
-				) AS a
-				ON a.id = salary_slip.created_by
-				ORDER BY salary_slip.year DESC, salary_slip.month DESC, users.name ASC
-				LIMIT $limit OFFSET $offset
-			");
-			$result = $query->result();
+			$this->db->select('users.name, users.image_url, salary_slip.*');
+			$this->db->from('salary_slip');
+			$this->db->join('users', 'salary_slip.user_id = users.id');
+			$this->db->where("salary_slip.month", $month);
+			$this->db->where('salary_slip.year', $year);
+			$this->db->limit($limit, $offset);
+			$this->db->order_by('users.name');
+			$query			= $this->db->get();
+			$result			= $query->result();
 			return $result;
 		}
 
-		public function countItems()
+		public function countItems($month, $year)
 		{
+			$this->db->where("salary_slip.month", $month);
+			$this->db->where('salary_slip.year', $year);
+			$query			= $this->db->get($this->table_salary);
+			$result			= $query->num_rows();
+			return $result;
+		}
+
+		public function getById($id)
+		{
+			$this->db->where("id", $id);
 			$query		= $this->db->get($this->table_salary);
-			$result		= $query->num_rows();
+			$result		= $query->row();
+			return $result;
+		}
+
+		public function deleteById($id)
+		{
+			$this->db->db_debug = false;
+			$this->db->where('id', $id);
+			$this->db->delete($this->table_salary);
+			$result		= $this->db->affected_rows();
 			return $result;
 		}
 }

@@ -69,6 +69,33 @@ class Sales_order extends CI_Controller {
 		echo json_encode($data);
 	}
 
+	public function getIncompleteSalesOrderDelivery()
+	{
+		$page = $this->input->get('page');
+		$offset = ($page - 1) * 10;
+		$term	= $this->input->get('term');
+		$areas	= $this->input->get('areas');
+		$resultArray = array();
+
+		$this->load->model('Sales_order_model');
+		$this->load->model('Customer_model');
+		$salesOrderArray	= $this->Sales_order_model->getIncompleteSalesOrderDelivery($offset, $term, $areas);
+		foreach($salesOrderArray as $salesOrder){
+			$childResultArray = (array) $salesOrder;
+			$customerId = $salesOrder->customer_id;
+			$customer = $this->Customer_model->getById($customerId);
+		
+			$childResultArray['customer'] = $customer;
+			array_push($resultArray, $childResultArray);
+		}
+		
+		$data['items']			= (object) $resultArray;
+		$data['pages'] 			= max(1, ceil($this->Sales_order_model->countIncompleteSalesOrderDelivery($term, $areas)/10));
+		
+		header('Content-Type: application/json');
+		echo json_encode($data);
+	}
+
 	public function createDashboard()
 	{
 		$user_id		= $this->session->userdata('user_id');
@@ -456,5 +483,55 @@ class Sales_order extends CI_Controller {
 		} else {
 			echo 0;
 		}
+	}
+
+	public function getUnclosedSalesOrders()
+	{
+		$page = $this->input->get('page');
+		$offset = ($page - 1) * 10;
+		$term	= $this->input->get('term');
+
+		$resultArray = array();
+
+		$this->load->model('Sales_order_model');
+		$this->load->model('Customer_model');
+		$salesOrderArray	= $this->Sales_order_model->getUnclosedSalesOrders($offset, $term);
+		foreach($salesOrderArray as $salesOrder){
+			$childResultArray = (array) $salesOrder;
+			$customerId = $salesOrder->customer_id;
+			$customer = $this->Customer_model->getById($customerId);
+
+			$childResultArray['customer'] = $customer;
+			array_push($resultArray, $childResultArray);
+		}
+
+		$data['items']			= (object) $resultArray;
+		$data['pages'] 			= max(1, ceil($this->Sales_order_model->countUnclosedSalesOrders($term)/10));
+
+		header('Content-Type: application/json');
+		echo json_encode($data);
+	}
+
+	public function getIncompletedSalesOrdersByCustomerId()
+	{
+		$customerId			= $this->input->get('customerId');
+
+		$this->load->model("Sales_order_model");
+		$data = $this->Sales_order_model->getPendingSalesOrdersByCustomerId($customerId);
+		header('Content-Type: application/json');
+		echo json_encode($data);
+	}
+
+	public function getConfirmedByCustomerId($customerId)
+	{
+		$page		= $this->input->get('page');
+		$offset		= ($page - 1) * 10;
+
+		$this->load->model("Sales_order_model");
+		$data['items'] = $this->Sales_order_model->getConfirmedByCustomerId($customerId, $offset);
+		$data['pages'] = max(1, ceil($this->Sales_order_model->countConfirmedByCustomerId($customerId)/10));
+
+		header('Content-Type: application/json');
+		echo json_encode($data);
 	}
 }

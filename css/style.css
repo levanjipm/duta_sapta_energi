@@ -105,12 +105,22 @@ html, body{
 	transition: 0.4s;
 }
 
-.container_button{
-	width:100%;
-	outline:none!important;
-	border:none;
-	background-color:transparent;
-	text-align:left;
+.container_button {
+	width: 100%;
+	outline: none !important;
+	border: none;
+	background-color: transparent;
+	text-align: left;
+	transition: 0.3s all ease;
+}
+
+.container_button p{
+	font-family:museo;
+	display:inline-block;
+}
+
+.container_button i{
+	float:right;
 }
 
 .container_bar{
