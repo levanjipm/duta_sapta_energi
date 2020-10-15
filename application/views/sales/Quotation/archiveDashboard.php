@@ -78,6 +78,9 @@
 			</tr>
 			<tbody id='quotationItemTable'></tbody>
 		</table>
+
+		<label>Note</label>
+		<p id='quotationNote'></p>
 	</div>
 </div>
 
@@ -188,6 +191,9 @@
 				var creator					= general.created_by;
 				var confirmed_by			= general.confirmed_by;
 				var complete_address		= '';
+				var note					= (general.note == null || general.note == "") ? "<i>Not available</i>" : general.note;;
+
+				$('#quotationNote').html(note);
 
 				var customer				= response.customer;
 				var customer_name			= customer.name;
@@ -255,6 +261,7 @@
 				});
 				
 				$('#quotationItemTable').append("<tr><td colspan='4'></td><td colspan='2'>Total</td><td>Rp. " + numeral(sales_order_value).format('0,0.00') + "</td></tr>");
+
 				
 				$('#viewQuotationWrapper').fadeIn(300, function(){
 					$('#viewQuotationWrapper .alert_box_slide').show("slide", { direction: "right" }, 250);

@@ -17,7 +17,7 @@
 		$complete_address	.= ' No. ' . $customer_number;
 	}
 	
-	if($customer_block != NULL){
+	if($customer_block != NULL && $customer_block != "000" && $customer_block != ""){
 		$complete_address	.= ' Blok ' . $customer_block;
 	}
 	
@@ -51,7 +51,7 @@
 			}
 	
 			@page {
-			  size: 29.7cm 21cm;
+			  size: A4 portrait;
 			}
 		}
 

@@ -39,4 +39,78 @@ class Inventory extends CI_Controller {
 		header("Content-Type:application/json");
 		echo json_encode($data);
 	}
+
+	public function pendingSalesOrderDashboard()
+	{
+		$user_id		= $this->session->userdata('user_id');
+		$this->load->model('User_model');
+		$data['user_login'] = $this->User_model->getById($user_id);
+		
+		$this->load->model('Authorization_model');
+		$data['departments']	= $this->Authorization_model->getByUserId($user_id);
+		
+		$this->load->view('head');
+		$this->load->view('inventory/header', $data);
+
+		$this->load->view('inventory/Pending/salesOrderDashboard');
+	}
+
+	public function viewPendingSalesOrderById()
+	{
+	$user_id		= $this->session->userdata('user_id');
+		$this->load->model('User_model');
+		$data['user_login'] = $this->User_model->getById($user_id);
+		
+		$this->load->model('Authorization_model');
+		$data['departments']	= $this->Authorization_model->getByUserId($user_id);
+		
+		$this->load->view('head');
+		$this->load->view('inventory/header', $data);
+
+		$id			= $this->input->get('id');
+
+		$this->load->model("Sales_order_model");
+		$data['salesOrder']		= $this->Sales_order_model->getById($id);
+		$customerId				= $data['salesOrder']->customer_id;
+		$this->load->model("Customer_model");
+		$data['customer']		= $this->Customer_model->getById($customerId);
+
+		$this->load->model("Sales_order_detail_model");
+		$data['items']			= $this->Sales_order_detail_model->show_by_code_sales_order_id($id);
+
+		$this->load->model("Delivery_order_model");
+		$data['deliveryOrder']	= $this->Delivery_order_model->getItemBySalesOrderId($id);
+
+		$this->load->view('inventory/Pending/salesOrderDetail', $data);
+	}
+
+	public function pendingPurchaseOrderDashboard()
+	{
+		$user_id		= $this->session->userdata('user_id');
+		$this->load->model('User_model');
+		$data['user_login'] = $this->User_model->getById($user_id);
+		
+		$this->load->model('Authorization_model');
+		$data['departments']	= $this->Authorization_model->getByUserId($user_id);
+		
+		$this->load->view('head');
+		$this->load->view('inventory/header', $data);
+
+		$this->load->view('inventory/Pending/purchaseOrderDashboard');
+	}
+
+	public function pendingDeliveryOrderDashboard()
+	{
+		$user_id		= $this->session->userdata('user_id');
+		$this->load->model('User_model');
+		$data['user_login'] = $this->User_model->getById($user_id);
+		
+		$this->load->model('Authorization_model');
+		$data['departments']	= $this->Authorization_model->getByUserId($user_id);
+		
+		$this->load->view('head');
+		$this->load->view('inventory/header', $data);
+
+		$this->load->view('inventory/Pending/deliveryOrderDashboard');
+	}
 }

@@ -22,6 +22,7 @@
 			<option value='1'>1</option>
 		</select>
 	</div>
+	<p id='visitListTableText'>There is no visit list to be confirmed.</p>
 </div>
 
 <div class='alert_wrapper' id='visitListWrapper'>
@@ -86,8 +87,17 @@
 					var date		= item.date;
 					var id			= item.id;
 
-					$('#visitListTableContent').append("<tr><td>" + my_date_format(date) + "</td><td>" + visit + "</td><td><button class='button button_default_dark' onclick='viewVisitList(" + id + ")'><i class='fa fa-long-arrow-right'></i></button></td></tr>")
-				})
+					$('#visitListTableContent').append("<tr><td>" + my_date_format(date) + "</td><td>" + visit + "</td><td><button class='button button_default_dark' onclick='viewVisitList(" + id + ")'><i class='fa fa-long-arrow-right'></i></button></td></tr>");
+					itemCount++;
+				});
+
+				if(itemCount > 0){
+					$("#visitListTableText").hide();
+					$('#visitListTable').show();
+				} else {
+					$("#visitListTableText").show();
+					$('#visitListTable').hide();
+				}
 			}
 		})
 	}

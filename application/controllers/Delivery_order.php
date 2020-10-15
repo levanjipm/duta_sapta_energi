@@ -561,4 +561,18 @@ class Delivery_order extends CI_Controller {
 		header('Content-Type: application/json');
 		echo json_encode($data);
 	}
+
+	public function getOnProgressItems()
+	{
+		$page			= $this->input->get('page');
+		$offset			= ($page - 1) * 10;
+		$this->load->model("Delivery_order_model");
+		$data['items']			= $this->Delivery_order_model->getPendingSentItems($offset);
+		$data['pages']			= max(1, ceil($this->Delivery_order_model->countPendingSentItems()/10));
+
+		header('Content-Type: application/json');
+		echo json_encode($data);
+	}
+		
+
 }

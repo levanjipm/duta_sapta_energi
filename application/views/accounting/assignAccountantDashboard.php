@@ -1,5 +1,11 @@
 <head>
 	<title>Assign accountant</title>
+	<style>
+		.subtitleText{
+			color:#333;
+			font-size:0.9em;
+		}
+	</style>
 </head>
 <div class='dashboard'>
 	<div class='dashboard_head'>
@@ -10,7 +16,12 @@
 		<label>User</label>
 		<button type='button' class='form-control' id='accountantButton' style='text-align:left'></button>
 		<br>
-		<button type='button' id='saveAccountantButton' class='button button_default_dark' disabled><i class='fa fa-long-arrow-right'></i></button> <button class='button button_danger_dark' id='selectAllCustomerButton' disabled><i class='fa fa-exclamation-triangle'></i></button>
+		<button type='button' id='saveAccountantButton' class='button button_default_dark' disabled><i class='fa fa-long-arrow-right'></i></button> <button class='button button_danger_dark' id='selectAllCustomerButton' disabled>Assign All</button>
+		<br><br>
+		<div id='warningText' style='display:none'>
+			<label>Warning</label>
+			<p class="subtitleText">Assigning all customers to an accountang could lead to significant work change. Please be cautious to execute this operation.</p>
+		</div>
 		<hr> 
 		<div id='customerTableWrapper' style='display:none'>
 			<input type='text' class='form-control' id='search_bar'>
@@ -241,6 +252,7 @@
 					$('#selectAccountantButton-' + id).click(function(){
 						$('#saveAccountantButton').attr('disabled', false);
 						$('#selectAllCustomerButton').attr('disabled', false);
+						$('#warningText').show();
 						$('#accountantButton').html(name);
 						accountantId = id;
 						getAccountantitems();

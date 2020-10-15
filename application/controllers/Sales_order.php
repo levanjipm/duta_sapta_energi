@@ -518,6 +518,19 @@ class Sales_order extends CI_Controller {
 
 		$this->load->model("Sales_order_model");
 		$data = $this->Sales_order_model->getPendingSalesOrdersByCustomerId($customerId);
+
+		header('Content-Type: application/json');
+		echo json_encode($data);
+	}
+
+	public function getIncompletedSalesOrdersByCustomer()
+	{
+		$this->load->model("Sales_order_model");
+		$page				= $this->input->get('page');
+		$offset				= ($page - 1) * 10;
+		$data['items']		= $this->Sales_order_model->getIncompletedSalesOrdersByCustomer($offset);
+		$data['pages']		= max(1, ceil($this->Sales_order_model->countIncompletedSalesOrdersByCustomer()/10));
+
 		header('Content-Type: application/json');
 		echo json_encode($data);
 	}
@@ -530,6 +543,17 @@ class Sales_order extends CI_Controller {
 		$this->load->model("Sales_order_model");
 		$data['items'] = $this->Sales_order_model->getConfirmedByCustomerId($customerId, $offset);
 		$data['pages'] = max(1, ceil($this->Sales_order_model->countConfirmedByCustomerId($customerId)/10));
+
+		header('Content-Type: application/json');
+		echo json_encode($data);
+	}
+
+	public function getCompletePendingSalesOrdersByCustomerId()
+	{
+		$customerId			= $this->input->get('customerId');
+
+		$this->load->model("Sales_order_model");
+		$data = $this->Sales_order_model->getPendingSalesOrdersByCustomerId($customerId);
 
 		header('Content-Type: application/json');
 		echo json_encode($data);

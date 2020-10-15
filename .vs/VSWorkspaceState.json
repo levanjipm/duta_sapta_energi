@@ -2,15 +2,13 @@
   "ExpandedNodes": [
     "",
     "\\application",
+    "\\application\\controllers",
+    "\\application\\models",
     "\\application\\views",
-    "\\application\\views\\accounting",
-    "\\application\\views\\accounting\\Bank",
-    "\\application\\views\\accounting\\Payable",
-    "\\application\\views\\inventory",
-    "\\application\\views\\inventory\\DeliveryOrder",
-    "\\application\\views\\sales",
-    "\\application\\views\\sales\\Customer"
+    "\\application\\views\\purchasing",
+    "\\application\\views\\purchasing\\PurchaseOrder",
+    "\\application\\views\\sales"
   ],
-  "SelectedNode": "\\application\\views\\accounting\\Bank\\resetBankDashboard.php",
+  "SelectedNode": "\\application\\views\\purchasing\\header.php",
   "PreviewInSolutionExplorer": false
 }

@@ -160,7 +160,7 @@ class Sales_order_model extends CI_Model {
 					FROM code_sales_order_close_request
 					WHERE is_confirm = '1'	
 				)
-				AND (code_sales_order.name LIKE '%$term%' OR customer.name LIKE '%$term%' OR customer.city LIKE '%$term%');
+				AND (code_sales_order.name LIKE '%$term%' OR customer.name LIKE '%$term%' OR customer.city LIKE '%$term%')
 				LIMIT 10 OFFSET $offset
 			");
 
@@ -666,6 +666,52 @@ class Sales_order_model extends CI_Model {
 			$this->db->where('is_confirm', 1);
 
 			$query		= $this->db->get($this->table_sales_order);
+			$result		= $query->num_rows();
+			return $result;
+		}
+
+		public function getIncompletedSalesOrdersByCustomer($offset = 0, $limit = 10)
+		{
+			$query			= $this->db->query("
+				SELECT customer.*, a.count FROM (
+					SELECT COUNT(code_sales_order.id) AS count, code_sales_order.customer_id
+					FROM code_sales_order
+					WHERE code_sales_order.id NOT IN (
+						SELECT DISTINCT(code_sales_order_close_request.code_sales_order_id) AS id
+						FROM code_sales_order_close_request
+						WHERE is_approved IS NULL OR is_approved = 1
+					)
+					AND code_sales_order.id IN (
+						SELECT DISTINCT(sales_order.code_sales_order_id) AS id
+						FROM sales_order
+						WHERE status = '0'
+					)
+					GROUP BY code_sales_order.customer_id
+				) AS a
+				JOIN customer ON a.customer_id = customer.id				
+				LIMIT $limit OFFSET $offset
+			");
+
+			$result		= $query->result();
+			return $result;
+		}
+
+		public function countIncompletedSalesOrdersByCustomer()
+		{
+			$query			= $this->db->query("
+				SELECT customer.id, a.count FROM (
+					SELECT COUNT(code_sales_order.id) AS count, code_sales_order.customer_id
+					FROM code_sales_order
+					WHERE code_sales_order.id NOT IN (
+						SELECT DISTINCT(code_sales_order_close_request.code_sales_order_id) AS id
+						FROM code_sales_order_close_request
+						WHERE is_approved IS NULL OR is_approved = 1
+					)
+					GROUP BY code_sales_order.customer_id
+				) AS a
+				JOIN customer ON a.customer_id = customer.id
+			");
+
 			$result		= $query->num_rows();
 			return $result;
 		}

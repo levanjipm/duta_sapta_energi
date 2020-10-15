@@ -3,7 +3,7 @@
 </head>
 <div class='dashboard'>
 	<div class='dashboard_head'>
-		<p style='font-family:museo'><a href='<?= site_url('Purchasing') ?>' title='Purchasing'><i class='fa fa-briefcase'></i></a> /<a href='<?= site_url('Purchase_order') ?>'>Purchase order</a> / Pending</p>
+		<p style='font-family:museo'><a href='<?= site_url('Purchasing') ?>' title='Purchasing'><i class='fa fa-briefcase'></i></a> /Purchase Order / Pending</p>
 	</div>
 	<br>
 	<div class='dashboard_in'>
@@ -57,7 +57,7 @@
 		<p style='font-family:museo' id='delivery_contact_person_p'></p>
 		<p style='font-family:museo' id='delivery_contact_p'></p>
 
-		<div class='table-responsive-lg'>
+		<div class='table-responsive'>
 			<table class='table table-bordered'>
 				<tr>
 					<th>Reference</th>
@@ -73,9 +73,25 @@
 			</table>
 		</div>
 
+		<label>Delivery</label>
+		<div id='goodReceiptTable'>
+			<table class='table table-bordered'>
+				<tr>
+					<th>Date</th>
+					<th>Document</th>
+					<th>Information</th>
+				</tr>
+				<tbody id='goodReceiptTableContent'></tbody>
+			</table>
+		</div>
+		<p id='goodReceiptTableText'>There is no delivery found.</p>
+
+		<button class='button button_default_dark' onclick='goToPurchaseOrder()'><i class='fa fa-eye'></i></button>
 	</div>
 </div>
 <script>
+	var purchaseOrderId;
+
 	$(document).ready(function(){
 		refresh_view();
 	})
@@ -138,6 +154,7 @@
 		$.ajax({
 			url:'<?= site_url('Purchase_order/getById/') ?>' + n,
 			success:function(response){
+				purchaseOrderId = n;
 				var supplier = response.supplier;
 				var supplier_name = supplier.name;
 
@@ -211,15 +228,38 @@
 					var total_price = net_price * quantity;
 
 					$('#purchaseOrderItemTable').append("<tr><td>" + reference + "</td><td>" + name + "</td><td>Rp." + numeral(price_list).format('0,0.00') + "</td><td>" + numeral(discount).format('0,0.00') + "%</td><td>Rp. " + numeral(net_price).format('0,0.00') + "</td><td>" + numeral(quantity).format('0,0') + "</td><td>Rp. " + numeral(total_price).format('0,0.00') + "</td><td>" + numeral(pending).format('0,0') + "</td></tr>");
-				})
+				});
 
+				var goodReceipts		= response.goodReceipt;
+				$('#goodReceiptTableContent').html("");
+				var goodReceiptCount = 0;
+				$.each(goodReceipts, function(index, goodReceipt){
+					var date		= goodReceipt.date;
+					var name		= goodReceipt.name;
+					var created_by	= goodReceipt.created_by;
+					var receivedDate	= goodReceipt.received_date;
+
+					$('#goodReceiptTableContent').append("<tr><td>" + my_date_format(date) + "</td><td>" + name + "</td><td><p>Created by " + created_by + "</p><p>Created on" + my_date_format(receivedDate) + "</p></td></tr>");
+					goodReceiptCount++;
+				});
+
+				if(goodReceiptCount > 0){
+					$('#goodReceiptTable').show();
+					$('#goodReceiptTableText').hide();
+				} else {
+					$('#goodReceiptTable').hide();
+					$('#goodReceiptTableText').show();
+				}
+			}, 
+			complete:function(){
 				$('#purchaseOrderWrapper').fadeIn(300, function(){
 					$('#purchaseOrderWrapper .alert_box_slide').show("slide", { direction: "right" }, 250);
 				});
-
 			}
 		})
 	}
 
-	
+	function goToPurchaseOrder(){
+		window.location.href=("<?= site_url('Purchase_order/viewPurchaseOrderDetail/') ?>" + purchaseOrderId);
+	}
 </script>

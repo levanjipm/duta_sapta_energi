@@ -26,7 +26,7 @@
 ?>
 	</div>
 	<div class='sidenav_bar_functions'>
-		<button class='container_button'><p style='font-family:museo'>Purchase order</p></button>
+		<button class='container_button'><p style='font-family:museo'>Purchase order</p><i class='fa fa-caret-down'></i></button>
 		<div class='container_bar'>
 			<a href='<?= site_url('Purchase_order/createDashboard') ?>'><p>Create</p></a>
 			<a href='<?= site_url('Purchase_order/confirmDashboard') ?>'><p>Confirm</p></a>
@@ -37,7 +37,7 @@
 			<a href='<?= site_url('Purchase_order/archiveDashboard') ?>'><p>Archive</p></a>	
 		</div>
 		<a href='<?= site_url('Supplier') ?>'><button><p>Supplier</p></button></a>
-		<button class='container_button'><p style='font-family:museo'>Return</p></button>
+		<button class='container_button'><p style='font-family:museo'>Return</p><i class='fa fa-caret-down'></i></button>
 		<div class='container_bar'>
 			<a href='<?= site_url('Purchase_return') ?>'><p>Create</p></a>
 			<?php if($user_login->access_level > 2){ ?>
@@ -45,7 +45,7 @@
 			<?php } ?>
 			<a href='<?= site_url('Purchase_return/archiveDashboard') ?>'><p>Archive</p></a>	
 		</div>
-		<a href='<?= site_url('PurchaseReport') ?>'><button><p>Report</p></button></a>
+		<a href='<?= site_url('Purchase_report') ?>'><button><p>Report</p></button></a>
 	</div>
 </div>
 <script>

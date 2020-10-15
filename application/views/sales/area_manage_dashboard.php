@@ -1,3 +1,6 @@
+<head>
+	<title>Customer Area</title>
+</head>
 <div class='dashboard'>
 	<div class='dashboard_head'>
 		<p style='font-family:museo'><a href='<?= site_url('Sales') ?>' title='Sales'><i class='fa fa-briefcase'></i></a> /Area</p>
@@ -5,9 +8,9 @@
 	<br>
 	<div class='dashboard_in'>
 		<div class='input_group'>
-			<input type='text' class='form-control input-lg' id='search_bar' placeholder="Search Area">
+			<input type='text' class='form-control' id='search_bar' placeholder="Search Area">
 			<div class='input_group_append'>
-				<button class='button button_default_dark' id='add_area_button'>Add area</button>
+				<button class='button button_default_dark' id='add_area_button'><i class='fa fa-plus'></i> Add area</button>
 			</div>
 		</div>
 		<br>
@@ -151,6 +154,7 @@
 				},
 				type:'POST',
 				success:function(response){
+					refresh_view();
 					if(response == 1){
 						$('#area').val('');
 						$('#add_area_wrapper .slide_alert_close_button').click();

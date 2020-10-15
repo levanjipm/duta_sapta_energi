@@ -57,6 +57,18 @@
                     </div>
                 </div>
             </div>
+			<div class='col-md-4 col-sm-12 col-xs-12'>
+                <div class='dashboardBox clickable' onclick='viewPendingSalesOrders()' >
+                    <div class='leftSide'>
+                        <h4><b>Unconfirmed</b></h4>
+                        <p>Sales order</p>
+                    </div>
+                    <div class='rightSide'>
+                        <h3><?= number_format($unconfirmedSalesOrder) ?></h3>
+                        <p>&nbsp;</p>
+                    </div>
+                </div>
+            </div>
             <div class='col-md-4 col-sm-12 col-xs-12'>
                 <div class='dashboardBox'>
                     <div class='leftSide'>
@@ -81,6 +93,20 @@
                     </div>
                 </div>
             </div>
+			<div class='col-md-4 col-sm-12 col-xs-12'>
+                <div class='dashboardBox'>
+                    <div class='leftSide'>
+                        <h4><b>Return</b></h4>
+                        <p>Submission</p>
+                    </div>
+                    <div class='rightSide'>
+                        <h3><?= number_format($returnSubmission) ?></h3>
+                        <p>&nbsp;</p>
+                    </div>
+                </div>
+            </div>
+		</div>
+		<div class='row'>
             <div class='col-md-7 col-sm-12 col-xs-12'>
                 <div id="salesChart" style='height:300px'></div>
             </div>

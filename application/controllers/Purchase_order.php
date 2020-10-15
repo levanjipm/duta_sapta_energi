@@ -65,6 +65,8 @@ class Purchase_order extends CI_Controller {
 		$this->load->model("Supplier_model");
 		$data['supplier'] = $this->Supplier_model->getById($supplierId);
 		
+		$this->load->model("Good_receipt_model");
+		$data['goodReceipt']	= $this->Good_receipt_model->getReceivedByPurchaseOrderId($id);
 		
 		$this->load->model('Purchase_order_detail_model');
 		$data['detail']		= $this->Purchase_order_detail_model->getByCodeId($id);
@@ -298,5 +300,36 @@ class Purchase_order extends CI_Controller {
 		} else {
 			echo 0;
 		}
+	}
+
+	public function viewPurchaseOrderDetail($purchaseOrderId)
+	{
+		$user_id		= $this->session->userdata('user_id');
+		$this->load->model('User_model');
+		$data['user_login'] = $this->User_model->getById($user_id);
+		
+		$this->load->model('Authorization_model');
+		$data['departments']	= $this->Authorization_model->getByUserId($user_id);
+		
+		$this->load->view('head');
+		$this->load->view('purchasing/header', $data);
+
+		$data		= array();
+
+		$this->load->model("Purchase_order_model");
+		$purchaseOrder		= $this->Purchase_order_model->showById($purchaseOrderId);
+		$data['general'] = $purchaseOrder;
+		$supplierId = $purchaseOrder->supplier_id;
+
+		$this->load->model("Supplier_model");
+		$data['supplier'] = $this->Supplier_model->getById($supplierId);
+		
+		$this->load->model("Good_receipt_model");
+		$data['goodReceipt']	= $this->Good_receipt_model->getReceivedByPurchaseOrderId($purchaseOrderId);
+		
+		$this->load->model('Purchase_order_detail_model');
+		$data['detail']		= $this->Purchase_order_detail_model->getByCodeId($purchaseOrderId);
+
+		$this->load->view('purchasing/PurchaseOrder/purchaseOrderDetail', $data);
 	}
 }

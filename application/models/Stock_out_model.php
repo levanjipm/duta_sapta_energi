@@ -219,7 +219,7 @@ class Stock_out_model extends CI_Model {
 		public function countRestockItems()
 		{
 			$query			= $this->db->query("
-				SELECT b.id as item_id, b.name, b.reference, b.sumQuantity, b.confidence_level, b.month, b.year, c.residue
+				SELECT b.id as item_id, b.name, b.reference, b.sumQuantity, b.confidence_level, b.month, b.year, c.residue, COALESCE(d.bought, 0) AS bought
 				FROM (
 					SELECT item.id, item.reference, item.name, item.confidence_level, SUM(sales_order.quantity) AS sumQuantity, MONTH(code_sales_order.date) as month, YEAR(code_sales_order.date) as year
 					FROM sales_order
@@ -240,6 +240,13 @@ class Stock_out_model extends CI_Model {
 					GROUP BY item_id
 				) AS c
 				ON b.id = c.id
+				LEFT JOIN (
+					SELECT SUM(purchase_order.quantity - purchase_order.received) AS bought, purchase_order.item_id
+					FROM purchase_order
+					WHERE purchase_order.status = '0'
+					GROUP BY purchase_order.item_id
+				) AS d
+				ON b.id = d.item_id
 			");
 
 			$result		= $query->result();

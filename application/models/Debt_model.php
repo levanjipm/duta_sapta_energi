@@ -1,4 +1,3 @@
-
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
@@ -688,6 +687,78 @@ class Debt_model extends CI_Model {
 			$this->db->set('is_done', 0);
 			$this->db->where_in("id", $idArray);
 			$this->db->update($this->table_purchase_invoice);
+		}
+
+		public function getBySupplierIdPeriod($supplierId, $month, $year)
+		{
+			if($month == NULL){
+				$query		= $this->db->query("
+					SELECT a.value, a.name FROM (
+						SELECT (good_receipt.billed_price * good_receipt.quantity) AS value, item_class.name
+						FROM good_receipt
+						JOIN code_good_receipt ON good_receipt.code_good_receipt_id = code_good_receipt.id
+						JOIN purchase_order ON good_receipt.purchase_order_id = purchase_order.id
+						JOIN item ON purchase_order.item_id = item.id
+						JOIN item_class ON item.type = item_class.id
+						JOIN purchase_invoice ON code_good_receipt.invoice_id = purchase_invoice.id
+						WHERE code_good_receipt.is_confirm = '1'
+						AND purchase_invoice.is_confirm = '1'
+						AND YEAR(purchase_invoice.date) = '$year'
+						GROUP BY item_class.id
+					) AS a
+				");
+			} else {
+				$query		= $this->db->query("
+					SELECT a.value, a.name, a.id, a.description FROM (
+						SELECT (good_receipt.billed_price * good_receipt.quantity) AS value, item_class.name, item_class.id, item_class.description
+						FROM good_receipt
+						JOIN code_good_receipt ON good_receipt.code_good_receipt_id = code_good_receipt.id
+						JOIN purchase_order ON good_receipt.purchase_order_id = purchase_order.id
+						JOIN item ON purchase_order.item_id = item.id
+						JOIN item_class ON item.type = item_class.id
+						JOIN purchase_invoice ON code_good_receipt.invoice_id = purchase_invoice.id
+						WHERE code_good_receipt.is_confirm = '1'
+						AND purchase_invoice.is_confirm = '1'
+						AND YEAR(purchase_invoice.date) = '$year'
+						AND MONTH(purchase_invoice.date) = '$month'
+						GROUP BY item_class.id
+					) AS a
+					ORDER BY a.name ASC
+				");
+			}
+
+			$result			= $query->result();
+			return $result;
+		}
+
+		public function viewPurchaseByMonth()
+		{
+			$query			= $this->db->query("
+				SELECT SUM(purchaseInvoiceTable.value) AS value, purchaseInvoiceTable.month, purchaseInvoiceTable.year FROM (
+					SELECT a.value, MONTH(purchase_invoice.date) AS month, YEAR(purchase_invoice.date) AS year
+					FROM (
+						SELECT SUM(good_receipt.quantity * good_receipt.billed_price) AS value, code_good_receipt.invoice_id
+						FROM good_receipt
+						JOIN code_good_receipt ON good_receipt.code_good_receipt_id = code_good_receipt.id
+						GROUP BY code_good_receipt.invoice_id
+					) AS a
+					JOIN purchase_invoice ON a.invoice_id = purchase_invoice.id
+					WHERE purchase_invoice.is_confirm = '1'
+					AND DATEDIFF(CURDATE(), purchase_invoice.date) <= 180 AND DATEDIFF(CURDATE(), purchase_invoice.date) > 0
+					GROUP BY MONTH(purchase_invoice.date), YEAR(purchase_invoice.date)
+					UNION (
+						SELECT purchase_invoice_other.value, MONTH(purchase_invoice_other.date) AS month, YEAR(purchase_invoice_other.date) AS year
+						FROM purchase_invoice_other
+						WHERE DATEDIFF(CURDATE(), purchase_invoice_other.date) <= 180 AND DATEDIFF(CURDATE(), purchase_invoice_other.date) > 0
+						GROUP BY MONTH(purchase_invoice_other.date), YEAR(purchase_invoice_other.date)
+					)
+				) purchaseInvoiceTable
+				GROUP BY purchaseInvoiceTable.month, purchaseInvoiceTable.year
+				ORDER BY purchaseInvoiceTable.year DESC, purchaseInvoiceTable.month	DESC
+			");
+
+			$result			= $query->result();
+			return $result;
 		}
 	}
 ?>

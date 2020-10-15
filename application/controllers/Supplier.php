@@ -33,7 +33,7 @@ class Supplier extends CI_Controller {
 		
 		$this->load->model('Supplier_model');
 		$data['suppliers']	= $this->Supplier_model->showItems($offset, $term);
-		$data['pages']		= $this->Supplier_model->countItems($term);
+		$data['pages']		= max(1, ceil($this->Supplier_model->countItems($term)/10));
 		
 		header('Content-Type: application/json');
 		echo json_encode($data);

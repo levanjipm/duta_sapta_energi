@@ -331,8 +331,9 @@ class Purchase_order_model extends CI_Model {
 		public function getAllIncompletePurchaseOrderSupplier()
 		{
 			$query = $this->db->query("
-				SELECT supplier.* FROM (
-					SELECT DISTINCT(code_purchase_order.supplier_id) as id FROM code_purchase_order
+				SELECT supplier.*, c.count FROM (
+					SELECT DISTINCT(code_purchase_order.supplier_id) as id, COUNT(a.id) AS count
+					FROM code_purchase_order
 					JOIN (
 						SELECT DISTINCT(purchase_order.code_purchase_order_id) as id  FROM purchase_order
 						WHERE purchase_order.status = '0'

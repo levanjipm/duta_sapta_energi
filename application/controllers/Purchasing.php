@@ -81,6 +81,8 @@ class Purchasing extends CI_Controller {
 		$data = $this->Stock_out_model->countRestockItems();
 		$zScoreArray = array();
 		$itemArray = array();
+		$itemDetailArray		= array();
+		$boughtArray			= array();
 		$currentDate = date("Y-m-d");
 		foreach($data as $datum){
 			$itemId = $datum->item_id;
@@ -89,6 +91,7 @@ class Purchasing extends CI_Controller {
 
 			$quantity		= $datum->sumQuantity;
 			$stock[$itemId]			= $datum->residue;
+			$boughtArray[$itemId]	= $datum->bought;
 			
 			$formatedDate = date("Y-m-d", mktime(0,0,0, $month, 1, $year));
 			$dateDifference = abs(strtotime($currentDate) - strtotime($formatedDate));
@@ -102,6 +105,11 @@ class Purchasing extends CI_Controller {
 			}
 
 			$itemArray[$itemId][$months] = $quantity;
+			$itemDetailArray[$itemId] = array(
+				"reference" => $datum->reference,
+				"name" => $datum->name
+			);
+
 		}
 
 		$result = array();
@@ -139,9 +147,51 @@ class Purchasing extends CI_Controller {
 				$result[$itemId][0] = $safetyStock3;
 				$result[$itemId][1] = $safetyStock6;
 				$result[$itemId][2] = (int)$stock[$itemId];
+				$result[$itemId][3] = $boughtArray[$itemId];
+				$result[$itemId][4] = $itemDetailArray[$itemId];
 			}
 		}
 
+		header('Content-Type: application/json');
+		echo json_encode($result);
+	}
+
+	public function countUnconfirmedPurchaseReturn()
+	{
+		$this->load->model("Purchase_return_model");
+		$data		= $this->Purchase_return_model->countUnconfirmedItems();
+		echo $data;
+	}
+
+	public function viewPurchaseByMonth()
+	{
+		$this->load->model("Debt_model");
+		$data		= $this->Debt_model->viewPurchaseByMonth();
+		$result			= array();
+		$today			= date("Y-m-d");
+		foreach($data as $datum){
+			$month		= $datum->month;
+			$year		= $datum->year;
+			$value		= (float) $datum->value;
+			$date		= date("Y-m-d", mktime(0,0,0, $month, 1, $year));
+			$difference	= date_diff(new DateTime($today), new DateTime($date));
+
+			$result[$difference->m] = array(
+				"label" => date("F Y", mktime(0,0,0, $month, 1, $year)),
+				"value" => $value
+			);
+		}
+
+		for($i = 0; $i <= 5; $i++){
+			if(!array_key_exists($i, $result)){
+				$result[$i] = array(
+					"label" => date("F Y", strtotime("-" . $i . "month")),
+					"value" => 0
+				);
+			}
+		}
+
+		$result		= array_reverse($result);
 		header('Content-Type: application/json');
 		echo json_encode($result);
 	}

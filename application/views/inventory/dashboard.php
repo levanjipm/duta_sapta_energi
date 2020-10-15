@@ -46,7 +46,7 @@
     <div class='dashboard_in'>
         <div class='row'>
             <div class='col-md-4 col-sm-12 col-xs-12'>
-                <div class='dashboardBox clickable' onclick="window.location.href='<?= site_url('Delivery_order/confirmDashboard') ?>'">
+                <div class='dashboardBox clickable' onclick="window.location.href='<?= site_url('Inventory/pendingDeliveryOrderDashboard') ?>'">
                     <div class='leftSide'>
                         <h4><b>Pending</b></h4>
                         <p>Delivery order</p>

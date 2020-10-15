@@ -73,12 +73,15 @@
 			<label>Information</label>
 			<p id='invoice_note_p'></p>
 
+			<label>Delivery Order Status</label>
+			<p id='deliveryOrderStatus'></p>
+
             <input type='hidden' id='invoice_id'>
-            <button type='button' class='button button_default_dark' title='Confirm invoice' onclick='confirmInvoice()'><i class='fa fa-long-arrow-right'></i></button>
+            <button type='button' class='button button_default_dark' title='Confirm invoice' onclick='confirmInvoice()' id='confirmButton'><i class='fa fa-long-arrow-right'></i></button>
             <button type='button' class='button button_danger_dark' title='Delete invoice' onclick='deleteInvoice()'><i class='fa fa-trash'></i></button>
         </form>
         <div class='notificationText danger' id='confirmFailedNotification'><p>Failed to confirm invoice.</p></div>
-    </div>
+	</div>
 </div>
 <script>
     $('#invoiceForm').validate();
@@ -168,6 +171,8 @@
             },
             success:function(response){
                 $('#invoice_id').val(n);
+				$('#deliveryOrderStatus').html("You are good to go.");
+				$("#confirmButton").attr('disabled', false);
                 var customer = response.customer;      
 				if(customer != null){
 					var customer_name = customer.name;
@@ -233,6 +238,20 @@
 					} else if(invoicing_method == 2){
 						var invoicing_text = "Coorporate method";
 					};
+
+					if(delivery_order.is_delete == 1){
+						$('#deliveryOrderStatus').html("Delivery order has been deleted by warehouse. Please delete the following invoice.");
+						$("#confirmButton").attr('disabled', true);
+					} else if(delivery_order.is_confirm == 0){
+						$('#deliveryOrderStatus').html("Delivery order has not been confirmed by warehouse. Please ask warehouse to confirm.");
+						$("#confirmButton").attr('disabled', true);
+					}
+
+					if(invoicing_method == 2 && delivery_order.is_sent == 0)
+					{
+						$('#deliveryOrderStatus').html("Delivery order has not been confirmed by warehouse. Please ask warehouse to confirm.");
+						$("#confirmButton").attr('disabled', true);
+					}
 
 					var taxing = sales_order.taxing;
 					if(taxing == 1){

@@ -8,8 +8,6 @@
 	<br>
 	<div class='dashboard_in'>
 		<form action='<?= site_url('Sales_order/inputItem') ?>' method='POST' id='sales_order_form'>
-			<h3 style='font-family:bebasneue'>Create Sales Order</h3>
-			<hr>
 			<label>Date</label>
 			<input type='date' class='form-control' name='sales_order_date' id='sales_order_date' value='<?= date('Y-m-d') ?>'>
 			
@@ -48,27 +46,31 @@
 			<br>
 			<button type='button' class='button button_default_dark' id='add_item_button'><i class='fa fa-shopping-cart'></i> Add item</button>
 			<br><br>
-			<table class='table table-bordered' id='cart_products_table' style='display:none'>
-				<tr>
-					<th>Reference</th>
-					<th>Name</th>
-					<th>Price list</th>
-					<th>Discount (%)</th>
-					<th>Quantity</th>
-					<th>Action</th>
-				</tr>
-				<tbody id='cart_products'></tbody>
-			</table>
-		
-			<table class='table table-bordered' id='bonus_cart_products_table' style='display:none'>
-				<tr>
-					<th>Item</th>
-					<th>Description</th>
-					<th>Quantity</th>
-					<th>Action</th>
-				</tr>
-				<tbody id='bonus_cart_products'></tbody>
-			</table>
+			<div class="table-responsive-md">
+				<table class='table table-bordered' id='cart_products_table' style='display:none'>
+					<tr>
+						<th>Reference</th>
+						<th>Name</th>
+						<th>Price list</th>
+						<th>Discount (%)</th>
+						<th>Quantity</th>
+						<th>Action</th>
+					</tr>
+					<tbody id='cart_products'></tbody>
+				</table>
+			</div>
+			
+			<div class='table-responsive-md'>
+				<table class='table table-bordered' id='bonus_cart_products_table' style='display:none'>
+					<tr>
+						<th>Item</th>
+						<th>Description</th>
+						<th>Quantity</th>
+						<th>Action</th>
+					</tr>
+					<tbody id='bonus_cart_products'></tbody>
+				</table>
+			</div>
 	
 			<button type='button' class='button button_default_dark' onclick='validate_form()' style='display:none' id='submit_button'>Submit</button>
 		</form>
@@ -171,18 +173,20 @@
 		<label>Invoicing method</label>
 		<p id='invoicing_p'></p>
 		
+		<div class='table-responsive-sm'>
 		<table class='table table-bordered'>
-			<tr>
-				<th>Reference</th>
-				<th>Name</th>
-				<th>Price list</th>
-				<th>Discount</th>
-				<th>Unit price</th>
-				<th>Quantity</th>
-				<th>Total price</th>
-			</tr>
-			<tbody id='table_item_confirm'></tbody>
-		</table>
+				<tr>
+					<th>Reference</th>
+					<th>Name</th>
+					<th>Price list</th>
+					<th>Discount</th>
+					<th>Unit price</th>
+					<th>Quantity</th>
+					<th>Total price</th>
+				</tr>
+				<tbody id='table_item_confirm'></tbody>
+			</table>
+		</div>
 
 		<label>Note</label>
 		<p id='salesOrderNote_p'></p>
@@ -336,7 +340,7 @@
 			var note		= $('#note').val();
 			
 			$('#customer_p').html(customer);
-			$('#customer_address_p').html(customer_address_select);
+			$('#customer_address_p').html($('#customer_address_select').html());
 			$('#date').html(my_date_format(date));
 			$('#taxing_p').html(taxing);
 			$('#salesOrderNote_p').html((note == "") ? "<i>Not available</i>" : note);

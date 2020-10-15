@@ -26,13 +26,13 @@
 ?>
 	</div>
 	<div class='sidenav_bar_functions'>
-		<button class='container_button'><p>Delivery order</p></button>
+		<button class='container_button'><p>Delivery order</p><i class='fa fa-caret-down'></i></button>
 		<div class='container_bar'>
 			<a href='<?= site_url('Delivery_order/createDashboard') ?>'><p>Create</p></a>
 			<a href='<?= site_url('Delivery_order/confirmDashboard') ?>'><p>Confirm</p></a>
 			<a href='<?= site_url('Delivery_order/archive') ?>'><p>Archive</p></a>	
 		</div>
-		<button class='container_button'><p style='font-family:museo'>Good receipt</p></button>
+		<button class='container_button'><p style='font-family:museo'>Good receipt</p><i class='fa fa-caret-down'></i></button>
 		<div class='container_bar'>
 			<a href='<?= site_url('Good_receipt/createDashboard') ?>'><p>Create</p></a>
 			<?php if($user_login->access_level > 1){ ?>
@@ -40,16 +40,21 @@
 			<?php } ?>
 			<a href='<?= site_url('Good_receipt/archiveDashboard') ?>'><p>Archive</p></a>	
 		</div>
-		<button class='container_button'><p style='font-family:museo'>Return</p></button>
+		<button class='container_button'><p style='font-family:museo'>Return</p><i class='fa fa-caret-down'></i></button>
 		<div class='container_bar'>
 			<a href='<?= site_url('Sales_return/receiveDashboard') ?>'><p>Sales</p></a>
 			<a href='<?= site_url('Purchase_return/sendDashboard') ?>'><p>Purchase</p></a>
 		</div>
 		<a href='<?= site_url('Stock/view/Inventory') ?>'><button><p>Check stock</p></button></a>
-		<button class='container_button'><p style='font-family:museo'>Cases</p></button>
+		<button class='container_button'><p style='font-family:museo'>Cases</p><i class='fa fa-caret-down'></i></button>
 		<div class='container_bar'>
 			<a href='<?= site_url('Inventory_case') ?>'><p>Create</p></a>
 			<a href='<?= site_url('Inventory_case/archiveDashboard') ?>'><p>Archive</p></a>
+		</div>
+		<button class='container_button'><p style='font-family:museo'><p>Pending</p><i class='fa fa-caret-down'></i></button>
+		<div class='container_bar'>
+			<a href='<?= site_url('Inventory/pendingSalesOrderDashboard') ?>'><p>Sales Orders</p></a>
+			<a href='<?= site_url('Inventory/pendingPurchaseOrderDashboard') ?>'><p>Purchase Orders</p></a>
 		</div>
 	</div>
 </div>
