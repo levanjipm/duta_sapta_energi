@@ -531,16 +531,6 @@ class Sales_order_model extends CI_Model {
 			return $this->db->affected_rows();
 		}
 		
-		public function show_years()
-		{
-			$this->db->select('DISTINCT(YEAR(date)) as year');
-			$this->db->order_by('date', 'asc');
-			$query		= $this->db->get($this->table_sales_order);
-			$result		= $query->result();
-			
-			return $result;
-		}
-		
 		public function showItems($year, $month, $offset = 0, $term = '', $limit = 25)
 		{
 			$this->db->select('code_sales_order.*, customer.name as customer_name, customer.address, customer.city, customer.number, customer.rt, customer.rw, customer.block, customer.pic_name, users.name as seller, COALESCE(code_sales_order_close_request.is_approved, 0) as is_approved, code_sales_order_close_request.approved_date');

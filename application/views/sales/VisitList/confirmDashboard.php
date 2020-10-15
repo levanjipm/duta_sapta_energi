@@ -177,8 +177,9 @@
 				$('button').attr('disabled', false);
 				refreshView();
 				if(response == 1){
-					visitListId = null;
 					$('#visitListWrapper .slide_alert_close_button').click();
+					window.location.href="<?= site_url('Visit_list/print/') ?>" + visitListId;
+					visitListId = null;
 				} else {
 					$('#visitListNotification').fadeIn(250);
 					setTimeout(function(){

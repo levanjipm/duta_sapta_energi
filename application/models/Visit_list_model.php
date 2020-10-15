@@ -480,5 +480,51 @@ class Visit_list_model extends CI_Model {
 			$result		= $query->num_rows();
 			return $result;
 		}
+
+		public function updateReport($id)
+		{
+			$this->db->set('is_reported', 1);
+			$this->db->where('id', $id);
+			$this->db->update($this->table_visit);
+			$result		= $this->db->affected_rows();
+			return $result;
+		}
+
+		public function getItems($offset = 0, $month, $year, $limit = 10)
+		{
+			$query		= $this->db->query("
+				SELECT code_visit_list.*, a.name as created_by, b.name as visited_by, c.name as confirmed_by
+				FROM code_visit_list
+				JOIN (
+					SELECT id, name FROM users
+				) a
+				ON code_visit_list.created_by = a.id
+				JOIN (
+					SELECT id, name FROM users
+				) b
+				ON code_visit_list.visited_by = b.id
+				LEFT JOIN (
+					SELECT id, name FROM users
+				) c
+				ON code_visit_list.confirmed_by = c.id
+				WHERE MONTH(code_visit_list.date) = '$month'
+				AND YEAR(code_visit_list.date) = '$year'
+				AND code_visit_list.is_delete = '0'
+				LIMIT $limit OFFSET $offset
+			");
+
+			$result		= $query->result();
+			return $result;
+		}
+
+		public function countItems($month, $year, $limit = 10)
+		{
+			$this->db->where('is_delete', 0);
+			$this->db->where('MONTH(date)', $month);
+			$this->db->where('YEAR(date)', $year);
+			$query		= $this->db->get($this->table_visit);
+			$result		= $query->num_rows();
+			return $result;
+		}
 	}
 ?>

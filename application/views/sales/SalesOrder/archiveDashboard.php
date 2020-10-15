@@ -27,13 +27,9 @@
 			</div>
 			<div class='col-md-2 col-sm-3 col-xs-4'>
 				<select class='form-control' id='year'>
-<?php
-	foreach($years as $year){
-?>
-					<option value='<?= $year->year ?>' <?php if($year->year == date('Y')){ echo('selected');} ?>><?= $year->year ?></option>
-<?php
-	}
-?>
+<?php for($i = 2020; $i <= date('Y'); $i++){ ?>
+					<option value='<?= $i ?>' <?= ($i == date('Y')) ? 'selected': '' ?>><?= $i ?></option>
+<?php } ?>
 				</select>
 			</div>
 			<div class='col-md-6 col-sm-4 col-xs-4 col-md-offset-2 col-sm-offset-2 col-xs-offset-0'>
@@ -144,7 +140,7 @@
 				$('#archive_table').html('');
 				
 				var sales_orders		= response.sales_orders;
-				
+				var itemCount			= 0;
 				$.each(sales_orders, function(index, sales_order){
 					var seller					= sales_order.seller;
 					var is_approved				= sales_order.is_approved;
@@ -198,7 +194,13 @@
 							$('#archive_table').append("<div class='row archive_row'><div class='col-md-3 col-sm-3 col-xs-4'><p><strong>" + sales_order_name + "</strong></p><p>" + seller + "</p></div><div class='col-md-3 col-sm-3 col-xs-3'><p><strong>" + customer_name + "</strong></p><p>" + complete_address + "</p><p>" + customer_city + "</p></div><div class='col-md-4 col-sm-5 col-xs-5 col-md-offset-2 col-sm-offset-1 col-xs-offset-2'><p style='display:inline-block'>" + my_date_format(sales_order_date) + " <strong>|</strong> </p> <button type='button' class='button button_transparent' onclick='open_view(" + sales_order_id + ")' title='View " + sales_order_name + "'><i class='fa fa-eye'></i></button> <button type='button' class='button button_verified' title='Confirmed'><i class='fa fa-check'></i></button></div>");
 						}
 					}
+
+					itemCount++;
 				});
+
+				if(itemCount == 0){
+					$('#archive_table').html("<p>There is no archive found.</p>");
+				}
 				
 				var button_width		= $('.button_verified').height();
 				$('.button_verified').width(button_width);

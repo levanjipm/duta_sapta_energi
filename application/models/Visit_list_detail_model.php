@@ -79,7 +79,8 @@ class Visit_list_detail_model extends CI_Model {
 		public function getByCodeId($id)
 		{
 			$query			= $this->db->query("
-				SELECT customer.* FROM
+				SELECT visit_list.id, customer.name, customer.address, customer.number, customer.block, customer.rt, customer.rw, customer.postal_code, customer.city, visit_list.result, visit_list.note
+				FROM
 				visit_list
 				JOIN customer
 				ON visit_list.customer_id = customer.id
@@ -87,5 +88,26 @@ class Visit_list_detail_model extends CI_Model {
 			");
 			$result			= $query->result();
 			return $result;
+		}
+
+		public function updateReport()
+		{
+			$resultArray		= $this->input->post('result');
+			$noteArray			= $this->input->post('note');
+
+			$batch				= array();
+
+			foreach($resultArray as $visitListId => $result)
+			{
+				$batch[]	= array(
+					"id" => $visitListId,
+					"result" => $result,
+					"note" => $this->db->escape_str($noteArray[$visitListId])
+				);
+
+				next($resultArray);
+			}
+
+			$this->db->update_batch($this->table_visit, $batch, "id");
 		}
 }

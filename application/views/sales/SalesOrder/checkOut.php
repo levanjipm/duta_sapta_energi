@@ -85,11 +85,11 @@
 	$customer_block			= $customer->block;
 	$customer_id			= $customer->id;
 	
-	if($customer_number != NULL){
+	if($customer_number != NULL || $customer_number == "000" || $customer_number == ""){
 		$complete_address	.= ' No. ' . $customer_number;
 	}
 	
-	if($customer_block != NULL){
+	if($customer_block != NULL || $customer_block == "000" || $customer_block == ""){
 		$complete_address	.= ' Blok ' . $customer_block;
 	}
 	

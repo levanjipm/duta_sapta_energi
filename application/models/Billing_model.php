@@ -215,17 +215,6 @@ class Billing_model extends CI_Model {
 			
 		}
 
-		public function getYears()
-		{
-			$this->db->select("DISTINCT(YEAR(code_billing.date)) as year");
-			$this->db->from('code_billing');
-			$this->db->order_by('code_billing.date', 'asc');
-
-			$query		= $this->db->get();
-			$result		= $query->result();
-			return $result;
-		}
-
 		public function getArchive($offset = 0, $month, $year, $limit = 10)
 		{
 			$this->db->select('code_billing.*, users.name as billed_by');

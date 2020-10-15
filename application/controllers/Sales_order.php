@@ -351,10 +351,7 @@ class Sales_order extends CI_Controller {
 		$this->load->view('head');
 		$this->load->view('sales/header', $data);
 
-		$this->load->model('Sales_order_model');
-		$data['years']	= $this->Sales_order_model->show_years();
-
-		$this->load->view('sales/SalesOrder/archiveDashboard', $data);
+		$this->load->view('sales/SalesOrder/archiveDashboard');
 	}
 
 	public function archiveView()

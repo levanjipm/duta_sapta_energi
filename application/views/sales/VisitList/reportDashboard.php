@@ -8,54 +8,59 @@
 	<br>
 	<div class='dashboard_in'>
 
-	<div id='visitListTable'>
-		<table class='table table-bordered'>
-			<tr>
-				<th>Date</th>
-				<th>Salesman</th>
-				<th>Action</th>
-			</tr>
-			<tbody id='visitListTableContent'></tbody>
-		</table>
+		<div id='visitListTable'>
+			<table class='table table-bordered'>
+				<tr>
+					<th>Date</th>
+					<th>Salesman</th>
+					<th>Action</th>
+				</tr>
+				<tbody id='visitListTableContent'></tbody>
+			</table>
 
-		<select class='form-control' id='page' style='width:100px'>
-			<option value='1'>1</option>
-		</select>
+			<select class='form-control' id='page' style='width:100px'>
+				<option value='1'>1</option>
+			</select>
+		</div>
+		<p id='visitListTableText'>There is no visit list to be reported.</p>
 	</div>
 </div>
 
 <div class='alert_wrapper' id='visitListWrapper'>
 	<button class='slide_alert_close_button'>&times;</button>
 	<div class='alert_box_slide'>
-		<h3 style='font-family:bebasneue'>View Visit List</h3>
-		<hr>
-		<label>Date</label>
-		<p id='dateP'></p>
+		<form id='reportForm'>
+			<h3 style='font-family:bebasneue'>View Visit List</h3>
+			<hr>
+			<label>Date</label>
+			<p id='dateP'></p>
 
-		<label>Sales</label>
-		<p id='salesP'></p>
+			<label>Sales</label>
+			<p id='salesP'></p>
 
-		<label>Created By</label>
-		<p id='creatorP'></p>
-		<p id='createdDateP'></p>
+			<label>Created By</label>
+			<p id='creatorP'></p>
+			<p id='createdDateP'></p>
 
-		<label>Customers</label>
-		<table class='table table-bordered'>
-			<tr>
-				<th>Name</th>
-				<th>Information</th>
-			</tr>
-			<tbody id='customerTableContent'></tbody>
-		</table>
+			<label>Customers</label>
+			<table class='table table-bordered'>
+				<tr>
+					<th>Customer</th>
+					<th>Result</th>
+				</tr>
+				<tbody id='customerTableContent'></tbody>
+			</table>
 
-		<button class='button button_danger_dark' onclick='deleteVisitList()'><i class='fa fa-trash'></i></button>
-		<button class='button button_default_dark' onclick='confirmVisitList()'><i class='fa fa-long-arrow-right'></i></button>
+			<button type='button' class='button button_default_dark' onclick='submitReport()'><i class='fa fa-long-arrow-right'></i></button>
 
-		<div class='notificationText danger' id='visitListNotification'><p>Failed to update data.</p></div>
+			<div class='notificationText danger' id='failedUpdateReport'><p>Failed to update report.</p></div>
+		</form>
 	</div>
 </div>
 
 <script>
+	$('#reportForm').validate();
+
 	var visitListId;
 	$(document).ready(function(){
 		refreshView();
@@ -86,8 +91,17 @@
 					var date		= item.date;
 					var id			= item.id;
 
-					$('#visitListTableContent').append("<tr><td>" + my_date_format(date) + "</td><td>" + visit + "</td><td><button class='button button_default_dark' onclick='viewVisitList(" + id + ")'><i class='fa fa-long-arrow-right'></i></button></td></tr>")
-				})
+					$('#visitListTableContent').append("<tr><td>" + my_date_format(date) + "</td><td>" + visit + "</td><td><button class='button button_default_dark' onclick='viewVisitList(" + id + ")'><i class='fa fa-long-arrow-right'></i></button></td></tr>");
+					itemCount++;
+				});
+
+				if(itemCount > 0){
+					$('#visitListTableText').hide();
+					$('#visitListTable').show();
+				} else {
+					$('#visitListTable').hide();
+					$('#visitListTableText').show();
+				}
 			}
 		})
 	}
@@ -118,6 +132,7 @@
 				var items		= response.items;
 				$('#customerTableContent').html("");
 				$.each(items, function(index, item){
+					var id					= item.id;
 					var name				= item.name;
 					var customer_number		= item.number;
 					var customer_block		= item.block;
@@ -143,8 +158,8 @@
 						complete_address += ', ' + customer_postal;
 					}
 
-					$('#customerTableContent').append("<tr><td>" + name + "</td><td><p>" + complete_address + "</p><p>" + customer_city + "</p></td></tr>");
-				})
+					$('#customerTableContent').append("<tr><td><label>" + name + "</label><p>" + complete_address + "</p></td><td><label>Result</label><select class='form-control' name='result[" + id + "]'><option value='0'>Failed</option><option value='1'>Success</option></select><label>Note</label><textarea class='form-control' name='note[" + id + "]' rows='3' style='resize:none' required minlength='10'></textarea></td></tr>");
+				});
 			},
 			complete:function(){
 				$('#visitListWrapper').fadeIn(300, function(){
@@ -154,53 +169,33 @@
 		})
 	}
 
-	function confirmVisitList(){
-		$.ajax({
-			url:"<?= site_url('Visit_list/confirmById') ?>",
-			data:{
-				id: visitListId
-			},
-			beforeSend:function(){
-				$('button').attr('disabled', true);
-			},
-			success:function(response){
-				$('button').attr('disabled', false);
-				refreshView();
-				if(response == 1){
-					visitListId = null;
-					$('#visitListWrapper .slide_alert_close_button').click();
-				} else {
-					$('#visitListNotification').fadeIn(250);
-					setTimeout(function(){
-						$('#visitListNotification').fadeOut(250);
-					},1000);
-				}
-			}
-		});
-	}
+	function submitReport(){
+		if($('#reportForm').valid()){
+			formData		= $('#reportForm').serializeArray();
+			formData.push({name: "id", value: visitListId});
+			$.ajax({
+				url:"<?= site_url('Visit_list/submitReport') ?>",
+				type:"POST",
+				data:formData,
+				beforeSend:function(){
+					$('textarea').attr('readonly', true);
+					$('button').attr('disabled', true);
+				},
+				success:function(response){
+					$('textarea').attr('readonly', false);
+					$('button').attr('disabled', false);
+					refreshView();
 
-	function deleteVisitList(){
-		$.ajax({
-			url:"<?= site_url('Visit_list/deleteById') ?>",
-			data:{
-				id: visitListId
-			},
-			beforeSend:function(){
-				$('button').attr('disabled', true);
-			},
-			success:function(response){
-				$('button').attr('disabled', false);
-				refreshView();
-				if(response == 1){
-					visitListId = null;
-					$('#visitListWrapper .slide_alert_close_button').click();
-				} else {
-					$('#visitListNotification').fadeIn(250);
-					setTimeout(function(){
-						$('#visitListNotification').fadeOut(250);
-					},1000);
+					if(response == 0){
+						$('#failedUpdateReport').fadeIn(250);
+						setTimeout(function(){
+							$('#failedUpdateReport').fadeOut(250);
+						}, 1000);
+					} else if(response == 1){
+						$('#visitListWrapper .slide_alert_close_button').click();
+					}
 				}
-			}
-		});
+			})
+		}
 	}
 </script>

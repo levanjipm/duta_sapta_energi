@@ -257,11 +257,7 @@ class Billing extends CI_Controller {
 		
 		$this->load->view('head');
 		$this->load->view('finance/header', $data);
-
-		$data = array();
-		$this->load->model("Billing_model");
-		$data['years'] = $this->Billing_model->getYears();
-		$this->load->view('finance/Billing/archiveDashboard', $data);
+		$this->load->view('finance/Billing/archiveDashboard');
 	}
 
 	public function GetArchive()

@@ -164,4 +164,68 @@ class Visit_list extends CI_Controller {
 		$result		= $this->Visit_list_model->updateById($id, 0);
 		echo $result;
 	}
+
+	public function print($id)
+	{
+		$user_id		= $this->session->userdata('user_id');
+		$this->load->model('User_model');
+		$data['user_login'] = $this->User_model->getById($user_id);
+		
+		$this->load->model('Authorization_model');
+		$data['departments']	= $this->Authorization_model->getByUserId($user_id);
+		
+		$this->load->view('head');
+		$this->load->view('sales/header', $data);
+
+		$this->load->model("Visit_list_model");
+		$data['general']	= $this->Visit_list_model->getById($id);
+
+		$this->load->model("Visit_list_detail_model");
+		$data['items']		= $this->Visit_list_detail_model->getByCodeId($id);
+		$this->load->view('sales/VisitList/print', $data);
+	}
+
+	public function submitReport()
+	{
+		$this->load->model("Visit_list_model");
+		$id			= $this->input->post('id');
+		$result		= $this->Visit_list_model->updateReport($id);
+		if($result == 1){
+			$this->load->model("Visit_list_detail_model");		
+			$this->Visit_list_detail_model->updateReport();
+
+			echo 1;
+		} else {
+			echo 0;
+		}		
+	}
+
+	public function archiveDashboard()
+	{
+		$user_id		= $this->session->userdata('user_id');
+		$this->load->model('User_model');
+		$data['user_login'] = $this->User_model->getById($user_id);
+		
+		$this->load->model('Authorization_model');
+		$data['departments']	= $this->Authorization_model->getByUserId($user_id);
+		
+		$this->load->view('head');
+		$this->load->view('sales/header', $data);
+		$this->load->view('sales/VisitList/archiveDashboard');
+	}
+
+	public function getItems()
+	{
+		$page			= $this->input->get('page');
+		$month			= $this->input->get('month');
+		$year			= $this->input->get('year');
+		$offset			= ($page - 1) * 10;
+
+		$this->load->model("Visit_list_model");
+		$data['items']		= $this->Visit_list_model->getItems($offset, $month, $year);
+		$data['pages']		= max(1, ceil($this->Visit_list_model->countItems($month, $year)/10));
+
+		header('Content-Type: application/json');
+		echo json_encode($data);
+	}
 }

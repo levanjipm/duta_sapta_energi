@@ -1,10 +1,13 @@
+<head>
+	<title>Customer - Plafond</title>
+</head>
 <div class='dashboard'>
 	<div class='dashboard_head'>
 		<p style='font-family:museo'><a href='<?= site_url('Sales') ?>' title='Sales'><i class='fa fa-briefcase'></i></a> /<a href='<?= site_url('Customer') ?>'>Customer </a>/ Customer plafond</p>
 	</div>
 	<br>
 	<div class='dashboard_in'>
-		<input type='text' class='form-control input-lg' id='search_bar' placeholder="Search customer">
+		<input type='text' class='form-control' id='search_bar' placeholder="Search customer">
 		<br>
 		<table class='table table-bordered'>
 			<tr>
@@ -66,7 +69,6 @@
 				term:$('#search_bar').val(),
 				page:page
 			},
-			type:'GET',
 			beforeSend:function(){
 				$('#customer_table_view_pane').html('');
 			},
@@ -79,7 +81,7 @@
 				$.each(customers, function(index, customer){
 					var complete_address		= '';
 					var customer_name			= customer.name;
-					complete_address		+= customer.address;
+					complete_address			+= customer.address;
 					var customer_city			= customer.city;
 					var customer_number			= customer.number;
 					var customer_rt				= customer.rt;
@@ -109,7 +111,7 @@
 						complete_address	+= ', ' + customer_postal;
 					}
 					
-					$('#table_plafond').append("<tr><td>" + customer_name + "</td><td><p>" + complete_address + "</p><p>" + customer_city + "</p></td><td>Rp." + numeral(plafond).format('0,0.00') + "</td><td><button type='button' class='button button_default_dark' title='Plafond raise submission for " + customer_name + "' onclick='open_edit_form(" + customer_id + ")'><i class='fa fa-file-text-o'></i></button></td></tr>");
+					$('#table_plafond').append("<tr><td>" + customer_name + "</td><td><p>" + complete_address + "</p><p>" + customer_city + "</p></td><td>Rp." + numeral(plafond).format('0,0.00') + "</td><td><button type='button' class='button button_default_dark' title='Plafond raise submission for " + customer_name + "' onclick='open_edit_form(" + customer_id + ")'><i class='fa fa-eye'></i></button></td></tr>");
 				});
 				
 				for(i = 1; i <= pages; i++){
