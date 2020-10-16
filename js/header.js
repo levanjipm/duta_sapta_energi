@@ -21,4 +21,13 @@ function closeSlideAlert(){
 		$(this).parent().fadeOut();
 	});
 }
+
+$(document).ready(function(){
+	$(window).keydown(function(event){
+		if(event.keyCode == 13) {
+		  event.preventDefault();
+		  return false;
+		}
+	});
+})
 // document.getElementsByClassName("slide_alert_close_button").addEventListener("click", closeSlideAlert());

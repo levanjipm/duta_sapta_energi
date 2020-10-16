@@ -129,4 +129,10 @@ class Users extends CI_Controller {
 		header('Content-Type: application/json');
 		echo json_encode($data);
 	}
+
+	public function logout()
+	{
+		unset($_SESSION['user_id']);
+		redirect(site_url('Login'));
+	}
 }

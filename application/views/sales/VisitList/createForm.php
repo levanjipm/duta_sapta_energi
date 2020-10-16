@@ -59,6 +59,9 @@
 		<br><br>
 		<div class='row'>
 			<div class='col-sm-12'>
+				<button class='button button_mini_tab' onclick='$("#areaWrapper").toggle(300);'><i class='fa fa-filter'></i></button>
+				<div class='row' id='areaWrapper' style='display:none'>
+				</div>
 				<input type='text' class='form-control' id='searchBar'>
 				<br>
 				<div id='customerTable'>
@@ -110,11 +113,50 @@
 
 <script>
 	var includedCustomer = [];
+	var includedAreas	= [];
 	var mode;
 
 	$(document).ready(function(){
-		fetchUrgentCustomer(1);
-	})
+		fetchAreas(fetchUrgentCustomer);
+	});
+
+	function fetchAreas(callback = null){
+		$.ajax({
+			url:"<?= site_url('Area/getAllItems') ?>",
+			success:function(response){
+				$.each(response, function(index, value){
+					var name		= value.name;
+					var id			= value.id;
+					$('#areaWrapper').append("<div class='col-sm-4 col-xs-6'><label><input type='checkbox' id='area-" + id + "' checked onchange='refreshArea(" + id + ")'> " + name + "</label></div>");
+
+					includedAreas.push(parseInt(id));
+				});
+
+				if(callback != null){
+					callback(1);
+				}
+			}
+		})
+	}
+
+	function refreshArea(n){
+		if($('#area-' + n).is(':checked')){
+			includedAreas.push(n);
+		} else {
+			var index = includedAreas.indexOf(n);
+			includedAreas.splice(index, 1);
+		}
+
+		if(mode == 1){
+			fetchUrgentCustomer(1);
+		} else if(mode == 2){
+			fetchRecommendedCustomer(1);
+		} else if(mode == 3){
+			fetchInactiveCustomer(1);
+		} else if(mode == 4){
+			fetchCustomer(1);
+		}
+	}
 
 	function fetchUrgentCustomer(page = $('#page').val()){
 		$('.button_mini_tab').removeClass('active');
@@ -164,13 +206,14 @@
 		refreshView(page);
 	}
 
-	function refreshView(page){
+	function refreshView(page = $('#page').val()){
 		$.ajax({
 			url:"<?= site_url('Visit_list/getCustomerVisitList') ?>",
 			data:{
 				mode: mode,
 				page: page,
-				term: $('#searchBar').val()
+				term: $('#searchBar').val(), 
+				areas: includedAreas
 			},
 			success:function(response){
 				var items		= response.items;

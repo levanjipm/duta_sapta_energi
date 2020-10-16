@@ -267,4 +267,18 @@ class User_model extends CI_Model {
 				$this->db->update($this->table_user);
 			}
 		}
+
+		public function updateById($id, $name, $email, $bank, $address, $password)
+		{
+			$this->db->set('name', $this->db->escape_str($name));
+			$this->db->set('email', $this->db->escape_str($email));
+			$this->db->set('bank_account', $this->db->escape_str($bank));
+			$this->db->set('address', $this->db->escape_str($address));
+			if($password != NULL){
+				$this->db->set('name', md5($password));
+			}
+			$this->db->where('id', $id);
+			$this->db->update($this->table_user);
+			return $this->db->affected_rows();
+		}
 }

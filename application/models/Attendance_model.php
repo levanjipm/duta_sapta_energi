@@ -149,4 +149,21 @@ class Attendance_model extends CI_Model {
 			$result			= $query->row();
 			return $result;
 		}
-}
+
+		public function getChartItems($userId, $month, $year)
+		{
+			$query		= $this->db->query("
+				SELECT attendance_status.name, attendance_status.description, attendance_status.point, COUNT(attendance_list.id) AS count
+				FROM attendance_list
+				LEFT JOIN attendance_status ON attendance_list.status = attendance_status.id
+				WHERE attendance_list.user_id = '$userId'
+				AND MONTH(attendance_list.date) = '$month'
+				AND YEAR(attendance_list.date) = '$year'
+				HAVING COUNT(attendance_list.id) > 0
+			");
+
+			$result			= $query->result();
+			return $result;
+		}
+	}
+?>

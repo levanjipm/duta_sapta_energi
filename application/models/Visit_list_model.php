@@ -78,8 +78,20 @@ class Visit_list_model extends CI_Model {
 			return $result;
 		}
 
-		public function getCustomerList($mode, $term = "", $offset = 0, $limit = 25)
+		public function getCustomerList($mode, $includedAreas = array(), $term = "", $offset = 0, $limit = 25)
 		{
+			if(count($includedAreas) > 0){
+				$string		= "AND customer.area_id IN (";
+				foreach($includedAreas as $includedArea){
+					$string .= $includedArea;
+					$string .= ",";
+				}
+
+				$string	= substr($string, 0, -1);
+				$string	.= ")";
+			} else {
+				$string = "";
+			}
 			//Urgent Customer//
 			//This mode implements to show customer that has not bought more than 3 months//
 			if($mode == 1){
@@ -106,6 +118,7 @@ class Visit_list_model extends CI_Model {
 							JOIN visit_list
 							ON visit_list.code_visit_list_id = code_visit_list.id
 							WHERE code_visit_list.is_confirm = '1'
+							AND visit_list.result = '1'
 							GROUP BY visit_list.customer_id
 						) maxVisitListTable
 						ON customer.id = maxVisitListTable.customer_id
@@ -120,6 +133,7 @@ class Visit_list_model extends CI_Model {
 						OR customer.pic_name LIKE '%$term%'
 					)
 					AND customer.is_remind = 1
+					$string
 					ORDER BY customer.name ASC
 					LIMIT $limit OFFSET $offset
 				");
@@ -151,6 +165,7 @@ class Visit_list_model extends CI_Model {
 							JOIN visit_list
 							ON visit_list.code_visit_list_id = code_visit_list.id
 							WHERE code_visit_list.is_confirm = '1'
+							AND visit_list.result = '1'
 							GROUP BY visit_list.customer_id
 						) maxVisitListTable
 						ON customer.id = maxVisitListTable.customer_id
@@ -167,6 +182,7 @@ class Visit_list_model extends CI_Model {
 						OR customer.pic_name LIKE '%$term%'
 					)
 					AND customer.is_remind = 1
+					$string
 					ORDER BY customer.name ASC
 					LIMIT $limit OFFSET $offset
 				");
@@ -198,6 +214,7 @@ class Visit_list_model extends CI_Model {
 							JOIN visit_list
 							ON visit_list.code_visit_list_id = code_visit_list.id
 							WHERE code_visit_list.is_confirm = '1'
+							AND visit_list.result = '1'
 							GROUP BY visit_list.customer_id
 						) maxVisitListTable
 						ON customer.id = maxVisitListTable.customer_id
@@ -215,6 +232,7 @@ class Visit_list_model extends CI_Model {
 						OR customer.city LIKE '%$term%'
 						OR customer.pic_name LIKE '%$term%'
 					)
+					$string
 					ORDER BY customer.name ASC
 					LIMIT $limit OFFSET $offset
 				");
@@ -243,6 +261,7 @@ class Visit_list_model extends CI_Model {
 							JOIN visit_list
 							ON visit_list.code_visit_list_id = code_visit_list.id
 							WHERE code_visit_list.is_confirm = '1'
+							AND visit_list.result = '1'
 							GROUP BY visit_list.customer_id
 						) maxVisitListTable
 						ON customer.id = maxVisitListTable.customer_id
@@ -255,6 +274,7 @@ class Visit_list_model extends CI_Model {
 						OR customer.city LIKE '%$term%'
 						OR customer.pic_name LIKE '%$term%'
 					)
+					$string
 					ORDER BY customer.name ASC
 					LIMIT $limit OFFSET $offset
 				");
@@ -264,8 +284,20 @@ class Visit_list_model extends CI_Model {
 			return $result;
 		}
 
-		public function countCustomerList($mode, $term = "")
+		public function countCustomerList($mode, $includedAreas = array(), $term = "")
 		{
+			if(count($includedAreas) > 0){
+				$string		= "AND customer.area_id IN (";
+				foreach($includedAreas as $includedArea){
+					$string .= $includedArea;
+					$string .= ",";
+				}
+
+				$string	= substr($string, 0, -1);
+				$string	.= ")";
+			} else {
+				$string = "";
+			}
 			//Urgent Customer//
 			//This mode implements to show customer that has not bought more than 3 months//
 			if($mode == 1){
@@ -291,6 +323,7 @@ class Visit_list_model extends CI_Model {
 						OR customer.city LIKE '%$term%'
 						OR customer.pic_name LIKE '%$term%'
 					)
+					$string
 				");
 			}
 			//Recommended Customer//
@@ -309,6 +342,7 @@ class Visit_list_model extends CI_Model {
 							JOIN visit_list
 							ON visit_list.code_visit_list_id = code_visit_list.id
 							WHERE code_visit_list.is_confirm = '1'
+							AND visit_list.result = '1'
 							GROUP BY visit_list.customer_id
 						) maxVisitListTable
 						ON customer.id = maxVisitListTable.customer_id
@@ -324,6 +358,7 @@ class Visit_list_model extends CI_Model {
 						OR customer.city LIKE '%$term%'
 						OR customer.pic_name LIKE '%$term%'
 					)
+					$string
 				");
 			}
 			//Inactive Customer//
@@ -345,6 +380,7 @@ class Visit_list_model extends CI_Model {
 						OR customer.city LIKE '%$term%'
 						OR customer.pic_name LIKE '%$term%'
 					)
+					$string
 				");
 			}
 			else if($mode == 4){
@@ -358,6 +394,7 @@ class Visit_list_model extends CI_Model {
 						OR customer.city LIKE '%$term%'
 						OR customer.pic_name LIKE '%$term%'
 					)
+					$string
 				");
 			}
 

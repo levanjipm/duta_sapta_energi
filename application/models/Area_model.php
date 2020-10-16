@@ -71,6 +71,7 @@ class Area_model extends CI_Model {
 				$this->db->like('name', $term, 'both');
 			}
 			$this->db->limit($limit, $offset);
+			$this->db->order_by('name');
 			$query = $this->db->get($this->table_area);
 			$result = $query->result();
 			

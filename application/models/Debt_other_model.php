@@ -189,4 +189,16 @@ class Debt_other_model extends CI_Model {
 			$this->db->where_in("id", $idArray);
 			$this->db->update($this->table_purchase_invoice);
 		}
+
+		public function getBySupplierIdPeriod($supplierId, $month, $year)
+		{
+			$this->db->where('supplier_id', $supplierId);
+			if($month != 0){
+				$this->db->where('MONTH(date)', $month);
+			}
+			$this->db->where('YEAR(date)', $year);
+			$query		= $this->db->get($this->table_purchase_invoice);
+			$result		= $query->result();
+			return $result;
+		}
 }

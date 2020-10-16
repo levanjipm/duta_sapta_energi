@@ -157,4 +157,15 @@ class Salary_slip_model extends CI_Model {
 			$result		= $this->db->affected_rows();
 			return $result;
 		}
+
+		public function getItemsByUserId($userId, $offset = 0, $limit = 10)
+		{
+			$this->db->where('user_id', $userId);
+			$this->db->order_by('year', "DESC");
+			$this->db->order_by("month", "DESC");
+			$this->db->limit($limit, $offset);
+			$query			= $this->db->get($this->table_salary);
+			$result			= $query->result();
+			return $result;
+		}
 }

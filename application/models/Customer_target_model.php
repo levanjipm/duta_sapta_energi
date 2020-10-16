@@ -143,7 +143,11 @@ class Customer_target_model extends CI_Model {
 			$result			= $query->num_rows();
 			if($result == 0){
 				$targetObject = $this->Customer_target_model->getCurrentTarget($customerId);
-				$currentTarget = $targetObject->value;
+				if($targetObject != null){
+					$currentTarget = $targetObject->value;
+				} else {
+					$currentTarget = $value;
+				}
 				if($value > 0 && $value != $currentTarget){
 					$db_item = array(
 						"id" => "",

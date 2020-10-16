@@ -9,21 +9,23 @@
 	<div class='dashboard_in'>
 		<input type='text' class='form-control' id='search_bar' placeholder='Search'>
 		<br>
-		<table class='table table-bordered' id='stock_table_wrapper'>
-			<tr>
-				<th>Reference</th>
-				<th>Name</th>
-				<th>Stock</th>
-				<th>Action</th>
-			</tr>
-			<tbody id='stock_table'></tbody>
-		</table>
+		<div  id='stock_table_wrapper'>
+			<table class='table table-bordered'>
+				<tr>
+					<th>Reference</th>
+					<th>Name</th>
+					<th>Stock</th>
+					<th>Action</th>
+				</tr>
+				<tbody id='stock_table'></tbody>
+			</table>
+
+			<select class='form-control' id='page' style='width:100px'>
+				<option value='1'>1</option>
+			</select>
+		</div>
 		
 		<p id='stock_status' style='display:none'>There is no stock data found</p>
-		
-		<select class='form-control' id='page' style='width:100px'>
-			<option value='1'>1</option>
-		</select>
 	</div>
 </div>
 <script>

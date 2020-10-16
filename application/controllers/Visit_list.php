@@ -84,10 +84,14 @@ class Visit_list extends CI_Controller {
 		$page				= $this->input->get('page');
 		$offset				= ($page - 1) * 25;
 		$term				= $this->input->get("term");
+		$includedAreas		= $this->input->get('areas');
+		if(empty($this->input->get('areas'))){
+			$includedAreas	= array();
+		}
 
 		$this->load->model("Visit_list_model");
-		$data['items']		= $this->Visit_list_model->getCustomerList($mode, $term, $offset);
-		$data['pages']		= max(1, ceil($this->Visit_list_model->countCustomerList($mode, $term)/10));
+		$data['items']		= $this->Visit_list_model->getCustomerList($mode, $includedAreas, $term, $offset);
+		$data['pages']		= max(1, ceil($this->Visit_list_model->countCustomerList($mode, $includedAreas, $term)/10));
 
 		header('Content-Type: application/json');
 		echo json_encode($data);

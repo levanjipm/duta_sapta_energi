@@ -55,6 +55,7 @@
 </head>
 <?php
 	$totalInvoice			= 0;
+	$totalOtherInvoice		= 0;
 	$complete_address		= '';
 	$complete_address		.= $supplier->address;
 	$supplier_number		= $supplier->number;
@@ -117,6 +118,49 @@
 				<tr>
 					<td><label>Total</label></td>
 					<td>Rp. <?= number_format($totalInvoice,2) ?></td>
+				</tr>
+			</table>
+			<script>
+				$('div[id^="progressBar-"]').each(function(){
+					var id			= $(this).attr('id');
+					var uid			= parseInt(id.substring(12, 267));
+					var value		= parseFloat($(this).attr('data-progress'));
+					var percentage	= value / <?= $totalInvoice ?>;
+					var progress	= percentage * 100;
+
+					$(this).animate({
+						width: progress + "%",
+					}, 200)
+					
+					$('#progressBarText-' + uid).html(numeral(percentage).format('0,0.00%'));
+				})
+			</script>
+		</div>
+<?php } else { ?>
+		<p id='purchaseInvoiceTableText'>There is no purchase invoice found.</p>
+<?php } ?>
+		<label>Other Purchase Invoice</label>
+<?php if(count($otherPurchaseInvoice) > 0){ ?>
+			<table class='table table-bordered'>
+				<tr>
+					<th>Date</th>
+					<th>Invoice</th>
+					<th>Value</th>
+				</tr>
+<?php foreach($otherPurchaseInvoice as $invoice){ ?>
+				<tr>
+					<td><?= date('d M Y', strtotime($invoice->date)) ?></td>
+					<td>
+						<label><?= $invoice->invoice_document ?></label>
+						<p><?= $invoice->tax_document ?></p>
+					</td>
+					<td>Rp. <?= number_format($invoice->value,2) ?></td>
+				</tr>
+<?php $totalOtherInvoice += $invoice->value; } ?>
+				<tr>
+					<td></td>
+					<td><label>Total</label></td>
+					<td>Rp. <?= number_format($totalOtherInvoice,2) ?></td>
 				</tr>
 			</table>
 			<script>
