@@ -100,6 +100,8 @@
 			<div class='card'>
 				<label>Attendance</label>
 				<p id='attendanceMonthYear'></p>
+				<label>Count</label>
+				<p id='attendanceCount'></p>
 				<div id='donutchart' style='height:150px'></div>
 				<button class='button_slide left' onclick='selectPrevious()'><i class='fa fa-chevron-left'></i></button><button class='button_slide right' onclick='selectNext()'><i class='fa fa-chevron-right'></i></button>
 			</div>
@@ -200,13 +202,18 @@
 			},
 			success:function(response){
 				if(response.length == 0){
-					$('#donutchart').html("<p>There is no attendance history found.</p>")
+					$('#donutchart').html("<p>There is no attendance history found.</p>");
+					$('#attendanceCount').html(0);
 				} else {
 					var attendanceArray = [];
+					var count		= 0;
 					attendanceArray.push(["Status", "Count"]);
 					$.each(response, function(index, value){
 						attendanceArray.push([value.name, value.count]);
+						count += parseInt(value.count);
 					});
+
+					$('#attendanceCount').html(count);
 
 					var data = google.visualization.arrayToDataTable(attendanceArray);
 					var options = {

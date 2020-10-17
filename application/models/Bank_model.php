@@ -949,6 +949,7 @@ class Bank_model extends CI_Model {
 
 		public function deleteById($id)
 		{
+			$this->db->db_debug = false;
 			$this->db->where("id", $id);
 			$this->db->delete($this->table_bank);
 			return $this->db->affected_rows();

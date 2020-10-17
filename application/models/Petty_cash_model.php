@@ -129,12 +129,16 @@ class Petty_cash_model extends CI_Model {
 		
 		public function view_mutation($month, $year, $offset = 0, $limit = 25)
 		{
+			$this->db->select('petty_cash.*, expense_class.name as expense_name, expense_class.description as expense_description');
+			$this->db->from('petty_cash');
+			$this->db->join('expense_class', 'expense_class.id = petty_cash.expense_class', "LEFT");
 			$this->db->where('MONTH(petty_cash.date)', $month);
 			$this->db->where('YEAR(petty_cash.date)', $year);
 			$this->db->order_by('petty_cash.date', 'asc');
 			$this->db->order_by('petty_cash.id', 'asc');
+			$this->db->limit($limit, $offset);
 			
-			$query		= $this->db->get($this->table_petty_cash, $limit, $offset);
+			$query		= $this->db->get();
 			$result		= $query->result();
 			
 			return $result;
@@ -236,5 +240,14 @@ class Petty_cash_model extends CI_Model {
 			$this->db->where('bank_id', $bankId);
 			$this->db->delete($this->table_petty_cash);
 			return $this->db->affected_rows();
+		}
+
+		public function deleteById($id)
+		{
+			$this->db->db_debug = false;
+			$this->db->where('id', $id);
+			$this->db->delete($this->table_petty_cash);
+			$result		= $this->db->affected_rows();
+			return $result;
 		}
 }

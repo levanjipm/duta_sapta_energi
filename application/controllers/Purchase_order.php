@@ -252,13 +252,67 @@ class Purchase_order extends CI_Controller {
 		$user_id		= $this->session->userdata('user_id');
 		$this->load->model('User_model');
 		$data['user_login'] = $this->User_model->getById($user_id);
-		
-		$this->load->model('Authorization_model');
-		$data['departments']	= $this->Authorization_model->getByUserId($user_id);
-		
-		$this->load->view('head');
-		$this->load->view('purchasing/header', $data);
-		$this->load->view('purchasing/PurchaseOrder/closeDashboard');
+		if($data['user_login']->access_level > 3){
+			$this->load->model('Authorization_model');
+			$data['departments']	= $this->Authorization_model->getByUserId($user_id);
+			
+			$this->load->view('head');
+			$this->load->view('administrator/header', $data);
+			$this->load->view('administrator/PurchaseOrder/closeDashboard');
+		} else {
+			redirect(site_url("Welcome"));
+		}
+	}
+
+	public function editDashboard()
+	{
+		$user_id		= $this->session->userdata('user_id');
+		$this->load->model('User_model');
+		$data['user_login'] = $this->User_model->getById($user_id);
+		if($data['user_login']->access_level > 3){
+			$this->load->model('Authorization_model');
+			$data['departments']	= $this->Authorization_model->getByUserId($user_id);
+			
+			$this->load->view('head');
+			$this->load->view('administrator/header', $data);
+			$this->load->view('administrator/PurchaseOrder/editDashboard');
+		} else {
+			redirect(site_url("Welcome"));
+		}
+	}
+
+	public function editForm()
+	{
+		$user_id		= $this->session->userdata('user_id');
+		$this->load->model('User_model');
+		$data['user_login'] = $this->User_model->getById($user_id);
+		if($data['user_login']->access_level > 3){
+			$this->load->model('Authorization_model');
+			$data['departments']	= $this->Authorization_model->getByUserId($user_id);
+			
+			$this->load->view('head');
+			$this->load->view('administrator/header', $data);
+
+			$data			= array();
+			$id				= $this->input->post('id');
+			$this->load->model("Purchase_order_model");
+			$data['general']	= $this->Purchase_order_model->showById($id);
+
+			if($data['general'] == null){
+				redirect("Welcome");
+			} else {
+				$supplierId			= $data['general']->supplier_id;
+				$this->load->model("Supplier_model");
+				$data['supplier']		= $this->Supplier_model->getById($supplierId);
+				
+				$this->load->model("Purchase_order_detail_model");
+				$data['items']			= $this->Purchase_order_detail_model->getByCodeId($id);
+				$this->load->view('administrator/PurchaseOrder/editForm', $data);
+			}
+			
+		} else {
+			redirect(site_url("Welcome"));
+		}	
 	}
 
 	public function getPendingItems()

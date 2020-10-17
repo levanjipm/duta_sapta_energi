@@ -1,9 +1,9 @@
 <head>
-	<title>Purchase order - Close</title>
+	<title>Purchase order - Edit</title>
 </head>
 <div class='dashboard'>
 	<div class='dashboard_head'>
-		<p style='font-family:museo'><a href='<?= site_url('Purchasing') ?>' title='Purchasing'><i class='fa fa-briefcase'></i></a> /Purchase Order / Close</p>
+		<p style='font-family:museo'><a href='<?= site_url('Administrator') ?>' title='Administrator'><i class='fa fa-briefcase'></i></a> /Purchase Order / Close</p>
 	</div>
 	<br>
 	<div class='dashboard_in'>
@@ -60,29 +60,13 @@
 				<tbody id='purchaseOrderItemTable'></tbody>
 			</table>
 		</div>
-
-		<button class="button button_danger_dark" onclick="confirmClose()"><i class='fa fa-trash'></i></button>
+		<form action="<?= site_url('Purchase_order/editForm') ?>" method="POST">
+			<input type='hidden' id='purchaseOrderId' name='id'>
+			<button class="button button_default_dark"><i class='fa fa-long-arrow-right'></i></button>
+		</form>
 	</div>
 </div>
 
-<div class='alert_wrapper' id='deletePurchaseOrderWrapper'>
-	<div class='alert_box_confirm_wrapper'>
-		<div class='alert_box_confirm_icon'><i class='fa fa-trash'></i></div>
-		<div class='alert_box_confirm'>
-			<input type='hidden' id='delete_customer_id'>
-			<h3>Delete confirmation</h3>
-			
-			<p>You are about to delete this data.</p>
-			<p>Are you sure?</p>
-			<button class='button button_default_dark' onclick="$('#deletePurchaseOrderWrapper').fadeOut()">Cancel</button>
-			<button class='button button_danger_dark' onclick='closePurchaseOrder()'>Delete</button>
-			
-			<br><br>
-			
-			<p style='font-family:museo;background-color:#f63e21;width:100%;padding:5px;color:white;position:relative;bottom:0;left:0;opacity:0' id='errorClosePurchaseOrder'>Deletation failed.</p>
-		</div>
-	</div>
-</div>
 <script>
 	var purchaseOrderId = null;
 	$(document).ready(function(){
@@ -149,7 +133,7 @@
 					}
 
 					if(is_confirm == 1 && is_delete == 0){
-						$('#purchaseOrderTableContent').append("<tr><td><label>" + name + "</label><p>" + my_date_format(date) + "</p></td><td><label>" + supplierName + "</label><p>" + complete_address + "</p><p>" + supplierCity + "</p></td><td><button class='button button_default_dark' onclick='viewPurchaseOrder(" + id + ")' title='Close " + name + "'><i class='fa fa-trash'></i></button>")
+						$('#purchaseOrderTableContent').append("<tr><td><label>" + name + "</label><p>" + my_date_format(date) + "</p></td><td><label>" + supplierName + "</label><p>" + complete_address + "</p><p>" + supplierCity + "</p></td><td><button class='button button_success_dark' onclick='viewPurchaseOrder(" + id + ")' title='Close " + name + "'><i class='fa fa-pencil'></i></button>")
 						countPurchaseOrder++;
 					}
 				})
@@ -169,7 +153,7 @@
 		$.ajax({
 			url:'<?= site_url('Purchase_order/getById/') ?>' + n,
 			success:function(response){
-				purchaseOrderId = n;
+				$('#purchaseOrderId').val(n);
 				var supplier = response.supplier;
 				var supplier_name = supplier.name;
 
@@ -249,36 +233,6 @@
 					$('#purchaseOrderWrapper .alert_box_slide').show("slide", { direction: "right" }, 250);
 				});
 
-			}
-		})
-	}
-
-	function confirmClose(){
-		$('#deletePurchaseOrderWrapper').fadeIn();
-	}
-
-	function closePurchaseOrder(){
-		$.ajax({
-			url:"<?= site_url('Purchase_order/closePurchaseOrder') ?>",
-			data:{
-				id: purchaseOrderId
-			},
-			type:"POST",
-			beforeSend:function(){
-				$('button').attr('disabled', true);
-			},
-			success:function(response){
-				$('button').attr('disabled', false);
-				refresh_view();
-				if(response == 1){
-					$('#deletePurchaseOrderWrapper').fadeOut();
-					$('#purchaseOrderWrapper .slide_alert_close_button').click();
-				} else {
-					$('#errorClosePurchaseOrder').fadeTo(1, 250);
-					setTimeout(function(){
-						$('#errorClosePurchaseOrder').fadeTo(0, 250);
-					}, 1000);
-				}
 			}
 		})
 	}

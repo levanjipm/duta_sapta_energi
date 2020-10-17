@@ -1,5 +1,5 @@
 <div class='topnav_bar'>
-	<div style='width:50%;display:inline-block'><h3>Administrators</h3></div><div style='width:50%;display:inline-block;text-align:right;color:white'><?php if(!empty($user_login)){ ?><h4>Hello, <a href='<?= site_url('Profile') ?>' style='text-decoration:none;color:#fff'><?= $user_login->name ?> <img src='<?= $user_login->image_url == null ? base_url('assets/ProfileImages/defaultImage.png') : $user_login->image_url ?>' style='height:30px;border-radius:50%'></img></a></h4><?php } else { ?><button type='button' class='button button_default_dark'>Login</button> <?php } ?></div>
+	<div style='width:50%;display:inline-block'><h3>Administrators</h3></div><div style='width:50%;display:inline-block;text-align:right;color:white'><?php if(!empty($user_login)){ ?><h4>Hello, <a href='<?= site_url('Profile') ?>' style='text-decoration:none;color:#fff'><?= $user_login->name ?> <img src='<?= $user_login->image_url == null ? base_url('assets/ProfileImages/defaultImage.png') : base_url('assets/ProfileImages/') . $user_login->image_url ?>' style='height:30px;border-radius:50%;width:30px'></img></a></h4><?php } else { ?><button type='button' class='button button_default_dark'>Login</button> <?php } ?></div>
 </div>
 <div class='sidenav_bar'>
 	<button class='button_close_sidenav'>
@@ -19,34 +19,25 @@
 ?>
 	</div>
 	<div class='sidenav_bar_functions'>
-		<button class='container_button'><p>Invoice</p></button>
+		<button class='container_button'><p>Accounting</p></button>
 		<div class='container_bar'>
-			<a href='<?= site_url('Invoice/editDashboard') ?>'><button><p style='font-family:museo'>Edit</p></button></a>
-			<a href='<?= site_url('Invoice/deleteDashboard') ?>'><button><p style='font-family:museo'>Delete</p></button></a>
+			<a href='<?= site_url('Invoice/deleteDashboard') ?>'><button><p style='font-family:museo'>Delete Invoice</p></button></a>
+			<a href='<?= site_url('Debt/deleteDashboard') ?>'><button><p style='font-family:museo'>Delete Debt</p></button></a>
 		</div>
-		<button class='container_button'><p>Debt Document</p></button>
-		<div class='container_bar'>
-			<a href='<?= site_url('Debt/editDashboard') ?>'><button><p style='font-family:museo'>Edit</p></button></a>
-			<a href='<?= site_url('Debt/deleteDashboard') ?>'><button><p style='font-family:museo'>Delete</p></button></a>
-		</div>
-		<a href='<?= site_url('Delivery_order/deleteDashboard') ?>'><button><p style='font-family:museo'>Delete Delivery Order</p></button></a>
-		<a href='<?= site_url('Good_receipt/deleteDashboard') ?>'><button><p style='font-family:museo'>Delete Good Receipt</p></button></a>
 		<button class='container_button'><p>Finance</p></button>
 		<div class='container_bar'>
 			<a href='<?= site_url('Bank/deleteDashboard') ?>'><button><p style='font-family:museo'>Delete Bank Data</p></button></a>
 			<a href='<?= site_url('Petty_cash/deleteDashboard') ?>'><button><p style='font-family:museo'>Delete Petty Cash Data</p></button></a>
 		</div>
-		<button class='container_button'><p>Asset</p></button>
+		<button class='container_button'><p>Inventory</p></button>
 		<div class='container_bar'>
-			<a href='<?= site_url('Asset') ?>'><button><p style='font-family:museo'>List</p></button></a>
-			<a href='<?= site_url('Asset/calculateValue') ?>'><button><p style='font-family:museo'>Value</p></button></a>
-			<a href='<?= site_url('Asset/classDashboard') ?>'><button><p style='font-family:museo'>Class</p></button></a>
-			<a href='<?= site_url('Asset/archiveDashboard') ?>'><button><p style='font-family:museo'>Archive</p></button></a>
+			<a href='<?= site_url('Delivery_order/deleteDashboard') ?>'><button><p style='font-family:museo'>Delete Delivery Order</p></button></a>
+			<a href='<?= site_url('Good_receipt/deleteDashboard') ?>'><button><p style='font-family:museo'>Delete Good Receipt</p></button></a>
 		</div>
-		<button class='container_button'><p>Opponent</p></button>
+		<button class='container_button'><p>Purchasing</p></button>
 		<div class='container_bar'>
-			<a href='<?= site_url('Opponent') ?>'><button><p>Manage</p></button></a>
-			<a href='<?= site_url('Opponent_type') ?>'><button><p>Type</p></button></a>
+			<a href='<?= site_url('Purchase_order/editDashboard') ?>'><button><p style='font-family:museo'>Edit Purchase Order</p></button></a>
+			<a href='<?= site_url('Purchase_order/closeDashboard') ?>'><button><p style='font-family:museo'>Close Purchase Order</p></button></a>
 		</div>
 	</div>
 </div>

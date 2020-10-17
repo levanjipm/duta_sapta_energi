@@ -96,4 +96,36 @@ class Petty_cash extends CI_Controller {
 			$this->Bank_model->mergeByParentId($parentId);
 		}
 	}
+
+	public function deleteDashboard()
+	{
+		$user_id		= $this->session->userdata('user_id');
+		$this->load->model('User_model');
+		$data['user_login'] = $this->User_model->getById($user_id);
+		if($data['user_login']->access_level > 3){
+			$this->load->model('Authorization_model');
+			$data['departments']	= $this->Authorization_model->getByUserId($user_id);
+			
+			$this->load->view('head');
+			$this->load->view('administrator/header', $data);
+			$this->load->view('administrator/PettyCash/deleteDashboard');
+		} else {
+			redirect(site_url('Welcome'));
+		}	
+	}
+
+	public function deleteById()
+	{
+		$user_id		= $this->session->userdata('user_id');
+		$this->load->model('User_model');
+		$data['user_login'] = $this->User_model->getById($user_id);
+		if($data['user_login']->access_level > 3){
+			$id			= $this->input->post('id');
+			$this->load->model("Petty_cash_model");
+			$result		= $this->Petty_cash_model->deleteById($id);
+			echo $result;
+		} else {
+			echo 0;
+		}
+	}	
 }

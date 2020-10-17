@@ -68,7 +68,7 @@
 		} else if($send_date == null && $status != null){
 			$request				= $status;
 		} else {
-			$request				= '';
+			$request				= '--';
 		}
 	?>
 	<title><?= $purchase_order_name . ' ' . $supplier->name ?></title>
@@ -106,6 +106,9 @@
 					<p><?= date('d M Y',strtotime($purchase_order_date)) ?></p>
 					<p><?= $general->promo_code ?></p>
 					<p><?= $request ?></p>
+
+					<p><strong>Payment</strong></p>
+					<p><?= $general->payment ?> days</p>
 					<p>
 				</td>
 			</tr>

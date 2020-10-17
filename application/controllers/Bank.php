@@ -592,4 +592,38 @@ class Bank extends CI_Controller {
 		}
 		$this->load->view('accounting/Bank/resetBankForm', $data);
 	}
+
+	public function deleteDashboard()
+	{
+		$user_id		= $this->session->userdata('user_id');
+		$this->load->model('User_model');
+		$data['user_login'] = $this->User_model->getById($user_id);
+		
+		$this->load->model('Authorization_model');
+		$data['departments']	= $this->Authorization_model->getByUserId($user_id);
+
+		if($data['user_login']->access_level < 4){
+			redirect(site_url('Welcome'));
+		} else {
+			$this->load->view('head');
+			$this->load->view('administrator/header', $data);
+			$this->load->view('administrator/Bank/deleteDashboard');
+		}
+	}
+
+	public function deleteById()
+	{
+		$user_id		= $this->session->userdata('user_id');
+		$this->load->model('User_model');
+		$user		= $this->User_model->getById($user_id);
+		if($user->access_level > 3){
+			$id			= $this->input->post('id');
+			$this->load->model("Bank_model");
+			$result	= $this->Bank_model->deleteById($id);
+			echo $result;
+		} else {
+			echo 0;
+		}
+		
+	}
 }
