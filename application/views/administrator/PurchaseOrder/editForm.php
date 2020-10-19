@@ -41,11 +41,13 @@
 </head>
 <div class='dashboard'>
 	<div class='dashboard_head'>
-		<p style='font-family:museo'><a href='<?= site_url('Administrator') ?>' title='Administrator'><i class='fa fa-briefcase'></i></a> /Purchase Order / Edit</p>
+		<p style='font-family:museo'><a href='<?= site_url('Administrators') ?>' title='Administrator'><i class='fa fa-briefcase'></i></a> /Purchase Order / Edit</p>
 	</div>
 	<br>
 	<div class='dashboard_in'>
 		<form id='purchaseOrderForm'>
+			<input type='hidden' name='id' value='<?= $general->id ?>'>
+
 			<label>Supplier</label>
 			<p><?= $supplier->name ?></p>
 			<p><?= $complete_address ?></p>
@@ -60,7 +62,7 @@
 
 			<div id='purchase_order_status_detail'>
 				<label>Send date request</label>
-				<input type='date' class='form-control' id='request_date' name='request_date' required min='2020-01-01'>
+				<input type='date' class='form-control' id='request_date' name='request_date' required min='2020-01-01' value='<?= $general->date_send_request ?>'>
 			</div>
 
 			<script>
@@ -90,7 +92,7 @@
 
 			<label>Delivery</label>
 			<br>
-			<label><input type='checkbox' id='dropship' <?= ($general->dropship_address != NULL) ? "checked": ""; ?>> Dropship</label>
+			<label><input type='checkbox' id='dropship' name='dropship' <?= ($general->dropship_address != NULL) ? "checked": ""; ?> value='1'> Dropship</label>
 			<br>
 			<div id='dropship_detail' style='display:none'>
 				<label>Address</label>
@@ -199,46 +201,21 @@
 	</div>
 </div>
 
-<div class='alert_wrapper' id='purchaseOrderWrapper'>
-	<button class='slide_alert_close_button'>&times;</button>
-	<div class='alert_box_slide'>
-		<h3 style='font-family:bebasneue'>Purchase order</h3>
-		<hr>
-		<label>Supplier</label>
-		<p style='font-family:museo'><?= $supplier->name ?></p>
-		<p style='font-family:museo'><?= $complete_address ?></p>
-		<p style='font-family:museo'><?= $supplier->city ?></p>
-
-		<label>Purchase order</label>
-		<p style='font-family:museo'><?= $general->name ?></p>
-		<p style='font-family:museo'><?= date('d M Y', strtotime($general->date)) ?></p>
-		<p style='font-family:museo' id='purchase_order_status_p'></p>
-
-		<label>Delivery address</label>
-		<p style='font-family:museo' id='delivery_address_p'></p>
-		<p style='font-family:museo' id='delivery_city_p'></p>
-		<p style='font-family:museo' id='delivery_contact_person_p'></p>
-		<p style='font-family:museo' id='delivery_contact_p'></p>
-
-		<div class='table-responsive-lg'>
-			<table class='table table-bordered'>
-				<tr>
-					<th>Reference</th>
-					<th>Name</th>
-					<th>Pricelist</th>
-					<th>Discount</th>
-					<th>Net price</th>
-					<th>Quantity</th>
-					<th>Total price</th>
-					<th>Pending</th>
-				</tr>
-				<tbody id='purchaseOrderItemTable'></tbody>
-			</table>
+<div class='alert_wrapper' id='validatePurchaseOrderWrapper'>
+	<div class='alert_box_confirm_wrapper'>
+		<div class='alert_box_confirm_icon'><i class='fa fa-pencil'></i></div>
+		<div class='alert_box_confirm'>
+			<h3>Edit confirmation</h3>
+			
+			<p>You are about to edit this data.</p>
+			<p>Are you sure?</p>
+			<button class='button button_default_dark' onclick="$('#validatePurchaseOrderWrapper').fadeOut();$('input').attr('readonly', false);$('textarea').attr('readonly', false);$('select').attr('readonly', false);">Cancel</button>
+			<button class='button button_danger_dark' onclick='editPurchaseOrder()'>Edit</button>
+			
+			<br><br>
+			
+			<p style='font-family:museo;background-color:#f63e21;width:100%;padding:5px;color:white;position:relative;bottom:0;left:0;opacity:0' id='errorUpdatePurchaseOrder'>Update failed.</p>
 		</div>
-		<form action="<?= site_url('Purchase_order/editForm') ?>" method="POST">
-			<input type='hidden' id='purchaseOrderId' name='id'>
-			<button class="button button_default_dark" onclick="editPurchaseOrder()"><i class='fa fa-long-arrow-right'></i></button>
-		</form>
 	</div>
 </div>
 
@@ -281,7 +258,29 @@
 
 	function validatePurchaseOrder(){
 		if($('#purchaseOrderForm').valid()){
-			alert("Valid");
+			$('input').attr('readonly', true);
+			$('textarea').attr('readonly', true);
+			$('select').attr('readonly', true);
+			$('#validatePurchaseOrderWrapper').fadeIn();
+		}
+	}
+
+	function editPurchaseOrder(){
+		if($('#purchaseOrderForm').valid()){
+			formData		= new FormData();
+			formData = $("#purchaseOrderForm").serializeArray();
+			$.each(deletedItems, function(index, value){
+				formData.push({name: "deletedItems[]", value: value});
+			})
+			
+			$.ajax({
+				url:"<?= site_url('Purchase_order/updatePurchaseOrder') ?>",
+				data:formData,
+				type:"POST",
+				success:function(){
+					window.location.href='<?= site_url('Purchase_order/editDashboard') ?>'
+				}
+			})
 		}
 	}
 

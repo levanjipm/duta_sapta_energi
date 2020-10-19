@@ -77,15 +77,15 @@
 					<th>Name</th>
 					<th>Action</th>
 				</tr>
-				<tbody id='pendingPurcaseOrderTableContent'></tbody>
+				<tbody id='pendingPurchaseOrderTableContent'></tbody>
 			</table>
 		</div>
-		<p id='pendingPurchaseOrderTableText'>There is no pending sales order found.</p>
+		<p id='pendingPurchaseOrderTableText'>There is no pending purchase order found.</p>
 	</div>
 </div>
 
-<form action='<?= site_url('Inventory/viewPendingSalesOrderById') ?>' method="GET" id="salesOrderForm">
-	<input type='hidden' id='id' name='id'>
+<form id='purchaseOrderForm' method="POST" action="<?= site_url("Inventory/viewPendingPurchaseOrderById") ?>">
+	<input type='hidden' id='purchaseOrderId' name='id'>
 </form>
 
 <script>
@@ -162,48 +162,40 @@
 	function viewPendingPurchaseOrder(supplierId)
 	{
 		$.ajax({
-			url:'<?= site_url('Sales_order/getCompletePendingSalesOrdersByCustomerId') ?>',
+			url:"<?= site_url('Purchase_order/getPendingPurchaseOrderBySupplierId') ?>",
 			data:{
-				customerId: customerId
+				supplierId: supplierId,
 			},
 			success:function(response){
-				$('#pendingSalesOrderTableContent').html("");
+				$('#pendingPurchaseOrderTableContent').html("");
 				var itemCount = 0;
 				$.each(response, function(index, value){
-					var id			= value.id;
-					var date		= value.date;
-					var name		= value.name;
-					var sent		= parseInt(value.sent);
-					var quantity	= parseInt(value.quantity);
-					var progress	= (sent / quantity) * 100;
+					var date = value.date;
+					var name	= value.name;
+					var id		= value.id;
 
-					$('#pendingSalesOrderTableContent').append("<tr><td>" + my_date_format(date) + "</td><td><p>" + name + "</p><div class='progressBarWrapper'><p id='progressText-" + id + "'></p><div class='progressBar' id='progressBar-" + id + "'></div></div></td><td><button class='button button_default_dark' onclick='viewSalesOrder(" + id + ")'><i class='fa fa-long-arrow-right'></i></button></td></tr>");
-					$('#progressBar-' + id).animate({
-						width: progress + "%"
-					}, "slow");
-
-					$('#progressText-' + id).html(numeral(progress).format('0,0.00') + "%");
+					$('#pendingPurchaseOrderTableContent').append("<tr><td>" + my_date_format(date) + "</td><td>" + name + "</td><td><button class='button button_default_dark' onclick='viewPurchaseOrder(" + id + ")'><i class='fa fa-eye'></i></button></td></tr>");
 					itemCount++;
 				})
 
 				if(itemCount > 0){
-					$('#pendingSalesOrderTable').show();
-					$('#pendingSalesOrderTableText').hide();
+					$('#pendingPurchaseOrderTable').show();
+					$('#pendingPurchaseOrderTableText').hide(); 
 				} else {
-					$('#pendingSalesOrderTable').hide();
-					$('#pendingSalesOrderTable').show();
+					$('#pendingPurchaseOrderTable').hide();
+					$('#pendingPurchaseOrderTableText').show();
 				}
 			},
 			complete:function(){
-				$('#pendingSalesOrderWrapper').fadeIn(300, function(){
-					$('#pendingSalesOrderWrapper .alert_box_slide').show("slide", { direction: "right" }, 250);
+				$('#pendingPurchaseOrderWrapper').fadeIn(300, function(){
+					$('#pendingPurchaseOrderWrapper .alert_box_slide').show("slide", { direction: "right" }, 250);
 				});
 			}
 		})
 	}
 
-	function viewSalesOrder(n){
-		$('#id').val(n);
-		$('#salesOrderForm').submit();
+	function viewPurchaseOrder(n){
+		$('#purchaseOrderId').val(n);
+		$('#purchaseOrderForm').submit();
 	}
 </script>

@@ -464,5 +464,39 @@ class Purchase_order_model extends CI_Model {
 			$result = $this->db->affected_rows();
 			return $result;
 		}
+
+		public function updateById($id, $inputStatus, $sendDate, $promoCode, $dropshipAddress, $dropshipCity, $dropshipContactPerson, $dropshipContact, $note)
+		{
+			$this->db->set('status', $inputStatus);
+			$this->db->set('date_send_request', $sendDate);
+			$this->db->set('dropship_address', $dropshipAddress);
+			$this->db->set('dropship_city', $dropshipCity);
+			$this->db->set('dropship_contact_person', $dropshipContactPerson);
+			$this->db->set('dropship_contact', $dropshipContact);
+			$this->db->set('note', $note);
+			$this->db->set('promo_code', $promoCode);
+			$this->db->where('id', $id);
+			$this->db->update($this->table_purchase_order);
+		}
+
+		public function getPendingPurchaseOrderBySupplierId($supplierId)
+		{
+			$query		= $this->db->query("
+				SELECT code_purchase_order.*
+				FROM code_purchase_order
+				WHERE code_purchase_order.supplier_id = '$supplierId'
+				AND code_purchase_order.is_confirm = '1'
+				AND code_purchase_order.is_closed = '0'
+				AND code_purchase_order.id IN (
+					SELECT DISTINCT(purchase_order.code_purchase_order_id) AS id
+					FROM purchase_order
+					WHERE status = '0'
+				)
+				ORDER BY date DESC
+			");
+
+			$result			= $query->result();
+			return $result;
+		}
 	}
 ?>

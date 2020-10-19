@@ -304,4 +304,71 @@ class Purchase_order_detail_model extends CI_Model {
 
 			$this->db->update_batch($this->table_purchase_order, $batch, "id");
 		}
-}
+
+		public function deletePurchaseOrderItem($idArray)
+		{
+			$this->db->where_in("id", $idArray);
+			$this->db->where('received', 0);
+			$this->db->delete($this->table_purchase_order);
+		}
+
+		public function updateItem($itemArray)
+		{
+			$idArray			= array();
+			foreach($itemArray as $item)
+			{
+				array_push($idArray, $item['id']);
+				next($itemArray);
+			}
+
+			$this->db->where_in("id", $idArray);
+			$query		= $this->db->get($this->table_purchase_order);
+			$result		= $query->result();
+			$receivedArray		= array();
+			foreach($result as $item){
+				$id			= $item->id;
+				$received	= $item->received;
+				$receivedArray[$id] = $received;
+				next($result);
+			}
+			
+			$updateBatch		= array();
+			foreach($itemArray as $item)
+			{
+				$pricelist		= $item['pricelist'];
+				$discount		= $item['discount'];
+				$netprice		= (100 - $discount) * $pricelist / 100;
+				if($receivedArray[$item['id']] == $item['quantity']){
+					$updateArray	= array(
+						"id" => $item['id'],
+						"quantity" => $item['quantity'],
+						"price_list" => $pricelist,
+						"net_price" => $netprice,
+						"status" => 1
+					);
+
+					array_push($updateBatch, $updateArray);
+				} else if($receivedArray[$item['id']] < $item['quantity']) {
+					$updateArray	= array(
+						"id" => $item['id'],
+						"quantity" => $item['quantity'],
+						"price_list" => $pricelist,
+						"net_price" => $netprice,
+						"status" => 0
+					);
+
+					array_push($updateBatch, $updateArray);
+				}
+
+				next($itemArray);
+			}
+
+			$this->db->update_batch($this->table_purchase_order, $updateBatch, "id");
+		}
+
+		public function insertItemBatch($batch)
+		{
+			$this->db->insert_batch($this->table_purchase_order, $batch);
+		}
+	}
+?>

@@ -386,4 +386,138 @@ class Purchase_order extends CI_Controller {
 
 		$this->load->view('purchasing/PurchaseOrder/purchaseOrderDetail', $data);
 	}
+
+	public function updatePurchaseOrder()
+	{
+		//Update general information//
+		$status			= $this->input->post('status');
+		if($status == 2 || $status == 3){
+			$sendDate		= NULL;
+			if($status == 2){
+				$inputStatus	= "URGENT";
+			} else {
+				$inputStatus	= NULL;
+			}
+		} else {
+			$inputStatus		= NULL;
+			$sendDate	= $this->input->post('request_date');
+		}
+
+		$promoCode		= $this->input->post('promo_code');
+		if(empty($this->input->post('dropship'))){
+			$dropshipAddress		= NULL;
+			$dropshipCity			= NULL;
+			$dropshipContactPerson	= NULL;
+			$dropshipContact		= NULL;
+		} else {
+			$dropshipAddress		= $this->input->post('dropship_address');
+			$dropshipCity			= $this->input->post('dropship_city');
+			$dropshipContactPerson	= $this->input->post('dropship_contact_person');
+			$dropshipContact		= $this->input->post('dropship_contact_person');
+		}
+
+		$note						= $this->input->post('note');
+		$id							= $this->input->post('id');
+
+		$this->load->model("Purchase_order_model");
+		$this->Purchase_order_model->updateById($id, $inputStatus, $sendDate, $promoCode, $dropshipAddress, $dropshipCity, $dropshipContactPerson, $dropshipContact, $note);
+
+		$this->load->model("Purchase_order_detail_model");
+		if(!empty($this->input->post('deletedItems'))){
+			$this->Purchase_order_detail_model->deletePurchaseOrderItem($this->input->post('deletedItems'));
+		}
+		
+		$discountArray		= $this->input->post('discount');
+		$pricelistArray		= $this->input->post('pricelist');
+		$quantityArray		= $this->input->post('quantity');
+		if(!empty($this->input->post('deletedItems'))){
+			$batch		= array();
+			foreach($discountArray as $key => $discount){
+				if(!in_array($key, $this->input->post('deletedItems'))){
+					$batch[]		= array(
+						"id" => $key,
+						"discount" => $discountArray[$key],
+						"pricelist" => $pricelistArray[$key],
+						"quantity" => $quantityArray[$key]
+					);
+				}
+			}
+		} else {
+			$batch		= array();
+			foreach($discountArray as $key => $discount){
+				$batch[]		= array(
+					"id" => $key,
+					"discount" => $discountArray[$key],
+					"pricelist" => $pricelistArray[$key],
+					"quantity" => $quantityArray[$key]
+				);
+			}
+		}
+
+		$this->Purchase_order_detail_model->updateItem($batch);
+
+		if(!empty($this->input->post('extraPriceList'))){
+			$extraBatch				= array();
+			$pricelistArray			= $this->input->post('extraPriceList');
+			$discountArray			= $this->input->post('extraDiscount');
+			$quantityArray			= $this->input->post('extraQuantity');
+
+			foreach($pricelistArray as $itemId => $pricelist)
+			{
+				$discount			= $discountArray[$itemId];
+				$netprice			= (100 - $discount) * $pricelist / 100;
+				$extraArray			= array(
+					"id" => "",
+					"price_list" => $pricelist,
+					"net_price" => $netprice,
+					"quantity" => $quantityArray[$itemId],
+					"item_id" => $itemId,
+					"received" => 0,
+					"status" => 0,
+					"code_purchase_order_id" => $id
+				);
+
+				array_push($extraBatch, $extraArray);
+				next($pricelistArray);
+			}
+
+			$this->Purchase_order_detail_model->insertItemBatch($extraBatch);
+		}
+
+		if(!empty($this->input->post('extraBonusPriceList'))){
+			$extraBatch				= array();
+			$quantityArray			= $this->input->post('extraBonusQuantity');
+
+			foreach($quantityArray as $itemId => $quantity)
+			{
+				$discount			= $discountArray[$itemId];
+				$netprice			= (100 - $discount) * $pricelist / 100;
+				$extraArray			= array(
+					"id" => "",
+					"price_list" => 1,
+					"net_price" => 0,
+					"quantity" => $quantity,
+					"item_id" => $itemId,
+					"received" => 0,
+					"status" => 0,
+					"code_purchase_order_id" => $id
+				);
+
+				array_push($extraBatch, $extraArray);
+				next($quantityArray);
+			}
+
+			$this->Purchase_order_detail_model->insertItemBatch($extraBatch);
+		}
+	}
+
+	public function getPendingPurchaseOrderBySupplierId()
+	{
+		$supplierId			= $this->input->get('supplierId');
+		$this->load->model("Purchase_order_model");
+		$data		= $this->Purchase_order_model->getPendingPurchaseOrderBySupplierId($supplierId);
+
+		header('Content-Type: application/json');
+		echo json_encode($data);
+	}
 }

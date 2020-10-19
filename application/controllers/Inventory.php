@@ -57,7 +57,7 @@ class Inventory extends CI_Controller {
 
 	public function viewPendingSalesOrderById()
 	{
-	$user_id		= $this->session->userdata('user_id');
+		$user_id		= $this->session->userdata('user_id');
 		$this->load->model('User_model');
 		$data['user_login'] = $this->User_model->getById($user_id);
 		
@@ -97,6 +97,37 @@ class Inventory extends CI_Controller {
 		$this->load->view('inventory/header', $data);
 
 		$this->load->view('inventory/Pending/purchaseOrderDashboard');
+	}
+
+	public function viewPendingPurchaseOrderById()
+	{
+		$user_id		= $this->session->userdata('user_id');
+		$this->load->model('User_model');
+		$data['user_login'] = $this->User_model->getById($user_id);
+		
+		$this->load->model('Authorization_model');
+		$data['departments']	= $this->Authorization_model->getByUserId($user_id);
+		
+		$this->load->view('head');
+		$this->load->view('inventory/header', $data);
+
+		$data		= array();
+		$id			= $this->input->post('id');
+		
+		$this->load->model("Purchase_order_model");
+		$data['purchaseOrder']		= $this->Purchase_order_model->showById($id);
+		$supplierId					= $data['purchaseOrder']->supplier_id;
+
+		$this->load->model("Supplier_model");
+		$data['supplier']			= $this->Supplier_model->getById($supplierId);
+
+		$this->load->model("Purchase_order_detail_model");
+		$data['items']				= $this->Purchase_order_detail_model->getByCodeId($id);
+
+		$this->load->model("Good_receipt_model");
+		$data['goodReceipt']		= $this->Good_receipt_model->getReceivedByPurchaseOrderId($id);
+
+		$this->load->view("inventory/pending/purchaseOrderDetail", $data);
 	}
 
 	public function pendingDeliveryOrderDashboard()
