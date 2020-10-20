@@ -53,8 +53,30 @@ class CustomerSales extends CI_Controller {
 		$page				= $this->input->post('page');
 		$offset				= ($page - 1) * 10;
 		$term				= $this->input->post('term');
-		$includedAreas		= $this->input->post('includedAreas');
-		$this->load->model("CustomerSalesModel");
-		$this->CustomerSalesModel->
+		$includedAreas		= (empty($this->input->post('includedAreas'))) ? array() : $this->input->post('includedAreas');
+
+		$this->load->model("Customer_sales_model");
+		$data['items']		= $this->Customer_sales_model->getBySales($salesId, $offset, $term, $includedAreas);
+		$data['pages']		= max(1, ceil($this->Customer_sales_model->countBySales($term, $includedAreas)/10));
+
+		header('Content-Type: application/json');
+		echo json_encode($data);
+	}
+
+	public function updateBySales()
+	{
+		$salesId			= $this->input->post('salesId');
+		$includedCustomers	= (!empty($this->input->post('includedCustomers'))) ? $this->input->post('includedCustomers') : array();
+		$removedCustomers	= (!empty($this->input->post('removedCustomers'))) ? $this->input->post('removedCustomers') : array();
+
+		$this->load->model("Customer_sales_model");
+
+		if(count($removedCustomers) > 0){
+			$this->Customer_sales_model->updateCustomerList($removedCustomers, 0);
+		}
+
+		if(count($includedCustomers) > 0){
+			$this->Customer_sales_model->updateCustomerList($includedCustomers, 1, $salesId);
+		}
 	}
 }

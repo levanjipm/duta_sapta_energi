@@ -462,4 +462,13 @@ class Customer_model extends CI_Model {
 
 			return $this->db->affected_rows();
 		}
+
+		public function customerLogin($uid, $password)
+		{
+			$this->db->where('uid', $uid);
+			$this->db->where('password', md5($password));
+			$query		= $this->db->get($this->table_customer);
+			$result		= $query->result();
+			return $result;
+		}
 }
