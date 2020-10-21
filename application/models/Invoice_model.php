@@ -1316,5 +1316,34 @@ class Invoice_model extends CI_Model {
 			$this->db->where_in('id', $idArray);
 			$this->db->update($this->table_invoice);
 		}
+
+		public function getBalanceByCustomerUID($customerUID)
+		{
+			$query		= $this->db->query("
+				SELECT COALESCE(SUM(invoice.value),0) AS value, receivableTable.value AS paid
+				FROM invoice
+				LEFT JOIN (
+					SELECT SUM(receivable.value) AS value, receivable.invoice_id AS id
+					FROM receivable
+					GROUP BY receivable.invoice_id
+				) AS receivableTable
+				ON invoice.id = receivableTable.id
+				LEFT JOIN customer ON invoice.customer_id = customer.id
+				WHERE invoice.id IN (
+					SELECT DISTINCT(code_delivery_order.invoice_id) AS id
+					FROM code_delivery_order
+					JOIN delivery_order ON delivery_order.id = code_delivery_order.id
+					JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
+					JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
+					JOIN customer ON code_sales_order.customer_id = customer.id
+					WHERE customer.uid = '$customerUID'
+				)
+				OR customer.uid = '$customerUID'
+				AND invoice.is_done = '0'
+			");
+
+			$result			= $query->row();
+			return $result;
+		}
 	}
 ?>

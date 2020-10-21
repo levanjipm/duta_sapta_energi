@@ -468,7 +468,7 @@ class Customer_model extends CI_Model {
 			$this->db->where('uid', $uid);
 			$this->db->where('password', md5($password));
 			$query		= $this->db->get($this->table_customer);
-			$result		= $query->result();
+			$result		= $query->row();
 			return $result;
 		}
 }

@@ -36,16 +36,33 @@ class Api extends CI_Controller {
                     "block" => $result->block,
                     "rt" => $result->rt,
                     "rw" => $result->rw,
-                    "pic" => $result->pic,
-                    "city" => $result->postal_code,
+                    "pic" => $result->pic_name,
+                    "city" => $result->city,
+                    "postal_code" => $result->postal_code,
                     "phone_number" => $result->phone_number,
-                    "pic_name" => $result->pic_name
                 )
             );
         }
 
         echo json_encode($response);
-        
+    }
+
+    public function getCustomerData()
+    {
+        header('Access-Control-Allow-Origin: *');
+        header("Access-Control-Allow-Methods: *");
+        header("Content-Type:application/json");
+
+        $postdata = file_get_contents("php://input");
+        $this->load->model("Invoice_model");
+        $result     = $this->Invoice_model->getBalanceByCustomerUID($postdata);
+        $value      = (float)$result->value - (float)$result->paid;
+
+        $this->load->model("Sales_order_model");
+        $pendingSalesOrders     = $this->Sales_order_model->countPendingByCustomerUID($postdata);
+        $data['balance']    = $value;
+        $data['pending']    = $pendingSalesOrders;
+        echo json_encode($data);
     }
 }
 ?>

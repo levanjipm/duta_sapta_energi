@@ -705,4 +705,28 @@ class Sales_order_model extends CI_Model {
 			$result		= $query->num_rows();
 			return $result;
 		}
+
+		public function countPendingByCustomerUID($customerUID)
+		{
+			$query		= $this->db->query("
+				SELECT code_sales_order.id AS id
+				FROM code_sales_order
+				JOIN customer ON code_sales_order.customer_id = customer.id
+				WHERE code_sales_order.id NOT IN (
+					SELECT DISTINCT(code_sales_order_close_request.code_sales_order_id) AS id
+					FROM code_sales_order_close_request
+					WHERE is_approved IS NULL OR is_approved = 1
+				)
+				AND code_sales_order.id NOT IN (
+					SELECT DISTINCT(sales_order.code_sales_order_id) AS id
+					FROM sales_order
+					WHERE sales_order.status = '0'
+				)
+				AND code_sales_order.is_confirm = '1'
+				AND customer.uid = '$customerUID'
+			");
+
+			$result			= $query->num_rows();
+			return $result;
+		}
 }
