@@ -58,10 +58,10 @@
 			<p style='font-family:museo'>There is no invoice to be assigned. <br><a role='button' href='<?= site_url('Bank/assignDashboard') ?>' class="button button_transparent" style='color:blue!important;padding:0;'>Go back</a></p>
 <?php } ?>
 		</form>
-<?php if($opponent == "Other" && $bank->transaction == 1) { ?>
+<?php if(($opponent == "Other" || $opponent == "Customer") && $bank->transaction == 1) { ?>
 		<form action="<?= site_url('Bank/assignIncome') ?>" method="POST">
 			<input type='hidden' name='id' value="<?= $bank->id ?>">
-			<p style='font-family:museo'>Assign as an income<button class="button button_transparent" style='color:blue!important;padding:0;'><a>Instead</a></button></p>
+			<p style='font-family:museo'>Assign as an income <button class="button button_transparent" style='color:blue!important;padding:0;'><a>Instead</a></button></p>
 		</form>
 <?php }	if($opponent == "Other" && $bank->transaction == 2){ ?>
 		<form action="<?= site_url('Bank/assignExpense') ?>" method="POST">

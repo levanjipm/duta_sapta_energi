@@ -140,6 +140,26 @@
 				})
 			}
 		</script>
+<?php } else if($type == "assignment"){ ?>
+	<button class='button button_danger_dark' onclick='resetAssignment()'>Reset this Transaction</button>
+	<script>
+			function resetAssignment(){
+				$.ajax({
+					url:"<?= site_url('Bank/resetByBankId') ?>",
+					data:{
+						id: <?= $bank->id ?>
+					},
+					type:"POST",
+					beforeSend:function(){
+						$('button').attr('disabled', true);
+					},
+					success:function(response){
+						$('button').attr('disabled', false);
+						window.location.href='<?= site_url('Bank/resetDashboard') ?>';
+					}
+				})
+			}
+		</script>
 <?php } ?>
 	</div>
 </div>

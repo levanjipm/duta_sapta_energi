@@ -214,4 +214,11 @@ class Payable extends CI_Controller {
 			$this->Bank_model->mergeByParentId($parentId);
 		}
 	}
+
+	public function deleteBlankById()
+	{
+		$id			= $this->input->post('id');
+		$this->load->model("Payable_model");
+		$this->Payable_model->deleteBlankById($id);
+	}
 }

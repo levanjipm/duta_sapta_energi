@@ -760,5 +760,14 @@ class Debt_model extends CI_Model {
 			$result			= $query->result();
 			return $result;
 		}
+
+		public function setInvoiceAsUndone($id)
+		{
+			$this->db->set('is_done', 0);
+			$this->db->where('id', $id);
+			$this->db->update($this->table_purchase_invoice);
+			$result			= $this->db->affected_rows();
+			return $result;
+		}
 	}
 ?>

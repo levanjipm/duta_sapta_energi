@@ -201,4 +201,52 @@ class Debt_other_model extends CI_Model {
 			$result		= $query->result();
 			return $result;
 		}
+
+		public function setInvoiceAsDone($invoiceId, $date)
+		{
+			$query			= $this->db->query("
+				SELECT purchase_invoice_other.value, COALESCE(payableTable.value, 0) AS paid
+				FROM purchase_invoice_other
+				LEFT JOIN (
+					SELECT SUM(value) AS value, other_purchase_id FROM payable
+					GROUP BY other_purchase_id
+				) payableTable
+				ON payableTable.other_purchase_id = purchase_invoice_other.id
+				WHERE id = '$invoiceId'
+			");
+
+			$result			= $query->row();
+			$value			= $result->value;
+			$paid			= $result->paid;
+			if($value > $paid){
+				$db_item		= array(
+					"id" => "",
+					"value" => ($value - $paid),
+					"bank_id" => NULL,
+					"date" => $date,
+					"purchase_id" => NULL,
+					"other_purchase_id" => $invoiceId
+				);
+
+				$this->db->insert("payable", $db_item);
+				if($this->db->affected_rows() == 1){
+					$this->db->set('is_done', 1);
+					$this->db->where('id', $invoiceId);
+					$this->db->update($this->table_purchase_invoice);
+				}
+
+				return 1;
+			} else {
+				return 0;
+			}
+		}
+
+		public function setInvoiceAsUndone($id)
+		{
+			$this->db->set('is_done', 0);
+			$this->db->where('id', $id);
+			$this->db->update($this->table_purchase_invoice);
+			$result			= $this->db->affected_rows();
+			return $result;
+		}
 }

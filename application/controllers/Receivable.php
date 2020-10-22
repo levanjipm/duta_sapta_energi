@@ -253,4 +253,23 @@ class Receivable extends CI_Controller {
 			$this->Bank_model->mergeByParentId($parentId);
 		}
 	}
+
+	public function viewCompleteByCustomerId($customerId)
+	{
+		$user_id		= $this->session->userdata('user_id');
+		$this->load->model('User_model');
+		$data['user_login'] = $this->User_model->getById($user_id);
+		
+		$this->load->model('Authorization_model');
+		$data['departments']	= $this->Authorization_model->getByUserId($user_id);
+		
+		$this->load->view('head');
+		$this->load->view('accounting/header', $data);
+
+		$data = array();
+		$this->load->model("Customer_model");
+		$data['customer'] = $this->Customer_model->getById($customerId);
+
+		$this->load->view('accounting/Receivable/customerCompleteReceivable', $data);
+	}
 }

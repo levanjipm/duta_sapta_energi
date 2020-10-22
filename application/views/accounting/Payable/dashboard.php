@@ -269,8 +269,6 @@
 						$('#payable_chart').append("<div class='row' style='cursor:pointer' id='otherPayable-" + id + "' onclick='viewOtherPayableDetail(" + id + ")' ><div class='col-sm-3 col-xs-3 center'><p><strong>" + name + "</strong></div><div class='col-sm-7 col-xs-6'><div class='Payable_line' id='otherPayableLine-" + id + "' data-value='" + value + "'></div></div><div class='col-sm-2 col-xs-3 center' style='text-align:right'><p>Rp. " + numeral(value).format('0,0.00') + "</p></div></div><br>");
 						payableCount++;
 					}
-
-					console.log(maxPayable);
 				});
 
 				$('.Payable_line').each(function(){

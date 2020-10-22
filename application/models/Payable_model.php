@@ -254,5 +254,28 @@ class Payable_model extends CI_Model {
 				}
 			}
 		}
+
+		public function deleteBlankById($id)
+		{
+			$this->db->where('id', $id);
+			$query			= $this->db->get($this->table_payable);
+			$result			= $query->row();
+
+			$purchaseInvoiceId		= $result->purchase_id;
+			$blankPurchaseInvoiceId	= $result->other_purchase_id;
+			$this->db->where('id', $id);
+			$this->db->delete($this->table_payable);
+			$result			= $this->db->affected_rows();
+
+			if($purcahseInvoiceId == NULL){
+				$this->load->model("Debt_model");
+				$data	= $this->Debt_model->setInvoiceAsUndone($purchaseInvoiceId);
+			} else if($blankPurchaseInvoiceId == NULL){
+				$this->load->model("Debt_other_model");
+				$data	= $this->Debt_other_model->setInvoiceAsUndone($blankPurchaseInvoiceId);
+			}
+
+			return $data;
+		}
 	}
 ?>

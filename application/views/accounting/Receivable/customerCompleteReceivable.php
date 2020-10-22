@@ -5,6 +5,34 @@
 ?>
 <head>
 	<title><?= $customerName ?> Receivable</title>
+	<style>
+		@media print{
+			body{
+				visibility:hidden;
+			}
+
+			.dashboard_in{
+				visibility:visible;
+				width:100%;
+				margin:0;
+				left:0;
+				top:0;
+				position: absolute;
+			}
+
+			#headerRow{
+				display:none;
+			}
+
+			button{
+				display:none;
+			}
+
+			.button_mini_tab{
+				display:none;
+			}
+		}
+	</style>
 </head>
 <div class='dashboard'>
 	<div class='dashboard_head'>
@@ -17,7 +45,7 @@
 		<p><?= $customerAddress ?></p>
 		<p><?= $customerCity ?></p>
 
-		<label>Receivable</label><a role='button' href='<?= site_url("Receivable/viewCompleteByCustomerId/") . $customer->id ?>' class='button button_mini_tab'><i class='fa fa-history'></i></a>
+		<div id="headerRow"><label>Receivable</label>  <a role='button' href='<?= site_url('Receivable/viewByCustomerId/') . $customer->id ?>' class='button button_mini_tab'><i class='fa fa-calendar-o' title='View incomplete transactions'></i></a> <button class='button button_mini_tab' onclick='window.print()'><i class='fa fa-print'></i></button></div>
 		<div id='receivableTable'>
 			<table class='table table-bordered'>
 				<tr>
@@ -171,32 +199,29 @@
 					var paid = parseFloat(item.paid);
 					totalReceivable += value;
 
-					if(item.is_done == 0){
-						$('#receivableTableContent').append("<tr><td>" + my_date_format(date) + "</td><td><p>" + name + "</p><p>" + taxInvoice + "</p><button class='button button_mini_tab active' onclick='viewInvoice(" + id + ")'><i class='fa fa-eye'></i></button></td><td>Rp. " + numeral(value).format('0,0.00') + "</td><td>Rp. 0,0.00</td><td>Rp. " + numeral(totalReceivable).format('0,0.00') + "</td></tr>");
-						receivableCount++; 
+					$('#receivableTableContent').append("<tr><td>" + my_date_format(date) + "</td><td><p>" + name + "</p><p>" + taxInvoice + "</p><button class='button button_mini_tab active' onclick='viewInvoice(" + id + ")'><i class='fa fa-eye'></i></button></td><td>Rp. " + numeral(value).format('0,0.00') + "</td><td>Rp. 0,0.00</td><td>Rp. " + numeral(totalReceivable).format('0,0.00') + "</td></tr>");
+					receivableCount++; 
 
-						var receivableArray = response.receivables.filter(function(receivable){
-							return receivable.invoice_id == id;
-						});
+					var receivableArray = response.receivables.filter(function(receivable){
+						return receivable.invoice_id == id;
+					});
 
-						if(receivableArray.length > 0){
-							$.each(receivableArray, function(index, value){
-								var paymentDate = value.date;
-								var paymentValue = parseFloat(value.value);
-								totalReceivable -= paymentValue;
+					if(receivableArray.length > 0){
+						$.each(receivableArray, function(index, value){
+							var paymentDate = value.date;
+							var paymentValue = parseFloat(value.value);
+							totalReceivable -= paymentValue;
 <?php if($user_login->access_level > 2){ ?>
 							if(value.bank_id == null){
 								var id = value.id;
 								$('#receivableTableContent').append("<tr class='success'><td>" + my_date_format(paymentDate) + "</td><td><p>Payment</p><button class='button button_default_dark' onclick='confirmDelete(" + id + ")'><i class='fa fa-trash'></i></button></td><td>Rp. 0,0.00</td><td>Rp. " + numeral(paymentValue).format('0,0.00') + "</td><td>Rp. " + numeral(totalReceivable).format('0,0.00') + "</td></tr>");
 							} else {
 								$('#receivableTableContent').append("<tr class='success'><td>" + my_date_format(paymentDate) + "</td><td><p>Payment</p></td><td>Rp. 0,0.00</td><td>Rp. " + numeral(paymentValue).format('0,0.00') + "</td><td>Rp. " + numeral(totalReceivable).format('0,0.00') + "</td></tr>");
-							}
-							
+							}	
 <?php } else { ?>
 							$('#receivableTableContent').append("<tr class='success'><td>" + my_date_format(paymentDate) + "</td><td><p>Payment</p</td><td>Rp. 0,0.00</td><td>Rp. " + numeral(paymentValue).format('0,0.00') + "</td><td>Rp. " + numeral(totalReceivable).format('0,0.00') + "</td></tr>");
 <?php } ?>
-							})
-						}
+						})
 					}	
 				});
 

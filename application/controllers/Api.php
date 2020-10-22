@@ -64,5 +64,40 @@ class Api extends CI_Controller {
         $data['pending']    = $pendingSalesOrders;
         echo json_encode($data);
     }
+
+    public function getCustomerSalesHistory()
+    {
+        header('Access-Control-Allow-Origin: *');
+        header("Access-Control-Allow-Methods: *");
+        header("Content-Type:application/json");
+
+        $postdata = file_get_contents("php://input");
+        $this->load->model("Invoice_model");
+        $result       = $this->Invoice_model->getCustomerSalesHistory($postdata);
+
+        for($i = 0; $i < 12; $i++){
+			$month		= date('m', strtotime("-" . $i . "months"));
+			$year		= date('Y', strtotime("-" . $i . "months"));
+			$batchArray[$i] = array(
+				"label" => date("M Y", mktime(0,0,0,$month, 1, $year)),
+				"value" => 0
+			);
+		}
+
+		foreach($result as $data){
+			$month			= $data->month;
+            $year			= $data->year;
+            $value          = $data->value;
+
+            $date			= mktime(0,0,0, $month, 1, $year);
+            $today          = strtotime("now");
+            $datediff		= floor(($today - $date)/(30 * 60 * 60 * 24));
+
+            $batchArray[$datediff]['value'] = (float)$value;
+        }
+        
+        $batch          = (object)$batchArray;
+        echo(json_encode($batch));
+    }
 }
 ?>

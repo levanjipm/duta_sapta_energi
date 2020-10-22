@@ -624,6 +624,34 @@ class Bank extends CI_Controller {
 		} else {
 			echo 0;
 		}
-		
+	}
+
+	public function resetByBankId()
+	{
+		$bankId			= $this->input->post('id');
+
+		$this->load->model("Bank_model");
+		$bank		= $this->Bank_model->getById($bankId);
+		$parentId	= $bank->bank_transaction_major;
+		if($parentId == NULL){
+			$status = false;
+		} else {
+			$bankChildData		= $this->Bank_model->getChildByParentId($parentId, $bankId);
+			$status				= true;
+			foreach($bankChildData as $bankChild){
+				if($bankChild->is_done != 0 || $bankChild->is_delete != 0){
+					$status		= false;
+					break;
+				}
+				next($bankChildData);
+			}
+		}
+
+		$this->Bank_model->deleteByBankId($bankId);
+		$this->Bank_model->updateUndoneById($bankId);
+
+		if($status){
+			$this->Bank_model->mergeByParentId($parentId);
+		}
 	}
 }
