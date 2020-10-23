@@ -88,8 +88,7 @@
 
 #copy_text_span{
 	cursor:pointer;
-}
-	
+}	
 </style>
 <div class='dashboard'>
 	<br>
@@ -105,10 +104,13 @@
 			<p style='font-family:museo'><?= $customer_name ?></p>
 			<p style='font-family:museo'><?= $complete_address ?></p>
 			<p style='font-family:museo'><?= $customer_city ?></p>
-			
+<?php if($submission->submitted_plafond != NULL){ ?>	
 			<label>Plafond</label>
 			<p style='font-family:museo'>Rp. <?= number_format($customer->plafond,2) ?> - <strong>Rp. <?= number_format($submission->submitted_plafond,2) ?></strong></p>
-			
+<?php } else { ?>
+			<label>Term of payment</label>
+			<p style='font-family:museo'><?= number_format($customer->term_of_payment) ?> - <strong><?= number_format($submission->submitted_top) ?></strong></p>
+<?php } ?>
 			<label>Submitted by</label>
 			<p style='font-family:museo'><?= $submission->created_by ?></p>
 			

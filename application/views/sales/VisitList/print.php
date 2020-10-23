@@ -13,13 +13,17 @@
 				width:100%;
 				visibility:visible;
 			}
+
+			button{
+				display:none;
+			}
 		}
 	</style>
 </head>
 <div class='dashboard'>
 	<br>
 	<div class='dashboard_in'>
-		<div class='row'>
+		<div class='row' style="margin-bottom:30px;">
 			<div class='col-xs-4 col-xs-offset-4'>
 				<img src='<?= base_url('assets/Logo_dark.png') ?>' style='width:40%;margin-left:30%'></img>
 			</div>

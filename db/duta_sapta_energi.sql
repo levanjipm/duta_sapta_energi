@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Waktu pembuatan: 19 Okt 2020 pada 12.02
+-- Waktu pembuatan: 23 Okt 2020 pada 11.43
 -- Versi server: 10.1.38-MariaDB
 -- Versi PHP: 7.3.2
 
@@ -102,6 +102,13 @@ CREATE TABLE `bank_transaction` (
   `account_id` int(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+--
+-- Dumping data untuk tabel `bank_transaction`
+--
+
+INSERT INTO `bank_transaction` (`id`, `value`, `date`, `transaction`, `customer_id`, `supplier_id`, `other_id`, `internal_account_id`, `is_done`, `is_delete`, `bank_transaction_major`, `account_id`) VALUES
+(1, '500000.00', '2020-10-22', 1, 5, NULL, NULL, NULL, 0, 0, NULL, 2);
+
 -- --------------------------------------------------------
 
 --
@@ -172,6 +179,13 @@ CREATE TABLE `code_delivery_order` (
   `guid` varchar(50) NOT NULL,
   `invoice_id` int(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data untuk tabel `code_delivery_order`
+--
+
+INSERT INTO `code_delivery_order` (`id`, `date`, `name`, `is_confirm`, `is_delete`, `is_sent`, `guid`, `invoice_id`) VALUES
+(1, '2020-10-22', 'DO-DSE-202010-00010', 1, 0, 1, 'E68D5A10-EF64-4589-A5B6-5D82F33C00CC', 1);
 
 -- --------------------------------------------------------
 
@@ -329,6 +343,13 @@ CREATE TABLE `code_sales_order` (
   `note` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+--
+-- Dumping data untuk tabel `code_sales_order`
+--
+
+INSERT INTO `code_sales_order` (`id`, `customer_id`, `name`, `date`, `taxing`, `seller`, `is_confirm`, `confirmed_by`, `guid`, `created_by`, `invoicing_method`, `is_delete`, `note`) VALUES
+(1, 5, '202010.72081018', '2020-10-22', 0, 20, 1, 1, 'F33970E1-B170-4B39-ACF6-3BEA97B27C9F', 1, 1, 0, '');
+
 -- --------------------------------------------------------
 
 --
@@ -407,7 +428,8 @@ INSERT INTO `code_visit_list` (`id`, `date`, `created_by`, `created_date`, `visi
 (1, '2020-10-15', 1, '2020-10-15', 1, 1, 0, 1, 1),
 (2, '2020-10-16', 1, '2020-10-15', 1, 1, 0, 1, 1),
 (3, '2020-10-17', 1, '2020-10-16', 17, 1, 0, 1, 1),
-(4, '2020-10-18', 1, '2020-10-16', 17, 0, 0, NULL, 0);
+(4, '2020-10-18', 1, '2020-10-16', 17, 0, 1, 1, 0),
+(5, '2020-10-23', 1, '2020-10-23', 20, 1, 0, 1, 0);
 
 -- --------------------------------------------------------
 
@@ -448,7 +470,7 @@ CREATE TABLE `customer` (
 
 INSERT INTO `customer` (`id`, `name`, `address`, `number`, `rt`, `rw`, `city`, `postal_code`, `area_id`, `is_black_list`, `block`, `npwp`, `phone_number`, `pic_name`, `date_created`, `created_by`, `latitude`, `longitude`, `term_of_payment`, `plafond`, `is_remind`, `visiting_frequency`, `uid`, `password`) VALUES
 (1, 'Toko Sumber Lampu', 'Jalan Jendral Ahmad Yani (Plaza IBCC)', '3', '029', '006', 'Kota Bandung', '40271', 1, 0, 'B2', NULL, '(022) 7233271', 'Bapak Ayung', '2020-01-24', 1, NULL, NULL, 45, '3000000.00', 1, 28, '72297039', NULL),
-(5, 'Toko Agni Surya', 'Jalan Jendral Ahmad Yani', '353', '000', '000', 'Kota Bandung', '40121', 1, 0, '', NULL, '(022) 7273893', 'Ibu Yani', '2020-01-24', 1, NULL, NULL, 45, '15000000.00', 1, 28, '09715857', NULL),
+(5, 'Toko Agni Surya', 'Jalan Jendral Ahmad Yani', '353', '000', '000', 'Kota Bandung', '40121', 1, 0, '', NULL, '(022) 7273893', 'Ibu Yani', '2020-01-24', 1, NULL, NULL, 45, '15000000.00', 1, 28, '09715857', 'e101df5a9fc03e1344eb9743f69c5127'),
 (6, 'Toko Trijaya 2', 'Jalan Cikawao', '56', '001', '001', 'Kota Bandung', '40261', 1, 0, '', NULL, '(022) 4220661', 'Bapak Yohan', '2020-01-24', 1, NULL, NULL, 45, '3000000.00', 1, 28, '45860382', NULL),
 (7, 'Toko Utama Lighting', 'Jalan Jendral Ahmad Yani (Plaza IBCC)', '12', '029', '006', 'Kota Bandung', '40271', 1, 0, 'D2', NULL, '081224499786', 'Ibu Mimi', '2020-01-25', 1, NULL, NULL, 45, '3000000.00', 1, 28, '51644842', NULL),
 (8, 'Toko Surya Agung', 'Jalan H. Ibrahim Adjie (Bandung Trade Mall)', '47A', '005', '011', 'Kota Bandung', '40283', 1, 0, 'C1', '', '(022) 7238333', 'Bapak Jajang Aji', '2020-01-29', 1, NULL, NULL, 45, '3000000.00', 1, 28, '88051032', NULL),
@@ -592,7 +614,9 @@ INSERT INTO `customer` (`id`, `name`, `address`, `number`, `rt`, `rw`, `city`, `
 (275, 'Toko LEF electric', 'Komplek Royal Casablanca Jalan Cipamokolan', '7', '000', '000', 'Kota Bandung', '40292', 1, 0, 'R7', '', '085831375657', 'Bapak Iwan', '2020-10-16', 1, '-6.947143000000000000000000000000', '107.635033400000000000000000000000', 30, '3000000.00', 1, 1, '14669786', NULL),
 (276, 'Toko Mulia Elektrik', 'Ruko Madani Regency, Jalan Cijambe', '21', '000', '000', 'Kota Bandung', '40619', 1, 0, '000', '', '081573782560', 'Bapak Sahudi ', '2020-10-16', 1, '-6.909340700000000000000000000000', '107.690662000000000000000000000000', 30, '3000000.00', 1, 1, '52246061', NULL),
 (277, 'Toko Omega Elektrik', 'Ruko Segitiga Mas, Jalan Jendral Ahmad Yani ', '221', '000', '000', 'Kota Bandung', '40113', 8, 0, '000', '', '(022) 7202862', 'Ibu Ingeu', '2020-10-16', 1, '-6.917813000000000000000000000000', '107.641955000000000000000000000000', 30, '3000000.00', 1, 1, '39780542', NULL),
-(278, 'Toko 29 Elektronik Cianjur', ' Jl. Dr. Muwardi', '29', '000', '000', 'Kabupaten Cianjur', '43215', 6, 0, '000', '', '(0263) 272929', 'Bapak Hiandi ', '2020-10-16', 1, '-6.816567000000000000000000000000', '107.140626000000000000000000000000', 30, '3000000.00', 1, 1, '74928339', NULL);
+(278, 'Toko 29 Elektronik Cianjur', ' Jl. Dr. Muwardi', '29', '000', '000', 'Kabupaten Cianjur', '43215', 6, 0, '000', '', '(0263) 272929', 'Bapak Hiandi ', '2020-10-16', 1, '-6.816567000000000000000000000000', '107.140626000000000000000000000000', 30, '3000000.00', 1, 1, '74928339', NULL),
+(279, 'Toko Abadi Prima', 'Jalan Taman Kopo Indah III', 'A2', '000', '000', 'Bandung', '', 2, 0, '000', '', '089694050778', 'Bapak Aa', '2020-10-22', 18, '0.000000000000000000000000000000', '0.000000000000000000000000000000', 0, '3000000.00', 1, 1, '23456323', NULL),
+(280, 'Toko AD Elektrik', 'Jalan Raya Rancaekek KM 25', '15', '000', '000', 'Bandung', '', 1, 0, '000', '', '085314314950', 'Bapak Ade Darin', '2020-10-22', 18, NULL, NULL, 0, '3000000.00', 1, 1, '74362404', NULL);
 
 -- --------------------------------------------------------
 
@@ -925,6 +949,44 @@ CREATE TABLE `customer_sales` (
   `sales_id` int(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+--
+-- Dumping data untuk tabel `customer_sales`
+--
+
+INSERT INTO `customer_sales` (`id`, `customer_id`, `sales_id`) VALUES
+(1, 274, 17),
+(2, 116, 17),
+(3, 274, 17),
+(4, 274, 20),
+(6, 124, 20),
+(7, 69, 20),
+(8, 278, 20),
+(10, 116, 20),
+(14, 277, 20),
+(15, 274, 17),
+(16, 116, 17),
+(17, 69, 17),
+(18, 278, 17),
+(19, 80, 17),
+(24, 80, 17),
+(25, 66, 17),
+(26, 274, 17),
+(27, 116, 17),
+(28, 69, 17),
+(29, 278, 17),
+(30, 80, 17),
+(31, 124, 17),
+(32, 274, 17),
+(33, 116, 17),
+(34, 124, 17),
+(35, 69, 17),
+(36, 274, 17),
+(37, 116, 17),
+(38, 124, 17),
+(39, 69, 17),
+(40, 274, 17),
+(41, 116, 17);
+
 -- --------------------------------------------------------
 
 --
@@ -1125,6 +1187,13 @@ CREATE TABLE `delivery_order` (
   `quantity` int(255) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+--
+-- Dumping data untuk tabel `delivery_order`
+--
+
+INSERT INTO `delivery_order` (`id`, `sales_order_id`, `code_delivery_order_id`, `quantity`) VALUES
+(1, 1, 1, 1);
+
 -- --------------------------------------------------------
 
 --
@@ -1293,7 +1362,8 @@ INSERT INTO `income_class` (`id`, `name`, `description`, `created_by`, `created_
 (1, 'Royalty', 'This account is used for royalty income.', 1, '2020-07-07'),
 (2, 'Saving Interest', 'This account is used for saving interest income.', 1, '2020-07-07'),
 (3, 'Sale of fixed asset', 'This account is used for sale of fixed asset income', 1, '2020-07-07'),
-(4, 'Other', 'This account is used for other income', 1, '2020-07-07');
+(4, 'Other', 'This account is used for other income', 1, '2020-07-07'),
+(5, 'Rounding off payments', 'This class is used for rounded customer\'s payment.', 1, '2020-10-22');
 
 -- --------------------------------------------------------
 
@@ -1340,6 +1410,13 @@ CREATE TABLE `invoice` (
   `opponent_id` int(255) DEFAULT NULL,
   `customer_id` int(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data untuk tabel `invoice`
+--
+
+INSERT INTO `invoice` (`id`, `name`, `value`, `discount`, `delivery`, `date`, `information`, `is_done`, `is_confirm`, `taxInvoice`, `lastBillingDate`, `nextBillingDate`, `is_billed`, `opponent_id`, `customer_id`) VALUES
+(1, 'INV.DSE202010-00010', '282080.00', '0.0000', '0.0000', '2020-10-22', 'DO-DSE-202010-00010', 0, 1, NULL, NULL, NULL, 0, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -1422,7 +1499,115 @@ INSERT INTO `item` (`id`, `reference`, `name`, `type`, `is_notified_stock`, `con
 (62, 'NYY42_500_EXT', 'Kabel NYY 4 x 2,5mm<sup>2</sup> kemasan 500 meter (Extrana)', 3, 0, 90.00),
 (63, 'NYY42_1000_EXT', 'Kabel NYY 4 x 2,5mm<sup>2</sup> kemasan 1.000 meter (Extrana)', 3, 0, 90.00),
 (64, 'NYMHY2075_50_EXT', 'Kabel NYMHY 2 x 0,75mm<sup>2</sup> kemasan 50 meter (Extrana)', 13, 0, 95.00),
-(65, 'NYMHY21_50_EXT', 'Kabel NYMHY 2 x 1,5mm<sup>2</sup> kemasan 50 meter (Extrana)', 13, 0, 90.00);
+(65, 'NYMHY21_50_EXT', 'Kabel NYMHY 2 x 1,5mm<sup>2</sup> kemasan 50 meter (Extrana)', 13, 0, 90.00),
+(66, 'NYMHY2075_100_EXT', 'Kabel NYMHY 2 x 0,75mm<sup>2</sup> kemasan 100 meter (Extrana)', 13, 0, 70.00),
+(67, 'NYMHY22_50_EXT', 'Kabel NYMHY 2 x 2,5mm<sup>2</sup> kemasan 50 meter (Extrana)', 13, 0, 95.00),
+(68, 'NYMHY3075_50_EXT', 'Kabel NYMHY 3 x 0,75mm<sup>2</sup> kemasan 50 meter (Extrana)', 13, 0, 95.00),
+(69, 'NYMHY31_50_EXT', 'Kabel NYMHY 3 x 1,5mm<sup>2</sup> kemasan 50 meter (Extrana)', 13, 0, 95.00),
+(70, 'NYMHY32_50_EXT', 'Kabel NYMHY 3 x 2,5mm<sup>2</sup> kemasan 50 meter (Extrana)', 13, 0, 95.00),
+(71, 'NYMHY4075_50_EXT', 'Kabel NYMHY 4 x 0,75mm<sup>2</sup> kemasan 50 meter (Extrana)', 13, 0, 95.00),
+(72, 'NYMHY41_50_EXT', 'Kabel NYMHY 4 x 1,5mm<sup>2</sup> kemasan 50 meter (Extrana)', 13, 0, 95.00),
+(73, 'NYMHY42_50_EXT', 'Kabel NYMHY 4 x 2,5mm<sup>2</sup> kemasan 50 meter (Extrana)', 13, 0, 95.00),
+(74, 'NYMHY21_100_EXT', 'Kabel NYMHY 2 x 1,5mm<sup>2</sup> kemasan 100 meter (Extrana)', 13, 0, 70.00),
+(75, 'NYMHY22_100_EXT', 'Kabel NYMHY 2 x 2,5mm<sup>2</sup> kemasan 100 meter (Extrana)', 13, 0, 70.00),
+(76, 'NYMHY3075_100_EXT', 'Kabel NYMHY 3 x 0,75mm<sup>2</sup> kemasan 100 meter (Extrana)', 13, 0, 70.00),
+(77, 'NYMHY31_100_EXT', 'Kabel NYMHY 3 x 1,5mm<sup>2</sup> kemasan 100 meter (Extrana)', 13, 0, 70.00),
+(78, 'NYMHY32_100_EXT', 'Kabel NYMHY 3 x 2,5mm<sup>2</sup> kemasan 100 meter (Extrana)', 13, 0, 70.00),
+(79, 'NYMHY4075_100_EXT', 'Kabel NYMHY 4 x 0,75mm<sup>2</sup> kemasan 100 meter (Extrana)', 13, 0, 0.00),
+(80, 'NYMHY41_100_EXT', 'Kabel NYMHY 4 x 1,5mm<sup>2</sup> kemasan 100 meter (Extrana)', 13, 0, 70.00),
+(81, 'NYMHY42_100_EXT', 'Kabel NYMHY 4 x 2,5mm<sup>2</sup> kemasan 100 meter (Extrana)', 13, 0, 70.00),
+(82, 'NYMHY2075_200_EXT', 'Kabel NYMHY 2 x 0,75mm<sup>2</sup> kemasan 200 meter (Extrana)', 13, 0, 90.00),
+(83, 'NYMHY21_200_EXT', 'Kabel NYMHY 2 x 1,5mm<sup>2</sup> kemasan 200 meter (Extrana)', 13, 0, 90.00),
+(84, 'NYMHY22_200_EXT', 'Kabel NYMHY 2 x 2,5mm<sup>2</sup> kemasan 200 meter (Extrana)', 13, 0, 90.00),
+(85, 'NYMHY3075_200_EXT', 'Kabel NYMHY 3 x 0,75mm<sup>2</sup> kemasan 200 meter (Extrana)', 13, 0, 90.00),
+(86, 'NYMHY31_200_EXT', 'Kabel NYMHY 3 x 1,5mm<sup>2</sup> kemasan 200 meter (Extrana)', 13, 0, 90.00),
+(87, 'NYMHY32_200_EXT', 'Kabel NYMHY 3 x 2,5mm<sup>2</sup> kemasan 200 meter (Extrana)', 13, 0, 90.00),
+(88, 'NYMHY4075_200_EXT', 'Kabel NYMHY 4 x 0,75mm<sup>2</sup> kemasan 200 meter (Extrana)', 13, 0, 90.00),
+(89, 'NYMHY41_200_EXT', 'Kabel NYMHY 4 x 1,5mm<sup>2</sup> kemasan 200 meter (Extrana)', 13, 0, 90.00),
+(90, 'NYMHY42_200_EXT', 'Kabel NYMHY 4 x 2,5mm<sup>2</sup> kemasan 200 meter (Extrana)', 13, 0, 90.00),
+(91, 'NYMHY2075_250_EXT', 'Kabel NYMHY 2 x 0,75mm<sup>2</sup> kemasan 250 meter (Extrana)', 13, 0, 70.00),
+(92, 'NYMHY21_250_EXT', 'Kabel NYMHY 2 x 1,5mm<sup>2</sup> kemasan 250 meter (Extrana)', 13, 0, 70.00),
+(93, 'NYMHY22_250_EXT', 'Kabel NYMHY 2 x 2,5mm<sup>2</sup> kemasan 250 meter (Extrana)', 13, 1, 70.00),
+(94, 'NYMHY3075_250_EXT', 'Kabel NYMHY 3 x 0,75mm<sup>2</sup> kemasan 250 meter (Extrana)', 13, 0, 70.00),
+(95, 'NYMHY31_250_EXT', 'Kabel NYMHY 3 x 1,5mm<sup>2</sup> kemasan 250 meter (Extrana)', 13, 0, 70.00),
+(96, 'NYMHY32_250_EXT', 'Kabel NYMHY 3 x 2,5mm<sup>2</sup> kemasan 250 meter (Extrana)', 13, 0, 70.00),
+(97, 'NYMHY4075_250_EXT', 'Kabel NYMHY 4 x 0,75mm<sup>2</sup> kemasan 250 meter (Extrana)', 13, 0, 70.00),
+(98, 'NYMHY41_250_EXT', 'Kabel NYMHY 4 x 1,5mm<sup>2</sup> kemasan 250 meter (Extrana)', 13, 0, 70.00),
+(99, 'NYMHY42_250_EXT', 'Kabel NYMHY 4 x 2,5mm<sup>2</sup> kemasan 250 meter (Extrana)', 13, 0, 70.00),
+(100, 'NYMHY2075_500_EXT', 'Kabel NYMHY 2 x 0,75mm<sup>2</sup> kemasan 500 meter (Extrana)', 13, 0, 70.00),
+(101, 'NYMHY21_500_EXT', 'Kabel NYMHY 2 x 1,5mm<sup>2</sup> kemasan 500 meter (Extrana)', 13, 0, 70.00),
+(102, 'NYMHY22_500_EXT', 'Kabel NYMHY 2 x 2,5mm<sup>2</sup> kemasan 500 meter (Extrana)', 14, 0, 70.00),
+(103, 'NYMHY3075_500_EXT', 'Kabel NYMHY 3 x 0,75mm<sup>2</sup> kemasan 500 meter (Extrana)', 13, 0, 70.00),
+(104, 'NYMHY31_500_EXT', 'Kabel NYMHY 3 x 1,5mm<sup>2</sup> kemasan 500 meter (Extrana)', 13, 0, 70.00),
+(105, 'NYMHY32_500_EXT', 'Kabel NYMHY 3 x 2,5mm<sup>2</sup> kemasan 500 meter (Extrana)', 13, 0, 70.00),
+(106, 'NYMHY4075_500_EXT', 'Kabel NYMHY 4 x 0,75mm<sup>2</sup> kemasan 500 meter (Extrana)', 13, 0, 70.00),
+(107, 'NYMHY41_500_EXT', 'Kabel NYMHY 4 x 1,5mm<sup>2</sup> kemasan 500 meter (Extrana)', 13, 0, 70.00),
+(108, 'NYMHY42_500_EXT', 'Kabel NYMHY 4 x 2,5mm<sup>2</sup> kemasan 500 meter (Extrana)', 13, 0, 70.00),
+(109, 'NYYHY2075_50_EXT', 'Kabel NYYHY 2 x 0,75mm<sup>2</sup> kemasan 50 meter (Extrana)', 14, 0, 95.00),
+(110, 'NYYHY21_50_EXT', 'Kabel NYYHY 2 x 1,5mm<sup>2</sup> kemasan 50 meter (Extrana)', 14, 0, 95.00),
+(111, 'NYYHY22_50_EXT', 'Kabel NYYHY 2 x 2,5mm<sup>2</sup> kemasan 50 meter (Extrana)', 14, 0, 95.00),
+(112, 'NYYHY3075_50_EXT', 'Kabel NYYHY 3 x 0,75mm<sup>2</sup> kemasan 50 meter (Extrana)', 13, 0, 95.00),
+(113, 'NYYHY31_50_EXT', 'Kabel NYYHY 3 x 1,5mm<sup>2</sup> kemasan 50 meter (Extrana)', 14, 0, 95.00),
+(114, 'NYYHY32_50_EXT', 'Kabel NYYHY 3 x 2,5mm<sup>2</sup> kemasan 50 meter (Extrana)', 14, 0, 95.00),
+(115, 'NYYHY4075_50_EXT', 'Kabel NYYHY 4 x 0,75mm<sup>2</sup> kemasan 50 meter (Extrana)', 14, 0, 95.00),
+(116, 'NYYHY41_50_EXT', 'Kabel NYYHY 4 x 1,5mm<sup>2</sup> kemasan 50 meter (Extrana)', 14, 0, 95.00),
+(117, 'NYYHY42_50_EXT', 'Kabel NYYHY 4 x 2,5mm<sup>2</sup> kemasan 50 meter (Extrana)', 14, 0, 95.00),
+(118, 'NYYHY2075_100_EXT', 'Kabel NYYHY 2 x 0,75mm<sup>2</sup> kemasan 100 meter (Extrana)', 14, 0, 70.00),
+(119, 'NYYHY21_100_EXT', 'Kabel NYYHY 2 x 1,5mm<sup>2</sup> kemasan 100 meter (Extrana)', 14, 0, 70.00),
+(120, 'NYYHY22_100_EXT', 'Kabel NYYHY 2 x 2,5mm<sup>2</sup> kemasan 100 meter (Extrana)', 14, 0, 70.00),
+(121, 'NYYHY3075_100_EXT', 'Kabel NYYHY 3 x 0,75mm<sup>2</sup> kemasan 100 meter (Extrana)', 14, 0, 70.00),
+(122, 'NYYHY31_100_EXT', 'Kabel NYYHY 3 x 1,5mm<sup>2</sup> kemasan 100 meter (Extrana)', 14, 0, 70.00),
+(123, 'NYYHY32_100_EXT', 'Kabel NYYHY 3 x 2,5mm<sup>2</sup> kemasan 100 meter (Extrana)', 14, 0, 70.00),
+(124, 'NYYHY4075_100_EXT', 'Kabel NYYHY 4 x 0,75mm<sup>2</sup> kemasan 100 meter (Extrana)', 14, 0, 70.00),
+(125, 'NYYHY41_100_EXT', 'Kabel NYYHY 4 x 1,5mm<sup>2</sup> kemasan 100 meter (Extrana)', 14, 0, 70.00),
+(126, 'NYYHY42_100_EXT', 'Kabel NYYHY 4 x 2,5mm<sup>2</sup> kemasan 100 meter (Extrana)', 14, 0, 70.00),
+(127, 'NYYHY2075_200_EXT', 'Kabel NYYHY 2 x 0,75mm<sup>2</sup> kemasan 200 meter (Extrana)', 14, 0, 90.00),
+(128, 'NYYHY21_200_EXT', 'Kabel NYYHY 2 x 1,5mm<sup>2</sup> kemasan 200 meter (Extrana)', 14, 0, 90.00),
+(129, 'NYYHY22_200_EXT', 'Kabel NYYHY 2 x 2,5mm<sup>2</sup> kemasan 200 meter (Extrana)', 14, 0, 90.00),
+(130, 'NYYHY3075_200_EXT', 'Kabel NYYHY 3 x 0,75mm<sup>2</sup> kemasan 200 meter (Extrana)', 14, 0, 90.00),
+(131, 'NYYHY31_200_EXT', 'Kabel NYYHY 3 x 1,5mm<sup>2</sup> kemasan 200 meter (Extrana)', 14, 0, 90.00),
+(132, 'NYYHY32_200_EXT', 'Kabel NYYHY 3 x 2,5mm<sup>2</sup> kemasan 200 meter (Extrana)', 14, 0, 90.00),
+(133, 'NYYHY4075_200_EXT', 'Kabel NYYHY 4 x 0,75mm<sup>2</sup> kemasan 200 meter (Extrana)', 14, 0, 90.00),
+(134, 'NYYHY41_200_EXT', 'Kabel NYYHY 4 x 1,5mm<sup>2</sup> kemasan 200 meter (Extrana)', 14, 0, 90.00),
+(135, 'NYYHY42_200_EXT', 'Kabel NYYHY 4 x 2,5mm<sup>2</sup> kemasan 200 meter (Extrana)', 14, 0, 90.00),
+(136, 'NYYHY2075_250_EXT', 'Kabel NYYHY 2 x 0,75mm<sup>2</sup> kemasan 250 meter (Extrana)', 14, 0, 70.00),
+(137, 'NYYHY21_250_EXT', 'Kabel NYYHY 2 x 1,5mm<sup>2</sup> kemasan 250 meter (Extrana)', 14, 0, 70.00),
+(138, 'NYYHY22_250_EXT', 'Kabel NYYHY 2 x 2,5mm<sup>2</sup> kemasan 250 meter (Extrana)', 14, 0, 70.00),
+(139, 'NYYHY3075_250_EXT', 'Kabel NYYHY 3 x 0,75mm<sup>2</sup> kemasan 250 meter (Extrana)', 14, 0, 70.00),
+(140, 'NYYHY31_250_EXT', 'Kabel NYYHY 3 x 1,5mm<sup>2</sup> kemasan 250 meter (Extrana)', 14, 0, 70.00),
+(141, 'NYYHY32_250_EXT', 'Kabel NYYHY 3 x 2,5mm<sup>2</sup> kemasan 250 meter (Extrana)', 14, 0, 70.00),
+(142, 'NYYHY4075_250_EXT', 'Kabel NYYHY 4 x 0,75mm<sup>2</sup> kemasan 250 meter (Extrana)', 14, 0, 70.00),
+(143, 'NYYHY41_250_EXT', 'Kabel NYYHY 4 x 1,5mm<sup>2</sup> kemasan 250 meter (Extrana)', 14, 0, 70.00),
+(144, 'NYYHY42_250_EXT', 'Kabel NYYHY 4 x 2,5mm<sup>2</sup> kemasan 250 meter (Extrana)', 14, 0, 70.00),
+(145, 'NYYHY2075_500_EXT', 'Kabel NYYHY 2 x 0,75mm<sup>2</sup> kemasan 500 meter (Extrana)', 14, 0, 70.00),
+(146, 'NYYHY21_500_EXT', 'Kabel NYYHY 2 x 1,5mm<sup>2</sup> kemasan 500 meter (Extrana)', 14, 0, 70.00),
+(147, 'NYYHY22_500_EXT', 'Kabel NYYHY 2 x 2,5mm<sup>2</sup> kemasan 500 meter (Extrana)', 14, 0, 70.00),
+(148, 'NYYHY3075_500_EXT', 'Kabel NYYHY 3 x 0,75mm<sup>2</sup> kemasan 500 meter (Extrana)', 14, 0, 70.00),
+(149, 'NYYHY31_500_EXT', 'Kabel NYYHY 3 x 1,5mm<sup>2</sup> kemasan 500 meter (Extrana)', 14, 0, 70.00),
+(150, 'NYYHY32_500_EXT', 'Kabel NYYHY 3 x 2,5mm<sup>2</sup> kemasan 500 meter (Extrana)', 14, 0, 70.00),
+(151, 'NYYHY4075_500_EXT', 'Kabel NYYHY 4 x 0,75mm<sup>2</sup> kemasan 500 meter (Extrana)', 14, 0, 70.00),
+(152, 'NYYHY41_500_EXT', 'Kabel NYYHY 4 x 1,5mm<sup>2</sup> kemasan 500 meter (Extrana)', 14, 0, 70.00),
+(153, 'NYYHY42_500_EXT', 'Kabel NYYHY 4 x 2,5mm<sup>2</sup> kemasan 500 meter (Extrana)', 14, 0, 70.00),
+(154, 'NYA1H_100_EXT', 'Kabel NYA 1 x 1,5mm<sup>2</sup> Hitam kemasan 100 meter (Extrana)', 11, 0, 95.00),
+(155, 'NYA1M_100_EXT', 'Kabel NYA 1 x 1,5mm<sup>2</sup> Merah kemasan 100 meter (Extrana)', 11, 0, 95.00),
+(156, 'NYA1B_100_EXT', 'Kabel NYA 1 x 1,5mm<sup>2</sup> Biru kemasan 100 meter (Extrana)', 11, 0, 90.00),
+(157, 'NYA1KH_100_EXT', 'Kabel NYA 1 x 1,5mm<sup>2</sup> Kuning Hijau kemasan 100 meter (Extrana)', 11, 0, 70.00),
+(158, 'NYA2H_100_EXT', 'Kabel NYA 1 x 2,5mm<sup>2</sup> Hitam kemasan 100 meter (Extrana)', 11, 0, 95.00),
+(159, 'NYA2M_100_EXT', 'Kabel NYA 1 x 2,5mm<sup>2</sup> Merah kemasan 100 meter (Extrana)', 11, 0, 95.00),
+(160, 'NYA2B_100_EXT', 'Kabel NYA 1 x 2,5mm<sup>2</sup> Biru kemasan 100 meter (Extrana)', 11, 0, 90.00),
+(161, 'NYA2KH_100_EXT', 'Kabel NYA 1 x 2,5mm<sup>2</sup> Kuning Hijau kemasan 100 meter (Extrana)', 11, 0, 70.00),
+(162, 'NYAF075H_100_EXT', 'Kabel NYAF 1 x 0,75mm<sup>2</sup> Hitam kemasan 100 meter (Extrana)', 15, 0, 95.00),
+(163, 'NYAF075M_100_EXT', 'Kabel NYAF 1 x 0,75mm<sup>2</sup> Merah kemasan 100 meter (Extrana)', 15, 0, 95.00),
+(164, 'NYAF075B_100_EXT', 'Kabel NYAF 1 x 0,75mm<sup>2</sup> Biru kemasan 100 meter (Extrana)', 15, 0, 90.00),
+(165, 'NYAF075KH_100_EXT', 'Kabel NYAF 1 x 0,75mm<sup>2</sup> Kuning Hijau kemasan 100 meter (Extrana)', 15, 0, 70.00),
+(166, 'NYAF1H_100_EXT', 'Kabel NYAF 1 x 1,5mm<sup>2</sup> Hitam kemasan 100 meter (Extrana)', 15, 0, 95.00),
+(167, 'NYAF1M_100_EXT', 'Kabel NYAF 1 x 1,5mm<sup>2</sup> Merah kemasan 100 meter (Extrana)', 15, 0, 95.00),
+(168, 'NYAF1B_100_EXT', 'Kabel NYAF 1 x 1,5mm<sup>2</sup> Biru kemasan 100 meter (Extrana)', 15, 0, 90.00),
+(169, 'NYAF1KH_100_EXT', 'Kabel NYAF 1 x 1,5mm<sup>2</sup> Kuning Hijau kemasan 100 meter (Extrana)', 15, 0, 70.00),
+(170, 'NYAF2H_100_EXT', 'Kabel NYAF 1 x 2,5mm<sup>2</sup> Hitam kemasan 100 meter (Extrana)', 15, 0, 95.00),
+(171, 'NYAF2M_100_EXT', 'Kabel NYAF 1 x 2,5mm<sup>2</sup> Merah kemasan 100 meter (Extrana)', 15, 0, 95.00),
+(172, 'NYAF2B_100_EXT', 'Kabel NYAF 1 x 2,5mm<sup>2</sup> Biru kemasan 100 meter (Extrana)', 15, 0, 90.00),
+(173, 'NYAF2KH_100_EXT', 'Kabel NYAF 1 x 2,5mm<sup>2</sup> Kuning Hijau kemasan 100 meter (Extrana)', 15, 0, 70.00);
 
 -- --------------------------------------------------------
 
@@ -1451,7 +1636,7 @@ INSERT INTO `item_class` (`id`, `name`, `description`, `created_by`) VALUES
 (13, 'Kabel NYMHY retail ukuran kecil', 'Kabel NYMHY dengan ukuran per core lebih kecil dari 4mm<sup>2</sup>', 1),
 (14, 'Kabel NYYHY retail ukuran kecil', 'Kabel NYYHY dengan ukuran per core lebih kecil dari 4mm<sup>2</sup>', 1),
 (15, 'Kabel NYAF retail ukuran kecil', 'Kabel NYAF dengan ukuran per core lebih kecil dari 4mm<sup>2</sup>', 1),
-(16, 'Kabel NYAF retail ukuran kecil', 'Kabel NYA dengan ukuran per core lebih besar dari 4mm<sup>2</sup> dan lebih kecil dari 10mm<sup>2</sup>', 1);
+(16, 'Kabel NYAF retail ukuran besar', 'Kabel NYA dengan ukuran per core lebih besar dari 4mm<sup>2</sup> dan lebih kecil dari 10mm<sup>2</sup>', 1);
 
 -- --------------------------------------------------------
 
@@ -1501,6 +1686,13 @@ CREATE TABLE `payable` (
   `other_purchase_id` int(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+--
+-- Dumping data untuk tabel `payable`
+--
+
+INSERT INTO `payable` (`id`, `value`, `bank_id`, `date`, `purchase_id`, `other_purchase_id`) VALUES
+(2, '200000.00', NULL, '2020-10-22', NULL, 1);
+
 -- --------------------------------------------------------
 
 --
@@ -1527,7 +1719,8 @@ CREATE TABLE `petty_cash` (
 CREATE TABLE `plafond_submission` (
   `id` int(255) NOT NULL,
   `customer_id` int(255) NOT NULL,
-  `submitted_plafond` decimal(50,2) NOT NULL,
+  `submitted_plafond` decimal(50,2) DEFAULT NULL,
+  `submitted_top` int(11) DEFAULT NULL,
   `submitted_by` int(255) NOT NULL,
   `submitted_date` date NOT NULL,
   `is_confirm` tinyint(1) NOT NULL DEFAULT '0',
@@ -1535,6 +1728,13 @@ CREATE TABLE `plafond_submission` (
   `confirmed_by` int(255) DEFAULT NULL,
   `confirmed_date` date DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data untuk tabel `plafond_submission`
+--
+
+INSERT INTO `plafond_submission` (`id`, `customer_id`, `submitted_plafond`, `submitted_top`, `submitted_by`, `submitted_date`, `is_confirm`, `is_delete`, `confirmed_by`, `confirmed_date`) VALUES
+(1, 15, NULL, 45, 1, '2020-10-23', 1, 0, 1, '2020-10-23');
 
 -- --------------------------------------------------------
 
@@ -1616,7 +1816,115 @@ INSERT INTO `price_list` (`id`, `item_id`, `price_list`) VALUES
 (66, 62, '9232000.000'),
 (67, 63, '18464000.000'),
 (68, 64, '224000.000'),
-(69, 65, '384000.000');
+(69, 65, '384000.000'),
+(70, 66, '448000.000'),
+(71, 67, '520000.000'),
+(72, 68, '360000.000'),
+(73, 69, '530000.000'),
+(74, 70, '774000.000'),
+(75, 71, '620000.000'),
+(76, 72, '796000.000'),
+(77, 73, '1018000.000'),
+(78, 74, '768000.000'),
+(79, 75, '1040000.000'),
+(80, 76, '720000.000'),
+(81, 77, '1060000.000'),
+(82, 78, '1548000.000'),
+(83, 79, '1240000.000'),
+(84, 80, '1592000.000'),
+(85, 81, '2036000.000'),
+(86, 82, '896000.000'),
+(87, 83, '1536000.000'),
+(88, 84, '2080000.000'),
+(89, 85, '1440000.000'),
+(90, 86, '2120000.000'),
+(91, 87, '3096000.000'),
+(92, 88, '2480000.000'),
+(93, 89, '3184000.000'),
+(94, 90, '4072000.000'),
+(95, 91, '1120000.000'),
+(96, 92, '1920000.000'),
+(97, 93, '2600000.000'),
+(98, 94, '1800000.000'),
+(99, 95, '2650000.000'),
+(100, 96, '3870000.000'),
+(101, 97, '3100000.000'),
+(102, 98, '3980000.000'),
+(103, 99, '5090000.000'),
+(104, 100, '2240000.000'),
+(105, 101, '3840000.000'),
+(106, 102, '5200000.000'),
+(107, 103, '3600000.000'),
+(108, 104, '5300000.000'),
+(109, 105, '7740000.000'),
+(110, 106, '6200000.000'),
+(111, 107, '7960000.000'),
+(112, 108, '10180000.000'),
+(113, 109, '224000.000'),
+(114, 110, '384000.000'),
+(115, 111, '520000.000'),
+(116, 112, '360000.000'),
+(117, 113, '530000.000'),
+(118, 114, '774000.000'),
+(119, 115, '620000.000'),
+(120, 116, '796000.000'),
+(121, 117, '1018000.000'),
+(122, 118, '448000.000'),
+(123, 119, '768000.000'),
+(124, 120, '1040000.000'),
+(125, 121, '720000.000'),
+(126, 122, '1060000.000'),
+(127, 123, '1548000.000'),
+(128, 124, '1240000.000'),
+(129, 125, '1592000.000'),
+(130, 126, '2036000.000'),
+(131, 127, '896000.000'),
+(132, 128, '1536000.000'),
+(133, 129, '2080000.000'),
+(134, 130, '1440000.000'),
+(135, 131, '2120000.000'),
+(136, 132, '3096000.000'),
+(137, 133, '2480000.000'),
+(138, 134, '3184000.000'),
+(139, 135, '4072000.000'),
+(140, 136, '1120000.000'),
+(141, 137, '1920000.000'),
+(142, 138, '2600000.000'),
+(143, 139, '1800000.000'),
+(144, 140, '2650000.000'),
+(145, 141, '3870000.000'),
+(146, 142, '3100000.000'),
+(147, 143, '3980000.000'),
+(148, 144, '5090000.000'),
+(149, 145, '2240000.000'),
+(150, 146, '3840000.000'),
+(151, 147, '5200000.000'),
+(152, 148, '3600000.000'),
+(153, 149, '5300000.000'),
+(154, 150, '7740000.000'),
+(155, 151, '6200000.000'),
+(156, 152, '7960000.000'),
+(157, 153, '10180000.000'),
+(158, 154, '215000.000'),
+(159, 155, '215000.000'),
+(160, 156, '215000.000'),
+(161, 157, '215000.000'),
+(162, 158, '345000.000'),
+(163, 159, '345000.000'),
+(164, 160, '345000.000'),
+(165, 161, '345000.000'),
+(166, 162, '160000.000'),
+(167, 163, '160000.000'),
+(168, 164, '160000.000'),
+(169, 165, '160000.000'),
+(170, 166, '270000.000'),
+(171, 167, '270000.000'),
+(172, 168, '270000.000'),
+(173, 169, '270000.000'),
+(174, 170, '460000.000'),
+(175, 171, '460000.000'),
+(176, 172, '460000.000'),
+(177, 173, '460000.000');
 
 -- --------------------------------------------------------
 
@@ -1665,7 +1973,7 @@ CREATE TABLE `purchase_invoice_other` (
 --
 
 INSERT INTO `purchase_invoice_other` (`id`, `date`, `tax_document`, `invoice_document`, `supplier_id`, `other_opponent_id`, `value`, `taxing`, `information`, `created_by`, `is_confirm`, `confirmed_by`, `is_delete`, `is_done`, `type`) VALUES
-(1, '2020-10-16', '', '010.003-20.51387652135', 1, NULL, '200000.00', 0, 'Ongkos pengririman barang tanggal 16 Oktober 2020', 1, 0, NULL, 0, 0, 4);
+(1, '2020-10-16', '', '010.003-20.51387652135', 1, NULL, '200000.00', 0, 'Ongkos pengririman barang tanggal 16 Oktober 2020', 1, 1, 1, 0, 1, 4);
 
 -- --------------------------------------------------------
 
@@ -1810,6 +2118,13 @@ CREATE TABLE `sales_order` (
   `code_sales_order_id` int(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+--
+-- Dumping data untuk tabel `sales_order`
+--
+
+INSERT INTO `sales_order` (`id`, `price_list_id`, `discount`, `quantity`, `sent`, `status`, `code_sales_order_id`) VALUES
+(1, 57, '14.0000', 1, 1, 1, 1);
+
 -- --------------------------------------------------------
 
 --
@@ -1862,7 +2177,7 @@ CREATE TABLE `stock_in` (
 --
 
 INSERT INTO `stock_in` (`id`, `item_id`, `quantity`, `residue`, `supplier_id`, `customer_id`, `good_receipt_id`, `sales_return_received_id`, `event_id`, `price`) VALUES
-(1, 1, 1, 1, 1, NULL, 1, NULL, NULL, '282506.4000');
+(1, 1, 1, 0, 1, NULL, 1, NULL, NULL, '282506.4000');
 
 -- --------------------------------------------------------
 
@@ -1880,6 +2195,13 @@ CREATE TABLE `stock_out` (
   `event_id` int(255) DEFAULT NULL,
   `purchase_return_id` int(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data untuk tabel `stock_out`
+--
+
+INSERT INTO `stock_out` (`id`, `in_id`, `quantity`, `customer_id`, `supplier_id`, `delivery_order_id`, `event_id`, `purchase_return_id`) VALUES
+(1, 1, 1, 5, NULL, 1, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -1941,7 +2263,7 @@ INSERT INTO `users` (`id`, `name`, `address`, `bank_account`, `is_active`, `entr
 (2, 'Andrew Bambang Rudianto', 'Jalan Jamuju no. 18, Bandung', '8090175441', 1, '2020-07-08', 'df68de1228db0edd7590b6c89f8dab7e', 'andrewbambang@gmail.com', NULL, 5),
 (16, 'Christian Gerald', 'Jalan J', '878684654', 0, '2020-08-24', 'df12f589a16a759053fc605a6c24d32a', 'christiangerald@gmail.com', NULL, 2),
 (17, 'Daniel Tri 2', 'Jalan Jamuju no. 18, Bandung', '80902495000', 1, '2020-08-30', '27a9dc715a8e1b472ba494313425de62', 'danielrudianto12@gmail.comi', NULL, 1),
-(18, 'Vinna Sary Rahayu', 'Cijerokaso RT 001 RW 010, Sarijadi Sukasari', '2820329743', 0, '2020-09-02', '3cc51adb5b8d7f83a02361cd34c29c93', 'vinaarka123@gmail.com', NULL, 2),
+(18, 'Vinna Sary Rahayu', 'Cijerokaso RT 001 RW 010, Sarijadi Sukasari', '2820329743', 1, '2020-09-02', '3cc51adb5b8d7f83a02361cd34c29c93', 'vinaarka123@gmail.com', NULL, 2),
 (19, 'Martin Luhulima', 'Jalan Cimahi 1, Bandung', '808080', 1, '2020-09-06', '34f74c049edea51851c6924f4a386762', 'martinluhulima@gmail.com', NULL, 2),
 (20, 'Dadan Sutisna', 'Kp. Kandang Sapi RT 001, RW 001, Cikadut, Cimenyan', '0083445189', 1, '2020-10-17', 'c7283529c7cf2378f146a6457b71c0aa', 'danz.ezzyy90@gmail.com', '7c7a7d6f70370b558efbaa799128ba4b.jpeg', 3);
 
@@ -1963,15 +2285,16 @@ CREATE TABLE `user_authorization` (
 
 INSERT INTO `user_authorization` (`id`, `user_id`, `department_id`) VALUES
 (12, 17, 2),
-(68, 18, 1),
-(69, 18, 5),
 (71, 1, 6),
 (72, 1, 1),
 (73, 1, 5),
 (74, 1, 4),
 (75, 1, 3),
 (76, 1, 2),
-(77, 20, 2);
+(77, 20, 2),
+(78, 18, 1),
+(79, 18, 5),
+(80, 18, 2);
 
 -- --------------------------------------------------------
 
@@ -2000,7 +2323,13 @@ INSERT INTO `visit_list` (`id`, `customer_id`, `code_visit_list_id`, `note`, `re
 (6, 52, 2, 'Berhasil dikunjungi', 1),
 (7, 5, 3, 'stok cukup ', 1),
 (8, 32, 3, 'toko tutup', 0),
-(9, 32, 4, '', 0);
+(9, 32, 4, '', 0),
+(10, 274, 5, '', 0),
+(11, 116, 5, '', 0),
+(12, 124, 5, '', 0),
+(13, 69, 5, '', 0),
+(14, 278, 5, '', 0),
+(15, 277, 5, '', 0);
 
 --
 -- Indexes for dumped tables
@@ -2523,7 +2852,7 @@ ALTER TABLE `bank_assignment`
 -- AUTO_INCREMENT untuk tabel `bank_transaction`
 --
 ALTER TABLE `bank_transaction`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT untuk tabel `benefit`
@@ -2547,7 +2876,7 @@ ALTER TABLE `code_billing`
 -- AUTO_INCREMENT untuk tabel `code_delivery_order`
 --
 ALTER TABLE `code_delivery_order`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT untuk tabel `code_event`
@@ -2589,7 +2918,7 @@ ALTER TABLE `code_quotation`
 -- AUTO_INCREMENT untuk tabel `code_sales_order`
 --
 ALTER TABLE `code_sales_order`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT untuk tabel `code_sales_order_close_request`
@@ -2613,13 +2942,13 @@ ALTER TABLE `code_sales_return_received`
 -- AUTO_INCREMENT untuk tabel `code_visit_list`
 --
 ALTER TABLE `code_visit_list`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT untuk tabel `customer`
 --
 ALTER TABLE `customer`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=279;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=281;
 
 --
 -- AUTO_INCREMENT untuk tabel `customer_accountant`
@@ -2637,7 +2966,7 @@ ALTER TABLE `customer_area`
 -- AUTO_INCREMENT untuk tabel `customer_sales`
 --
 ALTER TABLE `customer_sales`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=42;
 
 --
 -- AUTO_INCREMENT untuk tabel `customer_target`
@@ -2655,7 +2984,7 @@ ALTER TABLE `debt_type`
 -- AUTO_INCREMENT untuk tabel `delivery_order`
 --
 ALTER TABLE `delivery_order`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT untuk tabel `department`
@@ -2697,7 +3026,7 @@ ALTER TABLE `good_receipt`
 -- AUTO_INCREMENT untuk tabel `income_class`
 --
 ALTER TABLE `income_class`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT untuk tabel `internal_bank_account`
@@ -2709,13 +3038,13 @@ ALTER TABLE `internal_bank_account`
 -- AUTO_INCREMENT untuk tabel `invoice`
 --
 ALTER TABLE `invoice`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT untuk tabel `item`
 --
 ALTER TABLE `item`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=66;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=174;
 
 --
 -- AUTO_INCREMENT untuk tabel `item_class`
@@ -2739,7 +3068,7 @@ ALTER TABLE `other_opponent_type`
 -- AUTO_INCREMENT untuk tabel `payable`
 --
 ALTER TABLE `payable`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT untuk tabel `petty_cash`
@@ -2751,13 +3080,13 @@ ALTER TABLE `petty_cash`
 -- AUTO_INCREMENT untuk tabel `plafond_submission`
 --
 ALTER TABLE `plafond_submission`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT untuk tabel `price_list`
 --
 ALTER TABLE `price_list`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=70;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=178;
 
 --
 -- AUTO_INCREMENT untuk tabel `purchase_invoice`
@@ -2823,7 +3152,7 @@ ALTER TABLE `salary_slip`
 -- AUTO_INCREMENT untuk tabel `sales_order`
 --
 ALTER TABLE `sales_order`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT untuk tabel `sales_return`
@@ -2847,7 +3176,7 @@ ALTER TABLE `stock_in`
 -- AUTO_INCREMENT untuk tabel `stock_out`
 --
 ALTER TABLE `stock_out`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT untuk tabel `supplier`
@@ -2865,13 +3194,13 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT untuk tabel `user_authorization`
 --
 ALTER TABLE `user_authorization`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=78;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=81;
 
 --
 -- AUTO_INCREMENT untuk tabel `visit_list`
 --
 ALTER TABLE `visit_list`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- Ketidakleluasaan untuk tabel pelimpahan (Dumped Tables)

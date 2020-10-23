@@ -38,8 +38,12 @@ class Plafond extends CI_Controller {
 	
 	public function submitPlafond()
 	{
+		$termOfPayment		= (empty($this->input->post('top'))) ? NULL : $this->input->post('top');
+		$plafond			= (empty($this->input->post('plafond'))) ? NULL : $this->input->post('plafond');
+		$customerId			= $this->input->post('id');
+
 		$this->load->model('Plafond_model');
-		$result		= $this->Plafond_model->insertItem();
+		$result		= $this->Plafond_model->insertItem($customerId, $plafond, $termOfPayment);
 		if($result != NULL){
 			$id			= $result;
 			redirect('Plafond/successSubmission/' . $id);
@@ -90,10 +94,16 @@ class Plafond extends CI_Controller {
 				$this->load->model('Plafond_model');
 				$data				= $this->Plafond_model->getById($id);
 				$customer_id		= $data->customer_id;
-				$submitted_plafond	= $data->submitted_plafond;
 				
-				$this->load->model('Customer_model');
-				$this->Customer_model->update_plafond($customer_id, $submitted_plafond);
+				if($data->submitted_plafond != NULL){
+					$submitted_plafond	= $data->submitted_plafond;
+					$this->load->model('Customer_model');
+					$this->Customer_model->update_plafond($customer_id, $submitted_plafond, NULL);
+				} else if($data->submitted_top != NULL){
+					$submitted_top	= $data->submitted_top;
+					$this->load->model('Customer_model');
+					$this->Customer_model->update_plafond($customer_id, NULL, $submitted_top);
+				}
 
 				redirect(site_url("/Plafond/successConfirm/" . $id));
 			} else {
@@ -138,15 +148,6 @@ class Plafond extends CI_Controller {
 		
 		$this->load->view('head');
 		$this->load->view('sales/header', $data);
-		
-		$this->load->model('Plafond_model');
-		$result		= $this->Plafond_model->getById($submission_id);
-		$data['submission']		= $result;
-		
-		$customer_id		= $result->customer_id;
-		$this->load->model('Customer_model');
-		$data['customer']		= $this->Customer_model->getById($customer_id);
-		
 		$data['status']			= 'failed';
 		
 		$this->load->view('Sales/plafond/plafond_confirm_result', $data);

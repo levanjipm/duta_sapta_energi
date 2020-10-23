@@ -213,7 +213,8 @@
 				mode: mode,
 				page: page,
 				term: $('#searchBar').val(), 
-				areas: includedAreas
+				areas: includedAreas,
+				sales: <?= $this->input->get('sales') ?>
 			},
 			success:function(response){
 				var items		= response.items;
@@ -298,9 +299,11 @@
 	function removeCustomerFromList(n){
 		const idArray = includedCustomer.map(el => el.id);
 		var id = idArray.indexOf(n);
+
 		includedCustomer.splice(id, 1);
 		$('#removeCustomerButton-' + n).hide();
 		$('#addCustomerButton-' + n).show();
+
 		checkIncludedcustomerArray();
 	}
 

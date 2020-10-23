@@ -238,7 +238,7 @@ class Customer_model extends CI_Model {
 				$this->date_created			= date('Y-m-d');
 				$this->created_by			= $this->session->userdata('user_id');
 				$this->is_black_list		= '';
-				$this->term_of_payment		= $this->input->post('term_of_payment');
+				$this->term_of_payment		= 30;
 				$this->plafond				= '3000000';
 				$this->uid					= $this->Customer_model->generateUid();
 				$this->password				= NULL;
@@ -296,7 +296,6 @@ class Customer_model extends CI_Model {
 				'npwp' 				=> $this->input->post('npwp'),
 				'phone_number' 		=> $this->input->post('phone'),
 				'pic_name' 			=> $this->input->post('pic'),
-				'term_of_payment' 	=> $this->input->post('term_of_payment')
 			);
 			
 			$this->db->where('id', $customer_id);
@@ -403,13 +402,16 @@ class Customer_model extends CI_Model {
 			return $result;
 		}
 		
-		public function update_plafond($customer_id, $plafond)
+		public function update_plafond($customer_id, $plafond, $top)
 		{
-			if($plafond >= 0){
+			if($plafond >= 0 && $plafond != NULL){
 				$this->db->set('plafond', $plafond);
-				$this->db->where('id', $customer_id);
-				$this->db->update($this->table_customer);
+			} else if($top >= 0 && $top != NULL){
+				$this->db->set('term_of_payment', $top);
 			}
+
+			$this->db->where('id', $customer_id);
+			$this->db->update($this->table_customer);
 		}
 
 		public function showCustomerAccountantItems($offset = 0, $term = "", $accountantId, $limit = 10)

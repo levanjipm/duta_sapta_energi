@@ -31,7 +31,7 @@
 		<h3 style='font-family:bebasneue'>Plafond change form</h3>
 		<hr>
 		<form action='<?= site_url('Plafond/submitPlafond') ?>' method='POST' id='plafond_form'>
-			<input type='hidden' id='customer_id' name='id'>
+			<input type='hidden' id='customerPlafondId' name='id'>
 			
 			<label>Customer</label>
 			<p style='font-family:museo' id='customer_name_p'></p>
@@ -43,6 +43,18 @@
 			
 			<label>Submitted plafond</label>
 			<input type='number' class='form-control' name='plafond' min='0' required>
+			<br>
+			<button class='button button_default_dark'><i class='fa fa-long-arrow-right'></i></button>
+		</form>
+		<hr>
+		<form action='<?= site_url('Plafond/submitPlafond') ?>' method='POST' id='plafond_form'>
+			<input type='hidden' id='customerTopId' name='id'>
+			
+			<label>Current TOP</label>
+			<p style='font-family:museo' id='customer_top_p'></p>
+			
+			<label>Submitted Term Of Payment</label>
+			<input type='number' class='form-control' name='top' min='0' required>
 			<br>
 			<button class='button button_default_dark'><i class='fa fa-long-arrow-right'></i></button>
 		</form>
@@ -90,6 +102,7 @@
 					var customer_block			= customer.block;
 					var customer_id				= customer.id;
 					var plafond					= customer.plafond;
+					var term_of_payment			= customer.term_of_payment;
 		
 					if(customer_number != null){
 						complete_address	+= ' No. ' + customer_number;
@@ -111,7 +124,7 @@
 						complete_address	+= ', ' + customer_postal;
 					}
 					
-					$('#table_plafond').append("<tr><td>" + customer_name + "</td><td><p>" + complete_address + "</p><p>" + customer_city + "</p></td><td>Rp." + numeral(plafond).format('0,0.00') + "</td><td><button type='button' class='button button_default_dark' title='Plafond raise submission for " + customer_name + "' onclick='open_edit_form(" + customer_id + ")'><i class='fa fa-eye'></i></button></td></tr>");
+					$('#table_plafond').append("<tr><td>" + customer_name + "</td><td><p>" + complete_address + "</p><p>" + customer_city + "</p></td><td><p>Rp." + numeral(plafond).format('0,0.00') + "</p><p>" + numeral(term_of_payment).format('0,0') + " days</p></td><td><button type='button' class='button button_default_dark' title='Plafond raise submission for " + customer_name + "' onclick='open_edit_form(" + customer_id + ")'><i class='fa fa-eye'></i></button></td></tr>");
 				});
 				
 				for(i = 1; i <= pages; i++){
@@ -143,6 +156,7 @@
 				var customer_block			= response.block;
 				var customer_id				= response.id;
 				var plafond					= response.plafond;
+				var term_of_payment			= response.term_of_payment;
 				
 				if(customer_number != null){
 					complete_address	+= ' No. ' + customer_number;
@@ -169,8 +183,11 @@
 				$('#customer_city_p').html(customer_city);
 				$('#customer_plafond_p').html('Rp. ' + numeral(plafond).format('0,0.00'));
 				
-				$('#customer_id').val(customer_id);
-				
+				$('#customerPlafondId').val(customer_id);
+				$('#customerTopId').val(customer_id);
+				$('#customer_top_p').html(numeral(term_of_payment).format('0,0') + " day(s)");
+			},
+			complete:function(){
 				$('#plafond_raise_wrapper').fadeIn(300, function(){
 					$('#plafond_raise_wrapper .alert_box_slide').show("slide", { direction: "right" }, 250);
 				});

@@ -95,33 +95,62 @@ class Plafond_model extends CI_Model {
 			return $result;
 		}
 		
-		public function insertItem()
+		public function insertItem($customer_id, $plafond = NULL, $top = NULL)
 		{
-			$customer_id		= $this->input->post('id');
-			$plafond			= $this->input->post('plafond');
-			$result				= $this->Plafond_model->checkSubmissionByCustomerId($customer_id);
+			if($plafond != NULL && $top == NULL)
+			{
+				$result				= $this->Plafond_model->checkSubmissionByCustomerId($customer_id);
 			
-			if($result){
-				$db_item		= array(
-					'id' => '',
-					'customer_id' => $customer_id,
-					'submitted_plafond' => $plafond,
-					'submitted_by' => $this->session->userdata('user_id'),
-					'submitted_date' => date('Y-m-d'),
-					'is_confirm' => 0,
-					'is_delete' => 0,
-					'confirmed_by' => null,
-					'confirmed_date' => null
-				);
-				
-				$this->db->insert($this->table_plafond, $db_item);
-				if($this->db->affected_rows() > 0){
-					return ($this->db->insert_id());
+				if($result){
+					$db_item		= array(
+						'id' => '',
+						'customer_id' => $customer_id,
+						'submitted_plafond' => $plafond,
+						'submitted_top' => NULL,
+						'submitted_by' => $this->session->userdata('user_id'),
+						'submitted_date' => date('Y-m-d'),
+						'is_confirm' => 0,
+						'is_delete' => 0,
+						'confirmed_by' => null,
+						'confirmed_date' => null
+					);
+					
+					$this->db->insert($this->table_plafond, $db_item);
+					if($this->db->affected_rows() > 0){
+						return ($this->db->insert_id());
+					} else {
+						return NULL;
+					};
 				} else {
 					return NULL;
-				};
-			} else {
-				return NULL;
+				}
+			} else if($plafond == NULL && $top != NULL)
+			{
+				$result				= $this->Plafond_model->checkSubmissionByCustomerId($customer_id);
+			
+				if($result){
+					$db_item		= array(
+						'id' => '',
+						'customer_id' => $customer_id,
+						'submitted_plafond' => NULL,
+						'submitted_top' => $top,
+						'submitted_by' => $this->session->userdata('user_id'),
+						'submitted_date' => date('Y-m-d'),
+						'is_confirm' => 0,
+						'is_delete' => 0,
+						'confirmed_by' => null,
+						'confirmed_date' => null
+					);
+					
+					$this->db->insert($this->table_plafond, $db_item);
+					if($this->db->affected_rows() > 0){
+						return ($this->db->insert_id());
+					} else {
+						return NULL;
+					};
+				} else {
+					return NULL;
+				}
 			}
 		}
 		

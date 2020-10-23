@@ -120,8 +120,9 @@ class Customer_sales_model extends CI_Model {
 		public function updateCustomerList($customerArray, $status, $salesId =  null)
 		{
 			if($status == 0){
-				$this->db->where_in('id', $customerArray);
+				$this->db->where_in('customer_id', $customerArray);
 				$this->db->delete($this->table_customer_sales);
+
 			} else if($status == 1){
 				$batch		= array();
 				foreach($customerArray as $customer)

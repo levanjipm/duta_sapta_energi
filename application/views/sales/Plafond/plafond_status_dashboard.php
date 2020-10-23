@@ -1,3 +1,4 @@
+<title>Confirm Plafond Submission</title>
 <div class='dashboard'>
 	<div class='dashboard_head'>
 		<p style='font-family:museo'><a href='<?= site_url('Sales') ?>' title='Sales'><i class='fa fa-briefcase'></i></a> /<a href='<?= site_url('Customer') ?>'>Customer </a>/ Customer plafond</p>
@@ -39,8 +40,14 @@
 		<p style='font-family:museo' id='customer_address_p'></p>
 		<p style='font-family:museo' id='customer_city_p'></p></a>
 		
-		<label>Plafond</label>
-		<p style='font-family:museo' id='plafond_change_p'></p><br>
+		<div id='plafondWrapper'>
+			<label>Plafond</label>
+			<p style='font-family:museo' id='plafond_change_p'></p>
+		</div>
+		<div id='topWrapper'>
+			<label>Term of Payment</label>
+			<p style='font-family:museo' id='top_change_p'></p>
+		</div>
 		
 		<form action='<?= site_url('Plafond/confirmSubmission') ?>' method='POST'>
 			<input type='hidden' id='submission_id' name='id'>
@@ -64,8 +71,6 @@
 			}
 		});
 	}
-	
-	
 
 	$('#search_bar').change(function(){
 		refresh_view(1);
@@ -98,6 +103,7 @@
 				var customer_postal			= customer.postal_code;
 				var customer_block			= customer.block;
 				var customer_id				= customer.id;
+				var customer_top			= customer.term_of_payment;
 				
 				if(customer_number != null){
 					complete_address	+= ' No. ' + customer_number;
@@ -127,15 +133,26 @@
 				
 				var plafond					= response.plafond;
 				var submitted_plafond		= plafond.submitted_plafond;
+				var submitted_top			= plafond.submitted_top;
 				var created_by				= plafond.created_by;
 				var submission_id			= plafond.id;
 				
 				$('#submission_id').val(submission_id);
 				
+				if(submitted_plafond == null){
+					$('#plafondWrapper').hide();
+					$('#topWrapper').show();
+				} else {
+					$('#plafondWrapper').show();
+					$('#topWrapper').hide();
+				}
+
 				$('#plafond_change_p').html('Rp. ' + numeral(initial_plafond).format('0,0.00') + ' - ' + numeral(submitted_plafond).format('0,0.00'));
+				$('#top_change_p').html(numeral(customer_top).format('0,0') + ' day(s) - ' + numeral(submitted_top).format('0,0') + " day(s)");
 				
 				$('#customer_href').attr('href', '<?= site_url('Customer/view_detail/') ?>' + customer_id);
-				
+			},
+			complete:function(){
 				$('#plafond_confirm_wrapper').fadeIn(300, function(){
 					$('#plafond_confirm_wrapper .alert_box_slide').show("slide", { direction: "right" }, 250);
 				});
@@ -196,17 +213,8 @@
 					if(customer_postal != null){
 						complete_address	+= ', ' + customer_postal;
 					}
-<?php
-	if($user_login->access_level > 2){
-?>
+
 					$('#plafond_table').append("<tr><td>" + customer_name + "</td><td><p>" + complete_address + "</p><p>" + customer_city + "</p></td><td><p>" + created_by + "</p><p>" + my_date_format(submitted_date) + "</p></td><td><button type='button' class='button button_default_dark' title='View plafond change submission for " + customer_name + "' onclick='open_edit_form(" + submission_id + ")'><i class='fa fa-long-arrow-right'></i></button></td></tr>");
-<?php
-	} else {
-?>
-					$('#plafond_table').append("<tr><td>" + customer_name + "</td><td><p>" + complete_address + "</p><p>" + customer_city + "</p></td><td><button type='button' class='button button_default_dark'><i class='fa fa-long-arrow-right' title='View plafond change submission for " + customer_name + "' onclick='open_edit_form(" + customer_id + ")'></i></button></td></tr>");
-<?php
-	}
-?>
 				});
 
 				if(customerCount > 0){

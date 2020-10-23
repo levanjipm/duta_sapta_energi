@@ -77,17 +77,10 @@
 			
 			<label>Area</label>
 			<select class='form-control' id='area_id'>
-<?php
-	foreach($areas as $area){
-?>
+<?php foreach($areas as $area){ ?>
 				<option value='<?= $area->id ?>'><?= $area->name ?></option>
-<?php
-	}
-?>
+<?php } ?>
 			</select>
-			
-			<label>Default payment</label>
-			<input type='number' class='form-control' min='0' required id='term_of_payment'>
 			
 			<label>Location</label>
 			<input type='number' class='form-control' id='latitude' placeholder='Latitude'>
@@ -145,17 +138,10 @@
 			
 			<label>Area</label>
 			<select class='form-control' id='area_id_edit'>
-<?php
-	foreach($areas as $area){
-?>
+<?php foreach($areas as $area){ ?>
 				<option value='<?= $area->id ?>'><?= $area->name ?></option>
-<?php
-	}
-?>
+<?php } ?>
 			</select>
-			
-			<label>Default payment</label>
-			<input type='number' class='form-control' min='0' required id='term_of_payment_edit'>
 			
 			<label>Location</label>
 			<input type='number' class='form-control' id='latitude_edit' placeholder='Latitude'>

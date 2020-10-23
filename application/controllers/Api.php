@@ -40,6 +40,7 @@ class Api extends CI_Controller {
                     "city" => $result->city,
                     "postal_code" => $result->postal_code,
                     "phone_number" => $result->phone_number,
+                    "term_of_payment" => $result->term_of_payment
                 )
             );
         }
@@ -98,6 +99,16 @@ class Api extends CI_Controller {
         
         $batch          = (object)$batchArray;
         echo(json_encode($batch));
+    }
+
+    public function getCustomerInvoices()
+    {
+        header('Access-Control-Allow-Origin: *');
+        header("Access-Control-Allow-Methods: *");
+        $postdata = file_get_contents("php://input");
+        $this->load->model("Invoice_model");
+        $data           = $this->Invoice_model->getIncompletedTransactionByCustomerUID($postdata);
+        echo(json_encode($data));
     }
 }
 ?>

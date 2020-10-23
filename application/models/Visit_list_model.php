@@ -78,7 +78,7 @@ class Visit_list_model extends CI_Model {
 			return $result;
 		}
 
-		public function getCustomerList($mode, $includedAreas = array(), $term = "", $offset = 0, $limit = 25)
+		public function getCustomerList($sales, $mode, $includedAreas = array(), $term = "", $offset = 0, $limit = 25)
 		{
 			if(count($includedAreas) > 0){
 				$string		= "AND customer.area_id IN (";
@@ -96,44 +96,51 @@ class Visit_list_model extends CI_Model {
 			//This mode implements to show customer that has not bought more than 3 months//
 			if($mode == 1){
 				$query			= $this->db->query("
-					SELECT customer.*, salesOrderTable.date AS lastOrder, visitListTable.date AS lastVisited
+					SELECT customer.*, a.lastOrder, a.lastVisited 
 					FROM customer
-					LEFT JOIN (
-						SELECT customer.id, maxSalesOrderDateTable.date
+					INNER JOIN(
+						SELECT DISTINCT(customer.id) AS id, salesOrderTable.date AS lastOrder, visitListTable.date AS lastVisited
 						FROM customer
-						JOIN (
-							SELECT MAX(code_sales_order.date) as date, code_sales_order.customer_id
-							FROM code_sales_order
-							GROUP BY code_sales_order.customer_id
-						) maxSalesOrderDateTable
-						ON maxSalesOrderDateTable.customer_id = customer.id
-					) salesOrderTable
-					ON salesOrderTable.id = customer.id
-					LEFT JOIN (
-						SELECT customer.id, maxVisitListTable.date
-						FROM customer
-						JOIN (
-							SELECT MAX(code_visit_list.date) AS date, visit_list.customer_id
-							FROM code_visit_list
-							JOIN visit_list
-							ON visit_list.code_visit_list_id = code_visit_list.id
-							WHERE code_visit_list.is_confirm = '1'
-							AND visit_list.result = '1'
-							GROUP BY visit_list.customer_id
-						) maxVisitListTable
-						ON customer.id = maxVisitListTable.customer_id
-					) visitListTable
-					ON visitListTable.id = customer.id
-					WHERE TIMESTAMPDIFF(MONTH, salesOrderTable.date, CURDATE()) > 3
-					AND customer.is_black_list = 0
-					AND (
-						customer.name LIKE '%$term%'
-						OR customer.address LIKE '%$term%'
-						OR customer.city LIKE '%$term%'
-						OR customer.pic_name LIKE '%$term%'
-					)
-					AND customer.is_remind = 1
-					$string
+						LEFT JOIN (
+							SELECT customer.id, maxSalesOrderDateTable.date
+							FROM customer
+							JOIN (
+								SELECT MAX(code_sales_order.date) as date, code_sales_order.customer_id
+								FROM code_sales_order
+								GROUP BY code_sales_order.customer_id
+							) maxSalesOrderDateTable
+							ON maxSalesOrderDateTable.customer_id = customer.id
+						) salesOrderTable
+						ON salesOrderTable.id = customer.id
+						LEFT JOIN (
+							SELECT customer.id, maxVisitListTable.date
+							FROM customer
+							JOIN (
+								SELECT MAX(code_visit_list.date) AS date, visit_list.customer_id
+								FROM code_visit_list
+								JOIN visit_list
+								ON visit_list.code_visit_list_id = code_visit_list.id
+								WHERE code_visit_list.is_confirm = '1'
+								AND visit_list.result = '1'
+								GROUP BY visit_list.customer_id
+							) maxVisitListTable
+							ON customer.id = maxVisitListTable.customer_id
+						) visitListTable
+						ON visitListTable.id = customer.id
+						JOIN customer_sales ON customer.id = customer_sales.customer_id
+						WHERE TIMESTAMPDIFF(MONTH, salesOrderTable.date, CURDATE()) > 3
+						AND customer.is_black_list = 0
+						AND (
+							customer.name LIKE '%$term%'
+							OR customer.address LIKE '%$term%'
+							OR customer.city LIKE '%$term%'
+							OR customer.pic_name LIKE '%$term%'
+						)
+						AND customer.is_remind = 1
+						AND customer_sales.sales_id = '$sales'
+						$string
+					) AS a
+					ON a.id = customer.id
 					ORDER BY customer.name ASC
 					LIMIT $limit OFFSET $offset
 				");
@@ -143,46 +150,53 @@ class Visit_list_model extends CI_Model {
 			//Give +- 1 day error range//
 			else if($mode == 2){
 				$query			= $this->db->query("
-					SELECT customer.*, salesOrderTable.date AS lastOrder, visitListTable.date AS lastVisited
+					SELECT customer.*, a.lastOrder, a.lastVisited 
 					FROM customer
-					LEFT JOIN (
-						SELECT customer.id, maxSalesOrderDateTable.date
+					INNER JOIN(
+						SELECT DISTINCT(customer.id) AS id, salesOrderTable.date AS lastOrder, visitListTable.date AS lastVisited
 						FROM customer
-						JOIN (
-							SELECT MAX(code_sales_order.date) as date, code_sales_order.customer_id
-							FROM code_sales_order
-							GROUP BY code_sales_order.customer_id
-						) maxSalesOrderDateTable
-						ON maxSalesOrderDateTable.customer_id = customer.id
-					) salesOrderTable
-					ON salesOrderTable.id = customer.id
-					LEFT JOIN (
-						SELECT customer.id, maxVisitListTable.date
-						FROM customer
-						JOIN (
-							SELECT MAX(code_visit_list.date) AS date, visit_list.customer_id
-							FROM code_visit_list
-							JOIN visit_list
-							ON visit_list.code_visit_list_id = code_visit_list.id
-							WHERE code_visit_list.is_confirm = '1'
-							AND visit_list.result = '1'
-							GROUP BY visit_list.customer_id
-						) maxVisitListTable
-						ON customer.id = maxVisitListTable.customer_id
-					) visitListTable
-					ON visitListTable.id = customer.id
-					WHERE DATEDIFF(CURDATE(), visitListTable.date) = customer.visiting_frequency
-					OR DATEDIFF(CURDATE(), visitListTable.date) = customer.visiting_frequency + 1
-					OR DATEDIFF(CURDATE(), visitListTable.date) = customer.visiting_frequency - 1
-					AND customer.is_black_list = 0
-					AND (
-						customer.name LIKE '%$term%'
-						OR customer.address LIKE '%$term%'
-						OR customer.city LIKE '%$term%'
-						OR customer.pic_name LIKE '%$term%'
-					)
-					AND customer.is_remind = 1
-					$string
+						LEFT JOIN (
+							SELECT customer.id, maxSalesOrderDateTable.date
+							FROM customer
+							JOIN (
+								SELECT MAX(code_sales_order.date) as date, code_sales_order.customer_id
+								FROM code_sales_order
+								GROUP BY code_sales_order.customer_id
+							) maxSalesOrderDateTable
+							ON maxSalesOrderDateTable.customer_id = customer.id
+						) salesOrderTable
+						ON salesOrderTable.id = customer.id
+						LEFT JOIN (
+							SELECT customer.id, maxVisitListTable.date
+							FROM customer
+							JOIN (
+								SELECT MAX(code_visit_list.date) AS date, visit_list.customer_id
+								FROM code_visit_list
+								JOIN visit_list
+								ON visit_list.code_visit_list_id = code_visit_list.id
+								WHERE code_visit_list.is_confirm = '1'
+								AND visit_list.result = '1'
+								GROUP BY visit_list.customer_id
+							) maxVisitListTable
+							ON customer.id = maxVisitListTable.customer_id
+						) visitListTable
+						ON visitListTable.id = customer.id
+						JOIN customer_sales ON customer.id = customer_sales.customer_id
+						WHERE DATEDIFF(CURDATE(), visitListTable.date) = customer.visiting_frequency
+						OR DATEDIFF(CURDATE(), visitListTable.date) = customer.visiting_frequency + 1
+						OR DATEDIFF(CURDATE(), visitListTable.date) = customer.visiting_frequency - 1
+						AND customer.is_black_list = 0
+						AND (
+							customer.name LIKE '%$term%'
+							OR customer.address LIKE '%$term%'
+							OR customer.city LIKE '%$term%'
+							OR customer.pic_name LIKE '%$term%'
+						)
+						AND customer.is_remind = 1
+						AND customer_sales.sales_id = '$sales'
+						$string
+					) AS a
+					ON a.id = customer.id
 					ORDER BY customer.name ASC
 					LIMIT $limit OFFSET $offset
 				");
@@ -192,99 +206,113 @@ class Visit_list_model extends CI_Model {
 			//Give +- 1 day error range//
 			else if($mode == 3){
 				$query			= $this->db->query("
-					SELECT customer.*, salesOrderTable.date AS lastOrder, visitListTable.date AS lastVisited
+					SELECT customer.*, a.lastOrder, a.lastVisited 
 					FROM customer
-					LEFT JOIN (
-						SELECT customer.id, maxSalesOrderDateTable.date
+					INNER JOIN(
+						SELECT DISTINCT(customer.id) AS id, salesOrderTable.date AS lastOrder, visitListTable.date AS lastVisited
 						FROM customer
-						JOIN (
-							SELECT MAX(code_sales_order.date) as date, code_sales_order.customer_id
+						LEFT JOIN (
+							SELECT customer.id, maxSalesOrderDateTable.date
+							FROM customer
+							JOIN (
+								SELECT MAX(code_sales_order.date) as date, code_sales_order.customer_id
+								FROM code_sales_order
+								GROUP BY code_sales_order.customer_id
+							) maxSalesOrderDateTable
+							ON maxSalesOrderDateTable.customer_id = customer.id
+						) salesOrderTable
+						ON salesOrderTable.id = customer.id
+						LEFT JOIN (
+							SELECT customer.id, maxVisitListTable.date
+							FROM customer
+							JOIN (
+								SELECT MAX(code_visit_list.date) AS date, visit_list.customer_id
+								FROM code_visit_list
+								JOIN visit_list
+								ON visit_list.code_visit_list_id = code_visit_list.id
+								WHERE code_visit_list.is_confirm = '1'
+								AND visit_list.result = '1'
+								GROUP BY visit_list.customer_id
+							) maxVisitListTable
+							ON customer.id = maxVisitListTable.customer_id
+						) visitListTable
+						ON visitListTable.id = customer.id
+						JOIN customer_sales ON customer.id = customer_sales.customer_id
+						WHERE customer.id NOT IN (
+							SELECT DISTINCT(code_sales_order.customer_id) 
 							FROM code_sales_order
-							GROUP BY code_sales_order.customer_id
-						) maxSalesOrderDateTable
-						ON maxSalesOrderDateTable.customer_id = customer.id
-					) salesOrderTable
-					ON salesOrderTable.id = customer.id
-					LEFT JOIN (
-						SELECT customer.id, maxVisitListTable.date
-						FROM customer
-						JOIN (
-							SELECT MAX(code_visit_list.date) AS date, visit_list.customer_id
-							FROM code_visit_list
-							JOIN visit_list
-							ON visit_list.code_visit_list_id = code_visit_list.id
-							WHERE code_visit_list.is_confirm = '1'
-							AND visit_list.result = '1'
-							GROUP BY visit_list.customer_id
-						) maxVisitListTable
-						ON customer.id = maxVisitListTable.customer_id
-					) visitListTable
-					ON visitListTable.id = customer.id
-					WHERE customer.id NOT IN (
-						SELECT DISTINCT(code_sales_order.customer_id) 
-						FROM code_sales_order
-						WHERE code_sales_order.is_confirm = '1'
-					)
-					AND customer.is_black_list = 0
-					AND (
-						customer.name LIKE '%$term%'
-						OR customer.address LIKE '%$term%'
-						OR customer.city LIKE '%$term%'
-						OR customer.pic_name LIKE '%$term%'
-					)
-					$string
+							WHERE code_sales_order.is_confirm = '1'
+						)
+						AND customer.is_black_list = 0
+						AND (
+							customer.name LIKE '%$term%'
+							OR customer.address LIKE '%$term%'
+							OR customer.city LIKE '%$term%'
+							OR customer.pic_name LIKE '%$term%'
+						)
+						AND customer_sales.sales_id = '$sales'
+						$string
+					) AS a
+					ON a.id = customer.id
 					ORDER BY customer.name ASC
 					LIMIT $limit OFFSET $offset
 				");
 			}
 			else if($mode == 4){
 				$query		= $this->db->query("
-					SELECT customer.*, salesOrderTable.date AS lastOrder, visitListTable.date AS lastVisited
+					SELECT customer.*, a.lastOrder, a.lastVisited 
 					FROM customer
-					LEFT JOIN (
-						SELECT customer.id, maxSalesOrderDateTable.date
+					INNER JOIN(
+						SELECT DISTINCT(customer.id) AS id, salesOrderTable.date AS lastOrder, visitListTable.date AS lastVisited
 						FROM customer
-						JOIN (
-							SELECT MAX(code_sales_order.date) as date, code_sales_order.customer_id
-							FROM code_sales_order
-							GROUP BY code_sales_order.customer_id
-						) maxSalesOrderDateTable
-						ON maxSalesOrderDateTable.customer_id = customer.id
-					) salesOrderTable
-					ON salesOrderTable.id = customer.id
-					LEFT JOIN (
-						SELECT customer.id, maxVisitListTable.date
-						FROM customer
-						JOIN (
-							SELECT MAX(code_visit_list.date) AS date, visit_list.customer_id
-							FROM code_visit_list
-							JOIN visit_list
-							ON visit_list.code_visit_list_id = code_visit_list.id
-							WHERE code_visit_list.is_confirm = '1'
-							AND visit_list.result = '1'
-							GROUP BY visit_list.customer_id
-						) maxVisitListTable
-						ON customer.id = maxVisitListTable.customer_id
-					) visitListTable
-					ON visitListTable.id = customer.id
-					WHERE customer.is_black_list = 0
-					AND (
-						customer.name LIKE '%$term%'
-						OR customer.address LIKE '%$term%'
-						OR customer.city LIKE '%$term%'
-						OR customer.pic_name LIKE '%$term%'
-					)
-					$string
+						LEFT JOIN (
+							SELECT customer.id, maxSalesOrderDateTable.date
+							FROM customer
+							JOIN (
+								SELECT MAX(code_sales_order.date) as date, code_sales_order.customer_id
+								FROM code_sales_order
+								GROUP BY code_sales_order.customer_id
+							) maxSalesOrderDateTable
+							ON maxSalesOrderDateTable.customer_id = customer.id
+						) salesOrderTable
+						ON salesOrderTable.id = customer.id
+						LEFT JOIN (
+							SELECT customer.id, maxVisitListTable.date
+							FROM customer
+							JOIN (
+								SELECT MAX(code_visit_list.date) AS date, visit_list.customer_id
+								FROM code_visit_list
+								JOIN visit_list
+								ON visit_list.code_visit_list_id = code_visit_list.id
+								WHERE code_visit_list.is_confirm = '1'
+								AND visit_list.result = '1'
+								GROUP BY visit_list.customer_id
+							) maxVisitListTable
+							ON customer.id = maxVisitListTable.customer_id
+						) visitListTable
+						ON visitListTable.id = customer.id
+						JOIN customer_sales ON customer.id = customer_sales.customer_id
+
+						WHERE customer.is_black_list = 0
+						AND (
+							customer.name LIKE '%$term%'
+							OR customer.address LIKE '%$term%'
+							OR customer.city LIKE '%$term%'
+							OR customer.pic_name LIKE '%$term%'
+						)
+						AND customer_sales.sales_id = '$sales'
+						$string
+					) AS a
+					ON a.id = customer.id
 					ORDER BY customer.name ASC
 					LIMIT $limit OFFSET $offset
 				");
 			}
-
 			$result		= $query->result();
 			return $result;
 		}
 
-		public function countCustomerList($mode, $includedAreas = array(), $term = "")
+		public function countCustomerList($sales, $mode, $includedAreas = array(), $term = "")
 		{
 			if(count($includedAreas) > 0){
 				$string		= "AND customer.area_id IN (";
@@ -315,6 +343,7 @@ class Visit_list_model extends CI_Model {
 						ON maxSalesOrderDateTable.customer_id = customer.id
 					) salesOrderTable
 					ON salesOrderTable.id = customer.id
+					JOIN customer_sales ON customer.id = customer_sales.customer_id
 					WHERE TIMESTAMPDIFF(MONTH, salesOrderTable.date, CURDATE()) > 3
 					AND customer.is_black_list = 0
 					AND (
@@ -323,6 +352,7 @@ class Visit_list_model extends CI_Model {
 						OR customer.city LIKE '%$term%'
 						OR customer.pic_name LIKE '%$term%'
 					)
+					AND customer_sales.sales_id = '$sales'
 					$string
 				");
 			}
@@ -348,6 +378,7 @@ class Visit_list_model extends CI_Model {
 						ON customer.id = maxVisitListTable.customer_id
 					) visitListTable
 					ON visitListTable.id = customer.id
+					JOIN customer_sales ON customer.id = customer_sales.customer_id
 					WHERE DATEDIFF(CURDATE(), visitListTable.date) = customer.visiting_frequency
 					OR DATEDIFF(CURDATE(), visitListTable.date) = customer.visiting_frequency + 1
 					OR DATEDIFF(CURDATE(), visitListTable.date) = customer.visiting_frequency - 1
@@ -358,6 +389,7 @@ class Visit_list_model extends CI_Model {
 						OR customer.city LIKE '%$term%'
 						OR customer.pic_name LIKE '%$term%'
 					)
+					AND customer_sales.sales_id = '$sales'
 					$string
 				");
 			}
@@ -368,6 +400,7 @@ class Visit_list_model extends CI_Model {
 				$query			= $this->db->query("
 					SELECT customer.id
 					FROM customer
+					JOIN customer_sales ON customer.id = customer_sales.customer_id
 					WHERE customer.id NOT IN (
 						SELECT DISTINCT(code_sales_order.customer_id) 
 						FROM code_sales_order
@@ -380,6 +413,7 @@ class Visit_list_model extends CI_Model {
 						OR customer.city LIKE '%$term%'
 						OR customer.pic_name LIKE '%$term%'
 					)
+					AND customer_sales.sales_id = '$sales'
 					$string
 				");
 			}
@@ -387,6 +421,7 @@ class Visit_list_model extends CI_Model {
 				$query		= $this->db->query("
 					SELECT customer.id
 					FROM customer
+					JOIN customer_sales ON customer.id = customer_sales.customer_id
 					WHERE is_black_list = 0
 					AND (
 						customer.name LIKE '%$term%'
@@ -394,6 +429,7 @@ class Visit_list_model extends CI_Model {
 						OR customer.city LIKE '%$term%'
 						OR customer.pic_name LIKE '%$term%'
 					)
+					AND customer_sales.sales_id = '$sales'
 					$string
 				");
 			}
