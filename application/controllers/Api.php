@@ -105,10 +105,26 @@ class Api extends CI_Controller {
     {
         header('Access-Control-Allow-Origin: *');
         header("Access-Control-Allow-Methods: *");
+        header("Content-Type:application/json");
+
         $postdata = file_get_contents("php://input");
         $this->load->model("Invoice_model");
         $data           = $this->Invoice_model->getIncompletedTransactionByCustomerUID($postdata);
         echo(json_encode($data));
+    }
+
+    public function getCustomerInvoiceHistory()
+    {
+        header('Access-Control-Allow-Origin: *');
+        header("Access-Control-Allow-Methods: *");
+        header("Content-Type:application/json");
+
+        $postdata = file_get_contents("php://input");
+        $customerUID         = $postdata;
+        
+        $this->load->model("Invoice_model");
+        $result       = $this->Invoice_model->getCustomerHistory($customerUID);
+        echo(json_encode($result));
     }
 }
 ?>

@@ -7,6 +7,7 @@
 			border-radius:7px;
 			margin-top:20px;
 			cursor:pointer;
+			max-height:200px;
 		}
 		
 		.department_box_head{
@@ -79,7 +80,7 @@
 </div>
 <script>	
 	function adjust_size(){
-		var min_size	= 300;
+		var min_size	= 150;
 		$('.department_image').each(function(){
 			if($(this).height() < min_size && $(this).height() > 0){
 				min_size	= $(this).height();

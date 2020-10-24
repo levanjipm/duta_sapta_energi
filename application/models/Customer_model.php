@@ -215,7 +215,7 @@ class Customer_model extends CI_Model {
 			$this->load->model('Customer_model');
 			$this->db->select('*');
 			$this->db->from($this->table_customer);
-			$this->db->where('name =', $this->input->post('customer_name'));
+			$this->db->where('name', $this->input->post('customer_name'));
 			$items = $this->db->get();
 			$count = $items->num_rows();
 			
@@ -248,7 +248,7 @@ class Customer_model extends CI_Model {
 				
 				return ($this->db->affected_rows() == 0) ? NULL : $this->db->insert_id();
 			} else {
-				return 0;
+				return NULL;
 			}
 		}
 		

@@ -226,6 +226,7 @@
 				},
 				success:function(response){
 					$('button').attr('disabled', false);
+					refresh_view();
 					if(response == 1){
 						$('#add_customer_form').trigger("reset");
 						refresh_view();
