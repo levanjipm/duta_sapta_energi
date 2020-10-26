@@ -142,18 +142,22 @@
 					<div class='col-sm-12'>
 						<input type='text' class='form-control' id='customerSearchBar'>
 						<br>
-						<table class='table'>
-							<tr>
-								<th>Customer</th>
-								<th>Achivement | Target</th>
-								<th>Action</th>
-							</tr>
-							<tbody id='customerTableContent'></tbody>
-						</table>
+						<div id='customerTable' style='display:none'>
+							<table class='table'>
+								<tr>
+									<th>Customer</th>
+									<th>Achivement | Target</th>
+									<th>Achivement | Target</th>
+									<th>Action</th>
+								</tr>
+								<tbody id='customerTableContent'></tbody>
+							</table>
 
-						<select class='form-control' id='customerPage' style='width:100px'>
-							<option value='1'>1</option>
-						</select>
+							<select class='form-control' id='customerPage' style='width:100px'>
+								<option value='1'>1</option>
+							</select>
+						</div>
+						<p id='customerTableText'>There is no customer found.</p>
 					</div>
 				</div>
 			</div>
@@ -309,19 +313,6 @@
 	var customerIdSelected = null;
 
 	$('#customerAnalyticForm').validate();
-	$('#customerAnalyticForm input').keydown(function (e) {
-		if (e.keyCode == 13) {
-			e.preventDefault();
-			return false;
-		}
-	});
-
-	$('#customerTargetForm input').keydown(function (e) {
-		if (e.keyCode == 13) {
-			e.preventDefault();
-			return false;
-		}
-	});
 
 	$(document).ready(function(){
 		$('#valueButton').click();
@@ -342,9 +333,11 @@
 		$('#valueButton').attr('disabled', true);
 		$('#valueButton').addClass('active');
 
-		$('#customerViewPane, #paymentViewPane').fadeOut(250, function(){
-			$('#valueViewPane').fadeIn(250);
-		});
+		$('#paymentViewPane, #customerViewPane').fadeOut(250, function(){
+			setTimeout(function(){
+				$('#valueViewPane').fadeIn(250);
+			}, 252)
+		})
 
 		$('#sales').click();
 	});
@@ -356,8 +349,10 @@
 		$('#customerButton').attr('disabled', true);
 		$('#customerButton').addClass('active');
 
-		$('#valueViewPane, #paymentViewPane').fadeOut(250, function(){
-			$('#customerViewPane').fadeIn(250);
+		$('#paymentViewPane, #valueViewPane').fadeOut(250, function(){
+			setTimeout(function(){
+				$('#customerViewPane').fadeIn(250);
+			}, 252)
 		})
 	})
 
@@ -369,7 +364,9 @@
 		$('#paymentButton').addClass('active');
 
 		$('#customerViewPane, #valueViewPane').fadeOut(250, function(){
-			$('#paymentViewPane').fadeIn(250);
+			setTimeout(function(){
+				$('#paymentViewPane').fadeIn(250);
+			}, 252)
 		})
 	})
 
@@ -516,6 +513,7 @@
 				success:function(response){
 					$('#customerTableContent').html("");
 					var maxPercentage = 0;
+					var itemCount		= 0;
 					var items = response.items;
 					$.each(items, function(index, item){
 						var name = item.name;
@@ -553,7 +551,29 @@
 						var target = parseFloat(item.target);
 						var totalValue = value - returned;
 
-						$('#customerTableContent').append("<tr><td><label>" + name + "</label><p>" + complete_address + "</p>" + customer_city + "</p></td><td><p>Rp. " + numeral(totalValue).format('0,0.00') + " | Rp. " + numeral(target).format('0,0.00') + "</p><div class='progressBarWrapper'><p>" + numeral(100 * totalValue / target).format("0,0.00") + "%</p><div class='progressBar' id='progressCustomer-" + customer_id + "' data-value='" + (totalValue / target) + "'></div></div></td><td><button class='button button_default_dark' onclick='viewCustomerTarget(" + customer_id + ")'><i class='fa fa-eye'></i></button></td></tr>");
+						var previousValue = parseFloat(item.previousValue);
+						var previousReturned	= parseFloat(item.previousReturned);
+						var totalPreviousValue	= previousValue - previousReturned;
+						var previousTarget		= parseFloat(item.previousTarget);
+
+						if(previousValue > totalValue){
+							var valueIcon		= '<span style="color:red"><i class="fa fa-caret-down" aria-hidden="true"></i></span>';
+						} else if(previousValue == totalValue){
+							var valueIcon		= '<span style="color:#E19B3C"><i class="fa fa-minus" aria-hidden="true"></i></span>';
+						} else {
+							var valueIcon		= '<span style="color:green"><i class="fa fa-caret-up" aria-hidden="true"></i></span>';
+						}
+
+						if(previousTarget > target){
+							var targetIcon		= '<span style="color:red"><i class="fa fa-caret-down" aria-hidden="true"></i></span>';
+						} else if(previousTarget == target){
+							var targetIcon		= '<span style="color:#E19B3C"><i class="fa fa-minus" aria-hidden="true"></i></span>';
+						} else {
+							var targetIcon		= '<span style="color:green"><i class="fa fa-caret-up" aria-hidden="true"></i></span>';
+						}
+
+						$('#customerTableContent').append("<tr><td><label>" + name + "</label><p>" + complete_address + "</p>" + customer_city + "</p></td><td><p>Rp. " + numeral(totalPreviousValue).format('0,0.00') + " | Rp. " + numeral(previousTarget).format('0,0.00') + "</p><div class='progressBarWrapper'><p>" + numeral(100 * totalPreviousValue / previousTarget).format("0,0.00") + "%</p><div class='progressBar' id='previousProgressCustomer-" + customer_id + "' data-value='" + (totalPreviousValue / previousTarget) + "'></div></div></td><td><p>Rp. " + numeral(totalValue).format('0,0.00') + " " + valueIcon + " | Rp. " + numeral(target).format('0,0.00') + " " + targetIcon + "</p><div class='progressBarWrapper'><p>" + numeral(100 * totalValue / target).format("0,0.00") + "%</p><div class='progressBar' id='progressCustomer-" + customer_id + "' data-value='" + (totalValue / target) + "'></div></div></td><td><button class='button button_default_dark' onclick='viewCustomerTarget(" + customer_id + ")'><i class='fa fa-eye'></i></button></td></tr>");
+						itemCount++;
 					});
 
 					$('#customerTableContent .progressBar').each(function(){
@@ -570,6 +590,14 @@
 						}
 						
 					});
+
+					if(itemCount > 0){
+						$('#customerTable').show();
+						$('#customerTableText').hide();
+					} else {
+						$('#customerTable').hide();
+						$('#customerTableText').show();
+					}
 
 					var pages = response.pages;
 					$('#customerPage').html("");
@@ -703,11 +731,16 @@
 					$('#salesOrderCount-' + id).html(count);
 				});
 
-				var recommended = 28 / Math.ceil(totalCount * 4 / 12);
+				if(totalCount > 0){
+					var recommended = 28 / Math.ceil(totalCount * 4 / 12);
+				} else {
+					var recommended = 28;
+				}				
 
 				$('#visit').val(visiting_frequency);
 				$('#visitFrequencyRecommendedP').html(numeral(recommended).format('0,0') + " days");
-
+			},
+			complete:function(){
 				$('#customerTargetWrapper').fadeIn(300, function(){
 					$('#customerTargetWrapper .alert_box_slide').show("slide", { direction: "right" }, 250);
 				});

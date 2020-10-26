@@ -64,9 +64,14 @@ class Customer_target_model extends CI_Model {
 
 		public function getItems($offset = 0, $term = "", $month, $year, $limit = 25)
 		{
+			$currentDate		= mktime(0,0,0,$month, 1, $year);
+
+			$previousMonth		= date("m", strtotime("-1 month", $currentDate));
+			$previousYear		= date("Y", strtotime("-1 month", $currentDate));
+
 			$query		= $this->db->query("
-				SELECT customer.*, COALESCE(a.value,0) AS value, COALESCE(b.value) AS target, COALESCE(returnTable.value) as returned FROM 
-				customer
+				SELECT customer.*, COALESCE(a.value,0) AS value, COALESCE(b.value, 0) AS target, COALESCE(returnTable.value, 0) as returned, COALESCE(c.value, 0) AS previousValue, COALESCE(previousReturnTable.value, 0) AS previousReturned, COALESCE(d.value, 0) AS previousTarget
+				FROM customer
 				LEFT JOIN (
 					SELECT SUM(invoice.value) AS value, deliveryOrderTable.customer_id 
 					FROM invoice
@@ -81,6 +86,21 @@ class Customer_target_model extends CI_Model {
 					WHERE MONTH(invoice.date) = '$month' AND YEAR(invoice.date) = '$year'
 					GROUP BY deliveryOrderTable.customer_id
 				) AS a
+				ON customer.id = a.customer_id
+				LEFT JOIN (
+					SELECT SUM(invoice.value) AS value, deliveryOrderTable.customer_id 
+					FROM invoice
+					JOIN (
+						SELECT DISTINCT(code_delivery_order.invoice_id) AS id, code_sales_order.customer_id
+						FROM code_delivery_order
+						JOIN delivery_order ON code_delivery_order.id = delivery_order.code_delivery_order_id
+						JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
+						JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
+					) AS deliveryOrderTable
+					ON invoice.id = deliveryOrderTable.id
+					WHERE MONTH(invoice.date) = '$previousMonth' AND YEAR(invoice.date) = '$previousYear'
+					GROUP BY deliveryOrderTable.customer_id
+				) AS c
 				ON customer.id = a.customer_id
 				LEFT JOIN
 				(
@@ -98,6 +118,22 @@ class Customer_target_model extends CI_Model {
 					ON targetTable.customer_id = customer.id
 				) AS b
 				ON b.customer_id = customer.id
+				LEFT JOIN
+				(
+					SELECT COALESCE(targetTable.value, 3000000) AS value, targetTable.customer_id
+					FROM customer
+					LEFT JOIN (
+						SELECT customer_target.value, customer_target.customer_id FROM
+						customer_target WHERE customer_target.id IN (
+							SELECT MAX(id) AS id
+							FROM customer_target
+							WHERE MONTH(dateCreated) <= '$previousMonth' AND YEAR(dateCreated) <= '$previousYear'
+							GROUP BY customer_id
+						)
+					) AS targetTable
+					ON targetTable.customer_id = customer.id
+				) AS d
+				ON d.customer_id = customer.id
 				LEFT JOIN (
 					SELECT COALESCE(SUM(sales_return_received.quantity * price_list.price_list * (1 - sales_order.discount / 100)),0) as value, code_sales_order.customer_id
 					FROM sales_return_received
@@ -111,6 +147,19 @@ class Customer_target_model extends CI_Model {
 					GROUP BY code_sales_order.customer_id
 				) AS returnTable
 				ON returnTable.customer_id = customer.id
+				LEFT JOIN (
+					SELECT COALESCE(SUM(sales_return_received.quantity * price_list.price_list * (1 - sales_order.discount / 100)),0) as value, code_sales_order.customer_id
+					FROM sales_return_received
+					JOIN code_sales_return_received ON sales_return_received.code_sales_return_received_id = code_sales_return_received.id
+					JOIN sales_return ON sales_return_received.sales_return_id = sales_return.id
+					JOIN delivery_order ON sales_return.delivery_order_id = delivery_order.id
+					JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
+					JOIN price_list ON sales_order.price_list_id = price_list.id
+					JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
+					WHERE code_sales_return_received.is_confirm = '1' AND MONTH(code_sales_return_received.date) = '$previousMonth' AND YEAR(code_sales_return_received.date) = '$previousYear'
+					GROUP BY code_sales_order.customer_id
+				) AS previousReturnTable
+				ON previousReturnTable.customer_id = customer.id
 				WHERE customer.name LIKE '%$term%' OR customer.address LIKE '%$term%'
 				ORDER BY customer.name
 				LIMIT $limit OFFSET $offset
@@ -169,7 +218,7 @@ class Customer_target_model extends CI_Model {
 		public function getByCustomerId($customerId)
 		{
 			$this->db->where('customer_id', $customerId);
-			$this->db->order_by('dateCreated', 'ASC');
+			$this->db->order_by('dateCreated', 'DESC');
 			$query			= $this->db->get($this->table_target);
 			$result			= $query->result();
 			return $result;

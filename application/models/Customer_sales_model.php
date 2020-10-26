@@ -72,12 +72,12 @@ class Customer_sales_model extends CI_Model {
 				SELECT customer.*, IF(a.id IS NULL, 0, 1) AS status
 				FROM customer
 				LEFT JOIN (
-					SELECT customer_sales.customer_id, customer_sales.id
+					SELECT DISTINCT(customer_sales.customer_id) AS customer_id, customer_sales.id
 					FROM customer_sales
 					WHERE customer_sales.sales_id = '$salesId'
-				) a
-				ON customer.id = a.customer_id
-				WHERE $areaFilter (
+				) AS a
+				ON a.customer_id = customer.id
+				AND $areaFilter (
 					customer.name LIKE '%$term%'
 					OR customer.address LIKE '%$term%'
 					OR customer.city LIKE '%$term%'
@@ -90,7 +90,7 @@ class Customer_sales_model extends CI_Model {
 			return $result;
 		}
 
-		public function countBySales($term = "", $includedAreas = array()){
+		public function countBySales($salesId, $term = "", $includedAreas = array()){
 			$areaFilter = "";
 			if(count($includedAreas) > 0){
 				$areaFilter = "customer.area_id IN (";

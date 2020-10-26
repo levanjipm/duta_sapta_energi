@@ -185,8 +185,12 @@
 								<button type='button' class='button button_default_dark' onclick='calculateValue()'><i class='fa fa-long-arrow-right'></i></button>
 							</div>
 						</div>
+						<br>
 						<p>Rp. <span id='CustomerValueP'>0.00</span></p>
+						<label>Information</label>
+						<p>The value mentioned above is the sum of invoices value of the current customer.</p>
 					</form>
+					<hr>
 					<label>Target History</label>
 					<table class='table table-bordered'>
 						<tr>
@@ -195,6 +199,10 @@
 						</tr>
 						<tbody id='targetTableContent'></tbody>
 					</table>
+
+					<select class='form-control' id='targetPage' style='width:100px'>
+						<option value='1'>1</option>
+					</select>
 				</div>
 			</div>
 		</div>
@@ -254,7 +262,9 @@
 </div>
 
 <script>
+	var target;
 	$("#valueForm").validate();
+
 	$(document).ready(function(){
 		$('#salesOrderButton').click();
 	});
@@ -262,40 +272,46 @@
 	$('#salesOrderButton').click(function(){
 		$('.button_mini_tab').attr('disabled', false);
 		$('.button_mini_tab').removeClass('active');
-		$('.viewWrapper').hide(0, function(){
-			$('#pendingSalesOrderTableWrapper').fadeIn(300);
-		});
 
 		$(this).attr('disabled', true);
 		$(this).addClass('active');
 
 		fetchIncompletedSalesOrders();
+		$('.viewWrapper').fadeOut(300, function(){
+			setTimeout(function(){
+				$('#pendingSalesOrderTableWrapper').fadeIn(300);
+			}, 300);
+		});
 	});
 
 	$('#receivableButton').click(function(){
 		$('.button_mini_tab').attr('disabled', false);
 		$('.button_mini_tab').removeClass('active');
-		$('.viewWrapper').hide(0, function(){
-			$('#receivableTableWrapper').fadeIn(300);
-		});
 
 		$(this).attr('disabled', true);
 		$(this).addClass('active');
 
 		fetchReceivable();
+		$('.viewWrapper').fadeOut(300, function(){
+			setTimeout(function(){
+				$('#receivableTableWrapper').fadeIn(300);
+			}, 300);
+		});
 	});
 
 	$('#analyticButton').click(function(){
 		$('.button_mini_tab').attr('disabled', false);
 		$('.button_mini_tab').removeClass('active');
-		$('.viewWrapper').hide(0, function(){
-			$('#analyticsWrapper').fadeIn(300);
-		});
 
 		$(this).attr('disabled', true);
 		$(this).addClass('active');
 
-		fetchAnalytics();
+		fetchAnalytics(1);
+		$('.viewWrapper').fadeOut(300, function(){
+			setTimeout(function(){
+				$('#analyticsWrapper').fadeIn(300);
+			}, 300);
+		});
 	});
 
 	function fetchIncompletedSalesOrders(page = $('#page').val()){
@@ -379,69 +395,55 @@
 		})
 	}
 
-	function fetchAnalytics(){
+	$('#targetPage').change(function(){
+		var length	= target.length;
+		var pages	= Math.max(1, Math.ceil(length / 5));
+		$('#targetTableContent').html("");
+
+		var page			= $('#targetPage').val();
+		var startArray		= (page - 1) * 5;
+		var endArray		= startArray + 5;
+		var targetArray		= target.slice(startArray, endArray);
+		$.each(targetArray, function(index, item){
+			var value = item.value;
+			var dateCreated = item.dateCreated;
+			$('#targetTableContent').append("<tr><td>" + my_date_format(dateCreated) + "</td><td>Rp. " + numeral(value).format('0,0.00') + "</td></tr>");
+		});
+	})
+
+	function fetchAnalytics(page = $('#targetPage').val()){
 		$.ajax({
 			url:"<?= site_url('SalesAnalytics/getByCustomerId') ?>",
 			data:{
 				id: <?= $customer->id ?>
 			},
 			success:function(response){
-				var target = response.target;
+				target = response.target;
+				var length	= target.length;
+				var pages	= Math.max(1, Math.ceil(length / 5));
+
 				$('#targetTableContent').html("");
-				$.each(target, function(index, item){
+
+				var startArray		= (page - 1) * 5;
+				var endArray		= startArray + 5;
+				var targetArray		= target.slice(startArray, endArray);
+				$.each(targetArray, function(index, item){
 					var value = item.value;
 					var dateCreated = item.dateCreated;
 					$('#targetTableContent').append("<tr><td>" + my_date_format(dateCreated) + "</td><td>Rp. " + numeral(value).format('0,0.00') + "</td></tr>");
 				});
 
-				$('#calculationType').val(1);
+				$('#targetPage').html("");
+				for(i = 1; i <= pages; i++){
+					if(i == page){
+						$('#targetPage').append("<option value='" + i + "' selected>" + i + "</option>");
+					} else {
+						$('#targetPage').append("<option value='" + i + "'>" + i + "</option>");
+					}
+				}
 			}
 		})
 	}
-
-	function fetchItemType(type = $('#calculationType').val()){
-		$.ajax({
-			url:"<?= site_url('SalesAnalytics/getValueByItemType') ?>",
-			data:{
-				customerId: <?= $customer->id ?>,
-				type: type
-			},
-			success:function(response){
-				$('#itemTypeTableContent').html("");
-				var total = 0;
-				$.each(response, function(index, item){
-					var id = item.id;
-					var name = item.name;
-					var value = parseFloat(item.value);
-					var returned = parseFloat(item.returned);
-					var totalValue = value - returned;
-					total += totalValue;
-					$('#itemTypeTableContent').append("<tr><td>" + name + "</td><td><div class='progressBarWrapper'><p id='progressBarText-" + id + "'></p><div class='progressBar' id='progressBar-" + id + "' data-value='" + totalValue + "'></div></div></td></tr>");
-				});
-
-				var timeout = 0;
-				$('div[id^="progressBar-"]').each(function(){
-					var id = $(this).attr('id');
-					var uid = parseInt(id.substring(12, 267));
-					var value = parseFloat($(this).attr('data-value'));
-					var percentage = value * 100 / total;
-
-					$(this).animate({
-						width: (percentage) + "%"
-					}, timeout);
-					$("#progressBarText-" + uid).html(numeral(percentage).format('0,0.00') + "%");
-					timeout += 300;
-				})
-			}
-		})
-	}
-
-	$('#viewDetailAnalyticsButton').click(function(){
-		fetchItemType();
-		$('#viewDetailAnalyticsWrapper').fadeIn(300, function(){
-			$('#viewDetailAnalyticsWrapper .alert_box_slide').show("slide", { direction: "right" }, 250);
-		});
-	})
 
 	function viewInvoice(n){
 		$.ajax({

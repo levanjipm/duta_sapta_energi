@@ -57,7 +57,7 @@ class CustomerSales extends CI_Controller {
 
 		$this->load->model("Customer_sales_model");
 		$data['items']		= $this->Customer_sales_model->getBySales($salesId, $offset, $term, $includedAreas);
-		$data['pages']		= max(1, ceil($this->Customer_sales_model->countBySales($term, $includedAreas)/10));
+		$data['pages']		= max(1, ceil($this->Customer_sales_model->countBySales($salesId, $term, $includedAreas)/10));
 
 		header('Content-Type: application/json');
 		echo json_encode($data);
