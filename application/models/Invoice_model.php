@@ -1446,5 +1446,55 @@ class Invoice_model extends CI_Model {
 			$result			= $query->result();
 			return $result;
 		}
+
+		public function getCustomerValueByDateRange($customerId, $dateStart, $dateEnd)
+		{
+			$query			= $this->db->query("
+				SELECT COALESCE(SUM(invoice.value),0) AS value
+				FROM invoice
+				WHERE invoice.id IN (
+					SELECT DISTINCT(code_delivery_order.invoice_id)
+					FROM code_delivery_order
+					JOIN delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order.id
+					JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
+					JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
+					WHERE code_sales_order.customer_id = '$customerId'
+					AND code_sales_order.is_confirm = '1'
+					UNION (
+						SELECT invoice.id
+						FROM invoice
+						WHERE invoice.customer_id = '$customerId'
+					)
+				)
+				AND invoice.is_confirm = '1'
+				AND invoice.date >= '$dateStart'
+				AND invoice.date <= '$dateEnd'
+			");
+
+			$result		= $query->row();
+
+			return $result->value;
+		}
+
+		public function getCustomerValueByDateRangerItemType($id, $start, $end)
+		{
+			$query		= $this->db->query("
+				SELECT item_class.name, COALESCE(a.value,0) AS value
+				FROM item_class
+				LEFT JOIN (
+					SELECT SUM(delivery_order.quantity * (100 - sales_order.discount) * price_list.price_list) AS value, item_class.id
+					FROM delivery_order
+					JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
+					JOIN price_list ON sales_order.price_list_id = price_list.id
+					JOIN item ON price_list.item_id = item.id
+					JOIN item_class ON item.type = item_class.id
+					GROUP BY item_class.id
+				) a
+				ON a.id = item_class.id
+			");
+
+			$result			= $query->result();
+			return $result;
+		}
 	}
 ?>

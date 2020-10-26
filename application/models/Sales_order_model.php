@@ -610,13 +610,14 @@ class Sales_order_model extends CI_Model {
 				SELECT COUNT(code_sales_order.id) AS count, MONTH(code_sales_order.date) AS month, YEAR(code_sales_order.date) AS year, a.value
 				FROM code_sales_order
 				JOIN (
-					SELECT SUM(price_list.price_list * (100 - sales_order.discount) * sales_order.quantity / 100) AS value, sales_order.code_sales_order_id
+					SELECT SUM(price_list.price_list * (100 - sales_order.discount) * IF(sales_order.status = '1', sales_order.sent, sales_order.quantity) / 100) AS value, sales_order.code_sales_order_id
 					FROM sales_order
 					JOIN price_list ON price_list.id = sales_order.price_list_id
 					GROUP BY sales_order.code_sales_order_id
 				) a
 				ON a.code_sales_order_id = code_sales_order.id
 				WHERE code_sales_order.customer_id = '$customerId' AND code_sales_order.date >= DATE_ADD(CURDATE(), INTERVAL -12 MONTH)
+				AND code_sales_order.is_confirm = '1'
 				GROUP BY MONTH(code_sales_order.date), YEAR(code_sales_order.date)
 				ORDER BY code_sales_order.date DESC
 			");

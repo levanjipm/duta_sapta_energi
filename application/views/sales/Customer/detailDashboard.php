@@ -59,10 +59,9 @@
 			right:5px;
 		}
 	</style>
-	<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
 	<script>
-		google.charts.load('current', {'packages':["corechart", "line"]});
-		google.charts.setOnLoadCallback(function(){
+		$(document).ready(function(){
 			$.ajax({
 				url:"<?= site_url('SalesAnalytics/getSalesOrderByCustomerId') ?>",
 				data:{
@@ -71,30 +70,38 @@
 				dataType: "json",
 				success:function(response){
 					var monthArray = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-					var data = new google.visualization.DataTable();
-					data.addColumn('string', 'X');
-					data.addColumn('number', 'Sales');
 					var dataArray = [];
+					var labelArray = [];
 					$.each(response, function(index, item){
 						var date = index;
 						var year = parseInt(date.substring(2,4));
-						var month = parseInt(date.substring(5,7));
-						var value = parseInt(item.value);
-						dataArray.push([monthArray[month] + " " + year, value]);
+						var month = parseInt(date.substring(4,6));
+						var value = parseFloat(item.value);
+						dataArray.push(value);
+						labelArray.push(monthArray[month - 1] + " " + year);
 					});
-					data.addRows(dataArray);
 
-					var options = {
-						width: $('#rightDiv').width(),
-						colors:['#E19B3C'],
-						lineWidth: 4,
-						pointSize: 10,
-					};
-					var chart = new google.visualization.LineChart(document.getElementById('chartWrapper'));
-					chart.draw(data, options);
+					var ctx = document.getElementById('chartWrapper').getContext('2d');
+					var myLineChart = new Chart(ctx, {
+						type: 'line',
+						data: {
+							labels: labelArray,
+							datasets: [{
+								backgroundColor: 'rgba(225, 155, 60, 0.4)',
+								borderColor: 'rgba(225, 155, 60, 1)',
+								data: dataArray
+							}],
+						},
+						options: {
+							legend:{
+								display:false
+							}
+						}
+					});
+
 				}
 			});
-		});
+		});		
 	</script>
 </head>
 <div class='dashboard'>
@@ -159,6 +166,7 @@
 								<th>Value</th>
 								<th>Paid</th>
 								<th>Remainder</th>
+								<th>Action</th>
 							</tr>
 							<tbody id='receivableTableContent'></tbody>
 						</table>
@@ -167,7 +175,18 @@
 					<p id='receivableTableText'>There is no receivable found.</p>
 				</div>
 				<div id='analyticsWrapper' class='viewWrapper'>
-					<div id='chartWrapper'></div>
+					<canvas id='chartWrapper' width="100" height="30"></canvas>
+					<form id='valueForm'>
+						<label>View Sales Value</label>
+						<div class='input_group'>
+							<input type='date' class='form-control' id='dateStart'>
+							<input type='date' class='form-control' id='dateEnd'>
+							<div class='input_group_append'>
+								<button type='button' class='button button_default_dark' onclick='calculateValue()'><i class='fa fa-long-arrow-right'></i></button>
+							</div>
+						</div>
+						<p>Rp. <span id='CustomerValueP'>0.00</span></p>
+					</form>
 					<label>Target History</label>
 					<table class='table table-bordered'>
 						<tr>
@@ -176,30 +195,66 @@
 						</tr>
 						<tbody id='targetTableContent'></tbody>
 					</table>
-
-					<button class='button button_default_dark' id='viewDetailAnalyticsButton'><i class='fa fa-eye'></i></button>
 				</div>
 			</div>
 		</div>
 	</div>
 </div>
 
-<div class='alert_wrapper' id='viewDetailAnalyticsWrapper'>
+<div class='alert_wrapper' id='viewInvoiceWrapper'>
 	<button class='slide_alert_close_button'>&times;</button>
 	<div class='alert_box_slide'>
-		<h3 style='font-family:bebasneue'>Analytics Detail</h3>
+		<h3 style='font-family:bebasneue'>Invoice archive</h3>
 		<hr>
-		<table class='table table-bordered'>
-			<tr>
-				<th>Item Type</th>
-				<th>Value</th>
-			</tr>
-			<tbody id='itemTypeTableContent'></tbody>
-		</table>
+		<label>Customer</label>
+		<p id='customer_name_p'></p>
+		<p id='customer_address_p'></p>
+		<p id='customer_city_p'></p>
+
+		<label>Invoice</label>
+		<p id='invoice_name_p'></p>
+		<p id='invoice_tax_p'></p>
+		<p id='invoice_date_p'></p>
+
+
+		<div id='regularInvoice'>
+			<label>Other</label>
+			<p id='invoicing_method_p'></p>
+			<p id='taxing_p'></p>
+
+			<label>Sales order</label>
+			<p id='sales_order_name_p'></p>
+			<p id='sales_order_date_p'></p>
+			<p id='sales_order_seller_p'></p>
+
+			<label>Items</label>
+			<div class='table-responsive-md'>
+				<table class='table table-bordered'>
+					<tr>
+						<th>Reference</th>
+						<th>Name</th>
+						<th>Price list</th>
+						<th>Discount</th>
+						<th>Net price</th>
+						<th>Quantity</th>
+						<th>Total price</th>
+					</tr>
+					<tbody id='deliveryOrderTableContent'></tbody>
+				</table>
+			</div>
+		</div>
+		<div id='otherInvoice'>
+			<label>Value</label>
+			<p id='invoiceValue_p'></p>
+
+			<label>Information</label>
+			<p id='invoiceInformation_p'></p>
+		</div>
 	</div>
 </div>
 
 <script>
+	$("#valueForm").validate();
 	$(document).ready(function(){
 		$('#salesOrderButton').click();
 	});
@@ -293,6 +348,7 @@
 				$('#receivableTableContent').html("");
 				var totalValue = 0;
 				$.each(receivables, function(index, receivable){
+					var id		= receivable.id;
 					var date = receivable.date;
 					var name = receivable.name;
 					var taxInvoice = (receivable.taxInvoice == null || receivable.taxInvoice == "") ? "<i>Not available</i>" : receivable.taxInvoice;
@@ -301,7 +357,7 @@
 					var remainder = value - paid;
 					totalValue += remainder;
 
-					$('#receivableTableContent').append("<tr><td>" + my_date_format(date) + "</td><td>" + name + "</td><td>Rp. " + numeral(value).format('0,0.00') + "</td><td>Rp. " + numeral(paid).format('0,0.00') + "</td><td>Rp. " + numeral(remainder).format('0,0.00') + "</td></tr>");
+					$('#receivableTableContent').append("<tr><td>" + my_date_format(date) + "</td><td>" + name + "</td><td>Rp. " + numeral(value).format('0,0.00') + "</td><td>Rp. " + numeral(paid).format('0,0.00') + "</td><td>Rp. " + numeral(remainder).format('0,0.00') + "</td><td><button class='button button_default_dark' onclick='viewInvoice(" + id + ")'><i class='fa fa-eye'></i></button></tr>");
 					receivableCount++;
 				});
 
@@ -386,4 +442,171 @@
 			$('#viewDetailAnalyticsWrapper .alert_box_slide').show("slide", { direction: "right" }, 250);
 		});
 	})
+
+	function viewInvoice(n){
+		$.ajax({
+			url:'<?= site_url('Invoice/getById') ?>',
+			data:{
+				id:n
+			},
+			success:function(response){
+				var customer = response.customer;
+				if(customer != null){
+					var customer_name = customer.name;
+					var complete_address = customer.address;
+					var customer_number = customer.number;
+					var customer_block = customer.block;
+					var customer_rt = customer.rt;
+					var customer_rw = customer.rw;
+					var customer_city = customer.city;
+					var customer_postal = customer.postal;
+				
+					if(customer_number != null){
+						complete_address	+= ' No. ' + customer_number;
+					}
+				
+					if(customer_block != null && customer_block != '000'){
+						complete_address	+= ' Blok ' + customer_block;
+					}
+			
+					if(customer_rt != '000'){
+						complete_address	+= ' RT ' + customer_rt;
+					}
+				
+					if(customer_rw != '000' && customer_rt != '000'){
+						complete_address	+= ' /RW ' + customer_rw;
+					}
+				
+					if(customer_postal != null){
+						complete_address	+= ', ' + customer_postal;
+					}
+				} else {
+					var opponent		= response.opponent;
+					var customer_name	= opponent.name;
+					var complete_address	= opponent.description;
+					var customer_city		= opponent.type;
+				}
+
+				$('#customer_name_p').html(customer_name);
+				$('#customer_address_p').html(complete_address);
+				$('#customer_city_p').html(customer_city);
+				var salesOrder = response.sales_order;
+				if(salesOrder != null){
+					var invoice = response.invoice;
+					var date = invoice.date;
+					var name = invoice.name;
+
+					$('#invoice_name_p').html(name);
+					$('#invoice_date_p').html(my_date_format(date));
+
+					var taxing = salesOrder.taxing;
+					if(taxing == 0){
+						var taxingText = "Non-taxable";
+						var taxInvoice = "<i>Not available</i>";
+					} else {
+						var taxingText = "Taxable";
+						if(invoice.is_confirm == 1){
+							var taxInvoice = invoice.taxInvoice;
+						} else {
+							var taxInvoice = "<i>Not available</i>";
+						}
+					}
+				
+					$('#invoice_tax_p').html(taxInvoice);
+
+					var invoicing_method = salesOrder.invoicing_method;
+					if(invoicing_method == 1){
+						var invoicingMethodText = "Retail";
+					} else {
+						var invoicingMethodText = "Coorporate";
+					}
+
+					$('#invoicing_method_p').html(invoicingMethodText);
+					$('#taxing_p').html(taxingText);
+
+					var name = salesOrder.name;
+
+					var seller = salesOrder.seller;
+					if(seller == null){
+						var sellerText = "<i>Not available</i>";
+					} else {
+						var sellerText = seller;
+					}
+
+					$('#sales_order_name_p').html(name);
+					$('#sales_order_date_p').html(my_date_format(date));
+					$('#sales_order_seller_p').html(sellerText);
+
+					$('#deliveryOrderTableContent').html('');
+					var items = response.items;
+					var invoiceValue = 0;
+					$.each(items, function(index, item){
+						var reference = item.reference;
+						var name = item.name;
+						var discount = parseFloat(item.discount);
+						var priceList = parseFloat(item.price_list);
+						var quantity = parseInt(item.quantity);
+						var netPrice = (100 - discount) * priceList / 100;
+						var totalPrice = netPrice * quantity;
+						invoiceValue += totalPrice;
+
+						$('#deliveryOrderTableContent').append("<tr><td>" + reference + "</td><td>" + name + "</td><td>Rp. " + numeral(priceList).format('0,0.00') + "</td><td>" + numeral(discount).format('0,0.00') + "%</td><td>Rp. " + numeral(netPrice).format("0,0.00") + "</td><td>" + numeral(quantity).format("0,0") + "</td><td>Rp. " + numeral(totalPrice).format('0,0.00') + "</td></tr>");
+					});
+
+					$('#deliveryOrderTableContent').append("<tr><td colspan='4'><td colspan='2'>Total</td><td>Rp. " + numeral(invoiceValue).format('0,0.00') + "</td></tr>");
+
+					$('#otherInvoice').hide();
+					$('#regularInvoice').show();
+				} else {
+					var invoice = response.invoice;
+					var date = invoice.date;
+					var name = invoice.name;
+					var value	= invoice.value;
+					var information	= invoice.information;
+
+					$('#invoice_name_p').html(name);
+					$('#invoice_date_p').html(my_date_format(date));
+					$('#invoiceValue_p').html("Rp. " + numeral(value).format('0,0.00'));
+					$('#invoiceInformation_p').html(information);
+
+					var taxInvoice	= (invoice.taxInvoice == "" || invoice.taxInvoice == null) ? "<i>Not available</i>" : invoice.taxInvoice;
+					$('#invoice_tax_p').html(taxInvoice)
+
+					$('#otherInvoice').show();
+					$('#regularInvoice').hide();
+				}
+
+				$('#viewInvoiceWrapper').fadeIn(300, function(){
+					$('#viewInvoiceWrapper .alert_box_slide').show("slide", { direction: "right" }, 250);
+				});
+			}
+		})
+	}
+
+	function calculateValue(){
+		if($('#valueForm').valid()){
+			$.ajax({
+				url:"<?= site_url('Customer/getValueByDateRange') ?>",
+				data:{
+					id: <?= $customer->id ?>,
+					start: $('#dateStart').val(),
+					end: $('#dateEnd').val()
+				},
+				type:"POST",
+				success:function(response){
+					var value		= response.value;
+					$('#CustomerValueP').html(numeral(value).format('0,0.00'));
+
+					var distribution	= response.distribution;
+					var totalValue		= 0;
+					$.each(distribution, function(index, item){
+						var name		= item.name;
+						var value		= item.value;
+
+						totalValue += parseFloat(value);
+					});
+				}
+			})
+		}
+	}
 </script>

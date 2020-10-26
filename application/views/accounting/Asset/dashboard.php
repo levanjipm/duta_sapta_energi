@@ -361,7 +361,7 @@
 				var name = response.name;
 				var description = response.description;
 				var assetType = response.assetType;
-				var residualValue = parseFloat(response.residual_value);
+				var residualValue = parseFloat(response.residue_value);
 				var value = parseFloat(response.value);
 				var depreciation = parseInt(response.depreciation_time);
 

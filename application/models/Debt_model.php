@@ -221,21 +221,26 @@ class Debt_model extends CI_Model {
 				");
 			} else if($category == 2){
 				$query		= $this->db->query("
-					SELECT SUM(good_receipt.billed_price * good_receipt.quantity) as value, supplier.name, COALESCE(a.value,0) as paid, code_purchase_order.supplier_id, NULL as other_opponent_id
-					FROM good_receipt 
-					INNER JOIN code_good_receipt ON good_receipt.code_good_receipt_id = code_good_receipt.id 
-					JOIN purchase_order ON good_receipt.purchase_order_id = purchase_order.id
-					INNER JOIN code_purchase_order ON purchase_order.code_purchase_order_id = code_purchase_order.id
-					JOIN supplier ON code_purchase_order.supplier_id = supplier.id
-					JOIN purchase_invoice ON code_good_receipt.invoice_id = purchase_invoice.id
-					LEFT JOIN
-						(SELECT SUM(value) as value, purchase_id FROM payable GROUP BY purchase_id) a
-					ON a.purchase_id = purchase_invoice.id
-					WHERE purchase_invoice.is_done = '0'
-					AND purchase_invoice.date >= DATE_ADD(CURDATE(), INTERVAL - code_purchase_order.payment DAY)
-					GROUP BY code_purchase_order.supplier_id
-					UNION
-					(
+					SELECT a.value, supplier.name, COALESCE(b.value,0) AS paid, a.supplier_id, NULL as other_opponent_id
+					FROM (
+						SELECT SUM(good_receipt.billed_price * good_receipt.quantity) AS value, code_purchase_order.payment, purchase_invoice.date, code_good_receipt.invoice_id, code_purchase_order.supplier_id
+						FROM good_receipt
+						JOIN code_good_receipt ON good_receipt.code_good_receipt_id = code_good_receipt.id
+						JOIN purchase_order ON good_receipt.purchase_order_id = purchase_order.id
+						JOIN code_purchase_order ON purchase_order.code_purchase_order_id = code_purchase_order.id
+						JOIN purchase_invoice ON code_good_receipt.invoice_id = purchase_invoice.id
+						GROUP BY code_good_receipt.invoice_id
+					) AS a
+					LEFT JOIN (
+						SELECT SUM(payable.value) AS value, payable.purchase_id
+						FROM payable
+						GROUP BY payable.purchase_id	
+					) AS b
+					ON a.invoice_id = b.purchase_id
+					JOIN supplier ON supplier.id = a.supplier_id
+					WHERE DATE_ADD(a.date, INTERVAL a.payment DAY) < CURDATE()
+					OR DATE_ADD(a.date, INTERVAL a.payment DAY) = CURDATE()
+					UNION (
 						SELECT SUM(purchase_invoice_other.value) as value, COALESCE(supplier.name, other_opponent.name) as name, COALESCE(b.value,0) as paid, purchase_invoice_other.supplier_id, purchase_invoice_other.other_opponent_id
 						FROM purchase_invoice_other
 						LEFT JOIN supplier ON purchase_invoice_other.supplier_id = supplier.id
@@ -403,6 +408,7 @@ class Debt_model extends CI_Model {
 					) AS b
 					ON b.other_purchase_id = purchase_invoice_other.id
 					WHERE purchase_invoice_other.supplier_id = '$supplierId'
+					AND purchase_invoice_other.is_done = '0'
 				)
 			");
 

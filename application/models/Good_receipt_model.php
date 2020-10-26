@@ -447,17 +447,21 @@ class Good_receipt_model extends CI_Model {
 
 		public function getReceivedByPurchaseOrderId($purchaseOrderId)
 		{
-			$this->db->select("code_good_receipt.*, users.name as created_by");
-			$this->db->from('code_good_receipt');
-			$this->db->join('users', 'code_good_receipt.created_by = users.id');
-			$this->db->join('good_receipt', 'good_receipt.code_good_receipt_id = code_good_receipt.id');
-			$this->db->join('purchase_order', 'good_receipt.purchase_order_id = purchase_order.id');
-			$this->db->join('code_purchase_order', 'purchase_order.code_purchase_order_id = code_purchase_order.id');
-			$this->db->where('code_good_receipt.is_delete', 0);
-			$this->db->where('code_purchase_order.id', $purchaseOrderId);
-			$this->db->order_by('code_good_receipt.date');
-
-			$query			= $this->db->get();
+			$query		= $this->db->query("
+				SELECT code_good_receipt.*, users.name AS created_by
+				FROM code_good_receipt
+				JOIN users ON code_good_receipt.created_by = users.id
+				WHERE code_good_receipt.id IN (
+					SELECT code_good_receipt.id
+					FROM code_good_receipt
+					JOIN good_receipt ON good_receipt.code_good_receipt_id = code_good_receipt.id
+					JOIN purchase_order ON good_receipt.purchase_order_id = purchase_order.id
+					JOIN code_purchase_order ON code_purchase_order.id = purchase_order.code_purchase_order_id
+					WHERE code_purchase_order.id = '$purchaseOrderId'
+					AND code_good_receipt.is_delete = '0'
+				)
+				ORDER BY code_good_receipt.date ASC				
+			");
 			$result			= $query->result();
 			return $result;
 		}

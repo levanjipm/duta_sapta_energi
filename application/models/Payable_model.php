@@ -263,14 +263,15 @@ class Payable_model extends CI_Model {
 
 			$purchaseInvoiceId		= $result->purchase_id;
 			$blankPurchaseInvoiceId	= $result->other_purchase_id;
+
 			$this->db->where('id', $id);
 			$this->db->delete($this->table_payable);
 			$result			= $this->db->affected_rows();
 
-			if($purcahseInvoiceId == NULL){
+			if($purchaseInvoiceId != NULL){
 				$this->load->model("Debt_model");
 				$data	= $this->Debt_model->setInvoiceAsUndone($purchaseInvoiceId);
-			} else if($blankPurchaseInvoiceId == NULL){
+			} else if($blankPurchaseInvoiceId != NULL){
 				$this->load->model("Debt_other_model");
 				$data	= $this->Debt_other_model->setInvoiceAsUndone($blankPurchaseInvoiceId);
 			}

@@ -150,10 +150,10 @@ class Visit_list_model extends CI_Model {
 			//Give +- 1 day error range//
 			else if($mode == 2){
 				$query			= $this->db->query("
-					SELECT customer.*, a.lastOrder, a.lastVisited 
+					SELECT customer.*, a.lastOrder, a.lastVisited, a.daniel
 					FROM customer
 					INNER JOIN(
-						SELECT DISTINCT(customer.id) AS id, salesOrderTable.date AS lastOrder, visitListTable.date AS lastVisited
+						SELECT DISTINCT(customer.id) AS id, salesOrderTable.date AS lastOrder, visitListTable.date AS lastVisited, DATEDIFF(CURDATE(), visitListTable.date) AS daniel
 						FROM customer
 						LEFT JOIN (
 							SELECT customer.id, maxSalesOrderDateTable.date
@@ -171,8 +171,8 @@ class Visit_list_model extends CI_Model {
 							FROM customer
 							JOIN (
 								SELECT MAX(code_visit_list.date) AS date, visit_list.customer_id
-								FROM code_visit_list
-								JOIN visit_list
+								FROM visit_list
+								LEFT JOIN code_visit_list
 								ON visit_list.code_visit_list_id = code_visit_list.id
 								WHERE code_visit_list.is_confirm = '1'
 								AND visit_list.result = '1'

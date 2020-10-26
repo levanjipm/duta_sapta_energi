@@ -7,6 +7,13 @@
 	</div>
 	<br>
 	<div class='dashboard_in'>
+		<label>Warning</label>
+		<p>Good receipt(s) to be deleted must fullfill these requirements:</p>
+		<ul>
+			<li>Good receipt has been confirmed.</li>
+			<li>Good receipt have not been invoiced.</li>
+			<li>Items in the good receipt have not been taken.</li>
+		</ul>
 		<div id='goodReceiptTable'>
 			<table class='table table-bordered'>
 				<tr>
@@ -21,7 +28,7 @@
 				<option value='1'>1</option>
 			</select>
 		</div>
-		<p id='goodReceiptTableText'>There is no delivery order to be deleted.</p>
+		<p id='goodReceiptTableText'>There is no good receipt to be deleted.</p>
 	</div>
 </div>
 

@@ -219,6 +219,7 @@ class Payable extends CI_Controller {
 	{
 		$id			= $this->input->post('id');
 		$this->load->model("Payable_model");
-		$this->Payable_model->deleteBlankById($id);
+		$result	= $this->Payable_model->deleteBlankById($id);
+		echo $result;
 	}
 }

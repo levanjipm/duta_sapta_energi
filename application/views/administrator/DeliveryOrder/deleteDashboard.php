@@ -7,6 +7,12 @@
 	</div>
 	<br>
 	<div class='dashboard_in'>
+		<label>Warning</label>
+		<p>Delivery order(s) to be deleted must fullfill these requirements:</p>
+		<ul>
+			<li>Delivery order has been conirmed and sent.</li>
+			<li>Delivery order have not been invoiced.</li>
+		</ul>
 		<div id='deliveryOrderTable'>
 			<table class='table table-bordered'>
 				<tr>

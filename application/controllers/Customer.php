@@ -331,4 +331,18 @@ class Customer extends CI_Controller {
 		$result		= $this->Customer_target_model->deleteById($id);
 		echo $result;
 	}
+
+	public function getValueByDateRange()
+	{
+		$start			= $this->input->post('start');
+		$end			= $this->input->post('end');
+		$id				= $this->input->post('id');
+
+		$this->load->model("Invoice_model");
+		$result['value']		= $this->Invoice_model->getCustomerValueByDateRange($id, $start, $end);
+		$result['distribution']	= $this->Invoice_model->getCustomerValueByDateRangerItemType($id, $start, $end);
+
+		header('Content-Type: application/json');
+		echo(json_encode($result));
+	}
 }

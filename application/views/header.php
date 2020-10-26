@@ -40,7 +40,7 @@
 </head>
 <div class='topnav_bar' style='padding-left:8px!important;text-align:center;color:white;height:100px'>
 	<img src='<?= base_url('assets/Logo_dark.png') ?>' style='width:100px'>
-	<a href='<?= site_url('Profile') ?>'><h4>Hello, <?= $user_login->name ?></h4></a>
+	<a style='text-decoration:none;color:white' href='<?= site_url('Profile') ?>'><h4>Hello, <?= $user_login->name ?></h4></a>
 </div>
 <div class='row' style='padding:20px; padding-top:120px; margin:0;'>
 <?php
@@ -68,11 +68,11 @@
 		</div>
 	</div>
 <?php } if($user_login->access_level == 5){ ?>
-	<div class='col-lg-3 col-md-3 col-sm-4 col-xs-6 department_box_wrapper' onclick='window.location.href="<?= site_url('Administrators') ?>"'>
+	<div class='col-lg-3 col-md-3 col-sm-4 col-xs-6 department_box_wrapper' onclick='window.location.href="<?= site_url('Director') ?>"'>
 		<div class='department_box'>
 			<div class='department_box_head'>Directors</div>
 			<div class='department_box_body'>
-				<img src='<?= base_url() . 'assets/' . $department->icon . '.png'; ?>' class='department_image'>
+				<img src='<?= base_url() . 'assets/director.png'; ?>' class='department_image'>
 			</div>
 		</div>
 	</div>

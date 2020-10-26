@@ -126,5 +126,18 @@ class Api extends CI_Controller {
         $result       = $this->Invoice_model->getCustomerHistory($customerUID);
         echo(json_encode($result));
     }
+
+	public function register()
+	{
+		header('Access-Control-Allow-Origin: *');
+        header("Access-Control-Allow-Methods: *");
+        header("Content-Type:application/json");
+
+        $postdata = file_get_contents("php://input");
+        $request    = json_decode($postdata);
+		$this->load->model("Customer_model");
+		$result			= $this->Customer_model->registerCustomer($request->username, $request->password);
+		echo $result;
+	}
 }
 ?>

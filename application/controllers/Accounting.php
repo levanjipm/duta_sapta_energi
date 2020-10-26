@@ -77,4 +77,57 @@ class Accounting extends CI_Controller {
 		header('Content-Type: application/json');
 		echo json_encode($data);
 	}
+
+	public function getInvoices()
+	{
+		$this->load->model("Invoice_model");
+		$data = $this->Invoice_model->viewReceivableChart(1);
+		$notDue		= 0;
+		if(count($data) > 0){
+			foreach($data as $item){
+				$notDue	+= (float)$item['value'];
+			}
+		}
+
+		$data = $this->Invoice_model->viewReceivableChart(2);
+		$due		= 0;
+		if(count($data) > 0){
+			foreach($data as $item){
+				$due	+= (float)$item['value'];
+			}
+		}
+
+		$data['notDue'] = $notDue - $due;
+		$data['due']	= $due;
+
+		header('Content-Type: application/json');
+		echo json_encode($data);
+	}
+
+	public function getPayable()
+	{
+		$this->load->model("Debt_model");
+
+		$data = $this->Debt_model->viewPayableChart(1);
+		$notDue		= 0;
+		if(count($data) > 0){
+			foreach($data as $item){
+				$notDue	+= ((float)$item->value - (float)$item->paid);
+			}
+		}
+
+		$data = $this->Debt_model->viewPayableChart(2);
+		$due		= 0;
+		if(count($data) > 0){
+			foreach($data as $item){
+				$due	+= ((float)$item->value - (float)$item->paid);
+			}
+		}
+
+		$data['notDue'] = $notDue - $due;
+		$data['due']	= $due;
+
+		header('Content-Type: application/json');
+		echo json_encode($data);
+	}
 }

@@ -119,6 +119,21 @@ class Attendance extends CI_Controller {
 		echo $result;
 	}
 
+	public function insertCompleteItem()
+	{
+		$userId			= $this->input->post('user');
+		$status			= $this->input->post('status');
+		$date			= $this->input->post('date');
+		$time			= $this->input->post('time');
+
+		$timestamp		= date("Y-m-d", strtotime($date)) . " " . date("H:i:s", strtotime($time));
+
+		$this->load->model("Attendance_model");
+		$result			= $this->Attendance_model->insertItem($userId, $status, $date, $timestamp);
+
+		echo $result;
+	}
+
 	public function getItemSalary()
 	{
 		$userId			= (int) $this->input->post('user');

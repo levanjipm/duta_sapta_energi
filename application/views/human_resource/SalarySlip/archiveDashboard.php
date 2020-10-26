@@ -1,5 +1,34 @@
 <head>
 	<title>Salary Slip - Archive</title>
+	<style>
+		@media print{
+			html, body{
+				visibility:hidden;
+			}
+
+			#viewSalarySlipWrapper{
+				position:absolute;
+				top:0;
+				left:0;
+				width:100%;
+				height:100%;
+				visibility:visible;
+				z-index:150;
+				overflow-y:hidden;
+				right:0;
+			}
+
+			#viewSalarySlipWrapper .alert_box_slide{
+				width:100%!important;
+				border-radius:0;
+				box-shadow:0;
+			}
+
+			button{
+				display:none;
+			}
+		}
+	</style>
 </head>
 <div class='dashboard'>
 	<div class='dashboard_head'>
@@ -55,6 +84,9 @@
 		<p id='userName_p'></p>
 		<p id='userEmail_p'></p>
 
+		<label>Period</label>
+		<p id='periodP'></p>
+
 		<label>General Salary</label>
 		<div class='table-responsive-lg'>
 			<table class='table table-bordered'>	
@@ -83,12 +115,14 @@
 		<p id='benefitTableText'>There is no benefit found.</p>
 
 		<button class='button button_danger_dark' type='button' onclick='deleteSalarySlip()'><i class='fa fa-trash'></i></button>
+		<button class='button button_default_dark' type='button' onclick='printSalarySlip()'><i class='fa fa-print'></i></button>
 
 		<div class='notificationText danger' id='failedDeleteSalarySlip'><p>Failed to delete salary slip.</p></div>
 	</div>
 </div>
 <script>
 	var salarySlipId;
+	var monthNameArray = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
 	$(document).ready(function(){
 		refreshView();
@@ -104,7 +138,8 @@
 
 	$('#page').change(function(){
 		refreshView();
-	})
+	});
+
 	function refreshView($page = $('#page').val()){
 		$.ajax({
 			url:"<?= site_url('Salary_slip/getItems') ?>",
@@ -121,7 +156,7 @@
 					var name = item.name;
 					var image_url = (item.image_url == null) ? '<?= base_url() . "/assets/ProfileImages/defaultImage.png" ?>' : item.image_url;
 					var id		= item.id;
-					$('#salaryTableContent').append("<tr><td><img src='" + image_url + "' style='width:30px;height:30px;border-radius:50%'/> " + name + "</td><td><button class='button button_default_dark' onclick='viewSalarySlip(" + id + ")'><i class='fa fa-eye'></i></button></td></tr>");
+					$('#salaryTableContent').append("<tr><td><img src='" + "<?= base_url('assets/ProfileImages/') ?>" + image_url + "' style='width:30px;height:30px;border-radius:50%'/> " + name + "</td><td><button class='button button_default_dark' onclick='viewSalarySlip(" + id + ")'><i class='fa fa-eye'></i></button></td></tr>");
 					itemCount++;
 				});
 
@@ -158,6 +193,11 @@
 				var basic		= parseFloat(general.basic);
 				var bonus		= parseFloat(general.bonus);
 				var deduction	= parseFloat(general.deduction);
+
+				var month		= parseInt(general.month);
+				var year		= parseInt(general.year);
+
+				$('#periodP').html(monthNameArray[month - 1] + " " + year);
 
 				var absentee = response.absentee;
 				$('#salaryComponentTableContent').html("");
@@ -206,6 +246,12 @@
 				}
 
 				$('#salaryComponentTableContent').append("<tr><td colspan='2'>Grand Total</td><td>Rp. " + numeral(basic).format('0,0.00') + "</td><td>1</td><td>Rp. " + numeral(generalWage).format('0,0.00') + "</td></tr>");
+
+				var user		= response.user;
+				var username	= user.name;
+				var email		= user.email;
+				$('#userName_p').html(username);
+				$('#userEmail_p').html(email);
 			},
 			complete: function(){
 				$('#viewSalarySlipWrapper').fadeIn(300, function(){
@@ -242,5 +288,9 @@
 				}
 			})
 		}
+	}
+
+	function printSalarySlip(){
+		window.print();
 	}
 </script>

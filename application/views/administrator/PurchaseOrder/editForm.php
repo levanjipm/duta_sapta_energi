@@ -149,7 +149,7 @@
 					<tr id='existingItemRow-<?= $item->id ?>'>
 						<td><?= $item->reference ?></td>
 						<td><?= $item->name ?></td>
-						<td><input type='number' class='form-control' name='pricelist[<?= $item->id ?>]' value='<?= $item->price_list ?>' required min='1'></td>
+						<td><input type='number' class='form-control' name='pricelist[<?= $item->id ?>]' value='<?= $item->price_list ?>' <?= ($item->received > 0) ? "readonly" : "required"; ?> min='1'></td>
 						<td><input type='number' class='form-control' min='0' max='100' name='discount[<?= $item->id ?>]' value='<?= (1 - ($item->net_price / $item->price_list)) * 100 ?>' <?= ($item->received > 0) ? "readonly" : "required"; ?>></td>
 						<td><input type='number' class='form-control' name='quantity[<?= $item->id ?>]' value='<?= $item->quantity ?>' min='<?= max(1, $item->received) ?>' <?= ($item->received > 0) ? "readonly" : "required"; ?>></td>
 						<td><?= number_format($item->received, 0) ?></td>

@@ -473,4 +473,14 @@ class Customer_model extends CI_Model {
 			$result		= $query->row();
 			return $result;
 		}
+
+		public function registerCustomer($customerUID, $password)
+		{
+			$this->db->set('password', md5($password));
+			$this->db->where('uid', $customerUID);
+			$this->db->where('password', NULL);
+			$this->db->update($this->table_customer);
+			$result		= $this->db->affected_rows();
+			return $result;
+		}
 }

@@ -78,21 +78,43 @@ class Attendance_model extends CI_Model {
 			return $result;
 		}
 
-		public function insertItem($userId, $status)
+		public function insertItem($userId, $status, $date = null, $time = null)
 		{
-			$this->db->where('user_id', $userId);
-			$this->db->where('date', date('Y-m-d'));
-			$query		= $this->db->get($this->table_attendance);
-			$result		= $query->num_rows();
+			if($date == null || $time == null){
+				$this->db->where('user_id', $userId);
+				$this->db->where('date', date('Y-m-d'));
+				$query		= $this->db->get($this->table_attendance);
+				$result		= $query->num_rows();
 
-			if($result == 0){
-				$query		= $this->db->query("
-					INSERT INTO attendance_list (date, time, user_id, status) VALUES
-					('" . date("Y-m-d") . "', NOW(), '$userId', '$status')
-				");
-				return $this->db->affected_rows();
+				if($result == 0){
+					$query		= $this->db->query("
+						INSERT INTO attendance_list (date, time, user_id, status) VALUES
+						('" . date("Y-m-d") . "', NOW(), '$userId', '$status')
+					");
+					return $this->db->affected_rows();
+				} else {
+					return 0;
+				}
 			} else {
-				return 0;
+				$this->db->where('user_id', $userId);
+				$this->db->where('date', $date);
+				$query		= $this->db->get($this->table_attendance);
+				$result		= $query->num_rows();
+
+				if($result == 0){
+					$db_item	= array(
+						"id" => "",
+						"date" => $date,
+						"time" => $time,
+						"user_id" => $userId,
+						"status" => $status
+					);
+
+					$this->db->insert($this->table_attendance, $db_item);
+					return $this->db->affected_rows();
+				} else {
+					return 0;
+				}
 			}
 		}
 
