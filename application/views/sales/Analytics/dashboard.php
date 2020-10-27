@@ -140,6 +140,7 @@
 				<br>
 				<div class='row'>
 					<div class='col-sm-12'>
+						<button class='button button_default_dark' id='reportButton' title="Generate report" style='display:none'><i class='fa fa-file-o'></i></button>
 						<input type='text' class='form-control' id='customerSearchBar'>
 						<br>
 						<div id='customerTable' style='display:none'>
@@ -502,6 +503,7 @@
 	function getCustomerItems(page = $('#customerPage').val())
 	{
 		if($('#customerAnalyticForm').valid()){
+			$('#reportButton').show();
 			$.ajax({
 				url:"<?= site_url('SalesAnalytics/getCustomers') ?>",
 				data:{
@@ -610,8 +612,18 @@
 					}
 				}
 			})
+		} else {
+			$('#reportButton').hide();
 		}
 	}
+
+	$('#reportButton').click(function(){
+		if($('#customerAnalyticForm').valid()){
+			var month		= $('#customerMonth').val();
+			var year		= $('#customerYear').val();
+			window.location.href='<?= site_url('SalesAnalytics/salesReport/') ?>' + month + "/" + year;
+		}
+	})
 
 	$('#customerPage').change(function(){
 		getCustomerItems();

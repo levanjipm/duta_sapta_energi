@@ -483,4 +483,28 @@ class Customer_model extends CI_Model {
 			$result		= $this->db->affected_rows();
 			return $result;
 		}
+
+		public function getByAreaId($areaId)
+		{
+			$query		= $this->db->query("
+				SELECT customer.*, targetTable.value
+				FROM customer
+				LEFT JOIN (
+					SELECT customer_target.value, customer_target.customer_id
+					FROM customer_target
+					JOIN (
+						SELECT customer_target.customer_id, customer_target.dateCreated
+						FROM customer_target
+						ORDER BY customer_target.customer_id ASC,
+						customer_target.dateCreated DESC
+					) AS customerTargetTable
+					ON customerTargetTable.customer_id = customer_target.customer_id
+				) targetTable
+				ON targetTable.customer_id = customer.id
+				WHERE customer.area_id = '$areaId'
+			");
+
+			$result			= $query->result();
+			return $result;
+		}
 }

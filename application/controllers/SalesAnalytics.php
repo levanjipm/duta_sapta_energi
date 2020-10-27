@@ -108,4 +108,25 @@ class SalesAnalytics extends CI_Controller {
 		header('Content-Type: application/json');
 		echo json_encode($data);
 	}
+
+	public function salesReport($month, $year)
+	{
+		$user_id		= $this->session->userdata('user_id');
+		$this->load->model('User_model');
+		$data['user_login'] = $this->User_model->getById($user_id);
+		
+		$this->load->model('Authorization_model');
+		$data['departments']	= $this->Authorization_model->getByUserId($user_id);
+		
+		$this->load->view('head');
+		$this->load->view('sales/header', $data);
+
+		$data			= array();
+		$this->load->model("Customer_target_model");
+		$data['month']	= $month;
+		$data['year']	= $year;
+		$data['customers'] = $this->Customer_target_model->getItems(0, "", $month, $year, 0);
+
+		$this->load->view('sales/Analytics/salesReport', $data);
+	}
 }

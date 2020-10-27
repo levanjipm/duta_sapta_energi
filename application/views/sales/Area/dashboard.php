@@ -80,7 +80,9 @@
 		</div>
 	</div>
 </div>
-
+<form action="<?= site_url('Area/viewDetail') ?>" method="POST" id='areaForm'>
+	<input type='hidden' id='areaId' name='id'>
+</form>
 <script>
 	$(document).ready(function(){
 		refresh_view();
@@ -108,7 +110,7 @@
 				$.each(areas, function(index, area){
 					var name = area.name;
 					var id = area.id;
-					$('#areaTableContent').append("<tr id='area-" + id + "'><td>" + name + "</td><td><button class='button button_success_dark' onclick='open_edit_view(" + id + ")'><i class='fa fa-pencil'></i></button> <button class='button button_danger_dark' onclick='confirm_delete(" + id + ")'><i class='fa fa-trash'></i></button> <button class='button button_default_dark'><i class='fa fa-eye'></i></button></td></tr>");
+					$('#areaTableContent').append("<tr id='area-" + id + "'><td>" + name + "</td><td><button class='button button_success_dark' onclick='open_edit_view(" + id + ")'><i class='fa fa-pencil'></i></button> <button class='button button_danger_dark' onclick='confirm_delete(" + id + ")'><i class='fa fa-trash'></i></button> <button class='button button_default_dark' onclick='viewArea(" + id + ")'><i class='fa fa-eye'></i></button></td></tr>");
 					areaCount++;
 				});
 
@@ -234,5 +236,9 @@
 		});
 	});
 	
-	
+	function viewArea(n)
+	{
+		$('#areaId').val(n);
+		$('#areaForm').submit();
+	}
 </script>

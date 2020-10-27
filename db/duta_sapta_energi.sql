@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Waktu pembuatan: 26 Okt 2020 pada 11.07
+-- Waktu pembuatan: 27 Okt 2020 pada 11.05
 -- Versi server: 10.1.38-MariaDB
 -- Versi PHP: 7.3.2
 
@@ -2285,6 +2285,25 @@ INSERT INTO `price_list` (`id`, `item_id`, `price_list`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Struktur dari tabel `promotion_message`
+--
+
+CREATE TABLE `promotion_message` (
+  `id` int(255) NOT NULL,
+  `title` varchar(100) NOT NULL,
+  `image_url` varchar(100) NOT NULL,
+  `description` text NOT NULL,
+  `note` text NOT NULL,
+  `start_date` date NOT NULL,
+  `end_date` date NOT NULL,
+  `created_by` int(255) NOT NULL,
+  `confirmed_by` int(255) NOT NULL,
+  `is_confirm` tinyint(1) NOT NULL DEFAULT '0'
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
 -- Struktur dari tabel `purchase_invoice`
 --
 
@@ -3102,6 +3121,14 @@ ALTER TABLE `price_list`
   ADD KEY `item_id` (`item_id`);
 
 --
+-- Indeks untuk tabel `promotion_message`
+--
+ALTER TABLE `promotion_message`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `confirmed_by` (`confirmed_by`),
+  ADD KEY `created_by` (`created_by`);
+
+--
 -- Indeks untuk tabel `purchase_invoice`
 --
 ALTER TABLE `purchase_invoice`
@@ -3468,7 +3495,7 @@ ALTER TABLE `internal_bank_account`
 -- AUTO_INCREMENT untuk tabel `invoice`
 --
 ALTER TABLE `invoice`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
 -- AUTO_INCREMENT untuk tabel `item`
@@ -3498,7 +3525,7 @@ ALTER TABLE `other_opponent_type`
 -- AUTO_INCREMENT untuk tabel `payable`
 --
 ALTER TABLE `payable`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT untuk tabel `petty_cash`
@@ -3517,6 +3544,12 @@ ALTER TABLE `plafond_submission`
 --
 ALTER TABLE `price_list`
   MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=202;
+
+--
+-- AUTO_INCREMENT untuk tabel `promotion_message`
+--
+ALTER TABLE `promotion_message`
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT untuk tabel `purchase_invoice`
@@ -3835,6 +3868,13 @@ ALTER TABLE `petty_cash`
   ADD CONSTRAINT `petty_cash_ibfk_1` FOREIGN KEY (`bank_id`) REFERENCES `bank_transaction` (`id`),
   ADD CONSTRAINT `petty_cash_ibfk_2` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`),
   ADD CONSTRAINT `petty_cash_ibfk_3` FOREIGN KEY (`expense_class`) REFERENCES `expense_class` (`id`);
+
+--
+-- Ketidakleluasaan untuk tabel `promotion_message`
+--
+ALTER TABLE `promotion_message`
+  ADD CONSTRAINT `promotion_message_ibfk_1` FOREIGN KEY (`confirmed_by`) REFERENCES `users` (`id`),
+  ADD CONSTRAINT `promotion_message_ibfk_2` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`);
 
 --
 -- Ketidakleluasaan untuk tabel `purchase_invoice`

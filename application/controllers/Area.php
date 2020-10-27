@@ -20,7 +20,7 @@ class Area extends CI_Controller {
 		
 		$this->load->view('head');
 		$this->load->view('sales/header', $data);
-		$this->load->view('sales/area_manage_dashboard');
+		$this->load->view('sales/Area/dashboard');
 	}
 
 	public function insertItem()
@@ -83,5 +83,28 @@ class Area extends CI_Controller {
 		
 		header('Content-Type: application/json');
 		echo json_encode($data);
+	}
+
+	public function viewDetail()
+	{
+		$id			= $this->input->post('id');
+		$user_id		= $this->session->userdata('user_id');
+		$this->load->model('User_model');
+		$data['user_login'] = $this->User_model->getById($user_id);
+		
+		$this->load->model('Authorization_model');
+		$data['departments']	= $this->Authorization_model->getByUserId($user_id);
+		
+		$this->load->view('head');
+		$this->load->view('sales/header', $data);
+
+		$data			= array();
+		$this->load->model("Area_model");
+		$data['area']		= $this->Area_model->getItemById($id);
+
+		$this->load->model("Customer_model");
+		$data['customers']	= $this->Customer_model->getByAreaId($id);
+		
+		$this->load->view('sales/Area/detailDashboard', $data);
 	}
 }
