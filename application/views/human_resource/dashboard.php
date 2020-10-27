@@ -1,3 +1,11 @@
+<?php
+	$accessLevelArray		= array();
+	$accessLevelCountArray	= array();
+	foreach($accessLevelRatio as $level => $count){
+		array_push($accessLevelArray, $level);
+		array_push($accessLevelCountArray, $count);
+	}
+?>
 <head>
     <title>Human Resource</title>
     <style>
@@ -38,8 +46,34 @@
             color:#555;
             text-align:right;
         }
+
+		.progressBarWrapper{
+			width:100%;
+			height:20px;
+			background-color:#ccc;
+			z-index:10;
+			position:relative;
+			border-radius:5px;
+			margin-bottom:10px;
+		}
+
+		.progressBarWrapper p{
+			z-index:100;
+			float:right;
+		}
+
+		.progressBar{
+			width:0;
+			height:20px;
+			position:absolute;
+			top:0;
+			left:0;
+			z-index:20;
+			border-radius:5px;
+			background-color:rgb(1, 187, 0);
+		}
     </style>
-    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
 </head>
 <div class='dashboard'>
     <br>
@@ -57,7 +91,46 @@
                     </div>
                 </div>
             </div>
+			<div class='col-md-4 col-sm-12 col-xs-12'>
+                <div class='dashboardBox clickable' onclick='getUsers()' >
+                    <div class='leftSide'>
+                        <h4><b>Pending</b></h4>
+                        <p>Attendance</p>
+                    </div>
+                    <div class='rightSide'>
+                        <h3><?= number_format($pendingAttendance) ?></h3>
+                        <p>&nbsp;</p>
+                    </div>
+                </div>
+            </div>
         </div>
+		<div class="row">
+			<div class="col-sm-6">
+				<div class="row">
+					<div class="col-sm-12">
+						<label>User By Access Level Ratio</label>
+					</div>
+					<div class="col-sm-6">
+						<canvas id="levelChart" width="150" height="150"></canvas>
+					</div>
+					<div class='col-sm-6'>
+					<?php for($i = 0; $i < 5; $i++){ ?>
+						<label>Level <?= $i + 1 ?></label>
+						<div class='progressBarWrapper'>
+							<p><?= $accessLevelCountArray[$i] ?></p>
+							<div class='progressBar' id='progress-<?= $i ?>'></div>
+							<script>
+								$('#progress-<?= $i ?>').animate({
+									width: "<?= $accessLevelCountArray[$i] * 100 / $activeUser ?>%"
+								}, 1000)
+							</script>
+						</div>
+					<?php } ?>
+					</div>
+			</div>
+			<div class="col-sm-6">
+			</div>
+		</div>
     </div>
 </div>
 
@@ -106,4 +179,39 @@
 			}
 		})
 	}
+
+	$(document).ready(function(){
+		var ctx = document.getElementById("levelChart");
+		var myChart = new Chart(ctx, {
+			type: 'doughnut',
+			data: {
+			labels: <?= json_encode($accessLevelArray) ?>,
+			datasets: [{
+				label: 'User By Access Level',
+				data: <?= json_encode($accessLevelCountArray) ?>,
+				backgroundColor: [
+				'rgba(1, 187, 0, 0.2)',
+				'rgba(1, 187, 0, 0.4)',
+				'rgba(1, 187, 0, 0.6)',
+				'rgba(1, 187, 0, 0.8)',
+				'rgba(1, 187, 0, 1)'
+				],
+				borderColor: [
+				'rgba(1, 187, 0, 0.2)',
+				'rgba(1, 187, 0, 0.4)',
+				'rgba(1, 187, 0, 0.6)',
+				'rgba(1, 187, 0, 0.8)',
+				'rgba(1, 187, 0, 1)'
+				],
+				borderWidth: 1
+			}]
+			},
+			options: {
+			responsive: false,
+			legend: {
+				display: false,
+			},
+			}
+		});
+	})
 </script>

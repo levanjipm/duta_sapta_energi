@@ -2,13 +2,11 @@
   "ExpandedNodes": [
     "",
     "\\application",
+    "\\application\\controllers",
+    "\\application\\models",
     "\\application\\views",
     "\\application\\views\\accounting",
-    "\\application\\views\\accounting\\Asset",
-    "\\application\\views\\accounting\\Invoice",
-    "\\application\\views\\administrator\\PurchaseOrder",
-    "\\application\\views\\inventory\\Pending",
-    "\\application\\views\\sales",
+    "\\application\\views\\human_resource",
     "\\application\\views\\sales\\Customer"
   ],
   "SelectedNode": "\\application\\views\\accounting\\dashboard.php",

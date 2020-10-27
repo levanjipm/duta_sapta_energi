@@ -187,5 +187,22 @@ class Attendance_model extends CI_Model {
 			$result			= $query->result();
 			return $result;
 		}
+
+		public function getPendingAttendance($date)
+		{
+			$query		= $this->db->query("
+				SELECT users.id
+				FROM users
+				WHERE users.id NOT IN (
+					SELECT attendance_list.user_id
+					FROM attendance_list
+					WHERE attendance_list.date = '$date'
+				)
+				AND users.is_active = '1'
+			");
+
+			$result			= $query->num_rows();
+			return $result;
+		}
 	}
 ?>

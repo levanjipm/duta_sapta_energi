@@ -24,6 +24,21 @@ class Human_resource extends CI_Controller {
 		$data = array();
 
 		$data['activeUser'] = $this->User_model->countActiveUser();
+
+		$this->load->model("Attendance_model");
+		$data['pendingAttendance']	= $this->Attendance_model->getPendingAttendance(date("Y-m-d"));
+
+		$accessLevelArray = $this->User_model->getAccessLevelRatio();
+
+		for($i = 1; $i <= 5; $i++){
+			if(!array_key_exists($i, $accessLevelArray)){
+				$accessLevelArray[$i] = 0;
+			};
+		}
+
+		$data['accessLevelRatio']	= $accessLevelArray;
+
+
 		$this->load->view('human_resource/dashboard', $data);
 	}
 }

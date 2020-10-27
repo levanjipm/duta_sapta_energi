@@ -281,4 +281,23 @@ class User_model extends CI_Model {
 			$this->db->update($this->table_user);
 			return $this->db->affected_rows();
 		}
+
+		public function getAccessLevelRatio()
+		{
+			$query		= $this->db->query("
+				SELECT COUNT(users.id) AS count, users.access_level
+				FROM users
+				WHERE users.is_active = '1'
+				GROUP BY users.access_level
+			");
+
+			$result			= $query->result();
+			$responseArray	= array();
+			$data			= (array) $result;
+			foreach($data as $item){
+				$responseArray[$item->access_level] = $item->count;
+			}
+
+			return $responseArray;
+		}
 }
