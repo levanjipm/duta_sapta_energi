@@ -1496,5 +1496,37 @@ class Invoice_model extends CI_Model {
 			$result			= $query->result();
 			return $result;
 		}
+
+		public function getAchivementByAreaId($areaId, $offset, $limit)
+		{
+			$offsetMonth		= date("m", strtotime("-" . $offset . "month"));
+			$offsetYear			= date("Y", strtotime("-" . $offset . "month"));
+			$offsetDate			= date("Y-m-d", mktime(0,0,0,$offsetMonth, 1, $offsetYear));
+
+			$limitMonth		= date("m", strtotime("-" . $limit . "month"));
+			$limitYear		= date("Y", strtotime("-" . $limit . "month"));
+			$limitDate		= date("Y-m-d", mktime(0,0,0,$limitMonth, 1, $limitYear));
+			$query			 = $this->db->query("
+				SELECT invoiceTable.*
+				FROM (
+					SELECT SUM(invoice.value) AS value, YEAR(invoice.date) AS year, MONTH(invoice.date) AS month
+					FROM invoice
+					WHERE invoice.id IN (
+						SELECT DISTINCT(code_delivery_order.invoice_id) AS id
+						FROM code_delivery_order
+						JOIN delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order.id
+						JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
+						JOIN code_sales_order ON sales_order.code_sales_order_id
+						JOIN customer ON code_sales_order.customer_id = customer.id
+						WHERE customer.area_id = '$areaId'
+					)
+					AND invoice.date <= '$offsetDate' AND invoice.date >= '$limitDate'
+					GROUP BY YEAR(invoice.date), MONTH(invoice.date)
+				) invoiceTable
+			");
+
+			$result			= $query->result();
+			return $result;
+		}
 	}
 ?>

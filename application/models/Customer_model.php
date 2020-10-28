@@ -487,13 +487,13 @@ class Customer_model extends CI_Model {
 		public function getByAreaId($areaId)
 		{
 			$query		= $this->db->query("
-				SELECT customer.*, targetTable.value
+				SELECT customer.*, targetTable.value AS target
 				FROM customer
 				LEFT JOIN (
 					SELECT customer_target.value, customer_target.customer_id
 					FROM customer_target
 					JOIN (
-						SELECT customer_target.customer_id, customer_target.dateCreated
+						SELECT customer_target.customer_id, customer_target.dateCreated, customer_target.value
 						FROM customer_target
 						ORDER BY customer_target.customer_id ASC,
 						customer_target.dateCreated DESC

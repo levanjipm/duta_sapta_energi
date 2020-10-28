@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Waktu pembuatan: 27 Okt 2020 pada 11.05
+-- Waktu pembuatan: 28 Okt 2020 pada 10.59
 -- Versi server: 10.1.38-MariaDB
 -- Versi PHP: 7.3.2
 
@@ -492,7 +492,7 @@ CREATE TABLE `customer` (
 
 INSERT INTO `customer` (`id`, `name`, `address`, `number`, `rt`, `rw`, `city`, `postal_code`, `area_id`, `is_black_list`, `block`, `npwp`, `phone_number`, `pic_name`, `date_created`, `created_by`, `latitude`, `longitude`, `term_of_payment`, `plafond`, `is_remind`, `visiting_frequency`, `uid`, `password`) VALUES
 (1, 'Toko Sumber Lampu', 'Jalan Jendral Ahmad Yani (Plaza IBCC)', '3', '029', '006', 'Kota Bandung', '40271', 1, 0, 'B2', NULL, '(022) 7233271', 'Bapak Ayung', '2020-01-24', 1, NULL, NULL, 45, '3000000.00', 1, 28, '72297039', NULL),
-(5, 'Toko Agni Surya', 'Jalan Jendral Ahmad Yani', '353', '000', '000', 'Kota Bandung', '40121', 1, 0, '', '', '(022) 7273893', 'Ibu Yani', '2020-01-24', 1, '-6.911811000000000000000000000000', '107.637205000000000000000000000000', 45, '15000000.00', 1, 28, '09715857', 'e101df5a9fc03e1344eb9743f69c5127'),
+(5, 'Toko Agni Surya', 'Jalan Jendral Ahmad Yani', '353', '000', '000', 'Kota Bandung', '40121', 1, 0, '', '', '(022) 7273893', 'Ibu Yani', '2020-01-24', 1, '-6.911811000000000000000000000000', '107.637205000000000000000000000000', 45, '170000000.00', 1, 28, '09715857', 'e101df5a9fc03e1344eb9743f69c5127'),
 (6, 'Toko Trijaya 2', 'Jalan Cikawao', '56', '001', '001', 'Kota Bandung', '40261', 1, 0, '', NULL, '(022) 4220661', 'Bapak Yohan', '2020-01-24', 1, NULL, NULL, 45, '3000000.00', 1, 28, '45860382', NULL),
 (7, 'Toko Utama Lighting', 'Jalan Jendral Ahmad Yani (Plaza IBCC)', '12', '029', '006', 'Kota Bandung', '40271', 1, 0, 'D2', NULL, '081224499786', 'Ibu Mimi', '2020-01-25', 1, NULL, NULL, 45, '3000000.00', 1, 28, '51644842', NULL),
 (8, 'Toko Surya Agung', 'Jalan H. Ibrahim Adjie (Bandung Trade Mall)', '47A', '005', '011', 'Kota Bandung', '40283', 1, 0, 'C1', '', '(022) 7238333', 'Bapak Jajang Aji', '2020-01-29', 1, NULL, NULL, 45, '3000000.00', 1, 28, '88051032', NULL),
@@ -1450,7 +1450,8 @@ INSERT INTO `customer_target` (`id`, `customer_id`, `dateCreated`, `created_by`,
 (142, 275, '2020-10-01', 1, '3000000.0000'),
 (143, 276, '2020-10-01', 1, '3000000.0000'),
 (144, 277, '2020-10-01', 1, '3000000.0000'),
-(145, 278, '2020-10-01', 1, '3000000.0000');
+(145, 278, '2020-10-01', 1, '3000000.0000'),
+(146, 5, '2020-09-01', 1, '100000000.0000');
 
 -- --------------------------------------------------------
 
@@ -1729,8 +1730,8 @@ CREATE TABLE `invoice` (
 --
 
 INSERT INTO `invoice` (`id`, `name`, `value`, `discount`, `delivery`, `date`, `information`, `is_done`, `is_confirm`, `taxInvoice`, `lastBillingDate`, `nextBillingDate`, `is_billed`, `opponent_id`, `customer_id`) VALUES
-(18, 'INV.DSE202010-00020', '275520.00', '0.0000', '0.0000', '2020-10-25', 'DO-DSE-202010-00020', 1, 1, NULL, NULL, NULL, 0, NULL, NULL),
-(19, 'INV.DSE202010-00010', '282080.00', '50000.0000', '10000.0000', '2020-10-22', 'DO-DSE-202010-00010', 0, 1, NULL, NULL, NULL, 0, NULL, NULL);
+(18, 'INV.DSE202010-00020', '275520.00', '0.0000', '0.0000', '2020-09-25', 'DO-DSE-202010-00020', 1, 1, NULL, NULL, NULL, 0, NULL, NULL),
+(19, 'INV.DSE202010-00010', '282080.00', '50000.0000', '10000.0000', '2020-09-22', 'DO-DSE-202010-00010', 0, 1, NULL, NULL, NULL, 0, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -2066,7 +2067,7 @@ CREATE TABLE `plafond_submission` (
 
 INSERT INTO `plafond_submission` (`id`, `customer_id`, `submitted_plafond`, `submitted_top`, `submitted_by`, `submitted_date`, `is_confirm`, `is_delete`, `confirmed_by`, `confirmed_date`) VALUES
 (1, 15, NULL, 45, 1, '2020-10-23', 1, 0, 1, '2020-10-23'),
-(2, 5, '170000000.00', NULL, 19, '2020-10-25', 0, 0, NULL, NULL);
+(2, 5, '170000000.00', NULL, 19, '2020-10-25', 1, 0, 1, '2020-10-28');
 
 -- --------------------------------------------------------
 
@@ -3429,7 +3430,7 @@ ALTER TABLE `customer_sales`
 -- AUTO_INCREMENT untuk tabel `customer_target`
 --
 ALTER TABLE `customer_target`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=146;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=147;
 
 --
 -- AUTO_INCREMENT untuk tabel `debt_type`
