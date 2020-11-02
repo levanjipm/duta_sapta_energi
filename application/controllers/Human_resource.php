@@ -29,6 +29,31 @@ class Human_resource extends CI_Controller {
 		$data['pendingAttendance']	= $this->Attendance_model->getPendingAttendance(date("Y-m-d"));
 
 		$accessLevelArray = $this->User_model->getAccessLevelRatio();
+		$attendanceArray				= array();
+		$attendanceDashboardHistory		= $this->Attendance_model->getDashboardHistory();
+
+		foreach($attendanceDashboardHistory as $attendanceDashboard){
+			$difference		= $attendanceDashboard->difference;
+			if(!array_key_exists($difference, $attendanceArray)){
+				$attendanceArray[$difference]	= array();
+			}
+
+			$id			= $attendanceDashboard->id;
+			$status		= $attendanceDashboard->name;
+			$count		= $attendanceDashboard->count;
+
+			$attendanceArray[$difference][$id] = array(
+				"status" => $status,
+				"count" => (int)$count
+			);
+		}
+		for($i = 0; $i <= 6; $i++){
+			if(!array_key_exists($i, $attendanceArray)){
+				$attendanceArray[$i]	= array();
+			}
+		}
+
+		ksort($attendanceArray);
 
 		for($i = 1; $i <= 5; $i++){
 			if(!array_key_exists($i, $accessLevelArray)){
@@ -37,6 +62,7 @@ class Human_resource extends CI_Controller {
 		}
 
 		$data['accessLevelRatio']	= $accessLevelArray;
+		$data['attendanceItems']	= $attendanceArray;
 
 
 		$this->load->view('human_resource/dashboard', $data);

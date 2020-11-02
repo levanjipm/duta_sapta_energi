@@ -111,43 +111,75 @@ class Area extends CI_Controller {
 	public function getChartItems()
 	{
 		$areaId			= $this->input->get('area');
-		
+		$currentYear	= date("Y");
+		$currentMonth	= date('m');
+		$currentDate	= mktime(0,0,0, $currentMonth, 1, $currentYear);
+
 		$this->load->model("Invoice_model");
 		$invoiceObject		= $this->Invoice_model->getAchivementByAreaId($areaId, 0, 6);
+		$invoiceValue		= array();
+		foreach($invoiceObject as $invoiceItem){
+			$year		= $invoiceItem->year;
+			$month		= $invoiceItem->month;
+			$date		= mktime(0,0,0,$month, 1, $year);
+
+			$difference	= round(($currentDate - $date) / (60 * 60 * 24 * 30));
+			$invoiceValue[$difference]	= (float)$invoiceItem->value;
+		}
+
+		for($i = 1; $i <= 6; $i++){
+			if(!array_key_exists($i, $invoiceValue)){
+				$invoiceValue[$i] = 0;
+			}
+		}
+
+		$invoiceValue		= array_reverse($invoiceValue);
 
 		$this->load->model("Customer_target_model");
 		$targetObject		= (array)$this->Customer_target_model->getByAreaId($areaId);
-
-		$customerTargetArray		= array();
+		$customerArray		= array();
 		foreach($targetObject as $target){
 			$dateCreated		= $target->dateCreated;
+			$monthCreated		= date('m', strtotime($dateCreated));
+			$yearCreated		= date('Y', strtotime($dateCreated));
+			$date				= mktime(0,0,0,$monthCreated, 1, $yearCreated);
 			$value				= $target->value;
 
-			if(!array_key_exists($target->customer_id, $customerTargetArray)){
-				$customerTargetArray[$target->customer_id] = array();
+			$customerId			= $target->customer_id;
+			if(!array_key_exists($customerId, $customerArray)){
+				$customerArray[$customerId] = array();
 			}
 
 			for($i = 0; $i <= 6; $i++){
-				$month		= date("m", strtotime("-" . $i . "month"));
-				$year		= date("Y", strtotime("-" . $i . "month"));
-				$date		= date("Y-m-d", mktime(0,0,0, $month, 1, $year));
+				$paramMonth			= date('m', strtotime("-" . $i . "month"));
+				$paramYear			= date('Y', strtotime("-" . $i . "month"));
+				$paramDate			= mktime(0,0,0, $paramMonth, 1, $paramYear);
 
-				if($dateCreated <= $date){
-					$customerTargetArray[$target->customer_id][$i] = $value;
+				$difference			= (int) round(($paramDate - $date) / (60 * 60 * 24 * 30));
+				if($difference >= 0){
+					$customerArray[$customerId][$i] = $value;
+				} else if($difference < 0) {
+					$customerArray[$customerId][$i] = 0;
 				}
-			}
-
-			next($targetObject);
+			}			
 		}
 
-		foreach($customerTargetArray as $customerId => $targetArray){
-			for($i = 0; $i <= 6; $i++){
-				if(empty($customerTargetArray[$customerId][$i])){
-					$customerTargetArray[$customerId][$i] = 0;
-				}
-			}
+		$targetArray		= array_fill(0, 6, 0);
+		foreach($customerArray as $customerItem){
+			for($i = 0; $i < 6; $i++){
+				$currentValue		= $targetArray[$i];
+				$value				= $customerItem[$i];
+				$nextValue			= $currentValue + $value;
+				
+				$targetArray[$i]	= $nextValue;
+			}			
 		}
 
-		echo json_encode($customerTargetArray);
+		$targetValue		= array_reverse($targetArray);
+
+		$data['target']		= $targetValue;
+		$data['value']		= $invoiceValue;
+
+		echo json_encode($data);
 	}
 }

@@ -77,7 +77,7 @@ class Customer_sales_model extends CI_Model {
 					WHERE customer_sales.sales_id = '$salesId'
 				) AS a
 				ON a.customer_id = customer.id
-				AND $areaFilter (
+				WHERE $areaFilter (
 					customer.name LIKE '%$term%'
 					OR customer.address LIKE '%$term%'
 					OR customer.city LIKE '%$term%'
@@ -85,6 +85,7 @@ class Customer_sales_model extends CI_Model {
 				ORDER BY customer.name
 				LIMIT $limit OFFSET $offset
 			");
+
 
 			$result		= $query->result();
 			return $result;
@@ -140,6 +141,25 @@ class Customer_sales_model extends CI_Model {
 				$this->db->insert_batch($this->table_customer_sales, $batch);
 			}
 			
+		}
+
+		public function getByCustomerUID($customerUID)
+		{
+			$query		= $this->db->query("
+				SELECT users.name, users.email
+				FROM users
+				WHERE users.id IN (
+					SELECT customer_sales.sales_id
+					FROM customer_sales
+					JOIN customer ON customer_sales.customer_id = customer.id
+					WHERE customer.uid = '$customerUID'
+				)
+				AND users.is_active = '1'
+				ORDER BY users.access_level ASC, users.name ASC
+			");
+
+			$result		= $query->row();
+			return ($result == null) ? null : $result;
 		}
 	}
 ?>

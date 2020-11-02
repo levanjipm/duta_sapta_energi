@@ -1511,7 +1511,8 @@ class Invoice_model extends CI_Model {
 				FROM (
 					SELECT SUM(invoice.value) AS value, YEAR(invoice.date) AS year, MONTH(invoice.date) AS month
 					FROM invoice
-					WHERE invoice.id IN (
+					LEFT JOIN customer ON invoice.customer_id = customer.id
+					WHERE (invoice.id IN (
 						SELECT DISTINCT(code_delivery_order.invoice_id) AS id
 						FROM code_delivery_order
 						JOIN delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order.id
@@ -1520,9 +1521,21 @@ class Invoice_model extends CI_Model {
 						JOIN customer ON code_sales_order.customer_id = customer.id
 						WHERE customer.area_id = '$areaId'
 					)
-					AND invoice.date <= '$offsetDate' AND invoice.date >= '$limitDate'
+					AND invoice.date <= '$offsetDate' AND invoice.date >= '$limitDate')
+					OR customer.area_id = '$areaId'					
 					GROUP BY YEAR(invoice.date), MONTH(invoice.date)
 				) invoiceTable
+				UNION (
+					SELECT SUM((-1) * price_list.price_list * delivery_order.quantity * (100 - sales_order.discount) / 100) AS value, YEAR(code_sales_return_received.date) AS year, MONTH(code_sales_return_received.date) AS month
+					FROM sales_return_received
+					JOIN code_sales_return_received ON sales_return_received.code_sales_return_received_id = code_sales_return_received.id
+					JOIN sales_return ON sales_return_received.sales_return_id = sales_return.id
+					JOIN delivery_order ON sales_return.delivery_order_id = delivery_order.id
+					JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
+					JOIN price_list ON sales_order.price_list_id = price_list.id
+					WHERE code_sales_return_received.date <= '$offsetDate' AND code_sales_return_received.date >= '$limitDate'
+					GROUP BY YEAR(code_sales_return_received.date), MONTH(code_sales_return_received.date)
+				)
 			");
 
 			$result			= $query->result();

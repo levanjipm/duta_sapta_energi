@@ -5,6 +5,51 @@
 		array_push($accessLevelArray, $level);
 		array_push($accessLevelCountArray, $count);
 	}
+
+	$attendanceDateArray	= array();
+	$attendanceLabelArray	= array();
+	$attendanceArray		= array();
+	$attendanceData			= array();
+	foreach($attendanceItems as $difference => $detail){
+		$label		= date("d M Y", strtotime("-" . $difference . "day"));
+		$attendanceDateArray[]	= $label;
+		foreach($detail as $statusId => $item){
+			if(!array_key_exists($statusId, $attendanceArray)){
+				$attendanceArray[$statusId] = array();
+				$attendanceLabelArray[$statusId] = $item['status'];
+			};
+			$attendanceArray[$statusId][$difference] = $item['count'];
+		}
+	}
+
+	array_reverse($attendanceDateArray);
+	
+	foreach($attendanceArray as $key => $attendance){
+		for($i = 0; $i <= 6; $i++){
+			if(!array_key_exists($i, $attendance)){
+				$attendanceArray[$key][$i] = 0;
+			}
+		}
+		ksort($attendanceArray[$key]);
+	}
+
+	$opacityDivider		= count($attendanceLabelArray);
+	foreach($attendanceArray as $key => $attendance){
+		$label		= $attendanceLabelArray[$key];
+		$data		= $attendance;
+
+		//Differenciate the background color from opacity 1 to opacity 0.2//
+		$opacity	= 1 - 0.8 * ($key / $opacityDivider);
+
+		$item		= array(
+			"label" => $label,
+			"data" => $data,
+			"background" => 'rgba(225, 115, 60, ' . $opacity . ')'
+		);
+
+		$attendanceData[]	= $item;
+	}
+	$attendanceDataFinal		= json_encode($attendanceData);
 ?>
 <head>
     <title>Human Resource</title>
@@ -72,6 +117,15 @@
 			border-radius:5px;
 			background-color:rgb(1, 187, 0);
 		}
+
+		#levelChart{
+			top:0;
+			bottom:0;
+			left:0;
+			right:0;
+			position:absolute;
+			margin:auto;
+		}
     </style>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
 </head>
@@ -127,8 +181,15 @@
 						</div>
 					<?php } ?>
 					</div>
+				</div>
 			</div>
 			<div class="col-sm-6">
+				<div class="row">
+					<div class="col-sm-12">
+						<label>Attendance</label>
+						<canvas id='attendanceChart'></canvas>
+					</div>
+				</div>
 			</div>
 		</div>
     </div>
@@ -181,6 +242,11 @@
 	}
 
 	$(document).ready(function(){
+		getLevelRatio();
+		getAttendanceHistory();
+	});
+
+	function getLevelRatio(){
 		var ctx = document.getElementById("levelChart");
 		var myChart = new Chart(ctx, {
 			type: 'doughnut',
@@ -213,5 +279,38 @@
 			},
 			}
 		});
-	})
+	}
+
+	function getAttendanceHistory(){
+		var history		= <?= $attendanceDataFinal ?>;
+		var datasets	= [];
+		$.each(history, function(index, item){
+			var dataset = {
+				label: item.label,
+				data: item.data.reverse(),
+				backgroundColor: item.background
+			}
+
+			datasets[index] = dataset;
+		});
+
+		var ctx = document.getElementById("attendanceChart");
+		var myBarChart = new Chart(ctx, {
+			type: 'bar',
+			data: {
+				labels: <?= json_encode(array_reverse($attendanceDateArray)) ?>,
+				datasets:datasets
+			},
+			options: {
+				scales: {
+					xAxes: [{
+						stacked: true
+					}],
+					yAxes: [{
+						stacked: true
+					}]
+				}
+			}
+		});
+	}
 </script>

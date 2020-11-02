@@ -204,5 +204,21 @@ class Attendance_model extends CI_Model {
 			$result			= $query->num_rows();
 			return $result;
 		}
+
+		public function getDashboardHistory()
+		{
+			$paramDate		= date("Y-m-d", strtotime("-6days"));
+			$query		= $this->db->query("
+				SELECT COUNT(attendance_list.id) AS count, attendance_status.name AS name, DATEDIFF(CURDATE(), attendance_list.date) AS difference, attendance_status.id AS id
+				FROM attendance_list
+				JOIN attendance_status ON attendance_list.status = attendance_status.id
+				WHERE attendance_list.date >= '$paramDate'
+				GROUP BY attendance_list.status, attendance_list.date
+				ORDER BY attendance_list.date DESC
+			");
+			
+			$result		= $query->result();
+			return $result;
+		}
 	}
 ?>
