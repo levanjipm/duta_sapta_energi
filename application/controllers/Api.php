@@ -151,6 +151,35 @@ class Api extends CI_Controller {
 		$this->load->model("Customer_sales_model");
 		$result		= $this->Customer_sales_model->getByCustomerUID($customerUID);
 		echo json_encode($result);
-	}
+    }
+    
+    public function getCustomerSalesOrderHistory()
+    {
+        header('Access-Control-Allow-Origin: *');
+        header("Access-Control-Allow-Methods: *");
+        header("Content-Type:application/json");
+
+        $currentMonth       = date('m');
+        $currentYear        = date('Y');
+        $currentDate        = mktime(0,0,0,$currentMonth, 1, $currentYear);
+        $postdata = file_get_contents("php://input");
+        $customerUID         = $postdata;
+        $this->load->model("Sales_order_model");
+        $data       = $this->Sales_order_model->getByCustomerUID($customerUID);
+        $result     = array();
+        foreach($data as $datum){
+            $year       = $datum->year;
+            $month      = $datum->month;
+            $value      = $datum->value;
+            $sentValue  = $datum->sentValue;
+
+            $difference = round(($currentDate - mktime(0,0,0,$month, 1, $year)) / (60 * 60 * 24 * 30));
+            $result[$difference] = array(
+                "value" => $value,
+                "sent" => $sentValue
+            );
+        }
+        echo json_encode($result);
+    }
 }
 ?>

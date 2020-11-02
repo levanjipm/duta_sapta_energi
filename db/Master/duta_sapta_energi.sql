@@ -1987,14 +1987,6 @@ CREATE TABLE `plafond_submission` (
   `confirmed_date` date DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
---
--- Dumping data untuk tabel `plafond_submission`
---
-
-INSERT INTO `plafond_submission` (`id`, `customer_id`, `submitted_plafond`, `submitted_top`, `submitted_by`, `submitted_date`, `is_confirm`, `is_delete`, `confirmed_by`, `confirmed_date`) VALUES
-(1, 15, NULL, 45, 1, '2020-10-23', 1, 0, 1, '2020-10-23'),
-(2, 5, '170000000.00', NULL, 19, '2020-10-25', 0, 0, NULL, NULL);
-
 -- --------------------------------------------------------
 
 --

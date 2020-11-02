@@ -730,4 +730,21 @@ class Sales_order_model extends CI_Model {
 			$result			= $query->num_rows();
 			return $result;
 		}
+
+		public function getByCustomerUID($customerUID)
+		{
+			$query			= $this->db->query("
+				SELECT SUM(price_list.price_list * (100 - sales_order.discount) * sales_order.quantity) AS value, SUM(price_list.price_list * (100 - sales_order.discount) * sales_order.sent) AS sentValue, MONTH(code_sales_order.date) AS month, YEAR(code_sales_order.date) AS year
+				FROM sales_order
+				JOIN price_list ON sales_order.price_list_id = price_list.id
+				JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
+				JOIN customer ON code_sales_order.customer_id = customer.id
+				WHERE customer.uid = '$customerUID'
+				AND code_sales_order.is_confirm = '1'
+				GROUP BY MONTH(code_sales_order.date), YEAR(code_sales_order.date)
+				ORDER BY YEAR(code_sales_order.date) ASC, MONTH(code_sales_order.date) ASC
+			");
+			$result			= $query->result();
+			return $result;
+		}
 }
