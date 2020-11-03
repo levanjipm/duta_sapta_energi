@@ -10,7 +10,9 @@
 	<a href='<?= site_url() ?>'><img src='<?= base_url('assets/Logo_light.png') ?>' style='width:70%;vertical-align:top;height:65px;'></a>
 	<div class='sidenav_bar_departments'>
 <?php
+	$departmentArray		= array();
 	foreach($departments as $department){
+		array_push($departmentArray, (int)$department->department_id);
 ?>
 		<button class='button_departments' onclick='window.location.href="<?= site_url($department->index_url) ?>"' title='<?= $department->name ?>'><img src='<?= base_url() . 'assets/' . $department->icon . '.png' ?>' style='width:100%;filter: brightness(0) invert(1);'></button>
 		<br><br>
@@ -19,26 +21,34 @@
 ?>
 	</div>
 	<div class='sidenav_bar_functions'>
+		<?php if(in_array(1, $departmentArray)){ ?>
 		<button class='container_button'><p>Accounting</p></button>
 		<div class='container_bar'>
 			<a href='<?= site_url('Invoice/deleteDashboard') ?>'><button><p style='font-family:museo'>Delete Invoice</p></button></a>
 			<a href='<?= site_url('Debt/deleteDashboard') ?>'><button><p style='font-family:museo'>Delete Debt</p></button></a>
 		</div>
+		<?php } ?>
+		<?php if(in_array(5, $departmentArray)){ ?>
 		<button class='container_button'><p>Finance</p></button>
 		<div class='container_bar'>
 			<a href='<?= site_url('Bank/deleteDashboard') ?>'><button><p style='font-family:museo'>Delete Bank Data</p></button></a>
 			<a href='<?= site_url('Petty_cash/deleteDashboard') ?>'><button><p style='font-family:museo'>Delete Petty Cash Data</p></button></a>
 		</div>
+		<?php } ?>
+		<?php if(in_array(4, $departmentArray)){ ?>
 		<button class='container_button'><p>Inventory</p></button>
 		<div class='container_bar'>
 			<a href='<?= site_url('Delivery_order/deleteDashboard') ?>'><button><p style='font-family:museo'>Delete Delivery Order</p></button></a>
 			<a href='<?= site_url('Good_receipt/deleteDashboard') ?>'><button><p style='font-family:museo'>Delete Good Receipt</p></button></a>
 		</div>
+		<?php } ?>
+		<?php if(in_array(3, $departmentArray)){ ?>
 		<button class='container_button'><p>Purchasing</p></button>
 		<div class='container_bar'>
 			<a href='<?= site_url('Purchase_order/editDashboard') ?>'><button><p style='font-family:museo'>Edit Purchase Order</p></button></a>
 			<a href='<?= site_url('Purchase_order/closeDashboard') ?>'><button><p style='font-family:museo'>Close Purchase Order</p></button></a>
 		</div>
+		<?php } ?>
 	</div>
 </div>
 <script>

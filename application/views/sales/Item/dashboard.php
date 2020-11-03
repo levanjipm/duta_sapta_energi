@@ -157,7 +157,7 @@
 					var reference	= item.reference;
 					var description	= item.name;
 					var id			= item.item_id;
-					$('#itemTableContent').append("<tr><td>" + reference + "</td><td>" + description + "</td><td><button type='button' class='button button_success_dark' onclick='viewItem(" + id + ")' title='Edit " + reference + "'><i class='fa fa-pencil'></i></button> <button type='button' class='button button_danger_dark' onclick='confirm_delete(" + id + ")' title='Delete " + reference + "'><i class='fa fa-trash'></i></button> <button type='button' class='button button_default_dark' title='View " + reference + "'><i class='fa fa-eye'></i></button>");
+					$('#itemTableContent').append("<tr><td>" + reference + "</td><td>" + description + "</td><td><button type='button' class='button button_success_dark' onclick='viewItem(" + id + ")' title='Edit " + reference + "'><i class='fa fa-pencil'></i></button> <button type='button' class='button button_danger_dark' onclick='confirm_delete(" + id + ")' title='Delete " + reference + "'><i class='fa fa-trash'></i></button> <button type='button' class='button button_default_dark' title='View " + reference + "' onclick='viewDetailItem(`" + reference + "`)'><i class='fa fa-eye'></i></button>");
 					itemCount++;
 				});
 
@@ -183,6 +183,10 @@
 			
 		});
 	};
+
+	function viewDetailItem(reference){
+		window.location.href='<?= site_url('Item/viewDetail/') ?>' + reference
+	}
 
 	$('#add_item_button').click(function(){
 		$('#addItemWrapper').fadeIn(300, function(){

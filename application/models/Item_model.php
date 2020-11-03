@@ -255,4 +255,16 @@ class Item_model extends CI_Model {
 				return 0;
 			}
 		}
+
+		public function getByReference($reference)
+		{
+			$this->db->select('item.*, item_class.name as className');
+			$this->db->from('item');
+			$this->db->join('item_class', 'item.type = item_class.id');
+			$this->db->where('item.reference', $reference);
+
+			$query		= $this->db->get();
+			$result		= $query->row();
+			return $result;
+		}
 }

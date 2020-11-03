@@ -215,4 +215,15 @@ class Asset_model extends CI_Model {
 			return $result;
 		}
 
+		public function getCurrentValue($date)
+		{
+			$this->db->where('date <=', $date);
+			$this->db->where('sold_date >', $date);
+			$this->db->or_where('sold_date', null);
+			
+			$query			= $this->db->get($this->table_asset);
+			$result			= $query->result();
+			return $result;
+		}
+
 }

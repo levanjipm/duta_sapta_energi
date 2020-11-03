@@ -1541,5 +1541,24 @@ class Invoice_model extends CI_Model {
 			$result			= $query->result();
 			return $result;
 		}
+
+		public function getIncompletedTransactionByDate($date)
+		{
+			$query		= $this->db->query("
+				SELECT COALESCE(SUM(invoice.value - invoice.discount + invoice.delivery),0) AS value, COALESCE(receivableTable.value,0) AS paid
+				FROM invoice
+				LEFT JOIN (
+					SELECT SUM(receivable.value) AS value, receivable.invoice_id
+					FROM receivable
+					GROUP BY receivable.invoice_id
+				) receivableTable
+				ON invoice.id = receivableTable.invoice_id
+				WHERE invoice.is_done = '0'
+				AND invoice.date <= '$date'
+			");
+
+			$result		= $query->row();
+			return $result;
+		}
 	}
 ?>

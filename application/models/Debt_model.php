@@ -775,5 +775,55 @@ class Debt_model extends CI_Model {
 			$result			= $this->db->affected_rows();
 			return $result;
 		}
+
+		public function getIncompletedTransactionByDate($date)
+		{
+			$query			= $this->db->query("
+				SELECT COALESCE(SUM(debtTable.value - debtTable.paid), 0) AS value
+				FROM (
+					SELECT purchase_invoice_other.id, COALESCE(purchase_invoice_other.value,0) AS value, COALESCE(payableTable.value,0) AS paid
+					FROM purchase_invoice_other
+					LEFT JOIN (
+						SELECT SUM(payable.value) AS value, payable.other_purchase_id
+						FROM payable
+						JOIN bank_transaction ON payable.bank_id = bank_transaction.id
+						GROUP BY payable.other_purchase_id
+					) payableTable
+					ON purchase_invoice_other.id = payableTable.other_purchase_id
+					WHERE purchase_invoice_other.is_confirm = '1'
+					UNION (
+						SELECT purchaseInvoiceTable.id, COALESCE(purchaseInvoiceTable.value, 0) AS value, COALESCE(payableTable.value) AS paid
+						FROM (
+							SELECT SUM(good_receipt.quantity * good_receipt.billed_price) AS value, purchase_invoice.id
+							FROM good_receipt
+							JOIN code_good_receipt ON good_receipt.code_good_receipt_id = code_good_receipt.id
+							JOIN purchase_invoice ON code_good_receipt.invoice_id = purchase_invoice.id
+							WHERE purchase_invoice.date <= '$date'
+							AND purchase_invoice.is_confirm = '1'
+							GROUP BY purchase_invoice.id
+						) purchaseInvoiceTable
+						LEFT JOIN (
+							SELECT SUM(payable.value) AS value, payable.purchase_id
+							FROM payable
+							JOIN bank_transaction ON bank_transaction.id = payable.bank_id
+							WHERE bank_transaction.date <= '$date'
+							GROUP BY payable.purchase_id
+						) payableTable
+						ON purchaseInvoiceTable.id = payableTable.purchase_id
+					)
+					UNION (
+						SELECT NULL as id, SUM(purchase_order.net_price * good_receipt.quantity) AS value, 0 AS paid
+						FROM good_receipt
+						JOIN purchase_order ON good_receipt.purchase_order_id = purchase_order.id
+						JOIN code_good_receipt ON good_receipt.code_good_receipt_id = code_good_receipt.id
+						WHERE code_good_receipt.is_confirm = '1'
+						AND code_good_receipt.invoice_id IS NULL
+					)
+				) debtTable
+			");
+
+			$result		= $query->row();
+			return $result->value;
+		}
 	}
 ?>

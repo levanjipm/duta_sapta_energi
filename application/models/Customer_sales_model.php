@@ -125,22 +125,29 @@ class Customer_sales_model extends CI_Model {
 				$this->db->delete($this->table_customer_sales);
 
 			} else if($status == 1){
-				$batch		= array();
-				foreach($customerArray as $customer)
-				{
-					$batchItem = array(
+				$this->db->where_in('customer_id', $customerArray);
+				$this->db->where('sales_id', $salesId);
+				$query		= $this->db->get($this->table_customer_sales);
+				$result		= $query->result();
+
+				$existCustomerArray = array();
+				foreach($result as $data){
+					array_push($existCustomerArray, $data->customer_id);
+				}
+				
+				$finalCustomerArray		= array_diff($customerArray, $existCustomerArray);
+				$itemArray		= array();
+				foreach($finalCustomerArray as $finalCustomer){
+					$itemArray[] = array(
 						"id" => "",
-						"customer_id" => $customer,
+						"customer_id" => $finalCustomer,
 						"sales_id" => $salesId
 					);
-
-					array_push($batch, $batchItem);
-					next($customerArray);
 				}
-
-				$this->db->insert_batch($this->table_customer_sales, $batch);
+				if(count($itemArray) > 0){
+					$this->db->insert_batch($this->table_customer_sales, $itemArray);
+				}
 			}
-			
 		}
 
 		public function getByCustomerUID($customerUID)

@@ -26,7 +26,7 @@ class Item extends CI_Controller {
 		$items = $this->Item_class_model->showAllItems();
 		$data['classes'] = $items;
 		
-		$this->load->view('sales/item_manage_dashboard',$data);
+		$this->load->view('sales/Item/dashboard',$data);
 	}
 	
 	public function insertItem()
@@ -48,11 +48,6 @@ class Item extends CI_Controller {
 	{
 		$this->load->model('Item_model');
 		$this->Item_model->updateById();
-	}
-	
-	public function shopping_cart_view_purchase()
-	{		
-		$this->load->view('purchasing/shopping_cart_item');
 	}
 	
 	public function showItems()
@@ -107,5 +102,51 @@ class Item extends CI_Controller {
 		} else {
 			echo 0;
 		}		
+	}
+
+	public function viewDetail($reference)
+	{
+		$user_id		= $this->session->userdata('user_id');
+		$this->load->model('User_model');
+		$data['user_login'] = $this->User_model->getById($user_id);
+		
+		$this->load->model('Authorization_model');
+		$data['departments']	= $this->Authorization_model->getByUserId($user_id);
+		
+		$this->load->view('head');
+		$this->load->view('sales/header', $data);
+		
+		$data		= array();
+		$this->load->model("Item_model");
+		$data['item']	= $this->Item_model->getByReference($reference);
+
+		$this->load->model("Stock_out_model");
+		$stockArray		= $this->Stock_out_model->calculateMonthlyOutput($reference);
+		
+		$currentDate	= mktime(0,0,0,date('m'), 1, date("Y"));
+		$stockArray		= array();
+		foreach($stockArray as $stock){
+			$month		= $stock->month;
+			$year		= $stock->year;
+			$quantity	= $stock->quantity;
+
+			$date		= mktime(0,0,0,$month, 1, $year);
+			$difference	= round(($currentDate - $date) / (60 * 60 * 24 * 30));
+
+			$stockArray[$difference] = $quantity;
+		}
+
+		for($i = 0; $i < 12; $i++){
+			if(!array_key_exists($i, $stockArray)){
+				$stockArray[$i] = 0;
+			}
+		}
+
+		$data['stock']	= json_encode($stockArray);
+
+		$this->load->model("Price_list_model");	
+		$data['price']	= $this->Price_list_model->getByItemReference($reference);
+
+		$this->load->view('sales/Item/detailDashboard', $data);
 	}
 }

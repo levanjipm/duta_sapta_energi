@@ -68,14 +68,10 @@ class Customer_accountant_model extends CI_Model {
 					array_push($customerIdArrayExist, $item->customer_id);
 				}
 
-				foreach($customerIdArray as $customerId){
-					if(!in_array($customerId, $customerIdArrayExist)){
-						$batch[] = array(
-							"id" => '',
-							"customer_id" => $customerId,
-							"accountant_id" => $accountantId
-						);
-					}
+				$finalCustomerArray		= array_diff($customerIdArray, $customerIdExist);
+
+				foreach($finalCustomerArray as $finalCustomer){
+					$batch[]	= $finalCustomer;
 				}
 
 				if(count($batch) > 0){
@@ -106,14 +102,14 @@ class Customer_accountant_model extends CI_Model {
 					array_push($customerIdArrayExist, $item->customer_id);
 				}
 
-				foreach($customerIdArray as $customerId){
-					if(!in_array($customerId, $customerIdArrayExist)){
-						$batch[] = array(
-							"id" => '',
-							"customer_id" => $customerId,
-							"accountant_id" => $accountantId
-						);
-					}
+				$finalCustomerArray		= array_diff($customerIdArray, $customerIdArrayExist);
+
+				foreach($finalCustomerArray as $finalCustomer){
+					$batch[]		= array(
+						"id" => "",
+						"customer_id" => $finalCustomer,
+						"accountant_id" => $accountantId
+					);
 				}
 
 				$this->db->insert_batch($this->table_customer_accountant, $batch);

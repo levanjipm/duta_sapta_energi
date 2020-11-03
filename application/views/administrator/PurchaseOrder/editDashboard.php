@@ -3,7 +3,7 @@
 </head>
 <div class='dashboard'>
 	<div class='dashboard_head'>
-		<p style='font-family:museo'><a href='<?= site_url('Administrator') ?>' title='Administrator'><i class='fa fa-briefcase'></i></a> /Purchase Order / Close</p>
+		<p style='font-family:museo'><a href='<?= site_url('Administrator') ?>' title='Administrator'><i class='fa fa-briefcase'></i></a> /Purchase Order / Edit</p>
 	</div>
 	<br>
 	<div class='dashboard_in'>

@@ -23,6 +23,20 @@ class Receivable extends CI_Controller {
 		$this->load->view('accounting/header', $data);
 		$this->load->view('accounting/Receivable/dashboard');
 	}
+
+	public function finance()
+	{
+		$user_id		= $this->session->userdata('user_id');
+		$this->load->model('User_model');
+		$data['user_login'] = $this->User_model->getById($user_id);
+		
+		$this->load->model('Authorization_model');
+		$data['departments']	= $this->Authorization_model->getByUserId($user_id);
+		
+		$this->load->view('head');
+		$this->load->view('finance/header', $data);
+		$this->load->view('finance/Receivable/dashboard');
+	}
 	
 	public function viewReceivable()
 	{	

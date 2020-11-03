@@ -90,4 +90,17 @@ class Price_list_model extends CI_Model {
 			$result = $this->db->delete($this->table_price_list);
 			return $result;
 		}
+
+		public function getByItemReference($reference)
+		{
+			$this->db->select('price_list.*');
+			$this->db->from('price_list');
+			$this->db->join('item', 'price_list.item_id = item.id');
+			$this->db->where('item.reference', $reference);
+			$this->db->order_by('id', "ASC");
+
+			$query		= $this->db->get();
+			$result		= $query->result();
+			return $result;
+		}
 }

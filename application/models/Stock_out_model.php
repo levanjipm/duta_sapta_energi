@@ -285,5 +285,22 @@ class Stock_out_model extends CI_Model {
 			}
 			
 		}
+
+		public function calculateMonthlyOutput($reference)
+		{
+			$paramDate		= date("Y-m-d", mktime(0,0,0,date('m'), 1, date('Y')));
+			$query		= $this->db->query("
+				SELECT SUM(stock_out.quantity) AS quantity, MONTH(code_delivery_order.date) AS month, YEAR(code_delivery_order.date) AS year
+				FROM stock_out
+				JOIN delivery_order ON stock_out.delivery_order_id = delivery_order.id
+				JOIN code_delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order.id
+				WHERE code_delivery_order.date <= '$paramDate'
+				GROUP BY MONTH(code_delivery_order.date), YEAR(code_delivery_order.date)
+				ORDER BY code_delivery_order.date ASC
+			");
+
+			$result		= $query->result();
+			return $result;
+		}
 	}
 ?>

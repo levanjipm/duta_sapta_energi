@@ -1,7 +1,6 @@
 <head>
 	<title>Customer Area</title>
 	<script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
-
 	<script src="https://js.api.here.com/v3/3.1/mapsjs-core.js" type="text/javascript" charset="utf-8"></script>
 	<script src="https://js.api.here.com/v3/3.1/mapsjs-service.js" type="text/javascript" charset="utf-8"></script>
 	<script>
