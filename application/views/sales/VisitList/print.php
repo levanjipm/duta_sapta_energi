@@ -61,7 +61,7 @@
 			$complete_address	.= ' No. ' . $customer_number;
 		}
 		
-		if($customer_block != NULL || $customer_block == "000"){
+		if($customer_block != NULL && $customer_block != "000"){
 			$complete_address	.= ' Blok ' . $customer_block;
 		}
 		

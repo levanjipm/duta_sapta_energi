@@ -59,4 +59,31 @@ class Finance extends CI_Controller {
 
 		$this->load->view('finance/dashboard', $data);
 	}
+
+	public function paymentDashboard()
+	{
+		$user_id		= $this->session->userdata('user_id');
+		$this->load->model('User_model');
+		$data['user_login'] = $this->User_model->getById($user_id);
+		
+		$this->load->model('Authorization_model');
+		$data['departments']	= $this->Authorization_model->getByUserId($user_id);
+		
+		$this->load->view('head');
+		$this->load->view('finance/header', $data);
+
+		$data		= array();
+		$this->load->model("Payable_model");
+		$data['suppliers']	= $this->Payable_model->getSuppliersWithIncompletedInvoices();
+		$this->load->view('finance/Payment/dashboard', $data);
+	}
+
+	public function getIncompletedInvoiceBySupplierId()
+	{
+		$supplierId			= $this->input->get('id');
+		$this->load->model("Payable_model");
+		$data		= $this->Payable_model->getIncompletedInvoiceBySupplierId($supplierId);
+		header('Content-Type: application/json');
+		echo json_encode($data);		
+	}	
 }

@@ -7,7 +7,7 @@
 	</div>
 	<br>
 	<div class='dashboard_in'>
-        <input type='text' class='form-control input-lg' id='search_bar' placeholder="Search debt document">
+        <input type='text' class='form-control' id='search_bar' placeholder="Search debt document">
 		<br>
 		<div id='debtTable'>
 			<table class='table table-bordered' id='debt_document_table'>

@@ -50,7 +50,7 @@
 			<a href='<?= site_url('Income/reportDashboard') ?>'><button><p style='font-family:museo'>Report</p></button></a>
 		</div>
 		<a href='<?= site_url('Receivable/finance') ?>'><button><p>Receivable</p></button></a>
-		<a href='<?= site_url('Payable/finance') ?>'><button><p>Finance</p></button></a>
+		<a href='<?= site_url('Payable/finance') ?>'><button><p>Payable</p></button></a>
 		<button class='container_button'><p style='font-family:museo'>Billing</p></button>
 		<div class='container_bar'>
 			<a href='<?= site_url('Billing/createDashboard') ?>'><button><p style='font-family:museo'>Create</p></button></a>
@@ -58,6 +58,7 @@
 			<a href='<?= site_url('Billing/reportDashboard') ?>'><button><p style='font-family:museo'>Report</p></button></a>
 			<a href='<?= site_url('Billing/archiveDashboard') ?>'><button><p style='font-family:museo'>Archive</p></button></a>
 		</div>
+		<a href='<?= site_url('Finance/paymentDashboard') ?>'><button><p>Payment</p></button></a>
 	</div>
 </div>
 <script>

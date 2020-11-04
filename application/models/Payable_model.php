@@ -129,7 +129,7 @@ class Payable_model extends CI_Model {
 					JOIN code_good_receipt ON purchase_invoice.id = code_good_receipt.invoice_id
 					JOIN good_receipt ON good_receipt.code_good_receipt_id = code_good_receipt.id
 					JOIN purchase_order ON good_receipt.purchase_order_id = purchase_order.id
-					JOIN code_purchase_order ON purchase_order.code_purchase_order_id
+					JOIN code_purchase_order ON purchase_order.code_purchase_order_id = code_purchase_order.id
 					WHERE code_purchase_order.supplier_id = '$supplierId'
 					AND purchase_invoice.is_done = '0'
 				)
@@ -277,6 +277,83 @@ class Payable_model extends CI_Model {
 			}
 
 			return $data;
+		}
+
+		public function getSuppliersWithIncompletedInvoices()
+		{
+			$query		= $this->db->query("
+				SELECT supplier.*
+				FROM supplier
+				WHERE supplier.id IN (
+					SELECT purchase_invoice_other.supplier_id
+					FROM purchase_invoice_other
+					WHERE purchase_invoice_other.is_done = '0'
+					AND purchase_invoice_other.is_confirm = '1'
+					UNION (
+						SELECT code_purchase_order.supplier_id
+						FROM good_receipt
+						JOIN purchase_order ON good_receipt.purchase_order_id = purchase_order.id
+						JOIN code_purchase_order ON purchase_order.code_purchase_order_id = code_purchase_order.id
+						JOIN code_good_receipt ON good_receipt.code_good_receipt_id = code_good_receipt.id
+						JOIN purchase_invoice ON code_good_receipt.invoice_id = purchase_invoice.id
+						WHERE purchase_invoice.is_done = '0'
+						AND purchase_invoice.is_confirm = '1'
+					)
+				)
+			");
+
+			$result		= $query->result();
+			return $result;
+		}
+
+		public function getIncompletedInvoiceBySupplierId($supplierId)
+		{
+			$query			= $this->db->query("
+				SELECT * FROM (
+					SELECT purchase_invoice.id, purchase_invoice.date, purchase_invoice.invoice_document, purchase_invoice.tax_document, goodReceiptTable.value, COALESCE(payableTable.value,0) AS paid, '1' AS type, goodReceiptTable.payment
+					FROM purchase_invoice
+					JOIN (
+						SELECT SUM(a.value) AS value, code_good_receipt.invoice_id, a.payment
+						FROM code_good_receipt
+						JOIN (
+							SELECT SUM(good_receipt.billed_price * good_receipt.quantity) AS value, good_receipt.code_good_receipt_id, code_purchase_order.payment
+							FROM good_receipt
+							JOIN purchase_order ON good_receipt.purchase_order_id = purchase_order.id
+							JOIN code_purchase_order ON purchase_order.code_purchase_order_id = code_purchase_order.id
+							WHERE code_purchase_order.supplier_id = '$supplierId'
+							GROUP BY good_receipt.code_good_receipt_id
+						) AS a
+						ON a.code_good_receipt_id = code_good_receipt.id
+						GROUP BY code_good_receipt.invoice_id
+					) AS goodReceiptTable
+					ON goodReceiptTable.invoice_id = purchase_invoice.id
+					LEFT JOIN (
+						SELECT SUM(payable.value) AS value, purchase_id
+						FROM payable
+						GROUP BY purchase_id
+					) AS payableTable
+					ON purchase_invoice.id = payableTable.purchase_id
+					WHERE purchase_invoice.is_confirm = '1'
+					AND purchase_invoice.is_done = '0'
+					UNION (
+						SELECT purchase_invoice_other.id, purchase_invoice_other.date, purchase_invoice_other.invoice_document, purchase_invoice_other.tax_document, purchase_invoice_other.value, COALESCE(payableTable.value,0) AS paid, '2' AS type, '30' AS payment
+						FROM purchase_invoice_other
+						LEFT JOIN (
+							SELECT SUM(payable.value) AS value, other_purchase_id
+							FROM payable
+							GROUP BY other_purchase_id
+						) payableTable
+						ON payableTable.other_purchase_id = purchase_invoice_other.id
+						WHERE purchase_invoice_other.supplier_id = '$supplierId'
+						AND purchase_invoice_other.is_done = '0'
+						AND purchase_invoice_other.is_confirm = '1'
+					)
+				) purchaseInvoiceTable
+				ORDER BY purchaseInvoiceTable.date ASC
+			");
+
+			$result		= $query->result();
+			return $result;
 		}
 	}
 ?>
