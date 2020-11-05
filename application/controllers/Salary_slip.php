@@ -103,4 +103,18 @@ class Salary_slip extends CI_Controller {
 		$result		= $this->Salary_slip_model->deleteById($id);
 		echo $result;
 	}
+
+	public function getArchiveByUserId()
+	{
+		$userId			= $this->input->get('id');
+		$page			= $this->input->get('page');
+		$offset			= ($page - 1) * 10;
+
+		$this->load->model("Salary_slip_model");
+		$data['items']		= $this->Salary_slip_model->getItemsByUserId($userId, $offset);
+		$data['pages']		= max(1, ceil($this->Salary_slip_model->countItemsByUserId($userId)));
+		
+		header('Content-Type: application/json');
+		echo json_encode($data);
+	}
 }

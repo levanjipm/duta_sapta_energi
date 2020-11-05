@@ -16,24 +16,16 @@
 		<div class='row'>
 			<div class='col-md-2 col-sm-3 col-xs-4'>
 				<select class='form-control' id='month'>
-<?php
-	for($i = 1; $i <= 12; $i++){
-?>
+				<?php for($i = 1; $i <= 12; $i++){ ?>
 					<option value='<?= $i ?>' <?php if($i == date('m')){ echo('selected');} ?>><?= date('F', mktime(0,0,0,$i, 1)) ?></option>
-<?php
-	}
-?>
+				<?php } ?>
 				</select>
 			</div>
 			<div class='col-md-2 col-sm-3 col-xs-4'>
 				<select class='form-control' id='year'>
-<?php
-	foreach($years as $year){
-?>
-					<option value='<?= $year->year ?>' <?php if($year->year == date('Y')){ echo('selected');} ?>><?= $year->year ?></option>
-<?php
-	}
-?>
+				<?php for($i = 2020; $i <= date('Y'); $i++){ ?>
+					<option value='<?= $i ?>'><?= $i ?></option>
+				<?php } ?>
 				</select>
 			</div>
 			<div class='col-md-6 col-sm-4 col-xs-4 col-md-offset-2 col-sm-offset-2 col-xs-offset-0'>

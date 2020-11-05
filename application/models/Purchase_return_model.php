@@ -197,16 +197,6 @@ class Purchase_return_model extends CI_Model {
 			return $this->db->affected_rows();
 		}
 
-		public function getYears()
-		{
-			$this->db->select('DISTINCT(YEAR(created_date)) AS year');
-			$this->db->from('code_purchase_return');
-			$this->db->order_by('code_purchase_return.created_date');
-			$query		= $this->db->get();
-			$result		= $query->result();
-			return $result;
-		}
-
 		public function getItems($month, $year, $offset = 0, $limit = 10)
 		{
 			$this->db->select('code_purchase_return.*, supplier.name as supplierName, supplier.city as supplierCity');

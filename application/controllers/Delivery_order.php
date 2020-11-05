@@ -219,10 +219,7 @@ class Delivery_order extends CI_Controller {
 		$this->load->view('head');
 		$this->load->view('inventory/header', $data);
 		
-		$this->load->model('Delivery_order_model');
-		$data['years']	= $this->Delivery_order_model->show_years();
-		
-		$this->load->view('inventory/DeliveryOrder/deliveryOrderArchive', $data);
+		$this->load->view('inventory/DeliveryOrder/deliveryOrderArchive');
 	}
 
 	public function printDeliveryOrder($delivery_order_id)

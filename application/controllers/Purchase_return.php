@@ -332,10 +332,7 @@ class Purchase_return extends CI_Controller {
 		$this->load->view('purchasing/header', $data);
 		$data = array();
 
-		$this->load->model("Purchase_return_model");
-		$data['years'] = $this->Purchase_return_model->getYears();
-
-		$this->load->view('purchasing/Return/archiveDashboard', $data);
+		$this->load->view('purchasing/Return/archiveDashboard');
 	}
 
 	public function getItems()

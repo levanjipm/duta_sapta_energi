@@ -699,8 +699,8 @@ class Debt_model extends CI_Model {
 		{
 			if($month == NULL){
 				$query		= $this->db->query("
-					SELECT a.value, a.name FROM (
-						SELECT (good_receipt.billed_price * good_receipt.quantity) AS value, item_class.name
+					SELECT a.value, a.name, a.description FROM (
+						SELECT (good_receipt.billed_price * good_receipt.quantity) AS value, item_class.name, item_class.description
 						FROM good_receipt
 						JOIN code_good_receipt ON good_receipt.code_good_receipt_id = code_good_receipt.id
 						JOIN purchase_order ON good_receipt.purchase_order_id = purchase_order.id

@@ -26,6 +26,7 @@ class Administrators extends CI_Controller {
 		
 		$this->load->view('head');
 		$this->load->view('administrator/header', $data);
+		$this->load->view('administrator/dashboard', $data);
 	}
 
 	public function deleteInvoiceById()

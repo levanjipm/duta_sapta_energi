@@ -23,7 +23,8 @@ class Profile extends CI_Controller {
 		$data['salary']			= $this->Salary_slip_model->getItemsByUserId($user_id, 0, 10);
 		
 		$this->load->view('head');
-		$this->load->view('profile/header', $data);
+		$this->load->view('profile/header');
+		$this->load->view('profile/dashboard', $data);
 	}
 
 	public function getUserAttendance()
@@ -68,5 +69,12 @@ class Profile extends CI_Controller {
 			$this->load->model("User_model");
 			$result= $this->User_model->updateProfilePicture($userId,$image);
 		}
+	}
+
+	public function salaryDashboard()
+	{
+		$this->load->view('head');
+		$this->load->view('profile/header');
+		$this->load->view('profile/salaryDashboard');
 	}
 }

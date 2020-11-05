@@ -168,4 +168,13 @@ class Salary_slip_model extends CI_Model {
 			$result			= $query->result();
 			return $result;
 		}
-}
+
+		public function countItemsByUserId($userId)
+		{
+			$this->db->where('user_id', $userId);
+			$query			= $this->db->get($this->table_salary);
+			$result			= $query->num_rows();
+			return $result;
+		}
+	}
+?>

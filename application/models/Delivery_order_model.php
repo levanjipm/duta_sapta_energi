@@ -374,16 +374,6 @@ class Delivery_order_model extends CI_Model {
 			
 			return $result;
 		}
-		
-		public function show_years()
-		{
-			$this->db->select('DISTINCT(YEAR(date)) as year');
-			$this->db->order_by('date', 'asc');
-			$query		= $this->db->get($this->table_delivery_order);
-			$result		= $query->result();
-			
-			return $result;
-		}
 
 		public function updateById($status, $id)
 		{
