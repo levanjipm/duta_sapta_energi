@@ -70,6 +70,7 @@
 			<a href='<?= site_url('Visit_list/confirmDashboard') ?>'><p>Confirm</p></a>
 			<a href='<?= site_url('Visit_list/reportDashboard') ?>'><p>Report</p></a>
 			<a href='<?= site_url('Visit_list/archiveDashboard') ?>'><p>Archive</p></a>	
+			<a href='<?= site_url('Visit_list/recapDashboard') ?>'><p>Recap</p></a>
 		</div>
 		<?php } ?>
 		<?php if($user_login->access_level > 2){ ?>

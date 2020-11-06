@@ -507,4 +507,29 @@ class Customer_model extends CI_Model {
 			$result			= $query->result();
 			return $result;
 		}
+
+		public function getAllItemsByArea()
+		{
+			$query		= $this->db->query("
+				SELECT customer.*, customer_area.name AS area_name
+				FROM customer
+				JOIN customer_area ON customer.area_id = customer_area.id
+			");
+
+			$result			= $query->result();
+			$response			= array();
+			foreach($result as $data){
+				if(!array_key_exists($data->area_id, $response)){
+					$response[$data->area_id]				= array();
+					$response[$data->area_id]['name'] 		= $data->area_name;
+					$response[$data->area_id]['customers'] 	= array();
+				}
+
+				$arrayData		= (array)$data;
+				array_push($response[$data->area_id]['customers'], $arrayData);
+				next($result);
+			}
+
+			return $response;
+		}
 }

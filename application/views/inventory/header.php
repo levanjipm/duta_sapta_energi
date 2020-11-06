@@ -53,6 +53,7 @@
 		</div>
 		<button class='container_button'><p style='font-family:museo'><p>Pending</p><i class='fa fa-caret-down'></i></button>
 		<div class='container_bar'>
+			<a href='<?= site_url('Inventory/pendingDeliveryOrderDashboard') ?>'><p>Delivery Orders</p></a>
 			<a href='<?= site_url('Inventory/pendingSalesOrderDashboard') ?>'><p>Sales Orders</p></a>
 			<a href='<?= site_url('Inventory/pendingPurchaseOrderDashboard') ?>'><p>Purchase Orders</p></a>
 		</div>

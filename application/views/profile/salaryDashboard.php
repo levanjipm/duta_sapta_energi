@@ -35,7 +35,7 @@
 </head>
 <div class='dashboard'>
 	<div class='dashboard_in'>
-		<label>Salary Slips</label>
+		<label>Salary Slips</label> <a role='button' title='Back to profile' href='<?= site_url('Profile') ?>' class='button button_mini_tab'><i class='fa fa-long-arrow-left'></i></a>
 		<div id='salarySlipTable'>
 			<table class='table table-bordered'>
 				<tr>

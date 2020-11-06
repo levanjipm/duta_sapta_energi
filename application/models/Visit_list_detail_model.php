@@ -110,4 +110,9 @@ class Visit_list_detail_model extends CI_Model {
 
 			$this->db->update_batch($this->table_visit, $batch, "id");
 		}
+
+		public function getRecap()
+		{
+
+		}
 }

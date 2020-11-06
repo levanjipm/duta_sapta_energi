@@ -234,4 +234,38 @@ class Visit_list extends CI_Controller {
 		header('Content-Type: application/json');
 		echo json_encode($data);
 	}
+
+	public function recapDashboard()
+	{
+		$user_id		= $this->session->userdata('user_id');
+		$this->load->model('User_model');
+		$data['user_login'] = $this->User_model->getById($user_id);
+		
+		$this->load->model('Authorization_model');
+		$data['departments']	= $this->Authorization_model->getByUserId($user_id);
+		
+		$this->load->view('head');
+		$this->load->view('sales/header', $data);
+
+		$this->load->model("Visit_list_model");
+		$data['sales']			= $this->Visit_list_model->getUsers();
+		
+		$this->load->model("Customer_model");
+		$data['customers']		= $this->Customer_model->getAllItemsByArea();
+
+		$this->load->view('sales/VisitList/recapDashboard', $data);
+	}
+
+	public function getRecap()
+	{
+		$year			= $this->input->get('year');
+		$month			= $this->input->get('month');
+		$sales			= $this->input->get('sales');
+		
+		$this->load->model("Visit_list_detail_model");
+		$data			= $this->Visit_list_detail_model->getRecap($year, $month, $sales);
+
+		header('Content-Type: application/json');
+		echo json_encode($data);
+	}
 }

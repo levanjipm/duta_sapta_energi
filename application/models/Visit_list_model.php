@@ -599,5 +599,22 @@ class Visit_list_model extends CI_Model {
 			$result		= $query->num_rows();
 			return $result;
 		}
+
+		public function getUsers()
+		{
+			$query			= $this->db->query("
+				SELECT users.name, users.id
+				FROM users
+				WHERE users.id IN (
+					SELECT code_visit_list.visited_by
+					FROM code_visit_list
+					WHERE code_visit_list.is_delete = '0'
+				)
+				ORDER BY users.name
+			");
+
+			$result			= $query->result();
+			return $result;
+		}
 	}
 ?>

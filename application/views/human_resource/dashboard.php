@@ -168,14 +168,14 @@
 						<canvas id="levelChart" width="150" height="150"></canvas>
 					</div>
 					<div class='col-sm-6'>
-					<?php for($i = 0; $i < 5; $i++){ ?>
-						<label>Level <?= $i + 1 ?></label>
+					<?php for($i = 1; $i <= 5; $i++){ ?>
+						<label>Level <?= $i ?></label>
 						<div class='progressBarWrapper'>
-							<p><?= $accessLevelCountArray[$i] ?></p>
+							<p><?= $accessLevelRatio[$i] ?></p>
 							<div class='progressBar' id='progress-<?= $i ?>'></div>
 							<script>
 								$('#progress-<?= $i ?>').animate({
-									width: "<?= $accessLevelCountArray[$i] * 100 / $activeUser ?>%"
+									width: "<?= $accessLevelRatio[$i] * 100 / $activeUser ?>%"
 								}, 1000)
 							</script>
 						</div>
@@ -256,18 +256,18 @@
 				label: 'User By Access Level',
 				data: <?= json_encode($accessLevelCountArray) ?>,
 				backgroundColor: [
-				'rgba(1, 187, 0, 0.2)',
-				'rgba(1, 187, 0, 0.4)',
-				'rgba(1, 187, 0, 0.6)',
-				'rgba(1, 187, 0, 0.8)',
-				'rgba(1, 187, 0, 1)'
+					'rgba(1, 187, 0, 0.2)',
+					'rgba(1, 187, 0, 0.4)',
+					'rgba(1, 187, 0, 0.6)',
+					'rgba(1, 187, 0, 0.8)',
+					'rgba(1, 187, 0, 1)'
 				],
 				borderColor: [
-				'rgba(1, 187, 0, 0.2)',
-				'rgba(1, 187, 0, 0.4)',
-				'rgba(1, 187, 0, 0.6)',
-				'rgba(1, 187, 0, 0.8)',
-				'rgba(1, 187, 0, 1)'
+					'rgba(1, 187, 0, 0.2)',
+					'rgba(1, 187, 0, 0.4)',
+					'rgba(1, 187, 0, 0.6)',
+					'rgba(1, 187, 0, 0.8)',
+					'rgba(1, 187, 0, 1)'
 				],
 				borderWidth: 1
 			}]

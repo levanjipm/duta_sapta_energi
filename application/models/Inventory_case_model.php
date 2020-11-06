@@ -198,18 +198,6 @@ class Inventory_case_model extends CI_Model {
 			return $this->db->affected_rows();
 		}
 
-		public function getYears()
-		{
-			$query		= $this->db->query("
-				SELECT DISTINCT(YEAR(date)) as year FROM
-				code_event
-				ORDER BY date ASC
-			");
-			$result = $query->result();
-
-			return $result;
-		}
-
 		public function getItems($month, $year, $offset = 0, $limit = 10)
 		{
 			$this->db->where('MONTH(date)', $month);

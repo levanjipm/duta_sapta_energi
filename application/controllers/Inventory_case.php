@@ -338,10 +338,7 @@ class Inventory_case extends CI_Controller {
 		
 		$this->load->view('head');
 		$this->load->view('inventory/header', $data);
-
-		$this->load->model('Inventory_case_model');
-		$data['years'] = $this->Inventory_case_model->getYears();
-		$this->load->view('inventory/Case/archiveDashboard', $data);
+		$this->load->view('inventory/Case/archiveDashboard');
 	}
 
 	public function viewArchives()
