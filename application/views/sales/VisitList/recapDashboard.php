@@ -38,12 +38,12 @@
 			<?php foreach($customers as $areaId => $area){ ?>
 				<div id='container-<?= $areaId ?>'>
 					<table class='table table-bordered'>
-						<tr id='tableHeader-<?= $areaId ?>'>	
-							<th>Customer</th>
+						<tr>	
+							<th id='tableHeader-<?= $areaId ?>'>Customer</th>
 						</tr>
 					<?php foreach($area['customers'] as $item){ ?>
-						<tr id='tableBody-<?= $areaId ?>'>
-							<td><?= $item['name'] ?>, <?= $item['city'] ?></td>
+						<tr>
+							<td id='tableCustomer-<?= $item['id'] ?>'><?= $item['name'] ?>, <?= $item['city'] ?></td>
 						</tr>
 					<?php } ?>
 					</table>
@@ -70,6 +70,11 @@
 		refreshView();
 	});
 
+	function hideShowTable(area = $('#area').val()){
+		$('div[id^="container-"]').hide();
+		$('#container-' + area).show();
+	}
+
 	function refreshView(){
 		var year		= $('#year').val();
 		var month		= $('#month').val();
@@ -82,25 +87,64 @@
 				sales: sales,
 				month: month
 			},
-			success:function(response){
-				$('tr[id^="tableHeader-"]').each(function(){
-					var id			= $(this).attr('id');
-					var uid			= id.substr(12, 267);
+			beforeSend:function(){
+				$('th[id^="tableHeader-"]').each(function(){
+					$(this).siblings().remove();
+				})
 
-					$(this).html("<th>Customer</th>");
+				$('td[id^="tableCustomer-"]').each(function(){
+					$(this).siblings().remove();
+				})
+
+				$('th[id^="tableHeader-"]').each(function(){
+					var id			= $(this).attr('id');
+					var uid			= parseInt(id.substr(12, 267));
+					$(this).html("Customer");
 					var lastDayDate = new Date(year, month, 0);
 					var lastDay		= lastDayDate.getDay();
 					var lastDate	= lastDayDate.getDate();
 					
-					for(i = 1; i <= lastDate; i++){
+					for(i = lastDate; i >= 1; i--){
 						var dayDate	= new Date(year, (month - 1), i);
 						var date	= dayDate.getDay();
 						if(date != 0){
-							$('#tableBody-' + uid).append("<td>" + i + "</td>")
+							$('#tableHeader-' + uid).after("<th>" + i + "</th>")
 						}
 					}
-				})
+				});
+
+				var lastDayDate = new Date(year, month, 0);
+				var lastDay		= lastDayDate.getDay();
+				var lastDate	= lastDayDate.getDate();
+				$('td[id^="tableCustomer-"]').each(function(){
+					var tableCustomerId	= $(this).attr('id');
+					var tableCustomerUid	= parseInt(tableCustomerId.substr(14, 269));
+					for(i = lastDate; i >= 1; i--){
+						var dayDate	= new Date(year, (month - 1), i);
+						var date	= dayDate.getDay();
+						if(date != 0){
+							$('#tableCustomer-' + tableCustomerUid).after("<td id='customer-" + tableCustomerUid + "-" + i + "'></td>");
+						}
+					}
+				});
+
+				hideShowTable();
+			},
+			success:function(response){
+				$.each(response, function(index, value){
+					var date		= parseInt(value.date);
+					var result		= parseInt(value.result);
+					var customer_id	= parseInt(value.customer_id);
+
+					$('#customer-' + customer_id + '-' + date).animate({
+						backgroundColor: 'black'
+					}, 1000)
+				})	
 			}
 		})
 	}
+
+	$('#area').change(function(){
+		hideShowTable();
+	})
 </script>
