@@ -41,15 +41,15 @@
 				<?php 
 				$totalTarget		= 0;
 				foreach($customers as $customer){ 
-					$customerName		= $customer->name;
-					$complete_address	= $customer->address;
-					$customer_number	= $customer->number;
-					$customer_block		= $customer->block;
-					$customer_rt		= $customer->rt;
-					$customer_rw		= $customer->rw;
-					$customer_city		= $customer->city;
-					$customer_postal	= $customer->postal_code;
-					$customer_pic		= $customer->pic_name;
+					
+					$customerName		= $customer['name'];
+					$complete_address	= $customer['address'];
+					$customer_number	= $customer['number'];
+					$customer_block		= $customer['block'];
+					$customer_rt		= $customer['rt'];
+					$customer_rw		= $customer['rw'];
+					$customer_city		= $customer['city'];
+					$customer_postal	= $customer['postal_code'];
 					if($customer_number != null && $customer_number != ''){
 						$complete_address	.= ' no. ' . $customer_number;
 					};
@@ -66,14 +66,14 @@
 						$complete_address .= ', ' . $customer_postal;
 					}
 
-					$target		= $customer->target;
+					$target		= $customer['target'];
 					$totalTarget += $target;
 					
-					if($customer->latitude != NULL && $customer->longitude != NULL){
+					if($customer['latitude'] != NULL && $customer['longitude'] != NULL){
 				?>
 					<script>
 						var icon = new H.map.Icon('<?= base_url("assets/Icons/location.png") ?>');
-						var coords	= {lat:<?= $customer->latitude ?>, lng:<?= $customer->longitude ?>};
+						var coords	= {lat:<?= $customer['latitude'] ?>, lng:<?= $customer['longitude'] ?>};
 						var marker = new H.map.Marker(coords, {icon: icon});
 						markers.push(marker);
 					</script>
@@ -82,7 +82,8 @@
 				?>
 					<tr>
 						<td><?= $customerName ?></td>
-						<td><?= $complete_address ?>, <?= $customer_city ?></td>
+						<td><p><?= $complete_address ?></p>
+						<p><?= $customer_city ?></p></td>
 						<td>Rp. <?= number_format($target, 2) ?></td>
 					</tr>
 				<?php } ?>

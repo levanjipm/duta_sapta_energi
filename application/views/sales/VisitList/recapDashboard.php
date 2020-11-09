@@ -23,6 +23,9 @@
 				<option value='<?= $item->id ?>'><?= $item->name ?></option>
 <?php } ?>
 			</select>
+			<div class='input_group_append'>
+				<button class='button button_default_dark' onclick='viewReport()'><i class='fa fa-file-text-o'></i></button>
+			</div>
 		</div>
 		<br>
 		<div class='row'>
@@ -53,6 +56,26 @@
 		</div>
 	</div>
 </div>
+
+<div class='alert_wrapper' id='visitListWrapper'>
+	<button class='slide_alert_close_button'>&times;</button>
+	<div class='alert_box_slide'>
+		<h3 style='font-family:bebasneue'>Visit List Summary</h3>
+		<hr>
+		<label>Scheduled Visit</label>
+		<p id='sch'></p>
+
+		<label>Success Visit</label>
+		<p id='vis'></p>
+
+		<label>Scheduled Customers</label>
+		<p id='schArr'></p>
+
+		<label>Successfully Visited Customers</label>
+		<p id='visArr'></p>
+	</div>
+</div>
+
 <script>
 	$(document).ready(function(){
 		refreshView();
@@ -131,20 +154,52 @@
 				hideShowTable();
 			},
 			success:function(response){
+				var scheduled	= 0;
+				var success		= 0;
+				var scheduledCustomer		= [];
+				var successCustomer			= [];
 				$.each(response, function(index, value){
 					var date		= parseInt(value.date);
 					var result		= parseInt(value.result);
 					var customer_id	= parseInt(value.customer_id);
+					if(result == 0){
+						$('#customer-' + customer_id + '-' + date).css('background-color', "#f63e21");
+						if(!scheduledCustomer.includes(customer_id)){
+							scheduledCustomer.push(customer_id);
+						}
 
-					$('#customer-' + customer_id + '-' + date).animate({
-						backgroundColor: 'black'
-					}, 1000)
+						scheduled++;
+					} else {
+						$('#customer-' + customer_id + '-' + date).css('background-color', "rgb(1, 187, 0)");
+
+						if(!successCustomer.includes(customer_id)){
+							successCustomer.push(customer_id);
+						}
+
+						if(!scheduledCustomer.includes(customer_id)){
+							scheduledCustomer.push(customer_id);
+						}
+						scheduled++;
+						success++;
+					}
 				})	
+
+				$('#sch').html(numeral(scheduled).format("0,0"));
+				$('#vis').html(numeral(success).format('0,0'));
+
+				$('#schArr').html(numeral(scheduledCustomer.length).format('0,0'));
+				$('#visArr').html(numeral(successCustomer.length).format('0,0'));
 			}
 		})
 	}
 
 	$('#area').change(function(){
 		hideShowTable();
-	})
+	});
+
+	function viewReport(){
+		$('#visitListWrapper').fadeIn(300, function(){
+			$('#visitListWrapper .alert_box_slide').show("slide", { direction: "right" }, 250);
+		});
+	}
 </script>

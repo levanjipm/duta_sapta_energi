@@ -212,12 +212,9 @@ class Customer_model extends CI_Model {
 		
 		public function insertItem()
 		{
-			$this->load->model('Customer_model');
-			$this->db->select('*');
-			$this->db->from($this->table_customer);
 			$this->db->where('name', $this->input->post('customer_name'));
-			$items = $this->db->get();
-			$count = $items->num_rows();
+			$query = $this->db->get($this->table_customer);
+			$count = $query->num_rows();
 			
 			if($count == 0){
 				$this->id					= '';
@@ -487,25 +484,49 @@ class Customer_model extends CI_Model {
 		public function getByAreaId($areaId)
 		{
 			$query		= $this->db->query("
-				SELECT customer.*, targetTable.value AS target
+				SELECT customer.*, targetTable.value AS target, targetTable.dateCreated AS targetDate
 				FROM customer
-				LEFT JOIN (
-					SELECT customer_target.value, customer_target.customer_id
+				JOIN (
+					SELECT customer_target.value, customer_target.customer_id, customer_target.dateCreated
 					FROM customer_target
-					JOIN (
-						SELECT customer_target.customer_id, customer_target.dateCreated, customer_target.value
-						FROM customer_target
-						ORDER BY customer_target.customer_id ASC,
-						customer_target.dateCreated DESC
-					) AS customerTargetTable
-					ON customerTargetTable.customer_id = customer_target.customer_id
+					ORDER BY customer_target.customer_id ASC, 
+					customer_target.dateCreated DESC
 				) targetTable
 				ON targetTable.customer_id = customer.id
 				WHERE customer.area_id = '$areaId'
 			");
-
 			$result			= $query->result();
-			return $result;
+
+			$response			= array();
+			foreach($result as $item){
+				$id				= $item->id;
+				if(!array_key_exists($id, $response)){
+					$response[$id]['name']	= $item->name;
+					$response[$id]['address']	= $item->address;
+					$response[$id]['number']	= $item->number;
+					$response[$id]['block']		= $item->block;
+					$response[$id]['postal_code']	= $item->postal_code;
+					$response[$id]['city']			= $item->city;
+					$response[$id]['rt']			= $item->rt;
+					$response[$id]['rw']			= $item->rw;
+					$response[$id]['latitude']		= $item->latitude;
+					$response[$id]['longitude']		= $item->longitude;
+
+					$response[$id]['target']	= $item->target;
+					$response[$id]['date']		= $item->targetDate;
+				} else {
+					$currentDate		= $response[$id]['date'];
+					$date				= $item->targetDate;
+					if($date > $currentDate){
+						$response[$id]['target']	= $item->target;
+						$response[$id]['date']		= $item->targetDate;
+					}
+				}
+
+				next($result);
+			}
+
+			return $response;
 		}
 
 		public function getAllItemsByArea()

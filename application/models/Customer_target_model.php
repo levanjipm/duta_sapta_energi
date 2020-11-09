@@ -276,7 +276,7 @@ class Customer_target_model extends CI_Model {
 				ON customer_target.id = targetTable.id
 			");
 			$result = $query->row();
-			return $result;
+			return ($query->num_rows > 0) ? $result : NULL;
 		}
 
 		public function insertItem($customerId, $value, $date)
@@ -287,12 +287,20 @@ class Customer_target_model extends CI_Model {
 			$result			= $query->num_rows();
 			if($result == 0){
 				$targetObject = $this->Customer_target_model->getCurrentTarget($customerId);
-				if($targetObject != null){
+				if($targetObject != NULL){
 					$currentTarget = $targetObject->value;
+					if($value > 0 && $value != $currentTarget){
+						$db_item = array(
+							"id" => "",
+							"customer_id" => $customerId,
+							"created_by" => $this->session->userdata('user_id'),
+							"dateCreated" => $date,
+							"value" => $value
+						);
+						$this->db->insert($this->table_target, $db_item);
+						return $this->db->affected_rows();
+					}
 				} else {
-					$currentTarget = $value;
-				}
-				if($value > 0 && $value != $currentTarget){
 					$db_item = array(
 						"id" => "",
 						"customer_id" => $customerId,
@@ -302,8 +310,6 @@ class Customer_target_model extends CI_Model {
 					);
 					$this->db->insert($this->table_target, $db_item);
 					return $this->db->affected_rows();
-				} else {
-					return 0;
 				}
 			} else {
 				return 0;

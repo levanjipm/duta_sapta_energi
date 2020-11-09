@@ -47,7 +47,7 @@
 			<button class='button button_default_dark'><i class='fa fa-long-arrow-right'></i></button>
 		</form>
 		<hr>
-		<form action='<?= site_url('Plafond/submitPlafond') ?>' method='POST' id='plafond_form'>
+		<form action='<?= site_url('Plafond/submitPlafond') ?>' method='POST' id='top_form'>
 			<input type='hidden' id='customerTopId' name='id'>
 			
 			<label>Current TOP</label>
@@ -63,6 +63,7 @@
 
 <script>
 	$('#plafond_form').validate();
+	$('#top_form').validate();
 	
 	$('#page').change(function(){
 		refresh_view();
@@ -108,7 +109,7 @@
 						complete_address	+= ' No. ' + customer_number;
 					}
 					
-					if(customer_block != null){
+					if(customer_block != null && customer_block != "000"){
 						complete_address	+= ' Blok ' + customer_block;
 					}
 				
@@ -162,7 +163,7 @@
 					complete_address	+= ' No. ' + customer_number;
 				}
 				
-				if(customer_block != null){
+				if(customer_block != null && customer_block != "000"){
 					complete_address	+= ' Blok ' + customer_block;
 				}
 			

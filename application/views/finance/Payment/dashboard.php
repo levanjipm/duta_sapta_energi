@@ -1,6 +1,36 @@
 <head>
 	<title>Payment</title>
+	<style>
+		.snackBarWrapper{
+			position:fixed;top:0;left:0;padding:20px;width:100%;z-index:500
+		}
+
+		.snackBar{
+			background-color:#01BB00;
+			color:white;
+			text-align:center;
+			padding:10px;
+			width:40%;
+			min-width:250px;
+			left:0;
+			right:0;
+			margin:auto;
+			border-radius:10px;
+			transform:translateY(-200%);
+			transition:0.3s all ease;
+		}
+
+		.snackBar.shown{
+			transform:translateY(0);
+			transition:0.3s all ease;
+		}
+	</style>
 </head>
+<div class='snackBarWrapper'>
+	<div class='snackBar'>
+		<p>Successfully copied to clipboard.</p>
+	</div>
+</div>
 <div class='dashboard'>
 	<div class='dashboard_head'>
 		<p style='font-family:museo'><a href='<?= site_url('Finance') ?>' title='Finance'><i class='fa fa-briefcase'></i></a> /Payment</p>
@@ -31,6 +61,7 @@
 		</div>
 		<p id='invoiceTableText'>There is no invoice found.</p>
 	</div>
+	<input type='number' style='display:none'id='copyValue'>
 </div>
 <script>
 	var paymentValue;
@@ -75,7 +106,7 @@
 					var dueDate				= new Date(date.setDate(date.getDate() + payment));
 					var formattedDueDate	= dueDate.getFullYear() + "-" + (dueDate.getMonth() + 1).toString().padStart(2, "0") + "-" + dueDate.getDate().toString().padStart(2, "0");
 
-					$('#invoiceTableContent').append("<tr><td>" + my_date_format(formattedDate) + "</td><td><p><strong>" + invoice_document + "</strong></p><p>" + tax_document + "</p></td><td>" + my_date_format(formattedDueDate) + "</td><td>Rp. " + numeral(value).format('0,0.000') + "</td><td>Rp. " + numeral(paid).format('0,0.00') + "</td><td><input type='checkbox' class='paymentCheckBox' data-value='" + (value - paid) + "'></td></tr>")
+					$('#invoiceTableContent').append("<tr><td>" + my_date_format(formattedDate) + "</td><td><p><strong>" + invoice_document + "</strong></p><p>" + tax_document + "</p></td><td>" + my_date_format(formattedDueDate) + "</td><td><p>Rp. " + numeral(value).format('0,0.000') + "</p><button class='button button_default_dark' onclick='copyValue(" + value + ")'><i class='fa fa-copy'></i></button></td><td>Rp. " + numeral(paid).format('0,0.00') + "</td><td><input type='checkbox' class='paymentCheckBox' data-value='" + (value - paid) + "'></td></tr>")
 
 					itemCount++;
 				});
@@ -105,5 +136,18 @@
 
 	function refreshPaymentText(){
 		$('#paymentValue').html(numeral(paymentValue).format('0,0.00'));
+	}
+
+	function copyValue(n){
+		$('#copyValue').show();
+		$('#copyValue').val(n);
+		$('#copyValue').select();
+		document.execCommand('copy');
+		$('#copyValue').hide();
+
+		$('.snackBar').addClass('shown');
+		setTimeout(function(){
+			$('.snackBar').removeClass('shown');
+		}, 1000)
 	}
 </script>
