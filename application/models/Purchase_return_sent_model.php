@@ -240,5 +240,32 @@ class Purchase_return_sent_model extends CI_Model {
 			$this->db->update($this->table_purchase_return);
 			return $this->db->affected_rows();
 		}
+
+		public function getValueByMonthYear($month, $year)
+		{
+			if($month == 0){
+				$query		= $this->db->query("
+					SELECT COALESCE(SUM(purchase_return_sent.quantity * purchase_return.price), 0) AS value
+					FROM purchase_return_sent
+					JOIN purchase_return ON purchase_return_sent.purchase_return_id = purchase_return.id
+					JOIN code_purchase_return_sent ON purchase_return_sent.code_purchase_return_sent_id = code_purchase_return_sent.id
+					WHERE YEAR(code_purchase_return_sent.date) = '$year'
+					AND code_purchase_return_sent.is_confirm = '1'
+				");
+			} else {
+				$query		= $this->db->query("
+					SELECT COALESCE(SUM(purchase_return_sent.quantity * purchase_return.price), 0) AS value
+					FROM purchase_return_sent
+					JOIN purchase_return ON purchase_return_sent.purchase_return_id = purchase_return.id
+					JOIN code_purchase_return_sent ON purchase_return_sent.code_purchase_return_sent_id = code_purchase_return_sent.id
+					WHERE YEAR(code_purchase_return_sent.date) = '$year'
+					AND MONTH(code_purchase_return_sent.date) = '$month'
+					AND code_purchase_return_sent.is_confirm = '1'
+				");
+			}
+
+			$result		= $query->row();
+			return $result->value;
+		}
 	}
 ?>

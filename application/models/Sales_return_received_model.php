@@ -203,5 +203,43 @@ class Sales_return_received_model extends CI_Model {
 			$this->db->where('id', $id);
 			$this->db->update($this->table_sales_return);
 		}
+
+		public function getValueByMonthYear($month, $year)
+		{
+			if($month != 0){
+				$query			= $this->db->query("
+					SELECT COALESCE(SUM(price_list.price_list * (100 - sales_order.discount) * sales_return_received.quantity / 100), 0) AS value
+					FROM sales_return_received
+					JOIN sales_return ON sales_return_received.sales_return_id = sales_return.id
+					JOIN delivery_order ON sales_return.delivery_order_id = delivery_order.id
+					JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
+					JOIN price_list ON sales_order.price_list_id = price_list.id
+					WHERE sales_return_received.code_sales_return_received_id IN (
+						SELECT DISTINCT(code_sales_return_received.id) AS id
+						FROM code_sales_return_received
+						WHERE YEAR(code_sales_return_received.date) = '$year'
+						AND code_sales_return_received.is_confirm = '1'
+					)
+				");
+			} else {
+				$query			= $this->db->query("
+					SELECT COALESCE(SUM(price_list.price_list * (100 - sales_order.discount) * sales_return_received.quantity / 100), 0) AS value
+					FROM sales_return_received
+					JOIN sales_return ON sales_return_received.sales_return_id = sales_return.id
+					JOIN delivery_order ON sales_return.delivery_order_id = delivery_order.id
+					JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
+					JOIN price_list ON sales_order.price_list_id = price_list.id
+					WHERE sales_return_received.code_sales_return_received_id IN (
+						SELECT DISTINCT(code_sales_return_received.id) AS id
+						FROM code_sales_return_received
+						WHERE MONTH(code_sales_return_received.date) = '$month' AND YEAR(code_sales_return_received.date) = '$year'
+						AND code_sales_return_received.is_confirm = '1'
+					)
+				");
+			}
+
+			$result			= $query->row();
+			return $result->value;
+		}
 	}
 ?>

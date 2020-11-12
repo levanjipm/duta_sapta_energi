@@ -11,7 +11,6 @@
 		<label>Salesman</label>
 			<button type='button' class='form-control' id='selectSales' style='text-align:left'></button>
 			<input type='hidden' id='sales' name='sales' required>
-
 			<br>
 			<button type='button' id='assignButton' class='button button_default_dark'><i class='fa fa-long-arrow-right'></i></button>
 		</form>
@@ -86,7 +85,7 @@
 						var imageUrl = "<?= base_url() . '/assets/ProfileImages/' ?>" + item.image_url;
 					}
 
-					$('#userTableContent').append("<tr><td><img src='" + imageUrl + "' style='width:30px;height:30px;border-radius:50%'> " + name + "</td><td><button class='button button_default_dark' type='button' id='selectUserButton-" + id + "'><i class='fa fa-long-arrow-right'></i></button></td></tr>");
+					$('#userTableContent').append("<tr><td><img src='" + imageUrl + "' style='width:30px;height:30px;border-radius:50%'> " + name + "</td><td><button class='button button_default_dark' type='button' id='selectUserButton-" + id + "'><i class='fa fa-long-arrow-right'></i></button> <button class='button button_success_dark' onclick='viewSalesAssignment(" + id + ")'><i class='fa fa-eye'></i></button></td></tr>");
 
 					$('#selectUserButton-' + id).click(function(){
 						$("#selectSales").html(name);
@@ -119,5 +118,9 @@
 
 	$('.alert_full_close_button').click(function(){
 		$(this).parent().parent().fadeOut();
-	})
+	});
+
+	function viewSalesAssignment(n){
+		window.location.href='<?= site_url('CustomerSales/viewBySales/') ?>' + n;
+	}
 </script>

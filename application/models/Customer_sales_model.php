@@ -67,25 +67,37 @@ class Customer_sales_model extends CI_Model {
 				$areaFilter = substr($areaFilter, 0, -1);
 				$areaFilter .= ") AND";
 			}
-
-			$query			= $this->db->query("
-				SELECT customer.*, IF(a.id IS NULL, 0, 1) AS status
-				FROM customer
-				LEFT JOIN (
-					SELECT DISTINCT(customer_sales.customer_id) AS customer_id, customer_sales.id
-					FROM customer_sales
-					WHERE customer_sales.sales_id = '$salesId'
-				) AS a
-				ON a.customer_id = customer.id
-				WHERE $areaFilter (
-					customer.name LIKE '%$term%'
-					OR customer.address LIKE '%$term%'
-					OR customer.city LIKE '%$term%'
-				)
-				ORDER BY customer.name
-				LIMIT $limit OFFSET $offset
-			");
-
+			if($limit == 0){
+				$query			= $this->db->query("
+					SELECT customer.*
+					FROM customer
+					JOIN (
+						SELECT DISTINCT(customer_sales.customer_id) AS customer_id, customer_sales.id
+						FROM customer_sales
+						WHERE customer_sales.sales_id = '$salesId'
+					) AS a
+					ON a.customer_id = customer.id
+					ORDER BY customer.name
+				");
+			} else {
+				$query			= $this->db->query("
+					SELECT customer.*, IF(a.id IS NULL, 0, 1) AS status
+					FROM customer
+					LEFT JOIN (
+						SELECT DISTINCT(customer_sales.customer_id) AS customer_id, customer_sales.id
+						FROM customer_sales
+						WHERE customer_sales.sales_id = '$salesId'
+					) AS a
+					ON a.customer_id = customer.id
+					WHERE $areaFilter (
+						customer.name LIKE '%$term%'
+						OR customer.address LIKE '%$term%'
+						OR customer.city LIKE '%$term%'
+					)
+					ORDER BY customer.name
+					LIMIT $limit OFFSET $offset
+				");
+			}
 
 			$result		= $query->result();
 			return $result;

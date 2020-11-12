@@ -825,5 +825,31 @@ class Debt_model extends CI_Model {
 			$result		= $query->row();
 			return $result->value;
 		}
+
+		public function getValueByMonthYear($month, $year)
+		{
+			if($month == 0){
+				$query		= $this->db->query("
+					SELECT SUM(good_receipt.quantity * good_receipt.billed_price) AS value
+					FROM good_receipt
+					JOIN code_good_receipt ON good_receipt.code_good_receipt_id = code_good_receipt.id
+					JOIN purchase_invoice ON code_good_receipt.invoice_id = purchase_invoice.id
+					WHERE MONTH(purchase_invoice.date) = '$month' AND YEAR(purchase_invoice.date) = '$year'
+					AND purchase_invoice.is_confirm = '1'
+				");
+			} else {
+				$query		= $this->db->query("
+					SELECT SUM(good_receipt.quantity * good_receipt.billed_price) AS value
+					FROM good_receipt
+					JOIN code_good_receipt ON good_receipt.code_good_receipt_id = code_good_receipt.id
+					JOIN purchase_invoice ON code_good_receipt.invoice_id = purchase_invoice.id
+					WHERE MONTH(purchase_invoice.date) = '$month' AND YEAR(purchase_invoice.date) = '$year'
+					AND purchase_invoice.is_confirm = '1'
+				");
+			}
+
+			$result		= $query->row();
+			return $result->value;
+		}
 	}
 ?>

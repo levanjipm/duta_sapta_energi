@@ -118,16 +118,16 @@
                     </div>
                 </div>
             </div>
-			<div class='col-md-12 col-sm-12 col-xs-12' style="margin-top:20px">
+			<div class='col-md-6 col-sm-12 col-xs-12' style="margin-top:20px">
 				<div class='dashboardBox'>
-					<div style="width:30%;display:inline-block;border-right:2px solid #ccc;padding:20px">
-						<h4><b>Current Ratio</b></h4>
-						<h3 style='color:#E19B3C;font-weight:bold;text-align:center;font-size:32px'><?= number_format($ratio,2) ?></h3>
-					</div>
-					<div style="width:60%;display:inline-block;padding:20px">
-						<p><strong>A ratio value lower than 1</strong> may indicate liquidity problems for the company, though the company may still not face an extreme crisis if it's able to secure other forms of financing.</p>
-						<p><strong>A ratio over 3</strong> may indicate that the company is not using its current assets efficiently or is not managing its working capital properly.</p>
-					</div>
+					<div class='leftSide'>
+                        <h4><b>Current</b></h4>
+                        <p>Ratio</p>
+                    </div>
+                    <div class='rightSide'>
+                        <h3><?= number_format($ratio,2) ?></h3>
+                        <p>&nbsp;</p>
+                    </div>
 				</div>
 			</div>
         </div>

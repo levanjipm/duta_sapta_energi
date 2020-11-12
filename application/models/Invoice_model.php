@@ -660,10 +660,27 @@ class Invoice_model extends CI_Model {
 
 		public function getValueByMonthYear($month, $year)
 		{
-			$this->db->select_sum('value');
-			$this->db->where('MONTH(date)', (int)$month);
-			$this->db->where('YEAR(date)', $year);
-			$query = $this->db->get($this->table_invoice);
+			if($month == 0){
+				$query		= $this->db->query("
+					SELECT SUM(invoice.value + invoice.delivery - invoice.discount) AS value
+					FROM invoice
+					WHERE YEAR(invoice.date) = '$year'
+					AND invoice.is_confirm = '1'
+					AND invoice.customer_id IS NULL
+					AND invoice.opponent_id IS NULL
+				");
+			} else {
+				$query		= $this->db->query("
+					SELECT SUM(invoice.value + invoice.delivery - invoice.discount) AS value
+					FROM invoice
+					WHERE YEAR(invoice.date) = '$year'
+					AND MONTH(invoice.date) = '$month'
+					AND invoice.is_confirm = '1'
+					AND invoice.customer_id IS NULL
+					AND invoice.opponent_id IS NULL
+				");
+			}
+
 			$result = $query->row();
 
 			return ($result->value == null)? 0 : (float)$result->value;

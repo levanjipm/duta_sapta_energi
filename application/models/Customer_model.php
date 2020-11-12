@@ -234,11 +234,12 @@ class Customer_model extends CI_Model {
 				$this->pic_name				= $this->input->post('customer_pic');
 				$this->date_created			= date('Y-m-d');
 				$this->created_by			= $this->session->userdata('user_id');
-				$this->is_black_list		= '';
+				$this->is_black_list		= 0;
 				$this->term_of_payment		= 30;
 				$this->plafond				= '3000000';
 				$this->uid					= $this->Customer_model->generateUid();
 				$this->password				= NULL;
+				$this->visiting_frequency	= $this->input->post('visit');
 				
 				$db_item 					= $this->get_db_from_stub($this);
 				$db_result 					= $this->db->insert($this->table_customer, $db_item);
@@ -293,6 +294,7 @@ class Customer_model extends CI_Model {
 				'npwp' 				=> $this->input->post('npwp'),
 				'phone_number' 		=> $this->input->post('phone'),
 				'pic_name' 			=> $this->input->post('pic'),
+				'visiting_frequency'	=> $this->input->post('visit')
 			);
 			
 			$this->db->where('id', $customer_id);

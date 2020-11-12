@@ -274,9 +274,10 @@ class Customer_target_model extends CI_Model {
 					WHERE customer_id = '$customerId'
 				) AS targetTable
 				ON customer_target.id = targetTable.id
+				ORDER BY dateCreated DESC
 			");
 			$result = $query->row();
-			return ($query->num_rows > 0) ? $result : NULL;
+			return $result;
 		}
 
 		public function insertItem($customerId, $value, $date)

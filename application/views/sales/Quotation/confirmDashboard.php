@@ -30,6 +30,8 @@
 <div class='alert_wrapper' id='validateQutationForm'>
 	<button class='slide_alert_close_button'>&times;</button>
 	<div class='alert_box_slide'>
+		<h3 style='font-family:bebasneue'>Confirm Quotation</h3>
+		<hr>
 		<label>Quotation</label>
 		<p id='quotationName_p'></p>
 		<p id='quotationDate_p'></p>
@@ -38,6 +40,7 @@
 		<label>Customer</label>
 		<p id='customerName_p'></p>
 		<p id='customerAddress_p'></p>
+		<p id='customerCity_p'></p>
 
 		<div class='table-responsive-lg'>
 			<table class='table table-bordered'>
@@ -115,7 +118,7 @@
 						complete_address += ', ' + customer_postal;
 					}
 					
-					$('#quotationTableContent').append("<tr><td>" + my_date_format(date) + "</td><td>" + name + "</td><td><label>" + customerName + "</label><p>" + complete_address + "</p><p>" + customer_city + "</p></td><td><button class='button button_default_dark' onclick='viewQuotation(" + id + ")'><i class='fa fa-long-arrow-right'></i></button></td></tr>")
+					$('#quotationTableContent').append("<tr><td>" + my_date_format(date) + "</td><td>" + name + "</td><td><label>" + customerName + "</label><p>" + complete_address + "</p><p>" + customer_city + "</p></td><td><button class='button button_default_dark' onclick='viewQuotation(" + id + ")'><i class='fa fa-eye'></i></button></td></tr>");
 
 					quotationCount++;
 				});
@@ -128,6 +131,7 @@
 					$('#quotationTableText').show();
 				}
 				var pages = response.pages;
+				$('#page').html("");
 				for(i = 1; i <= pages; i++){
 					if(i == page){
 						$('#page').append("<option value='" + i + "' selected>" + i + "</option>");
@@ -285,9 +289,8 @@
 				} else {
 					$('#quotationConfirmItems').append("<tr><td colspan='4'></td><td colspan='2'><strong>Total</strong></td><td>Rp. " + numeral(quotationValue).format('0,0.00') + "</td></tr>");
 				}
-
-				
-
+			},
+			complete:function(){
 				$('#validateQutationForm').fadeIn(300, function(){
 					$('#validateQutationForm .alert_box_slide').show("slide", { direction: "right" }, 250);
 				});

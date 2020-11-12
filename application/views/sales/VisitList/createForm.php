@@ -214,7 +214,8 @@
 				page: page,
 				term: $('#searchBar').val(), 
 				areas: includedAreas,
-				sales: <?= $this->input->get('sales') ?>
+				sales: <?= $this->input->get('sales') ?>,
+				date: "<?= date('Y-m-d', strtotime($date)); ?>"
 			},
 			success:function(response){
 				var items		= response.items;

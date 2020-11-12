@@ -78,7 +78,7 @@ class Visit_list_model extends CI_Model {
 			return $result;
 		}
 
-		public function getCustomerList($sales, $mode, $includedAreas = array(), $term = "", $offset = 0, $limit = 25)
+		public function getCustomerList($sales, $mode, $includedAreas = array(), $term = "", $offset = 0, $date = NULL, $limit = 25)
 		{
 			if(count($includedAreas) > 0){
 				$string		= "AND customer.area_id IN (";
@@ -150,10 +150,10 @@ class Visit_list_model extends CI_Model {
 			//Give +- 1 day error range//
 			else if($mode == 2){
 				$query			= $this->db->query("
-					SELECT customer.*, a.lastOrder, a.lastVisited, a.daniel
+					SELECT customer.*, a.lastOrder, a.lastVisited
 					FROM customer
 					INNER JOIN(
-						SELECT DISTINCT(customer.id) AS id, salesOrderTable.date AS lastOrder, visitListTable.date AS lastVisited, DATEDIFF(CURDATE(), visitListTable.date) AS daniel
+						SELECT DISTINCT(customer.id) AS id, salesOrderTable.date AS lastOrder, visitListTable.date AS lastVisited
 						FROM customer
 						LEFT JOIN (
 							SELECT customer.id, maxSalesOrderDateTable.date
@@ -182,17 +182,17 @@ class Visit_list_model extends CI_Model {
 						) visitListTable
 						ON visitListTable.id = customer.id
 						JOIN customer_sales ON customer.id = customer_sales.customer_id
-						WHERE DATEDIFF(CURDATE(), visitListTable.date) = customer.visiting_frequency
-						OR DATEDIFF(CURDATE(), visitListTable.date) = customer.visiting_frequency + 1
-						OR DATEDIFF(CURDATE(), visitListTable.date) = customer.visiting_frequency - 1
-						AND customer.is_black_list = 0
+						WHERE DATEDIFF('$date', visitListTable.date) = customer.visiting_frequency
+						OR DATEDIFF('$date', visitListTable.date) = customer.visiting_frequency + 1
+						OR DATEDIFF('$date', visitListTable.date) = customer.visiting_frequency - 1
+						AND customer.is_black_list = '0'
 						AND (
 							customer.name LIKE '%$term%'
 							OR customer.address LIKE '%$term%'
 							OR customer.city LIKE '%$term%'
 							OR customer.pic_name LIKE '%$term%'
 						)
-						AND customer.is_remind = 1
+						AND customer.is_remind = '1'
 						AND customer_sales.sales_id = '$sales'
 						$string
 					) AS a
@@ -312,7 +312,7 @@ class Visit_list_model extends CI_Model {
 			return $result;
 		}
 
-		public function countCustomerList($sales, $mode, $includedAreas = array(), $term = "")
+		public function countCustomerList($sales, $mode, $includedAreas = array(), $term = "", $date)
 		{
 			if(count($includedAreas) > 0){
 				$string		= "AND customer.area_id IN (";
@@ -363,34 +363,51 @@ class Visit_list_model extends CI_Model {
 				$query			= $this->db->query("
 					SELECT customer.id
 					FROM customer
-					JOIN (
-						SELECT customer.id, maxVisitListTable.date
+					INNER JOIN(
+						SELECT DISTINCT(customer.id) AS id, salesOrderTable.date AS lastOrder, visitListTable.date AS lastVisited
 						FROM customer
-						JOIN (
-							SELECT MAX(code_visit_list.date) AS date, visit_list.customer_id
-							FROM code_visit_list
-							JOIN visit_list
-							ON visit_list.code_visit_list_id = code_visit_list.id
-							WHERE code_visit_list.is_confirm = '1'
-							AND visit_list.result = '1'
-							GROUP BY visit_list.customer_id
-						) maxVisitListTable
-						ON customer.id = maxVisitListTable.customer_id
-					) visitListTable
-					ON visitListTable.id = customer.id
-					JOIN customer_sales ON customer.id = customer_sales.customer_id
-					WHERE DATEDIFF(CURDATE(), visitListTable.date) = customer.visiting_frequency
-					OR DATEDIFF(CURDATE(), visitListTable.date) = customer.visiting_frequency + 1
-					OR DATEDIFF(CURDATE(), visitListTable.date) = customer.visiting_frequency - 1
-					AND customer.is_black_list = 0
-					AND (
-						customer.name LIKE '%$term%'
-						OR customer.address LIKE '%$term%'
-						OR customer.city LIKE '%$term%'
-						OR customer.pic_name LIKE '%$term%'
-					)
-					AND customer_sales.sales_id = '$sales'
-					$string
+						LEFT JOIN (
+							SELECT customer.id, maxSalesOrderDateTable.date
+							FROM customer
+							JOIN (
+								SELECT MAX(code_sales_order.date) as date, code_sales_order.customer_id
+								FROM code_sales_order
+								GROUP BY code_sales_order.customer_id
+							) maxSalesOrderDateTable
+							ON maxSalesOrderDateTable.customer_id = customer.id
+						) salesOrderTable
+						ON salesOrderTable.id = customer.id
+						LEFT JOIN (
+							SELECT customer.id, maxVisitListTable.date
+							FROM customer
+							JOIN (
+								SELECT MAX(code_visit_list.date) AS date, visit_list.customer_id
+								FROM visit_list
+								LEFT JOIN code_visit_list
+								ON visit_list.code_visit_list_id = code_visit_list.id
+								WHERE code_visit_list.is_confirm = '1'
+								AND visit_list.result = '1'
+								GROUP BY visit_list.customer_id
+							) maxVisitListTable
+							ON customer.id = maxVisitListTable.customer_id
+						) visitListTable
+						ON visitListTable.id = customer.id
+						JOIN customer_sales ON customer.id = customer_sales.customer_id
+						WHERE DATEDIFF('$date', visitListTable.date) = customer.visiting_frequency
+						OR DATEDIFF('$date', visitListTable.date) = customer.visiting_frequency + 1
+						OR DATEDIFF('$date', visitListTable.date) = customer.visiting_frequency - 1
+						AND customer.is_black_list = '0'
+						AND (
+							customer.name LIKE '%$term%'
+							OR customer.address LIKE '%$term%'
+							OR customer.city LIKE '%$term%'
+							OR customer.pic_name LIKE '%$term%'
+						)
+						AND customer.is_remind = '1'
+						AND customer_sales.sales_id = '$sales'
+						$string
+					) AS a
+					ON a.id = customer.id
 				");
 			}
 			//Inactive Customer//
@@ -538,6 +555,7 @@ class Visit_list_model extends CI_Model {
 				) b
 				ON code_visit_list.created_by = b.id
 				WHERE code_visit_list.is_confirm = '1' AND code_visit_list.is_reported = '0'
+				ORDER BY code_visit_list.date ASC
 				LIMIT $limit OFFSET $offset
 			");
 			$result		= $query->result();
@@ -583,7 +601,8 @@ class Visit_list_model extends CI_Model {
 				WHERE MONTH(code_visit_list.date) = '$month'
 				AND YEAR(code_visit_list.date) = '$year'
 				AND code_visit_list.is_delete = '0'
-				LIMIT $limit OFFSET $offset
+				ORDER BY code_visit_list.date ASC
+				LIMIT $limit OFFSET $offset				
 			");
 
 			$result		= $query->result();

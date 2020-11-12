@@ -111,8 +111,16 @@
 			</div>
 			<div class='col-md-10 col-sm-9 col-xs-8'>
 				<div class='input_group'>
-					<input type='number' class='form-control' id='month' placeholder='Month'>
-					<input type='number' class='form-control' id='year' placeholder='Year'>
+					<select class='form-control' id='month' placeholder='Month'>
+					<?php for($i = 1; $i <= 12; $i++){ ?>
+						<option value='<?= $i ?>'><?= date('F', mktime(0,0,0,$i, 1, date('Y'))) ?></option>
+					<?php } ?>
+					</select>
+					<select class='form-control' id='year'>
+					<?php for($i = 2020; $i <= date("Y"); $i++){ ?>
+						<option value='<?= $i ?>'><?= $i ?></option>
+					<?php } ?>
+					</select>
 					<div class='input_group_append'>
 						<button type='button' class='button button_default_dark' onclick='refreshView()'><i class='fa fa-long-arrow-right'></i></button>
 					</div>
@@ -130,8 +138,16 @@
 			<div class='col-sm-12'>
 				<form id='customerAnalyticForm'>
 					<div class='input_group'>
-						<input type='number' class='form-control' id='customerMonth' placeholder='Month' min='1' max='12'>
-						<input type='number' class='form-control' id='customerYear' placeholder='Year' min='2020'>
+						<select class='form-control' id='customerMonth' placeholder='Month'>
+						<?php for($i = 1; $i <= 12; $i++){ ?>
+							<option value='<?= $i ?>'><?= date('F', mktime(0,0,0,$i, 1, date('Y'))) ?></option>
+						<?php } ?>
+						</select>
+						<select class='form-control' id='customerYear'>
+						<?php for($i = 2020; $i <= date("Y"); $i++){ ?>
+							<option value='<?= $i ?>'><?= $i ?></option>
+						<?php } ?>
+						</select>
 						<div class='input_group_append'>
 							<button type='button' class='button button_default_dark' onclick='getCustomerItems()'><i class='fa fa-search'></i></button>
 						</div>
@@ -377,9 +393,6 @@
 
 		$(this).addClass('active');
 		$(this).attr('disabled', true);
-
-		$('#month').val("");
-		$('#year').val("");
 		$('#valueAnalyticTable').hide();
 		$('#tableAnalyticBody').html("");
 		var id = $(this).attr('id');

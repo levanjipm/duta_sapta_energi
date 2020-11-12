@@ -77,6 +77,14 @@
 		<a href="<?= site_url('CustomerSales') ?>"><button><p>Assign sales</p></button></a>
 		<a href='<?= site_url('SalesAnalytics') ?>'><button><p>Analytic</p></button></a>
 		<?php } ?>
+		<button class='container_button'><p>Promotion</p><i class='fa fa-caret-down'></i></button>
+		<div class='container_bar'>
+			<a href='<?= site_url('Promotion/createDashboard') ?>'><p>Create</p></a>
+			<?php if($user_login->access_level > 2){ ?>
+			<a href='<?= site_url('Promotion/confirmDashboard') ?>'><p>Confirm</p></a>
+			<?php } ?>
+			<a href='<?= site_url('Promotion/archiveDashboard') ?>'><p>Archive</p></a>
+		</div>
 	</div>
 </div>
 <script>

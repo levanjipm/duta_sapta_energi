@@ -121,10 +121,7 @@ class Purchase_order extends CI_Controller {
 		$this->load->view('head');
 		$this->load->view('purchasing/header', $data);
 		
-		$this->load->model('Purchase_order_model');
-		$data['years']	= $this->Purchase_order_model->show_years();
-		
-		$this->load->view('purchasing/PurchaseOrder/archiveDashboard', $data);
+		$this->load->view('purchasing/PurchaseOrder/archiveDashboard');
 	}
 	
 	public function showArchive()

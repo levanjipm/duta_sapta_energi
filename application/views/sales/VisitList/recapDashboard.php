@@ -31,11 +31,17 @@
 		<div class='row'>
 			<div class='col-xs-12' style='margin-bottom:20px'>
 				<label>Area</label>
-				<select class='form-control' id='area'>
-				<?php foreach($customers as $areaId => $area){ ?>
-					<option value='<?= $areaId ?>'><?= $area['name'] ?></option>
-				<?php } ?>
-				</select>
+				<div class='input_group'>
+					<select class='form-control' id='area'>
+					<?php foreach($customers as $areaId => $area){ ?>
+						<option value='<?= $areaId ?>'><?= $area['name'] ?></option>
+					<?php } ?>
+					</select>
+					<select class='form-control' id='type'>
+						<option value='1'>View All Customers</option>
+						<option value='2'>View With Data Only</option>
+					</select>
+				</div>
 			</div>
 			<div class='col-xs-12'>
 			<?php foreach($customers as $areaId => $area){ ?>
@@ -98,6 +104,14 @@
 		$('#container-' + area).show();
 	}
 
+	$('#type').change(function(){
+		if($('#type').val() == 1){
+			$('.emptyCustomer').show();
+		} else {
+			$('.emptyCustomer').hide();
+		}
+	})
+
 	function refreshView(){
 		var year		= $('#year').val();
 		var month		= $('#month').val();
@@ -142,6 +156,8 @@
 				$('td[id^="tableCustomer-"]').each(function(){
 					var tableCustomerId	= $(this).attr('id');
 					var tableCustomerUid	= parseInt(tableCustomerId.substr(14, 269));
+					$('#tableCustomer-' + tableCustomerUid).parent().removeClass('emptyCustomer');
+					$('#tableCustomer-' + tableCustomerUid).parent().addClass('emptyCustomer');
 					for(i = lastDate; i >= 1; i--){
 						var dayDate	= new Date(year, (month - 1), i);
 						var date	= dayDate.getDay();
@@ -162,12 +178,14 @@
 					var date		= parseInt(value.date);
 					var result		= parseInt(value.result);
 					var customer_id	= parseInt(value.customer_id);
+					
 					if(result == 0){
 						$('#customer-' + customer_id + '-' + date).css('background-color', "#f63e21");
 						if(!scheduledCustomer.includes(customer_id)){
 							scheduledCustomer.push(customer_id);
 						}
 
+						$('#tableCustomer-' + customer_id).parent().removeClass('emptyCustomer');
 						scheduled++;
 					} else {
 						$('#customer-' + customer_id + '-' + date).css('background-color', "rgb(1, 187, 0)");
@@ -179,6 +197,8 @@
 						if(!scheduledCustomer.includes(customer_id)){
 							scheduledCustomer.push(customer_id);
 						}
+
+						$('#tableCustomer-' + customer_id).parent().removeClass('emptyCustomer');
 						scheduled++;
 						success++;
 					}
@@ -189,6 +209,13 @@
 
 				$('#schArr').html(numeral(scheduledCustomer.length).format('0,0'));
 				$('#visArr').html(numeral(successCustomer.length).format('0,0'));
+			},
+			complete:function(){
+				if($('#type').val() == 1){
+					$('.emptyCustomer').show();
+				} else {
+					$('.emptyCustomer').hide();
+				}
 			}
 		})
 	}

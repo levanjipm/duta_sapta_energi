@@ -83,9 +83,13 @@
 			</select>
 			
 			<label>Location</label>
-			<input type='number' class='form-control' id='latitude' placeholder='Latitude'>
-			
-			<input type='number' class='form-control' id='longitude' placeholder='Longitude'>
+			<div class='input_group'>
+				<input type='number' class='form-control' id='latitude' placeholder='Latitude'>
+				<input type='number' class='form-control' id='longitude' placeholder='Longitude'>
+			</div>
+
+			<label>Visit Frequency</label>
+			<input type='number' class='form-control' id='visit' required>
 			<br>
 			<button class='button button_default_dark' type='button' id='submit_add_customer_button'><i class='fa fa-long-arrow-right'></i></button>
 		</form>
@@ -144,9 +148,13 @@
 			</select>
 			
 			<label>Location</label>
-			<input type='number' class='form-control' id='latitude_edit' placeholder='Latitude'>
-			
-			<input type='number' class='form-control' id='longitude_edit' placeholder='Longitude'>
+			<div class='input_group'>
+				<input type='number' class='form-control' id='latitude_edit' placeholder='Latitude'>
+				<input type='number' class='form-control' id='longitude_edit' placeholder='Longitude'>
+			</div>
+
+			<label>Visit Frequency</label>
+			<input type='number' class='form-control' id='visit_edit' placeholder='Visit Frequency'>
 			<br>
 			<button class='button button_default_dark' type='button' id='submit_edit_customer_button'><i class='fa fa-long-arrow-right'></i></button>
 		</form>
@@ -186,6 +194,7 @@
 	});	
 	
 	$('#add_customer_button').click(function(){
+		$('#visit').val(28);
 		$('#add_customer_wrapper').fadeIn(300, function(){
 			$('#add_customer_wrapper .alert_box_slide').show("slide", { direction: "right" }, 250);
 		});
@@ -218,7 +227,8 @@
 					customer_pic: $('#customer_pic').val(),
 					term_of_payment: $('#term_of_payment').val(),
 					latitude: $('#latitude').val(),
-					longitude: $("#longitude").val()
+					longitude: $("#longitude").val(),
+					visit: $('#visit').val()
 				},
 				type:'POST',
 				beforeSend:function(){
@@ -295,6 +305,7 @@
 				var rw 				= response.rw;
 				var term_of_payment = response.term_of_payment;
 				var city			= response.city;
+				var visit			= response.visiting_frequency;
 				
 				$('#name_edit').val(name)			
 				$('#customer_id_edit').val(id)			
@@ -312,6 +323,7 @@
 				$('#rw_edit').val(rw) 				
 				$('#term_of_payment_edit').val(term_of_payment);
 				$('#city_edit').val(city);
+				$('#visit_edit').val(visit);
 				
 				$('#edit_customer_wrapper').fadeIn(300, function(){
 					$('#edit_customer_wrapper .alert_box_slide').show("slide", { direction: "right" }, 250);
@@ -339,7 +351,8 @@
 				rt 				: $('#rt_edit').val(), 					
 				rw 				: $('#rw_edit').val(), 					
 				term_of_payment : $('#term_of_payment_edit').val(),
-				city			: $('#city_edit').val() 
+				city			: $('#city_edit').val(),
+				visit			: $('#visit_edit').val()
 			},
 			type:'POST',
 			beforeSend: function(){

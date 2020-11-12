@@ -44,6 +44,7 @@
 			<select class='form-control' name='type' id='type'>
 				<option value='1'>Operational</option>
 				<option value='2'>Non operational</option>
+				<option value='3'>Taxing</option>
 			</select>
 			
 			<label><input type='checkbox' name='null_check' id='null_check' checked> No parent</label>
@@ -161,6 +162,8 @@
 						var typeText = "Operational";
 					} else if(type == 2) {
 						var typeText = "Non-operational";
+					} else if(type == 3){
+						var typeText = "Taxing";
 					} else {
 						var typeText = "<i>Not available</i>";
 					}

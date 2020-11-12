@@ -5,6 +5,7 @@
 			border-radius:10px;
 			background-color:white;
 			width:100%;
+			margin-bottom:20px;
 		}
 
 		.departmentBoxHeader{
