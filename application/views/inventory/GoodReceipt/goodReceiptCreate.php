@@ -94,7 +94,7 @@
 					if(dropship_address == null){
 						$('#delivery_address_p').html("<p style='font-family:museo'>PT Duta Sapta Energi</p><p style='font-family:museo'>Jalan Babakan Hantap no. 23</p><p style='font-family:museo'>Bandung</p>");
 					} else {
-						$('#delivery_address_p').html("<p style='font-family:museo'>" + dropship_address + "</p><p style='font-family:museo'>" + dropship_address + "</p><p style='font-family:museo'>" + dropship_city + "</p><p style='font-family:museo'>" + dropship_contact_person + "</p>");
+						$('#delivery_address_p').html("<p style='font-family:museo'>" + dropship_address + "</p><p style='font-family:museo'>" + dropship_city + "</p><p style='font-family:museo'>" + dropship_contact_person + "</p>");
 					}
 
 					$('#goodReceiptTableContent').html("");

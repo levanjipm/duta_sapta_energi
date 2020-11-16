@@ -251,7 +251,8 @@ class Debt_model extends CI_Model {
 						ON b.other_purchase_id = purchase_invoice_other.id
 						WHERE purchase_invoice_other.is_done = '0'
 						AND purchase_invoice_other.is_confirm = '1'
-						GROUP BY IF(purchase_invoice_other.supplier_id = null, purchase_invoice_other.other_opponent_id, purchase_invoice_other.supplier_id)
+						AND (DATE_ADD(purchase_invoice_other.date, INTERVAL purchase_invoice_other.payment DAY) < CURDATE() OR DATE_ADD(purchase_invoice_other.date, INTERVAL purchase_invoice_other.payment DAY) = CURDATE())
+						GROUP BY IF(purchase_invoice_other.supplier_id IS NULL, purchase_invoice_other.other_opponent_id, purchase_invoice_other.supplier_id)
 					)
 				");
 			} else if($category == 3){

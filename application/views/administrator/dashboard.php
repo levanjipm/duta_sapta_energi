@@ -63,6 +63,7 @@
 			<div class='departmentBoxFunctionsWrapper'>
 				<a href='<?= site_url('Delivery_order/deleteDashboard') ?>'><p style='font-family:museo'>Delete Delivery Order</p></a>
 				<a href='<?= site_url('Good_receipt/deleteDashboard') ?>'><p style='font-family:museo'>Delete Good Receipt</p></a>
+				<a href='<?= site_url('Sales_return/deleteDashboard') ?>'><p style='font-family:museo'>Delete Sales Return</p></a>
 			</div>
 		</div>
 	</div>

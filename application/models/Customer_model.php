@@ -555,4 +555,31 @@ class Customer_model extends CI_Model {
 
 			return $response;
 		}
+
+		public function getNoo($month, $year)
+		{
+			$dateParam			= $year . '-' . str_pad($month, 2, 0) . "-01";
+			$query			= $this->db->query("
+				SELECT customer.*, customer_area.name as area
+				FROM customer
+				JOIN customer_area ON customer.area_id = customer_area.id
+				WHERE customer.id IN
+				(
+					SELECT code_sales_order.customer_id
+					FROM code_sales_order
+					WHERE code_sales_order.is_confirm = '1'
+					AND MONTH(code_sales_order.date) = '$month'
+					AND YEAR(code_sales_order.date) = '$year'
+				)
+				AND customer.id NOT IN (
+					SELECT code_sales_order.customer_id
+					FROM code_sales_order
+					WHERE code_sales_order.date < $dateParam
+					AND code_sales_order.is_confirm = '1'
+				)
+			");
+
+			$result			= $query->result();
+			return $result;
+		}
 }

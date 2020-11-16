@@ -27,13 +27,9 @@
 			</div>
 			<div class='col-md-3 col-sm-4 col-xs-6'>
 				<select class='form-control' id='year'>
-				<?php
-	for($i = 2020; $i <= date('Y'); $i++){
-?>
+				<?php for($i = 2020; $i <= date('Y'); $i++){ ?>
 					<option value='<?= $i ?>'><?= $i ?></option>
-<?php
-	}
-?>
+				<?php } ?>
 				</select>
 			</div>
 		</div>
@@ -144,7 +140,7 @@
 					};
 
 
-					if(is_confirm == 0){
+					if(is_confirm == 1){
 						$('#archiveTable').append("<div class='row archive_row'><div class='col-md-4 col-sm-5 col-xs-6'><p><strong>" + name + "</strong></p><p>" + typeName + "</p></div><div class='col-md-4 col-sm-5 col-xs-6'><p style='display:inline-block'>" + my_date_format(date) + " <strong>|</strong> </p> <button type='button' class='button button_transparent' onclick='open_view(" + id + ")' title='View " + name + "'><i class='fa fa-eye'></i></button> <button type='button' class='button button_verified' title='Confirmed'><i class='fa fa-check'></i></button></div>");
 					} else {
 						$('#archiveTable').append("<div class='row archive_row'><div class='col-md-4 col-sm-5 col-xs-6'><p><strong>" + name + "</strong></p><p>" + typeName + "</p></div><div class='col-md-4 col-sm-5 col-xs-6'><p style='display:inline-block'>" + my_date_format(date) + " <strong>|</strong> </p> <button type='button' class='button button_transparent' onclick='open_view(" + id + ")' title='View " + name + "'><i class='fa fa-eye'></i></button></div>");

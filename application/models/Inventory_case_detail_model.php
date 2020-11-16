@@ -248,7 +248,7 @@ class Inventory_case_detail_model extends CI_Model {
 					'customer_id' => null,
 					'supplier_id' => null,
 					'good_receipt_id' => null,
-					'sales_return_id' => null,
+					'sales_return_received_id' => null,
 					'event_id' => $id,
 					'price' => $price,
 				);

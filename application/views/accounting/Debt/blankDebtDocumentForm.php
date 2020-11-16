@@ -32,6 +32,9 @@
 		</script>
 	</div>
 
+	<label>Payment</label>
+	<input type='number' class='form-control' id='payment' required min='0'>
+
 	<label>Type</label>
 	<button type='button' class='form-control' id='debtTypePickButton' style='text-align:left!important'></button>
 	<input type='hidden' id='debtType' name='debtType' required>
@@ -135,6 +138,9 @@
 		<label>Type</label>
 		<p id='debtTypeText'></p>
 
+		<label>Payment</label>
+		<p id='payment_p'></p>
+
 		<button class='button button_default_dark' id='submitFormButton'><i class='fa fa-long-arrow-right'></i></button>
 		<br>
 		<div class='notificationText danger' id='failedInsertNotification'><p>Failed to insert debt document.</p></div>
@@ -154,6 +160,7 @@
 	var date;
 
 	var debtType;
+	var payment;
 
 	var taxing;
 	var supplierType;
@@ -212,6 +219,7 @@
 
 			invoiceName = $('#invoiceName').val();
 			supplierType = supplierType;
+			payment		= $('#payment').val();
 
 			$('#supplier_name_p').html(supplier_name);
 			$('#supplier_address_p').html(complete_address);
@@ -232,6 +240,7 @@
 
 			$('#information_p').html(information);
 			$('#taxing_p').html(taxingText);
+			$('#payment_p').html(payment + " day(s)");
 
 			$('#debtDocumentWrapper').fadeIn(300, function(){
 				$('#debtDocumentWrapper .alert_box_slide').show("slide", { direction: "right" }, 250);
@@ -253,7 +262,8 @@
 					date: $('#date').val(),
 					supplier_id: $('#supplier_id').val(),
 					debtType: $('#debtType').val(),
-					supplierType: supplierType
+					supplierType: supplierType,
+					payment: $('#payment').val()
 				},
 				type:'POST',
 				beforeSend:function(){

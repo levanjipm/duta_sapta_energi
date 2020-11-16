@@ -486,7 +486,9 @@ class Bank extends CI_Controller {
 		$this->load->model("Bank_model");
 		$bank	= $this->Bank_model->getById($id);
 		$data['bank']		= $bank;
-
+		if($bank == null){
+			redirect(site_url('Bank/resetDashboard'));
+		}
 		$accountId			= $bank->account_id;
 		$this->load->model("Internal_bank_account_model");
 		$data['account']	= $this->Internal_bank_account_model->getById($accountId);
@@ -589,6 +591,9 @@ class Bank extends CI_Controller {
 				"address" => "--",
 				"city" => ""
 			);
+		} else {
+			$transactionReference		= $bank->transaction_reference;
+			$data['balancer']			= $this->Bank_model->getById($transactionReference);
 		}
 		$this->load->view('accounting/Bank/resetBankForm', $data);
 	}

@@ -18,6 +18,10 @@
 				display:none;
 			}
 		}
+
+		.table tr, th, td{
+			border:2px solid black!important;
+		}
 	</style>
 </head>
 <div class='dashboard'>
@@ -39,7 +43,7 @@
 				<label>Salesman</label>
 				<p><?= $general->visited_by ?></p>
 
-				<table class='table table-bordered'>
+				<table class='table table-bordered' style='border:1px solid black'>
 					<tr>
 						<th>Customer</th>
 						<th>Signature</th>

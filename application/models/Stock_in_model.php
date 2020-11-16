@@ -203,10 +203,10 @@ class Stock_in_model extends CI_Model {
 		public function ViewCard($item_id)
 		{
 			$query = $this->db->query("
-				SELECT COALESCE(customer.name, supplier.name, 'Internal Transaction') as name, COALESCE(deliveryOrderTable.date, eventTable.date) as date, COALESCE(deliveryOrderTable.quantity, eventTable.quantity) * (-1) as quantity, COALESCE(deliveryOrderTable.name, eventTable.name) as documentName 
+				SELECT COALESCE(customer.name, supplier.name, 'Internal Transaction') as name, COALESCE(deliveryOrderTable.date, eventTable.date,purchaseReturnTable.date) as date, COALESCE(deliveryOrderTable.quantity, eventTable.quantity, purchaseReturnTable.quantity) * (-1) as quantity, COALESCE(deliveryOrderTable.name, eventTable.name, purchaseReturnTable.name) as documentName, COALESCE(deliveryOrderTable.deliveryOrderId, eventTable.eventId, purchaseReturnTable.returnId) AS documentId, COALESCE(deliveryOrderTable.type, eventTable.type, purchaseReturnTable.type) AS documentType
 				FROM stock_out
 				LEFT JOIN (
-					SELECT stock_out.id, code_delivery_order.name, code_delivery_order.date, delivery_order.quantity
+					SELECT stock_out.id, code_delivery_order.name, code_delivery_order.date, delivery_order.quantity, code_delivery_order.id AS deliveryOrderId, 'deliveryOrder' AS type
 					FROM delivery_order
 					JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
 					JOIN price_list ON sales_order.price_list_id = price_list.id
@@ -216,13 +216,22 @@ class Stock_in_model extends CI_Model {
 				) AS deliveryOrderTable
 				ON stock_out.id = deliveryOrderTable.id
 				LEFT JOIN (
-					SELECT stock_out.id, code_event.name, code_event.date, SUM(event.quantity) as quantity
+					SELECT stock_out.id, code_event.name, code_event.date, SUM(event.quantity) as quantity, code_event.id AS eventId, 'event' AS type
 					FROM event
 					JOIN stock_out ON stock_out.event_id = event.id
 					JOIN code_event ON event.code_event_id = code_event.id
 					GROUP BY event.item_id, event.code_event_id
 				) AS eventTable
 				ON stock_out.id = eventTable.id
+				LEFT JOIN (
+					SELECT purchase_return_sent.id, code_purchase_return_sent.name, code_purchase_return_sent.date, SUM(purchase_return_sent.quantity) AS quantity, purchase_return_sent.code_purchase_return_sent_id AS returnId, 'purchaseReturn' AS type
+					FROM purchase_return_sent
+					JOIN stock_out ON stock_out.purchase_return_id = purchase_return_sent.id
+					JOIN code_purchase_return_sent ON code_purchase_return_sent.id = purchase_return_sent.code_purchase_return_sent_id
+					JOIN purchase_return ON purchase_return_sent.purchase_return_id = purchase_return.id
+					GROUP BY purchase_return_sent.code_purchase_return_sent_id, purchase_return.item_id
+				) purchaseReturnTable
+				ON purchaseReturnTable.id = stock_out.purchase_return_id
 				LEFT JOIN customer ON stock_out.customer_id = customer.id
 				LEFT JOIN supplier ON stock_out.supplier_id = supplier.id
 				WHERE stock_out.in_id IN(
@@ -239,19 +248,28 @@ class Stock_in_model extends CI_Model {
 				)
 				UNION
 				(
-					SELECT COALESCE(customer.name, supplier.name) as name, COALESCE(goodReceiptTable.date, salesReturnTable.date) as date, stock_in.quantity, COALESCE(goodReceiptTable.name, salesReturnTable.name) as documentName
+					SELECT COALESCE(customer.name, supplier.name, 'Internal Transaction') as name, COALESCE(goodReceiptTable.date, salesReturnTable.date,eventTable.date) as date, stock_in.quantity, COALESCE(goodReceiptTable.name, salesReturnTable.name, eventTable.name) as documentName, COALESCE(goodReceiptTable.goodReceiptId, salesReturnTable.saesReturnId, eventTable.eventId) AS documentId, COALESCE(goodReceiptTable.type, salesReturnTable.type, eventTable.type) AS documentType
 					 FROM stock_in
 					LEFT JOIN (
-						SELECT good_receipt.id, code_good_receipt.name, code_good_receipt.date FROM code_good_receipt
+						SELECT good_receipt.id, code_good_receipt.name, code_good_receipt.date, code_good_receipt.id AS goodReceiptId, 'goodReceipt' AS type
+						FROM code_good_receipt
 						JOIN good_receipt ON good_receipt.code_good_receipt_id = code_good_receipt.id
 					) goodReceiptTable
 					ON stock_in.good_receipt_id = goodReceiptTable.id
 					LEFT JOIN(
-						SELECT code_sales_return_received.name, code_sales_return_received.date, sales_return_received.quantity, sales_return_received.id
+						SELECT code_sales_return_received.name, code_sales_return_received.date, sales_return_received.quantity, sales_return_received.id, code_sales_return_received.id AS saesReturnId, 'salesReturn' AS type
 						FROM sales_return_received
 						JOIN code_sales_return_received ON sales_return_received.code_sales_return_received_id = code_sales_return_received.id
 					) salesReturnTable
 					ON stock_in.sales_return_received_id = salesReturnTable.id
+					LEFT JOIN (
+						SELECT stock_in.id, code_event.name, code_event.date, SUM(event.quantity) as quantity, code_event.id AS eventId, 'event' AS type
+						FROM event
+						JOIN stock_in ON stock_in.event_id = event.id
+						JOIN code_event ON event.code_event_id = code_event.id
+						GROUP BY event.item_id, event.code_event_id
+					) AS eventTable
+					ON stock_in.id = eventTable.id
 					LEFT JOIN customer ON stock_in.customer_id = customer.id
 					LEFT JOIN supplier ON stock_in.supplier_id = supplier.id
 					WHERE stock_in.item_id = '$item_id'
@@ -398,5 +416,11 @@ class Stock_in_model extends CI_Model {
 					WHERE good_receipt.code_good_receipt_id = '$id'
 				)
 			");
+		}
+
+		public function deleteBySalesReturnId($idArray)
+		{
+			$this->db->where_in('sales_return_received_id', $idArray);
+			return $this->db->delete($this->table_stock_in);
 		}
 }

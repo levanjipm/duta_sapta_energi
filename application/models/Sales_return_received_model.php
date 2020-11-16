@@ -160,6 +160,10 @@ class Sales_return_received_model extends CI_Model {
 				$this->db->set('confirmed_by', $this->session->userdata('user_id'));
 				$this->db->where('is_delete', 0);
 				$this->db->where('is_confirm', 0);
+			} else if($status == 2){
+				$this->db->set('is_delete', 1);
+				$this->db->set('is_confirm', 0);
+				$this->db->set('confirmed_by', $this->session->userdata('user_id'));
 			}
 
 			$this->db->where('id', $id);
@@ -240,6 +244,50 @@ class Sales_return_received_model extends CI_Model {
 
 			$result			= $query->row();
 			return $result->value;
+		}
+
+		public function resetByBankId($bankId)
+		{
+			$this->db->set('is_done', 0);
+			$this->db->set('bank_id', NULL);
+			$this->db->where('bank_id', $bankId);
+			$query			= $this->db->update($this->table_sales_return);
+			$result			= $this->db->affected_rows();
+			return $result;
+		}
+
+		public function getConfirmedItems($offset = 0, $limit = 10)
+		{
+			$this->db->select('code_sales_return_received.*, customer.name AS customerName');
+			$this->db->from('code_sales_return_received');
+			$this->db->join('sales_return_received', 'sales_return_received.code_sales_return_received_id = code_sales_return_received.id');
+			$this->db->join('sales_return', 'sales_return_received.sales_return_id = sales_return.id');
+			$this->db->join('delivery_order', 'sales_return.delivery_order_id = delivery_order.id');
+			$this->db->join('sales_order', 'delivery_order.sales_order_id = sales_order.id');
+			$this->db->join('code_sales_order', 'sales_order.code_sales_order_id = code_sales_order.id');
+			$this->db->join('customer', 'code_sales_order.customer_id = customer.id');
+			$this->db->where('code_sales_return_received.is_confirm', 1);
+			$this->db->where('code_sales_return_received.is_done', 0);
+			$this->db->limit($limit, $offset);
+			$query		= $this->db->get();
+			$result		= $query->result();
+			return $result;
+		}
+
+		public function countConfirmedItems()
+		{
+			$this->db->where('is_confirm', 1);
+			$this->db->where('is_done', 0);
+			$query			= $this->db->get($this->table_sales_return);
+			$result			= $query->num_rows();
+			return $result;
+		}
+
+		public function cancelById($id)
+		{
+			$query			= $this->db->query("
+
+			");
 		}
 	}
 ?>

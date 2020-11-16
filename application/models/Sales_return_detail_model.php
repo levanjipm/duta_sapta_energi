@@ -10,6 +10,7 @@ class Sales_return_detail_model extends CI_Model {
 		public $received;
 		public $is_done;
 		public $code_sales_return_id;
+		public $price;
 		
 		public $complete_address;
 		
@@ -26,6 +27,7 @@ class Sales_return_detail_model extends CI_Model {
 			$this->received				= $db_item->received;
 			$this->is_done				= $db_item->is_done;
 			$this->code_sales_return_id	= $db_item->code_sales_return_id;
+			$this->price				= $db_item->price;
 			
 			return $this;
 		}
@@ -39,7 +41,8 @@ class Sales_return_detail_model extends CI_Model {
 			$db_item->quantity				= $this->quantity;		
 			$db_item->received				= $this->received;				
 			$db_item->is_done				= $this->is_done;				
-			$db_item->code_sales_return_id	= $this->code_sales_return_id;	
+			$db_item->code_sales_return_id	= $this->code_sales_return_id;
+			$db_item->price					= $this->price;	
 			
 			return $db_item;
 		}
@@ -54,6 +57,7 @@ class Sales_return_detail_model extends CI_Model {
 			$stub->received				= $db_item->received;				
 			$stub->is_done				= $db_item->is_done;				
 			$stub->code_sales_return_id	= $db_item->code_sales_return_id;
+			$stub->price				= $db_item->price;
 			
 			return $stub;
 		}
@@ -86,14 +90,16 @@ class Sales_return_detail_model extends CI_Model {
 			$batch		= array();
 			foreach($returnQuantityArray as $key => $returnQuantity)
 			{
-				if($returnQuantity > 0){
+				print_r($returnQuantity);
+				if($returnQuantity['quantity'] > 0){
 					$item		= array(
 						'id' => "",
 						'delivery_order_id' => $key,
-						'quantity' => $returnQuantity,
+						'quantity' => $returnQuantity['quantity'],
 						'received' => 0,
 						'is_done' => 0,
-						'code_sales_return_id' => $codeSalesReturnId
+						'code_sales_return_id' => $codeSalesReturnId,
+						"price" => $returnQuantity['price']
 					);
 					array_push($batch, $item);	
 				}
@@ -107,7 +113,7 @@ class Sales_return_detail_model extends CI_Model {
 		public function getByCodeSalesReturnId($codeSalesReturnId)
 		{
 			$query	= $this->db->query("
-				SELECT item.reference, item.name, sales_return.id, sales_return.quantity, sales_return.received, sales_return.is_done, price_list.price_list, sales_order.discount FROM
+				SELECT item.reference, item.name, sales_return.id, sales_return.quantity, sales_return.received, sales_return.is_done, sales_return.price FROM
 				sales_return
 				JOIN delivery_order ON sales_return.delivery_order_id = delivery_order.id
 				JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
@@ -235,9 +241,10 @@ class Sales_return_detail_model extends CI_Model {
 				SELECT delivery_order.id, COALESCE(IF(sales_return.is_done = 1, sales_return.received, sales_return.quantity),0) as quantity 
 				FROM sales_return
 				JOIN delivery_order ON sales_return.delivery_order_id = delivery_order.id
-				JOIN code_sales_return ON sales_return.code_sales_return_id = code_sales_return.id
 				JOIN code_delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order.id
-				WHERE code_delivery_order.id = '$deliveryOrderId' AND code_sales_return.is_delete <> 0
+				JOIN code_sales_return ON sales_return.code_sales_return_id = code_sales_return.id
+				WHERE code_delivery_order.id = '$deliveryOrderId' 
+				AND code_sales_return.is_delete = 0
 			");
 
 			$result = $query->result();

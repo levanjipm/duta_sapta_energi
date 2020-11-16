@@ -201,9 +201,7 @@
 				$.each(items, function(index, item){
 					var reference 		= item.reference;
 					var description		= item.name;
-					var priceList		= parseFloat(item.price_list);
-					var discount		= parseFloat(item.discount);
-					var unitPrice		= priceList * (100 - discount) / 100;
+					var unitPrice		= parseFloat(item.price);
 					var quantity		= parseInt(item.quantity);
 					var totalPrice		= unitPrice * quantity;
 					returnValue			+= totalPrice;

@@ -19,6 +19,7 @@ class Debt_other_model extends CI_Model {
 		public $information;
 		public $value;
 		public $type;
+		public $payment;
 
 		public function __construct()
 		{
@@ -42,6 +43,7 @@ class Debt_other_model extends CI_Model {
 			$this->information			= $db_item->information;
 			$this->value				= $db_item->value;
 			$this->type					= $db_item->type;
+			$this->payment				= $db_item->payment;
 			
 			return $this;
 		}
@@ -65,6 +67,7 @@ class Debt_other_model extends CI_Model {
 			$db_item->information			= $this->information;
 			$db_item->value					= $this->value;
 			$db_item->type					= $this->type;
+			$db_item->payment				= $this->payment;
 			
 			return $db_item;
 		}
@@ -88,6 +91,7 @@ class Debt_other_model extends CI_Model {
 			$stub->information			= $db_item->information;
 			$stub->value				= $db_item->value;
 			$stub->type					= $db_item->type;
+			$stub->payment				= $db_item->payment;
 			
 			return $stub;
 		}
@@ -145,6 +149,7 @@ class Debt_other_model extends CI_Model {
 			$this->is_done				= 0;
 			$this->tax_document			= $this->input->post('taxInvoiceName');
 			$this->invoice_document		= $this->input->post('invoiceName');
+			$this->payment				= $this->input->post('payment');
 
 			if($this->input->post('supplierType') == 1){
 				$this->supplier_id			= $this->input->post('supplier_id');

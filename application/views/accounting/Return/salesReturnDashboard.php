@@ -232,12 +232,9 @@
                 var salesReturnValue = 0;
                 $.each(items, function(index, item){
                     var reference = item.reference;
-                    var quantity = item.quantity;
                     var name = item.name;
-                    var priceList = parseFloat(item.price_list);
-                    var discount = parseFloat(item.discount);
                     var quantity = parseInt(item.quantity);
-                    var unitPrice = priceList * (100 - discount) / 100;
+                    var unitPrice = parseFloat(item.price);
                     var totalPrice = unitPrice * quantity;
 
                     $('#returnItemTable').append("<tr><td>" + reference + "</td><td>" + name + "</td><td>Rp. " + numeral(unitPrice).format('0,0.00') + "</td><td>" + numeral(quantity).format('0,0') + "</td><td>Rp. " + numeral(totalPrice).format("0,0.00") + "</td><tr>")
@@ -352,4 +349,8 @@
 			})
 		}
 	}
+
+	$('.alert_full_close_button').click(function(){
+		$(this).parent().parent().fadeOut();
+	})
 </script>

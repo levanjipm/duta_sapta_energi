@@ -67,6 +67,7 @@ class Stock extends CI_Controller {
 		$itemId			= $this->input->get('id');
 		$this->load->model('Stock_in_model');
 		$data = $this->Stock_in_model->viewCard($itemId);
+
 		header('Content-Type: application/json');
 		echo json_encode($data);
 	}

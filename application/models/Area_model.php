@@ -56,6 +56,7 @@ class Area_model extends CI_Model {
 		
 		public function showAllItems()
 		{
+			$this->db->order_by('name');
 			$query 		= $this->db->get($this->table_area);
 			$areas	 	= $query->result();
 			

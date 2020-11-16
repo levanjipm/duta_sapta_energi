@@ -110,6 +110,10 @@
 				<td><label>Value</label></td>
 				<td>Rp. <span id='blankInvoiceValue_p'></span></td>
 			</tr>
+			<tr>
+				<td><label>Payment</label></td>
+				<td><span id='blankInvoicePayment_p'></span> day(s)</p>
+			</tr>
 		</table>
 
 		<p style='font-family:museo;float:right'>Created by <span id='blankInvoiceCreator_p'></span></p><br><br>
@@ -314,6 +318,7 @@
 				var debt = response.debt;
 				var taxDocumentName = debt.tax_document;
 				var documentName	= debt.invoice_document;
+				var payment			= debt.payment;
 
 				var taxing			= debt.taxing;
 				if(taxing == 1){
@@ -321,6 +326,8 @@
 				} else {
 					var taxingText = "Non-taxable purchase";
 				}
+
+				$('#blankInvoicePayment_p').html(numeral(payment).format('0,0'));
 
 				var createdBy 		= debt.created_by;
 				var information 	= debt.information;

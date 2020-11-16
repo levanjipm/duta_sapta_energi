@@ -228,8 +228,11 @@ class Purchase_return extends CI_Controller {
 		$this->load->model("Purchase_return_sent_model");
 		$result = $this->Purchase_return_sent_model->updateById(1, $id);
 		if($result == 1){
-			$this->load->model("Purchase_return_detail_model");
-			$dataArray = $this->Purchase_return_detail_model->getByCodeId($id);
+			$data			= $this->Purchase_return_sent_model->getById($id);
+			$supplierId		= $data->supplier_id;
+
+			$this->load->model("Purchase_return_sent_detail_model");
+			$dataArray = $this->Purchase_return_sent_detail_model->getByCodeId($id);
 			$stockItemArray = array();
 			foreach($dataArray as $data){
 				$stockItemArray[] = array(
@@ -242,7 +245,7 @@ class Purchase_return extends CI_Controller {
 			}
 
 			$this->load->model("Stock_out_model");
-			$this->Stock_out_model->insertFromPurchaseReturn($stockItemArray);
+			$this->Stock_out_model->insertFromPurchaseReturn($stockItemArray, $supplierId);
 		}
 		echo $result;
 	}

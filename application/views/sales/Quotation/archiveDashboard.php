@@ -213,11 +213,11 @@
 				}
 
 				$('#taxing_name_p').html(taxing_p);
-				if(customer_number != ''){
+				if(customer_number != '' && customer_number != null){
 					complete_address	+= ' No. ' + customer_number;
 				}
 				
-				if(customer_block != ''){
+				if(customer_block != null && customer_block != "000" && customer_block != ""){
 					complete_address	+= ' Blok ' + customer_block;
 				}
 			
@@ -261,8 +261,8 @@
 				});
 				
 				$('#quotationItemTable').append("<tr><td colspan='4'></td><td colspan='2'>Total</td><td>Rp. " + numeral(sales_order_value).format('0,0.00') + "</td></tr>");
-
-				
+			},
+			complete:function(){				
 				$('#viewQuotationWrapper').fadeIn(300, function(){
 					$('#viewQuotationWrapper .alert_box_slide').show("slide", { direction: "right" }, 250);
 				});

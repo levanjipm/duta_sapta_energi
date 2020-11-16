@@ -172,13 +172,13 @@ class Stock_out_model extends CI_Model {
 			return $this->db->affected_rows();
 		}
 
-		public function insertFromPurchaseReturn($stockOutArray)
+		public function insertFromPurchaseReturn($stockOutArray, $supplierId)
 		{
 			$this->load->model('Stock_in_model');
-			foreach($eventItemArray as $event){
-				$item_id				= $event['item_id'];
-				$quantity				= $event['quantity'];
-				$purchase_return_id		= $event['id'];
+			foreach($stockOutArray as $stockOut){
+				$item_id				= $stockOut['item_id'];
+				$quantity				= $stockOut['quantity'];
+				$purchase_return_id		= $stockOut['id'];
 
 				while($quantity > 0){
 					$stock_in				= $this->Stock_in_model->getResidueByItemId($item_id);
@@ -188,26 +188,26 @@ class Stock_out_model extends CI_Model {
 					if($residue	> $quantity){
 						$current_residue	= $residue - $quantity;
 						$this->Stock_in_model->updateById($in_id, $current_residue);
-						$result = $this->Stock_out_model->insertStockOutFromPurchaseReturn($in_id, $quantity, $purchase_return_id); 
+						$result = $this->Stock_out_model->insertStockOutFromPurchaseReturn($in_id, $quantity, $purchase_return_id, $supplierId); 
 						break;
 					} else {
 						$current_residue		= $quantity - $residue;
 						$this->Stock_in_model->updateById($in_id, 0);
-						$result = $this->Stock_out_model->insertStockOutFromPurchaseReturn($in_id, $current_residue, $purchase_return_id);
+						$this->Stock_out_model->insertStockOutFromPurchaseReturn($in_id, $current_residue, $purchase_return_id, $supplierId);
 						$quantity = $quantity - $residue;
 					}
 				}
 			}
 		}
 
-		public function insertStockOutFromPurchaseReturn($in_id, $quantity, $purchase_return_id)
+		public function insertStockOutFromPurchaseReturn($in_id, $quantity, $purchase_return_id, $supplierId)
 		{
 			$db_item		= array(
 				'in_id' => $in_id,
 				'quantity' => $quantity,
 				'event_id' => null,
 				'customer_id' => null,
-				'supplier_id' => null,
+				'supplier_id' => $supplierId,
 				'purchase_return_id' => $purchase_return_id,
 				'delivery_order_id' => null
 			);

@@ -662,28 +662,48 @@ class Invoice_model extends CI_Model {
 		{
 			if($month == 0){
 				$query		= $this->db->query("
-					SELECT SUM(invoice.value + invoice.delivery - invoice.discount) AS value
+					SELECT COALESCE(SUM(invoice.value + invoice.delivery - invoice.discount), 0) AS value
 					FROM invoice
 					WHERE YEAR(invoice.date) = '$year'
 					AND invoice.is_confirm = '1'
 					AND invoice.customer_id IS NULL
 					AND invoice.opponent_id IS NULL
+					UNION (
+						SELECT COALESCE(SUM(-1 * sales_return.price * sales_return_received.quantity), 0) AS value
+						FROM sales_return_received
+						JOIN sales_return ON sales_return_received.sales_return_id = sales_return_id
+						JOIN code_sales_return_received ON sales_return_received.code_sales_return_received_id = code_sales_return_received.id
+						WHERE YEAR(code_sales_return_received.date) = '$year'
+						AND code_sales_return_received.is_confirm = '1'
+					)
 				");
 			} else {
 				$query		= $this->db->query("
-					SELECT SUM(invoice.value + invoice.delivery - invoice.discount) AS value
+					SELECT COALESCE(SUM(invoice.value + invoice.delivery - invoice.discount), 0) AS value
 					FROM invoice
 					WHERE YEAR(invoice.date) = '$year'
 					AND MONTH(invoice.date) = '$month'
 					AND invoice.is_confirm = '1'
 					AND invoice.customer_id IS NULL
 					AND invoice.opponent_id IS NULL
+					UNION (
+						SELECT COALESCE(SUM(-1 * sales_return.price * sales_return_received.quantity), 0) AS value
+						FROM sales_return_received
+						JOIN sales_return ON sales_return_received.sales_return_id = sales_return_id
+						JOIN code_sales_return_received ON sales_return_received.code_sales_return_received_id = code_sales_return_received.id
+						WHERE MONTH(code_sales_return_received.date) = '$month' AND YEAR(code_sales_return_received.date) = '$year'
+						AND code_sales_return_received.is_confirm = '1'
+					)
 				");
 			}
-
-			$result = $query->row();
-
-			return ($result->value == null)? 0 : (float)$result->value;
+			$result = $query->result();
+			if(count($result) == 1){
+				$value		= $result[0]->value;
+			} else {
+				$value		=  $result[0]->value + $result[1]->value;
+			}
+			
+			return (float)$value;
 		}
 
 		public function getById($id)
@@ -761,8 +781,9 @@ class Invoice_model extends CI_Model {
 		public function getByMonthYear($month, $year, $offset)
 		{
 			$query = $this->db->query("
-				SELECT a.value, a.name FROM (
-					SELECT SUM(invoice.value + invoice.delivery - invoice.discount) as value, customer.name
+				SELECT (a.value - COALESCE(returnTable.value, 0)) AS value, a.name 
+				FROM (
+					SELECT COALESCE(SUM(invoice.value + invoice.delivery - invoice.discount), 0) as value, customer.name, customer.id
 					FROM invoice
 					JOIN code_delivery_order ON code_delivery_order.invoice_id = invoice.id
 					JOIN delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order.id
@@ -773,6 +794,19 @@ class Invoice_model extends CI_Model {
 					AND YEAR(invoice.date) = '$year'
 					GROUP BY code_sales_order.customer_id
 				) a
+				LEFT JOIN (
+					SELECT COALESCE(SUM(sales_return.price * sales_return_received.quantity), 0) AS value, code_sales_order.customer_id
+					FROM sales_return_received
+					JOIN sales_return ON sales_return_received.sales_return_id = sales_return.id
+					JOIN code_sales_return_received ON sales_return_received.code_sales_return_received_id = code_sales_return_received.id
+					JOIN delivery_order ON sales_return.delivery_order_id = delivery_order.id
+					JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
+					JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
+					WHERE MONTH(code_sales_return_received.date) = '$month' AND YEAR(code_sales_return_received.date)  = '$year'
+					AND code_sales_return_received.is_confirm = '1'
+					GROUP BY code_sales_order.customer_id
+				) returnTable
+				ON returnTable.customer_id = a.id
 				ORDER BY value ASC
 			");
 			$result = $query->result();
@@ -1053,7 +1087,7 @@ class Invoice_model extends CI_Model {
 					) AS a
 					LEFT JOIN users ON a.seller = users.id
 					LEFT JOIN (
-						SELECT COALESCE(SUM(sales_return_received.quantity * price_list.price_list * (1 - sales_order.discount / 100)),0) as value, COALESCE(code_sales_order.seller,0) AS seller
+						SELECT COALESCE(SUM(sales_return_received.quantity * sales_return.price),0) as value, COALESCE(code_sales_order.seller,0) AS seller
 						FROM sales_return_received
 						JOIN code_sales_return_received ON sales_return_received.code_sales_return_received_id = code_sales_return_received.id
 						JOIN sales_return ON sales_return_received.sales_return_id = sales_return.id
@@ -1088,7 +1122,7 @@ class Invoice_model extends CI_Model {
 					) AS invoiceTable
 					ON customer_area.id = invoiceTable.area_id
 					LEFT JOIN (
-						SELECT COALESCE(SUM(sales_return_received.quantity * price_list.price_list * (1 - sales_order.discount / 100)),0) as value, customer.area_id
+						SELECT COALESCE(SUM(sales_return_received.quantity * sales_return.price),0) as value, customer.area_id
 						FROM sales_return_received
 						JOIN code_sales_return_received ON sales_return_received.code_sales_return_received_id = code_sales_return_received.id
 						JOIN sales_return ON sales_return_received.sales_return_id = sales_return.id
@@ -1121,7 +1155,7 @@ class Invoice_model extends CI_Model {
 					) invoiceTable
 					ON invoiceTable.type = item_class.id
 					LEFT JOIN (
-						SELECT item.type, SUM(price_list.price_list * (100 - sales_order.discount) * sales_return_received.quantity / 100) as value
+						SELECT item.type, COALESCE(SUM(sales_return.price * sales_return_received.quantity),0) as value
 						FROM sales_return_received
 						JOIN code_sales_return_received ON sales_return_received.code_sales_return_received_id = code_sales_return_received.id
 						JOIN sales_return ON sales_return_received.sales_return_id = sales_return.id
@@ -1210,7 +1244,7 @@ class Invoice_model extends CI_Model {
 					) invoiceTable
 					ON invoiceTable.type = item_class.id
 					LEFT JOIN (
-						SELECT item.type, SUM(price_list.price_list * (100 - sales_order.discount) * sales_return_received.quantity / 100) as value
+						SELECT item.type, COALESCE(SUM(sales_return.price * sales_return_received.quantity),0) as value
 						FROM sales_return_received
 						JOIN code_sales_return_received ON sales_return_received.code_sales_return_received_id = code_sales_return_received.id
 						JOIN sales_return ON sales_return_received.sales_return_id = sales_return.id
@@ -1235,7 +1269,7 @@ class Invoice_model extends CI_Model {
 		{
 			if($type == 1){
 				$query			= $this->db->query("
-					SELECT COUNT(a.id) as count, SUM(invoice.value) AS value, SUM(DATEDIFF(a.date, invoice.date) * invoice.value) / SUM(invoice.value) AS vwa, AVG(DATEDIFF(a.date, invoice.date)) AS pa
+					SELECT COUNT(a.id) as count, SUM(invoice.value + invoice.delivery - invoice.discount) AS value, SUM(DATEDIFF(a.date, invoice.date) * (invoice.value + invoice.delivery - invoice.discount)) / SUM(invoice.value + invoice.delivery - invoice.discount) AS vwa, AVG(DATEDIFF(a.date, invoice.date)) AS pa
 					FROM invoice
 					JOIN (
 						SELECT receivableTable.date, invoice.id
@@ -1256,7 +1290,7 @@ class Invoice_model extends CI_Model {
 				return $result;
 			} else if($type == 2) {
 				$query			= $this->db->query("
-					SELECT COUNT(a.id) as count, SUM(invoice.value) AS value, SUM(DATEDIFF(a.date, invoice.date) * invoice.value) / SUM(invoice.value) AS vwa, AVG(DATEDIFF(a.date, invoice.date)) AS pa
+					SELECT COUNT(a.id) as count, SUM(invoice.value + invoice.delivery - invoice.discount) AS value, SUM(DATEDIFF(a.date, invoice.date) * invoice.value) / SUM(invoice.value + invoice.delivery - invoice.discount) AS vwa, AVG(DATEDIFF(a.date, invoice.date)) AS pa
 					FROM invoice
 					JOIN (
 						SELECT receivableTable.date, invoice.id
@@ -1277,7 +1311,7 @@ class Invoice_model extends CI_Model {
 				return $result;
 			} else if($type == 3){
 				$query			= $this->db->query("
-					SELECT COUNT(a.id) as count, SUM(invoice.value) AS value, SUM(DATEDIFF(a.date, invoice.date) * invoice.value) / SUM(invoice.value) AS vwa, AVG(DATEDIFF(a.date, invoice.date)) AS pa
+					SELECT COUNT(a.id) as count, SUM(invoice.value + invoice.delivery - invoice.discount) AS value, SUM(DATEDIFF(a.date, invoice.date) * (invoice.value + invoice.delivery - invoice.discount)) / SUM(invoice.value + invoice.delivery - invoice.discount) AS vwa, AVG(DATEDIFF(a.date, invoice.date)) AS pa
 					FROM invoice
 					JOIN (
 						SELECT receivableTable.date, invoice.id
@@ -1299,7 +1333,7 @@ class Invoice_model extends CI_Model {
 				return $result;
 			} else if($type == 4){
 				$query			= $this->db->query("
-					SELECT COUNT(a.id) as count, SUM(invoice.value) AS value, SUM(DATEDIFF(a.date, invoice.date) * invoice.value) / SUM(invoice.value) AS vwa, AVG(DATEDIFF(a.date, invoice.date)) AS pa
+					SELECT COUNT(a.id) as count, SUM(invoice.value + invoice.delivery - invoice.discount) AS value, SUM(DATEDIFF(a.date, invoice.date) * (invoice.value + invoice.delivery - invoice.discount)) / SUM(invoice.value + invoice.delivery - invoice.discount) AS vwa, AVG(DATEDIFF(a.date, invoice.date)) AS pa
 					FROM invoice
 					JOIN (
 						SELECT receivableTable.date, invoice.id
@@ -1338,7 +1372,7 @@ class Invoice_model extends CI_Model {
 		public function getBalanceByCustomerUID($customerUID)
 		{
 			$query		= $this->db->query("
-				SELECT COALESCE(SUM(invoice.value),0) AS value, receivableTable.value AS paid
+				SELECT COALESCE(SUM(invoice.value + invoice.delivery - invoice.discount),0) AS value, receivableTable.value AS paid
 				FROM invoice
 				LEFT JOIN (
 					SELECT SUM(receivable.value) AS value, receivable.invoice_id AS id
@@ -1371,7 +1405,7 @@ class Invoice_model extends CI_Model {
 		public function getCustomerSalesHistory($customerUID)
 		{
 			$query			= $this->db->query("
-				SELECT COALESCE(SUM(invoice.value),0) AS value, MONTH(invoice.date) AS month, YEAR(invoice.date) AS year
+				SELECT COALESCE(SUM(invoice.value + invoice.delivery - invoice.discount),0) AS value, MONTH(invoice.date) AS month, YEAR(invoice.date) AS year
 				FROM invoice
 				LEFT JOIN customer ON invoice.customer_id = customer.id
 				WHERE invoice.id IN (
@@ -1467,7 +1501,7 @@ class Invoice_model extends CI_Model {
 		public function getCustomerValueByDateRange($customerId, $dateStart, $dateEnd)
 		{
 			$query			= $this->db->query("
-				SELECT COALESCE(SUM(invoice.value),0) AS value
+				SELECT COALESCE(SUM(invoice.value + invoice.delivery - invoice.discount),0) AS value
 				FROM invoice
 				WHERE invoice.id IN (
 					SELECT DISTINCT(code_delivery_order.invoice_id)
@@ -1526,7 +1560,7 @@ class Invoice_model extends CI_Model {
 			$query			 = $this->db->query("
 				SELECT invoiceTable.*
 				FROM (
-					SELECT SUM(invoice.value) AS value, YEAR(invoice.date) AS year, MONTH(invoice.date) AS month
+					SELECT SUM(invoice.value + invoice.delivery - invoice.discount) AS value, YEAR(invoice.date) AS year, MONTH(invoice.date) AS month
 					FROM invoice
 					LEFT JOIN customer ON invoice.customer_id = customer.id
 					WHERE (invoice.id IN (
@@ -1543,7 +1577,7 @@ class Invoice_model extends CI_Model {
 					GROUP BY YEAR(invoice.date), MONTH(invoice.date)
 				) invoiceTable
 				UNION (
-					SELECT SUM((-1) * price_list.price_list * delivery_order.quantity * (100 - sales_order.discount) / 100) AS value, YEAR(code_sales_return_received.date) AS year, MONTH(code_sales_return_received.date) AS month
+					SELECT SUM((-1) * sales_return.price * sales_return_received.quantity) AS value, YEAR(code_sales_return_received.date) AS year, MONTH(code_sales_return_received.date) AS month
 					FROM sales_return_received
 					JOIN code_sales_return_received ON sales_return_received.code_sales_return_received_id = code_sales_return_received.id
 					JOIN sales_return ON sales_return_received.sales_return_id = sales_return.id
@@ -1562,7 +1596,7 @@ class Invoice_model extends CI_Model {
 		public function getIncompletedTransactionByDate($date)
 		{
 			$query		= $this->db->query("
-				SELECT COALESCE(SUM(invoice.value - invoice.discount + invoice.delivery),0) AS value, COALESCE(receivableTable.value,0) AS paid
+				SELECT COALESCE(SUM(invoice.value + invoice.delivery - invoice.discount),0) AS value, COALESCE(receivableTable.value,0) AS paid
 				FROM invoice
 				LEFT JOIN (
 					SELECT SUM(receivable.value) AS value, receivable.invoice_id

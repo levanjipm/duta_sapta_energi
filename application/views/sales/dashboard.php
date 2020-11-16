@@ -132,6 +132,7 @@
                 range: 6
             },
             success:function(response){
+                console.log(response);
                 $.each(response, function(index, item){
                     var value = item.value;
                     var label = item.label;

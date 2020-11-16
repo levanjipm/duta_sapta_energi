@@ -69,10 +69,21 @@
 								<td><?= $item['name'] ?></td>
 								<td><?= number_format($item['quantity'], 0) ?></td>
 								<td><?= number_format($item['returned']) ?></td>
-								<td>Rp. <?= number_format($net_price,2) ?></td>
+								<td>
+									<input type='number' class='form-control' name='return_price[<?= $item['id'] ?>]' value='0' min='1'>
+									<p>Rp. <?= number_format($net_price,2) ?></p>
+								</td>
 								<td><input type='number' class='form-control' name='return_quantity[<?= $item['id'] ?>]' max='<?= $item['quantity'] - $item['returned'] ?>' value='0' min='0' onchange='calculate_total()'></td>
 							</tr>
 						<?php } ?>
+							<tr>
+								<td colspan='4'>Delivery</td>
+								<td colspan='2'>Rp. <?= number_format($invoice->delivery,2) ?></td>
+							</tr>
+							<tr>
+								<td colspan='4'>Discount</td>
+								<td colspan='2'>Rp. <?= number_format($invoice->discount,2) ?></td>
+							</tr>
 					</table>
 					<input type='hidden' id='total_quantity' min='1' required value='0'><br>
 					<button class='button button_default_dark'>Submit</button>

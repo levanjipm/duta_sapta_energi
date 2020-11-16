@@ -55,6 +55,7 @@ class Sales_return extends CI_Controller {
 		$returnArray = array();
 		foreach($returnDeliveryOrders as $returnDeliveryOrder){
 			$returnArray[$returnDeliveryOrder->id] = $returnDeliveryOrder->quantity;
+			next($returnDeliveryOrders);
 		}
 
 		$resultArray = array();
@@ -67,6 +68,9 @@ class Sales_return extends CI_Controller {
 		}
 		
 		$data['items'] = $resultArray;
+
+		$this->load->model("Invoice_model");
+		$data['invoice']	= $this->Invoice_model->getById($delivery_order->invoice_id);
 		
 		$this->load->view('sales/Return/validation', $data);
 	}
@@ -77,7 +81,9 @@ class Sales_return extends CI_Controller {
 		if($total_quantity > 0)
 		{
 			$check = true;
-			$returnQuantityArray = $this->input->post('return_quantity');
+			$itemArray				= array();
+			$returnPriceArray		= $this->input->post('return_price');
+			$returnQuantityArray 	= $this->input->post('return_quantity');
 			$this->load->model('Sales_return_detail_model');
 
 			$deliveryOrderIdArray	= array();
@@ -85,6 +91,10 @@ class Sales_return extends CI_Controller {
 			{
 				$deliveryOrderId		= key($returnQuantityArray);
 				array_push($deliveryOrderIdArray, $deliveryOrderId);
+				$itemArray[$deliveryOrderId]			= array(
+					"quantity" => $returnQuantity,
+					"price" => $returnPriceArray[$deliveryOrderId]
+				);
 				next($returnQuantityArray);
 			}
 
@@ -108,7 +118,7 @@ class Sales_return extends CI_Controller {
 				if($codeSalesReturnId != null)
 				{
 					$this->load->model('Sales_return_detail_model');
-					$this->Sales_return_detail_model->insertItemArray($returnQuantityArray, $codeSalesReturnId);
+					$this->Sales_return_detail_model->insertItemArray($itemArray, $codeSalesReturnId);
 				}
 			}
 		}
@@ -386,9 +396,7 @@ class Sales_return extends CI_Controller {
 			$items				= (array) $salesReturnDetail;
 			foreach($items as $item){
 				$quantity		= $item->quantity;
-				$price_list		= $item->price_list;
-				$discount		= $item->discount;
-				$netPrice		= $price_list * (100 - $discount) / 100;
+				$netPrice		= $item->price;
 				$totalPrice		= $netPrice * $quantity;
 
 				$salesReturnValue	+= $totalPrice;
@@ -397,9 +405,8 @@ class Sales_return extends CI_Controller {
 			$this->load->model("Bank_model");
 			$result = $this->Bank_model->insertItem($date, $salesReturnValue, 1, 'customer', $customer_id, $account);
 			if($result != NULL){
-				$this->Sales_return_received_model->updateFinanceStatusById($salesReturnReceivedId, $result);
-				$this->Bank_model->insertItem($date, $salesReturnValue, 2, 'customer', $customer_id, $account, $result, 1);
-
+				$bankId		= $this->Bank_model->insertItem($date, $salesReturnValue, 2, 'customer', $customer_id, $account, NULL, 1, 0, $result);
+				$this->Sales_return_received_model->updateFinanceStatusById($salesReturnReceivedId, $bankId);
 				echo 1;
 			} else {
 				echo 0;
@@ -420,5 +427,90 @@ class Sales_return extends CI_Controller {
 		$data['pages'] = max(1, ceil($this->Sales_return_model->countItems($month, $year)/10));
 		header('Content-Type: application/json');
 		echo json_encode($data);
+	}
+
+	public function resetByBankId()
+	{
+		$id			= $this->input->post('id');
+		$this->load->model("Bank_model");
+		$bankTransaction		= $this->Bank_model->getById($id);
+		$transactionReference	= $bankTransaction->transaction_reference;
+		if($transactionReference != null){
+			$balancer			= $this->Bank_model->getById($transactionReference);
+			if($balancer->is_done == 0){
+				$this->load->model("Sales_return_received_model");
+				$result		= $this->Sales_return_received_model->resetByBankId($id);
+				if($result){
+					$this->Bank_model->deleteById($id);
+					$this->Bank_model->deleteById($transactionReference);
+
+					echo 1;
+				} else {
+					echo 0;
+				}				
+			} else {
+				echo 0;
+			}
+		} else {
+			echo 0;
+		}
+	}
+
+	public function deleteDashboard()
+	{
+		$user_id		= $this->session->userdata('user_id');
+		$this->load->model('User_model');
+		$data['user_login'] = $this->User_model->getById($user_id);
+		
+		if($data['user_login']->access_level > 3){
+			$this->load->model('Authorization_model');
+			$data['departments']	= $this->Authorization_model->getByUserId($user_id);
+
+			$this->load->view('head');
+			$this->load->view('director/header', $data);
+			$data			= array();
+			$this->load->view('administrator/SalesReturn/deleteInventoryDashboard');
+		} else {
+			redirect(site_url("Welcome"));
+		}		
+	}
+
+	public function getConfirmedReceivedReturn()
+	{
+		$page			= $this->input->get('page');
+		$offset			= ($page - 1) * 10;
+		$this->load->model("Sales_return_received_model");
+		$data['items']	= $this->Sales_return_received_model->getConfirmedItems($offset);
+		$data['pages']	= max(1, ceil($this->Sales_return_received_model->countConfirmedItems())/10);
+
+		header('Content-Type: application/json');
+		echo json_encode($data);
+	}
+
+	public function deleteSalesReturnReceived()
+	{
+		$id				= $this->input->post('id');
+		$this->load->model("Sales_return_received_detail_model");
+		$result			= $this->Sales_return_received_detail_model->getByCodeId($id);
+		$item			= array();
+		$idArray		= array();
+		foreach($result as $value){
+			$item[$value->id] = $value->quantity;
+			array_push($idArray, $value->id);
+			next($result);
+		}
+
+		$this->load->model("Stock_in_model");
+		$result		= $this->Stock_in_model->deleteBySalesReturnId($idArray);
+		if($result){
+			$this->load->model("Sales_return_detail_model");
+			$this->Sales_return_detail_model->updateByDeleteReceivedArray($item);
+
+			$this->load->model("Sales_return_received_model");
+			$this->Sales_return_received_model->updateById(2, $id);
+			echo 1;
+		} else {
+			echo 0;
+		}
 	}
 }

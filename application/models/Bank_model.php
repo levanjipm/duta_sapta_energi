@@ -151,7 +151,7 @@ class Bank_model extends CI_Model {
 			return $result;
 		}
 		
-		public function insertItem($date, $value, $transaction, $type, $opponent_id, $account, $major_id = null, $isDone = 0, $isDelete = 0)
+		public function insertItem($date, $value, $transaction, $type, $opponent_id, $account, $major_id = null, $isDone = 0, $isDelete = 0, $reference = null)
 		{				
 			switch($type){
 				case 'customer':
@@ -166,7 +166,8 @@ class Bank_model extends CI_Model {
 						'internal_account_id' => NULL,
 						'bank_transaction_major' => $major_id,
 						'is_done' => $isDone,
-						'is_delete' => $isDelete
+						'is_delete' => $isDelete,
+						'transaction_reference' => $reference
 					);
 				break;
 				case 'supplier':
@@ -181,7 +182,8 @@ class Bank_model extends CI_Model {
 						'internal_account_id' => NULL,
 						'bank_transaction_major' => $major_id,
 						'is_done' => $isDone,
-						'is_delete' => $isDelete
+						'is_delete' => $isDelete,
+						'transaction_reference' => $reference
 					);
 				break;
 				case 'other':
@@ -196,7 +198,8 @@ class Bank_model extends CI_Model {
 						'internal_account_id' => NULL,
 						'bank_transaction_major' => $major_id,
 						'is_done' => $isDone,
-						'is_delete' => $isDelete
+						'is_delete' => $isDelete,
+						'transaction_reference' => $reference
 					);
 				break;
 				case 'internal':
@@ -211,7 +214,8 @@ class Bank_model extends CI_Model {
 						'internal_account_id' => $opponent_id,
 						'bank_transaction_major' => $major_id,
 						'is_done' => $isDone,
-						'is_delete' => $isDelete
+						'is_delete' => $isDelete,
+						'transaction_reference' => $reference
 					);
 				break;
 			}

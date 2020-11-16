@@ -51,7 +51,7 @@
 </div>
 
 <div class='alert_wrapper' id='view_delivery_order_wrapper'>
-	<button type='button' class='slide_alert_close_button'>&times </button>
+	<button type='button' class='slide_alert_close_button'>&times;</button>
 	<div class='alert_box_slide'>
 		<h3 style='font-family:bebasneue'>Delivery order archive</h3>
 		<hr>

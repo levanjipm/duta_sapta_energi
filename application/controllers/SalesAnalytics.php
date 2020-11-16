@@ -129,4 +129,15 @@ class SalesAnalytics extends CI_Controller {
 
 		$this->load->view('sales/Analytics/salesReport', $data);
 	}
+
+	public function getNoo()
+	{
+		$month			= $this->input->get('month');
+		$year			= $this->input->get('year');
+		$this->load->model("Customer_model");
+		$data		= $this->Customer_model->getNoo($month, $year);
+
+		header('Content-Type: application/json');
+		echo json_encode($data);
+	}
 }

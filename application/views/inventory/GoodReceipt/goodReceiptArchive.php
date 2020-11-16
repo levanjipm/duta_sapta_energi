@@ -216,7 +216,7 @@
 					complete_address	+= ' No. ' + supplier_number;
 				}
 				
-				if(supplier_block != null){
+				if(supplier_block != null && supplier_block != "000"){
 					complete_address	+= ' Blok ' + supplier_block;
 				}
 			
@@ -254,7 +254,7 @@
 					var quantity		= item.quantity;
 					$('#good_receipt_table').append("<tr><td>" + reference + "</td><td>" + name + "</td><td>" + numeral(quantity).format('0,0') + "</td></tr>");
 				});
-				
+			}, complete:function(){				
 				$('#view_good_receipt_wrapper').fadeIn(300, function(){
 					$('#view_good_receipt_wrapper .alert_box_slide').show("slide", { direction: "right" }, 250);
 				});

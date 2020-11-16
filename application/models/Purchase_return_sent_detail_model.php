@@ -79,7 +79,7 @@ class Purchase_return_sent_detail_model extends CI_Model {
 		public function getByCodeId($codePurchaseReturnSentId)
 		{
 			$query		= $this->db->query("
-				SELECT item.reference, item.name, purchase_return.price, purchase_return_sent.quantity, purchase_return_sent.id, purchase_return.id as purchaseReturnId
+				SELECT item.reference, item.name, purchase_return.price, purchase_return_sent.quantity, purchase_return_sent.id, purchase_return.id as purchaseReturnId, item.id AS item_id
 				FROM purchase_return_sent
 				JOIN purchase_return ON purchase_return.id = purchase_return_sent.purchase_return_id
 				JOIN item ON purchase_return.item_id = item.id

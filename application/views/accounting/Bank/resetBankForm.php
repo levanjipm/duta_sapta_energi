@@ -143,9 +143,35 @@
 <?php } else if($type == "assignment"){ ?>
 	<button class='button button_danger_dark' onclick='resetAssignment()'>Reset this Transaction</button>
 	<script>
-			function resetAssignment(){
+		function resetAssignment(){
+			$.ajax({
+				url:"<?= site_url('Bank/resetByBankId') ?>",
+				data:{
+					id: <?= $bank->id ?>
+				},
+				type:"POST",
+				beforeSend:function(){
+					$('button').attr('disabled', true);
+				},
+				success:function(response){
+					$('button').attr('disabled', false);
+					window.location.href='<?= site_url('Bank/resetDashboard') ?>';
+				}
+			})
+		}
+	</script>
+<?php
+	} else if($type == "salesReturn"){ 
+		if($balancer->is_done == 0){
+?>
+		<label class='subtitleLabel'>Warning | Peringatan</label>
+		<p class='subtitleText'>This operation not only delete the assignment of bank data but ultimately delete the bank data itself. Please be cautious to execute this operation.</p>
+		<p class='subtitleText'>Operasi ini bukan hanya menghapus penempatan dari data bank namun juga akhirnya menghapus data bank itu sendiri. Mohon untuk berhati - hati dalam melakukan operasi ini.</p><br>
+		<button class='button button_danger_dark' onclick='resetSalesReturn()'>Reset this transaction</button>
+		<script>
+			function resetSalesReturn(){
 				$.ajax({
-					url:"<?= site_url('Bank/resetByBankId') ?>",
+					url:"<?= site_url('Sales_return/resetByBankId') ?>",
 					data:{
 						id: <?= $bank->id ?>
 					},
@@ -160,6 +186,9 @@
 				})
 			}
 		</script>
-<?php } ?>
+<?php
+		}
+?>
+<?php  } ?>
 	</div>
 </div>

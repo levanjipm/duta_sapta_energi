@@ -99,6 +99,7 @@
 	<div class='dashboard_in'>
 		<button class='button button_mini_tab' id='valueButton'>Value Analytic</button>
 		<button class='button button_mini_tab' id='customerButton'>Customer Analytic</button>
+		<button class='button button_mini_tab' id='nooButton'>New Outlet Orders</button>
 		<button class='button button_mini_tab' id='paymentButton'>Payment Analytic</button>
 		<hr>
 		<div class='row' id='valueViewPane' style='display:none'>
@@ -151,12 +152,14 @@
 						<div class='input_group_append'>
 							<button type='button' class='button button_default_dark' onclick='getCustomerItems()'><i class='fa fa-search'></i></button>
 						</div>
+						<div class='input_group_append'>
+							<button type='button' class='button button_success_dark' id='reportButton' title="Generate report" style='display:none'><i class='fa fa-file-o'></i></button>
+						</div>
 					</div>
 				</form>
 				<br>
 				<div class='row'>
 					<div class='col-sm-12'>
-						<button class='button button_default_dark' id='reportButton' title="Generate report" style='display:none'><i class='fa fa-file-o'></i></button>
 						<input type='text' class='form-control' id='customerSearchBar'>
 						<br>
 						<div id='customerTable' style='display:none'>
@@ -177,6 +180,39 @@
 						<p id='customerTableText'>There is no customer found.</p>
 					</div>
 				</div>
+			</div>
+		</div>
+		<div class='row' id='nooViewPane' style='display:none'>
+			<div class='col-sm-12'>
+				<form id='nooForm'>
+					<div class='input_group'>
+						<select class='form-control' id='nooMonth' placeholder='Month'>
+						<?php for($i = 1; $i <= 12; $i++){ ?>
+							<option value='<?= $i ?>'><?= date('F', mktime(0,0,0,$i, 1, date('Y'))) ?></option>
+						<?php } ?>
+						</select>
+						<select class='form-control' id='nooYear'>
+						<?php for($i = 2020; $i <= date("Y"); $i++){ ?>
+							<option value='<?= $i ?>'><?= $i ?></option>
+						<?php } ?>
+						</select>
+						<div class='input_group_append'>
+							<button type='button' class='button button_default_dark' onclick='getNooItems()'><i class='fa fa-search'></i></button>
+						</div>
+					</div>
+				</form>
+			</div>
+			<div class='col-sm-12'>
+				<br>
+				<table class='table table-bordered' id='nooTable' style='display:none'>
+					<tr>
+						<th>Name</th>
+						<th>Address</th>
+						<th>Action</th>
+					</tr>
+					<tbody id='nooTableContent'></tbody>
+				</table>
+				<p id='nooTableText'>There is no new outlet order found.</p>
 			</div>
 		</div>
 		<div class='row' id='paymentViewPane' style='display:none'>
@@ -330,6 +366,7 @@
 	var customerIdSelected = null;
 
 	$('#customerAnalyticForm').validate();
+	$('#nooForm').validate();
 
 	$(document).ready(function(){
 		$('#valueButton').click();
@@ -350,7 +387,7 @@
 		$('#valueButton').attr('disabled', true);
 		$('#valueButton').addClass('active');
 
-		$('#paymentViewPane, #customerViewPane').fadeOut(250, function(){
+		$('#paymentViewPane, #customerViewPane, #nooViewPane').fadeOut(250, function(){
 			setTimeout(function(){
 				$('#valueViewPane').fadeIn(250);
 			}, 252)
@@ -366,9 +403,23 @@
 		$('#customerButton').attr('disabled', true);
 		$('#customerButton').addClass('active');
 
-		$('#paymentViewPane, #valueViewPane').fadeOut(250, function(){
+		$('#paymentViewPane, #valueViewPane, #nooViewPane').fadeOut(250, function(){
 			setTimeout(function(){
 				$('#customerViewPane').fadeIn(250);
+			}, 252)
+		})
+	})
+
+	$('#nooButton').click(function(){
+		$('.button_mini_tab').attr('disabled', false);
+		$('.button_mini_tab').removeClass('active');
+
+		$('#nooButton').attr('disabled', true);
+		$('#nooButton').addClass('active');
+
+		$('#paymentViewPane, #valueViewPane, #customerViewPane').fadeOut(250, function(){
+			setTimeout(function(){
+				$('#nooViewPane').fadeIn(250);
 			}, 252)
 		})
 	})
@@ -380,7 +431,7 @@
 		$('#paymentButton').attr('disabled', true);
 		$('#paymentButton').addClass('active');
 
-		$('#customerViewPane, #valueViewPane').fadeOut(250, function(){
+		$('#customerViewPane, #valueViewPane, #nooViewPane').fadeOut(250, function(){
 			setTimeout(function(){
 				$('#paymentViewPane').fadeIn(250);
 			}, 252)
@@ -627,6 +678,65 @@
 			})
 		} else {
 			$('#reportButton').hide();
+		}
+	}
+
+	function getNooItems(){
+		if($('#nooForm').valid()){
+			$.ajax({
+				url:"<?= site_url('SalesAnalytics/getNoo') ?>",
+				data:{
+					month: parseInt($('#nooMonth').val()),
+					year: $('#nooYear').val()
+				},
+				success:function(response){
+					$('#nooTableContent').html("");
+					var itemCount = 0;
+					$.each(response, function(index, item){
+						var name 					= item.name;
+						var complete_address		= item.address;
+						var customer_city			= item.city;
+						var customer_number			= item.number;
+						var customer_rt				= item.rt;
+						var customer_rw				= item.rw;
+						var customer_postal			= item.postal_code;
+						var customer_block			= item.block;
+						var customer_id				= item.id;
+						var area					= item.area;
+		
+						if(customer_number != null){
+							complete_address	+= ' No. ' + customer_number;
+						}
+					
+						if(customer_block != null && customer_block != "000"){
+							complete_address	+= ' Blok ' + customer_block;
+						}
+				
+						if(customer_rt != '000'){
+							complete_address	+= ' RT ' + customer_rt;
+						}
+					
+						if(customer_rw != '000' && customer_rt != '000'){
+							complete_address	+= ' /RW ' + customer_rw;
+						}
+					
+						if(customer_postal != null){
+							complete_address	+= ', ' + customer_postal;
+						}
+
+						$('#nooTableContent').append("<tr><td>" + name + "</td><td>" + complete_address + "<strong> ( " + area + " )</strong></td><td><button class='button button_default_dark' onclick='viewCustomerTarget(" + customer_id + ")'><i class='fa fa-eye'></i></button></td></tr>");
+						itemCount++;
+					});
+
+					if(itemCount > 0){
+						$('#nooTable').show();
+						$('#nooTableText').hide();
+					} else {
+						$('#nooTableText').show();
+						$('#nooTable').hide();
+					}
+				}
+			});
 		}
 	}
 
