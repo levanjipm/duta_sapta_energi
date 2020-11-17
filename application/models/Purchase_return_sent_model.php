@@ -181,6 +181,10 @@ class Purchase_return_sent_model extends CI_Model {
 				$this->db->set('is_delete', 1);
 				$this->db->set('confirmed_by', $this->session->userdata('user_id'));
 				$this->db->where('is_confirm', 0);
+			} else if($status == 2){
+				$this->db->set('is_delete', 1);
+				$this->db->set('is_confirm', 0);
+				$this->db->where('is_confirm', 1);
 			}
 			
 			$this->db->where("id", $id);
@@ -266,6 +270,47 @@ class Purchase_return_sent_model extends CI_Model {
 
 			$result		= $query->row();
 			return $result->value;
+		}
+
+		public function resetByBankId($bankId)
+		{
+			$this->db->set('is_done', 0);
+			$this->db->set('bank_id', NULL);
+			$this->db->where('bank_id', $bankId);
+			$query			= $this->db->update($this->table_purchase_return);
+			$result			= $this->db->affected_rows();
+			return $result;
+		}
+
+		public function getConfirmedItems($offset = 0, $limit = 10)
+		{
+			$this->db->select('code_purchase_return_sent.*, supplier.name AS supplierName');
+			$this->db->from('code_purchase_return_sent');
+			$this->db->join('purchase_return_sent', 'purchase_return_sent.code_purchase_return_sent_id = code_purchase_return_sent.id');
+			$this->db->join('purchase_return', 'purchase_return_sent.purchase_return_id = purchase_return.id');
+			$this->db->join('code_purchase_return', 'purchase_return.code_purchase_return_id = code_purchase_return.id');
+			$this->db->join('supplier', 'code_purchase_return.supplier_id = supplier.id');
+			$this->db->where('code_purchase_return_sent.is_confirm', 1);
+			$this->db->where('code_purchase_return_sent.is_done', 0);
+			$this->db->limit($limit, $offset);
+			$query		= $this->db->get();
+			$result		= $query->result();
+			return $result;
+		}
+
+		public function countConfirmedItems()
+		{
+			$this->db->select('code_purchase_return_sent.id, supplier.name AS supplierName');
+			$this->db->from('code_purchase_return_sent');
+			$this->db->join('purchase_return_sent', 'purchase_return_sent.code_purchase_return_sent_id = code_purchase_return_sent.id');
+			$this->db->join('purchase_return', 'purchase_return_sent.purchase_return_id = purchase_return.id');
+			$this->db->join('code_purchase_return', 'purchase_return.code_purchase_return_id = code_purchase_return.id');
+			$this->db->join('supplier', 'code_purchase_return.supplier_id = supplier.id');
+			$this->db->where('code_purchase_return_sent.is_confirm', 1);
+			$this->db->where('code_purchase_return_sent.is_done', 0);
+			$query		= $this->db->get();
+			$result		= $query->num_rows();
+			return $result;
 		}
 	}
 ?>

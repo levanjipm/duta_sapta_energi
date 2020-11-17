@@ -70,7 +70,7 @@ class Customer_target_model extends CI_Model {
 			$previousYear		= date("Y", strtotime("-1 month", $currentDate));
 			if($limit != 0){
 				$query		= $this->db->query("
-					SELECT customer.*, COALESCE(a.value,0) AS value, COALESCE(b.value, 0) AS target, COALESCE(returnTable.value, 0) as returned, COALESCE(c.value, 0) AS previousValue, COALESCE(previousReturnTable.value, 0) AS previousReturned, COALESCE(d.value, 0) AS previousTarget
+					SELECT customer.*, COALESCE(a.value,0) AS value, COALESCE(b.value, 0) AS target, COALESCE(returnTable.value, 0) as returned, COALESCE(c.value, 0) AS previousValue, COALESCE(previousReturnTable.value, 0) AS previousReturned, COALESCE(d.value, 0) AS previousTarget, customer_area.name AS areaName
 					FROM customer
 					LEFT JOIN (
 						SELECT SUM(invoice.value) AS value, deliveryOrderTable.customer_id 
@@ -160,13 +160,14 @@ class Customer_target_model extends CI_Model {
 						GROUP BY code_sales_order.customer_id
 					) AS previousReturnTable
 					ON previousReturnTable.customer_id = customer.id
+					JOIN customer_area ON customer.area_id = customer_area.id
 					WHERE customer.name LIKE '%$term%' OR customer.address LIKE '%$term%'
 					ORDER BY customer.name
 					LIMIT $limit OFFSET $offset
 				");
 			} else {
 				$query		= $this->db->query("
-					SELECT customer.*, COALESCE(a.value,0) AS value, COALESCE(b.value, 0) AS target, COALESCE(returnTable.value, 0) as returned, COALESCE(c.value, 0) AS previousValue, COALESCE(previousReturnTable.value, 0) AS previousReturned, COALESCE(d.value, 0) AS previousTarget
+					SELECT customer.*, COALESCE(a.value,0) AS value, COALESCE(b.value, 0) AS target, COALESCE(returnTable.value, 0) as returned, COALESCE(c.value, 0) AS previousValue, COALESCE(previousReturnTable.value, 0) AS previousReturned, COALESCE(d.value, 0) AS previousTarget, customer_area.name AS areaName
 					FROM customer
 					LEFT JOIN (
 						SELECT SUM(invoice.value) AS value, deliveryOrderTable.customer_id 
@@ -256,6 +257,7 @@ class Customer_target_model extends CI_Model {
 						GROUP BY code_sales_order.customer_id
 					) AS previousReturnTable
 					ON previousReturnTable.customer_id = customer.id
+					JOIN customer_area ON customer_area.id = customer.area_id
 					ORDER BY customer.name
 				");
 			}

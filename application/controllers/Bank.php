@@ -591,10 +591,14 @@ class Bank extends CI_Controller {
 				"address" => "--",
 				"city" => ""
 			);
-		} else {
+		} else if($bank->type == "salesReturn") {
+			$transactionReference		= $bank->transaction_reference;
+			$data['balancer']			= $this->Bank_model->getById($transactionReference);
+		} else if($bank->type == "salesReturn") {
 			$transactionReference		= $bank->transaction_reference;
 			$data['balancer']			= $this->Bank_model->getById($transactionReference);
 		}
+
 		$this->load->view('accounting/Bank/resetBankForm', $data);
 	}
 

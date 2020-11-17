@@ -139,7 +139,7 @@ class Bank_model extends CI_Model {
 						SELECT code_purchase_return_sent.id, 'purchaseReturn' AS type, code_purchase_return_sent.bank_id 
 						FROM code_purchase_return_sent
 					) purchaseReturnTable
-					ON salesReturnTable.bank_id = bank_transaction.id
+					ON purchaseReturnTable.bank_id = bank_transaction.id
 					LEFT JOIN (
 						SELECT petty_cash.id, 'pettyCash' AS type, petty_cash.bank_id
 						FROM petty_cash
@@ -838,7 +838,7 @@ class Bank_model extends CI_Model {
 							SELECT code_purchase_return_sent.id, 'purchaseReturn' AS type, code_purchase_return_sent.bank_id 
 							FROM code_purchase_return_sent
 						) purchaseReturnTable
-						ON salesReturnTable.bank_id = bank_transaction.id
+						ON purchaseReturnTable.bank_id = bank_transaction.id
 						LEFT JOIN (
 							SELECT petty_cash.id, 'pettyCash' AS type, petty_cash.bank_id
 							FROM petty_cash

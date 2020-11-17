@@ -122,7 +122,6 @@ class Item extends CI_Controller {
 
 		$this->load->model("Stock_out_model");
 		$stockArray		= $this->Stock_out_model->calculateMonthlyOutput($reference);
-		
 		$currentDate	= mktime(0,0,0,date('m'), 1, date("Y"));
 		$stockArray		= array();
 		foreach($stockArray as $stock){

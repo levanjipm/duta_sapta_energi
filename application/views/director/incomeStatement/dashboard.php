@@ -31,16 +31,5 @@
 	</div>
 </div>
 <script>
-	function viewIncomeStatement(){
-		$.ajax({
-			url:"<?= site_url('Director/getIncomeStatment') ?>",
-			data:{
-				month: $('#month').val(),
-				year: $('#year').val()
-			},
-			success:function(response){
-				console.log(response);
-			}
-		})
-	}
+	
 </script>

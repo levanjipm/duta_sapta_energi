@@ -355,5 +355,18 @@ class Payable_model extends CI_Model {
 			$result		= $query->result();
 			return $result;
 		}
+
+		public function getSetDoneGain($month, $year)
+		{
+			$this->db->select_sum('value');
+			if($month != 0){
+				$this->db->where('MONTH(date)', $month);
+			}
+			$this->db->where('YEAR(date)', $year);
+			$this->db->where('bank_id', NULL);
+			$query		= $this->db->get($this->table_payable);
+			$result		= $query->row();
+			return (float)$result->value;
+		}
 	}
 ?>

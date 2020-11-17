@@ -1,12 +1,5 @@
 <head>
     <title>Purchasing Return</title>
-	<style>
-		.subtitleText{
-			color:#333;
-			font-size:0.8em;
-			text-align:right;
-		}
-	</style>
 </head>
 <div class='dashboard'>
 	<div class='dashboard_head'>
@@ -41,6 +34,8 @@
 		<hr>
 		<label>Purchase return data</label>
 		<p id='purchaseReturnName_p'></p>
+		<p>Created by <span id='createdBy_p'></span></p>
+		<p>Created on <span id='createdDate_p'></span></p>
 
 		<label>Supplier</label>
 		<p id='supplierName_p'></p>
@@ -65,8 +60,7 @@
 		<div class='notificationText danger' id='failedConfirmNotification'><p>Failed to confirm purchase return.</p></div>
 		<div class='notificationText danger' id='failedDeleteNotification'><p>Failed to delete purchase return.</p></div>
 		
-		<p class='subtitleText'>Created by <span id='createdBy_p'></span></p>
-		<p class='subtitleText'>Created on <span id='createdDate_p'></span></p>
+		
 
 	</div>
 </div>
@@ -99,7 +93,7 @@
 					var name = item.name;
 					var supplierName = item.supplierName;
 					var id = item.id;
-					$('#purchaseReturnTableContent').append("<tr><td>" + name + "</td><td>" + supplierName + "</td><td><button class='button button_default_dark' onclick='viewReturn(" + id + ")'><i class='fa fa-long-arrow-right'></i></button>");
+					$('#purchaseReturnTableContent').append("<tr><td>" + name + "</td><td>" + supplierName + "</td><td><button class='button button_default_dark' onclick='viewReturn(" + id + ")'><i class='fa fa-eye'></i></button>");
 					returnCount++;
 				});
 

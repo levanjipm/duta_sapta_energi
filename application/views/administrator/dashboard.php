@@ -64,6 +64,7 @@
 				<a href='<?= site_url('Delivery_order/deleteDashboard') ?>'><p style='font-family:museo'>Delete Delivery Order</p></a>
 				<a href='<?= site_url('Good_receipt/deleteDashboard') ?>'><p style='font-family:museo'>Delete Good Receipt</p></a>
 				<a href='<?= site_url('Sales_return/deleteDashboard') ?>'><p style='font-family:museo'>Delete Sales Return</p></a>
+				<a href='<?= site_url('Purchase_return/deleteDashboard') ?>'><p style='font-family:museo'>Delete Purchase Return</p></a>
 			</div>
 		</div>
 	</div>
@@ -77,6 +78,7 @@
 			<div class='departmentBoxFunctionsWrapper'>
 				<a href='<?= site_url('Purchase_order/editDashboard') ?>'><p style='font-family:museo'>Edit Purchase Order</p></a>
 				<a href='<?= site_url('Purchase_order/closeDashboard') ?>'><p style='font-family:museo'>Close Purchase Order</p></a>
+				<a href='<?= site_url('Purchase_return/cancelDashboard') ?>'><p style='font-family:museo'>Cancel Purchase Return</p></a>
 			</div>
 		</div>
 	</div>

@@ -219,4 +219,50 @@ class Purchase_return_model extends CI_Model {
 			$result		= $query->num_rows();
 			return $result;
 		}
+
+		public function getIncompletedItems($offset = 0, $limit = 10)
+		{
+			$query			= $this->db->query("
+				SELECT code_purchase_return.*, supplier.name as supplierName
+				FROM code_purchase_return
+				JOIN supplier ON code_purchase_return.supplier_id = supplier.id
+				WHERE code_purchase_return.id IN
+				(
+					SELECT purchase_return.code_purchase_return_id
+					FROM purchase_return
+					WHERE status = '0'
+				)
+				AND code_purchase_return.is_confirm = '1'
+				ORDER BY code_purchase_return.created_date ASC
+				LIMIT $limit OFFSET $offset
+			");
+
+			$result			= $query->result();
+			return $result;
+		}
+
+		public function countIncompletedItems()
+		{
+			$query			= $this->db->query("
+				SELECT code_purchase_return.id
+				FROM code_purchase_return
+				WHERE code_purchase_return.id IN
+				(
+					SELECT purchase_return.code_purchase_return_id
+					FROM purchase_return
+					WHERE status = '0'
+				)
+				AND code_purchase_return.is_confirm = '1'
+			");
+			$result			= $query->num_rows();
+			return $result;
+		}
+
+		public function cancelById($id)
+		{
+			$query		= $this->db->query("
+				UPDATE purchase_return SET status = '1'
+				WHERE purchase_return.code_purchase_return_id = '$id'
+			");
+		}
 }

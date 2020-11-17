@@ -189,6 +189,33 @@
 <?php
 		}
 ?>
-<?php  } ?>
+<?php  
+	} else if($type == "purchaseReturn"){  
+?>
+		<label class='subtitleLabel'>Warning | Peringatan</label>
+		<p class='subtitleText'>This operation not only delete the assignment of bank data but ultimately delete the bank data itself. Please be cautious to execute this operation.</p>
+		<p class='subtitleText'>Operasi ini bukan hanya menghapus penempatan dari data bank namun juga akhirnya menghapus data bank itu sendiri. Mohon untuk berhati - hati dalam melakukan operasi ini.</p><br>
+		<button class='button button_danger_dark' onclick='resetSalesReturn()'>Reset this transaction</button>
+		<script>
+			function resetSalesReturn(){
+				$.ajax({
+					url:"<?= site_url('Purchase_return/resetByBankId') ?>",
+					data:{
+						id: <?= $bank->id ?>
+					},
+					type:"POST",
+					beforeSend:function(){
+						$('button').attr('disabled', true);
+					},
+					success:function(response){
+						$('button').attr('disabled', false);
+						window.location.href='<?= site_url('Bank/resetDashboard') ?>';
+					}
+				})
+			}
+		</script>
+<?php
+	}
+?>
 	</div>
 </div>

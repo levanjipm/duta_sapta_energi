@@ -240,5 +240,19 @@ class Receivable_model extends CI_Model {
 				$this->Invoice_model->updateDoneStatusByIdArray($invoiceIdArray, 0);
 			}
 		}
+
+		public function getSetDoneCost($month, $year)
+		{
+			
+			$this->db->select_sum('value');
+			if($month != 0){
+				$this->db->where('MONTH(date)', $month);
+			}
+			$this->db->where('YEAR(date)', $year);
+			$this->db->where('bank_id', NULL);
+			$query		= $this->db->get($this->table_receivable);
+			$result		= $query->row();
+			return (float)$result->value;
+		}
 	}
 ?>

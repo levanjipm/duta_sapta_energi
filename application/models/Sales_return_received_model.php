@@ -222,6 +222,7 @@ class Sales_return_received_model extends CI_Model {
 						SELECT DISTINCT(code_sales_return_received.id) AS id
 						FROM code_sales_return_received
 						WHERE YEAR(code_sales_return_received.date) = '$year'
+						AND MONTH(code_sales_return_received.date) = '$month'
 						AND code_sales_return_received.is_confirm = '1'
 					)
 				");
@@ -236,7 +237,7 @@ class Sales_return_received_model extends CI_Model {
 					WHERE sales_return_received.code_sales_return_received_id IN (
 						SELECT DISTINCT(code_sales_return_received.id) AS id
 						FROM code_sales_return_received
-						WHERE MONTH(code_sales_return_received.date) = '$month' AND YEAR(code_sales_return_received.date) = '$year'
+						WHERE YEAR(code_sales_return_received.date) = '$year'
 						AND code_sales_return_received.is_confirm = '1'
 					)
 				");

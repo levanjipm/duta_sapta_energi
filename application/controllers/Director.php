@@ -84,6 +84,7 @@ class Director extends CI_Controller {
 		$data['user_login'] = $this->User_model->getById($user_id);
 
 		if($data['user_login']->access_level == 5){
+			$data		= array();
 			$month		= $this->input->get('month');
 			$year		= $this->input->get('year');
 			
@@ -104,8 +105,21 @@ class Director extends CI_Controller {
 			$purchaseReturn		= $this->Purchase_return_sent_model->getValueByMonthYear($month, $year);
 
 			$data['purchase']	= $purchase - $purchaseReturn;
-			
-			$data['otherSales'];
+
+			//Cost and Gain of setting invoice as done//
+			$this->load->model("Receivable_model");
+			$data['receivable']		= $this->Receivable_model->getSetDoneCost($month, $year);
+
+			$this->load->model("Payable_model");
+			$data['payable']		= $this->Payable_model->getSetDoneGain($month, $year);
+
+			//Expense//
+			$this->load->model("Expense_model");
+			$data['expense']	= $this->Expense_model->getByMonthYear($month, $year);
+
+			//Other income//
+			$this->load->model("Income_model");
+			$data['income']		= $this->Income_model->getByMonthYear($month, $year);
 
 			header('Content-Type: application/json');
 			echo json_encode($data);

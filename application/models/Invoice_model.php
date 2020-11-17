@@ -672,9 +672,11 @@ class Invoice_model extends CI_Model {
 						SELECT COALESCE(SUM(-1 * sales_return.price * sales_return_received.quantity), 0) AS value
 						FROM sales_return_received
 						JOIN sales_return ON sales_return_received.sales_return_id = sales_return_id
+						JOIN code_sales_return ON sales_return.code_sales_return_id = code_sales_return.id
 						JOIN code_sales_return_received ON sales_return_received.code_sales_return_received_id = code_sales_return_received.id
 						WHERE YEAR(code_sales_return_received.date) = '$year'
 						AND code_sales_return_received.is_confirm = '1'
+						AND code_sales_return.is_confirm = '1'
 					)
 				");
 			} else {
@@ -690,12 +692,15 @@ class Invoice_model extends CI_Model {
 						SELECT COALESCE(SUM(-1 * sales_return.price * sales_return_received.quantity), 0) AS value
 						FROM sales_return_received
 						JOIN sales_return ON sales_return_received.sales_return_id = sales_return_id
+						JOIN code_sales_return ON sales_return.code_sales_return_id = code_sales_return.id
 						JOIN code_sales_return_received ON sales_return_received.code_sales_return_received_id = code_sales_return_received.id
 						WHERE MONTH(code_sales_return_received.date) = '$month' AND YEAR(code_sales_return_received.date) = '$year'
 						AND code_sales_return_received.is_confirm = '1'
+						AND code_sales_return.is_confirm = '1'
 					)
 				");
 			}
+
 			$result = $query->result();
 			if(count($result) == 1){
 				$value		= $result[0]->value;

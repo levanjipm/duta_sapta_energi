@@ -40,6 +40,7 @@
 					<select class='form-control' id='type'>
 						<option value='1'>View All Customers</option>
 						<option value='2'>View With Data Only</option>
+						<option value='3'>View Without Data Only</option>
 					</select>
 				</div>
 			</div>
@@ -107,8 +108,13 @@
 	$('#type').change(function(){
 		if($('#type').val() == 1){
 			$('.emptyCustomer').show();
-		} else {
+			$('.notEmptyCustomer').show();
+		} else if($('#type').val() == 2) {
 			$('.emptyCustomer').hide();
+			$('.notEmptyCustomer').show();
+		} else if($("#type").val() == 3){
+			$('.notEmptyCustomer').hide();
+			$('.emptyCustomer').show();
 		}
 	})
 
@@ -186,6 +192,7 @@
 						}
 
 						$('#tableCustomer-' + customer_id).parent().removeClass('emptyCustomer');
+						$('#tableCustomer-' + customer_id).parent().addClass('notEmptyCustomer');
 						scheduled++;
 					} else {
 						$('#customer-' + customer_id + '-' + date).css('background-color', "rgb(1, 187, 0)");
@@ -199,6 +206,7 @@
 						}
 
 						$('#tableCustomer-' + customer_id).parent().removeClass('emptyCustomer');
+						$('#tableCustomer-' + customer_id).parent().addClass('notEmptyCustomer');
 						scheduled++;
 						success++;
 					}

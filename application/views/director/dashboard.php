@@ -241,13 +241,27 @@
 
 	function getIncomeStatement(){
 		$.ajax({
-			url:"<?= site_url('Director/getIncomeStatement') ?>",
+			url:"<?= site_url('Director/getIncomeStatment') ?>",
 			data:{
-				month: $('#incomeMonth').val(),
-				year: $('#incomeYear').val()
+				month: $('#month').val(),
+				year: $('#year').val()
 			},
 			success:function(response){
-				console.log(response);
+				var sales			= response.sales;
+				var purchase		= response.purchase;
+				var expense			= response.expense;
+				var expenseValue 	= 0;
+				$.each(expense, function(index, item)){
+					var value	= item.value;
+					expenseValue += parseFloat(value);	
+				}
+
+				var income			= response.income;
+				var incomeValue		= 0;
+				$.each(income, function(index, item)){
+					var value	= item.value;
+					incomeValue += parseFloat(value);	
+				}			
 			}
 		})
 	}

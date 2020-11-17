@@ -22,7 +22,7 @@ class Item_class extends CI_Controller {
 		$this->load->view('head');
 		$this->load->view('sales/header', $data);
 		
-		$this->load->view('sales/item_class_manage_dashboard');
+		$this->load->view('sales/ItemClass/dashboard');
 	}
 	
 	public function insertItem()

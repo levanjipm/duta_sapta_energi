@@ -315,11 +315,15 @@ class Purchase_return extends CI_Controller {
 		$type			= "supplier";
 
 		$this->load->model("Bank_model");
-		$bankId = $this->Bank_model->insertItem($date, $value, 2, $type, $supplierId, $account, NULL, 0, 0);
-		$this->Bank_model->insertItem($date, $value, 1, $type, $supplierId, $account, $bankId, 1, 0);
+		$result			= $this->Bank_model->insertItem($date, $value, 2, $type, $supplierId, $account, NULL, 1, 0);
+		if($result != null){
+			$bankId		= $this->Bank_model->insertItem($date, $value, 1, $type, $supplierId, $account, NULL, 0, 0, $result);
+			$response = $this->Purchase_return_sent_model->updateBankById($bankId, $id);
 
-		$result = $this->Purchase_return_sent_model->updateBankById($bankId, $id);
-		echo $result;
+			echo 1;
+		} else {
+			echo 0;
+		}
 	}
 
 	public function archiveDashboard()
@@ -351,6 +355,130 @@ class Purchase_return extends CI_Controller {
 
 		header('Content-Type: application/json');
 		echo json_encode($data);
+	}
+	
+	public function resetByBankId()
+	{
+		$id			= $this->input->post('id');
+		$this->load->model("Bank_model");
+		$bankTransaction		= $this->Bank_model->getById($id);
+		$transactionReference	= $bankTransaction->transaction_reference;
+		if($transactionReference != null){
+			$balancer			= $this->Bank_model->getById($transactionReference);
+			if($balancer->is_done == 0){
+				$this->load->model("Purchase_return_sent_model");
+				$result		= $this->Purchase_return_sent_model->resetByBankId($id);
+				if($result){
+					$this->Bank_model->deleteById($id);
+					$this->Bank_model->deleteById($transactionReference);
+
+					echo 1;
+				} else {
+					echo 0;
+				}				
+			} else {
+				echo 0;
+			}
+		} else {
+			echo 0;
+		}
+	}
+
+	public function deleteDashboard()
+	{
+		$user_id		= $this->session->userdata('user_id');
+		$this->load->model('User_model');
+		$data['user_login'] = $this->User_model->getById($user_id);
+		
+		if($data['user_login']->access_level > 3){
+			$this->load->model('Authorization_model');
+			$data['departments']	= $this->Authorization_model->getByUserId($user_id);
+
+			$this->load->view('head');
+			$this->load->view('director/header', $data);
+			$data			= array();
+			$this->load->view('administrator/PurchaseReturn/deleteInventoryDashboard');
+		} else {
+			redirect(site_url("Welcome"));
+		}		
+	}
+
+	public function cancelDashboard()
+	{
+		$user_id		= $this->session->userdata('user_id');
+		$this->load->model('User_model');
+		$data['user_login'] = $this->User_model->getById($user_id);
+		
+		if($data['user_login']->access_level > 3){
+			$this->load->model('Authorization_model');
+			$data['departments']	= $this->Authorization_model->getByUserId($user_id);
+
+			$this->load->view('head');
+			$this->load->view('director/header', $data);
+			$data			= array();
+			$this->load->view('administrator/PurchaseReturn/cancelDashboard');
+		} else {
+			redirect(site_url("Welcome"));
+		}		
+	}
+
+	public function getConfirmedReceivedReturn()
+	{
+		$page			= $this->input->get('page');
+		$offset			= ($page - 1) * 10;
+		$this->load->model("Purchase_return_sent_model");
+		$data['items']	= $this->Purchase_return_sent_model->getConfirmedItems($offset);
+		$data['pages']	= max(1, ceil($this->Purchase_return_sent_model->countConfirmedItems())/10);
+
+		header('Content-Type: application/json');
+		echo json_encode($data);
+	}
+
+	public function deletePurchaseReturnSent()
+	{
+		$id				= $this->input->post('id');
+		$this->load->model("Purchase_return_sent_detail_model");
+		$result			= $this->Purchase_return_sent_detail_model->getByCodeId($id);
+		$item			= array();
+		$idArray		= array();
+		foreach($result as $value){
+			$item[$value->id] = $value->quantity;
+			array_push($idArray, $value->id);
+			next($result);
+		}
+
+		$this->load->model("Stock_out_model");
+		$result		= $this->Stock_out_model->deleteByPurchaseReturnId($idArray);
+		if($result){
+			$this->load->model("Purchase_return_detail_model");
+			$this->Purchase_return_detail_model->updateQuantityByDelete($item);
+
+			$this->load->model("Purchase_return_sent_model");
+			$this->Purchase_return_sent_model->updateById(2, $id);
+			echo 1;
+		} else {
+			echo 0;
+		}
+	}
+
+	public function getIncompletedPurchaseReturn()
+	{
+		$page			= $this->input->get('page');
+		$offset			= ($page - 1) * 10;
+		$this->load->model("Purchase_return_model");
+		$data['items']		= $this->Purchase_return_model->getIncompletedItems($offset);
+		$data['pages']		= max(1, ceil($this->Purchase_return_model->countIncompletedItems($offset) / 10));
+		
+		header('Content-Type: application/json');
+		echo json_encode($data);
+	}
+
+	public function cancelById()
+	{
+		$id			= $this->input->post('id');
+		$this->load->model("Purchase_return_model");
+		$this->Purchase_return_model->cancelById($id);
+		echo 1;
 	}
 }
 ?>
