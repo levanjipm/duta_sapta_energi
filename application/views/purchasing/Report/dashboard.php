@@ -109,15 +109,15 @@
 							$('#page').append("<option value='" + i + "'>" + i + "</option>");
 						}
 					}
-
-					if(itemCount > 0){
-						$('#supplierTable').show();
-						$('#supplierTableText').hide();
-					} else {
-						$('#supplierTable').hide();
-						$('#supplierTableText').show();
-					}
 				})
+
+				if(itemCount > 0){
+					$('#supplierTable').show();
+					$('#supplierTableText').hide();
+				} else {
+					$('#supplierTable').hide();
+					$('#supplierTableText').show();
+				}
 			}
 		})
 	}

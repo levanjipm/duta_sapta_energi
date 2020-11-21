@@ -172,7 +172,8 @@ class Invoice_model extends CI_Model {
 					'is_done' => 0,
 					'taxInvoice' => null,
 					'opponent_id' => $opponentId,
-					'customer_id' => null
+					'customer_id' => null,
+					'type' => $this->input->post('type')
 				);
 			} else if($opponentType == 1){
 				$db_item		= array(
@@ -185,7 +186,8 @@ class Invoice_model extends CI_Model {
 					'is_done' => 0,
 					'taxInvoice' => null,
 					'opponent_id' => null,
-					'customer_id' => $opponentId
+					'customer_id' => $opponentId,
+					'type' => $this->input->post('type')
 				);
 			}
 
@@ -1525,28 +1527,68 @@ class Invoice_model extends CI_Model {
 				AND invoice.is_confirm = '1'
 				AND invoice.date >= '$dateStart'
 				AND invoice.date <= '$dateEnd'
+				UNION (
+					SELECT SUM(-1 * sales_return_received.quantity * sales_return.price) AS value
+					FROM sales_return_received
+					JOIN sales_return ON sales_return_received.sales_return_id
+					JOIN code_sales_return_received ON sales_return_received.code_sales_return_received_id = code_sales_return_received.id
+					JOIN delivery_order ON sales_return.delivery_order_id = delivery_order.id
+					JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
+					JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
+					WHERE code_sales_order.customer_id = '$customerId'
+					AND code_sales_return_received.date <= '$dateEnd'
+					AND code_sales_return_received.date >= '$dateStart'
+					AND code_sales_return_received.is_confirm = '1'
+				)
 			");
 
-			$result		= $query->row();
+			$result		= $query->result();
+			$value		= 0;
+			foreach($result as $item){
+				$value += (float)$item->value;
+			}
 
-			return $result->value;
+			return $value;
 		}
 
-		public function getCustomerValueByDateRangerItemType($id, $start, $end)
+		public function getCustomerValueByDateRangerItemType($customerId, $dateStart, $dateEnd)
 		{
 			$query		= $this->db->query("
-				SELECT item_class.name, COALESCE(a.value,0) AS value
+				SELECT item_class.name, COALESCE(a.value,0) AS value, COALESCE(b.value, 0) AS returned
 				FROM item_class
 				LEFT JOIN (
-					SELECT SUM(delivery_order.quantity * (100 - sales_order.discount) * price_list.price_list) AS value, item_class.id
+					SELECT SUM(delivery_order.quantity * (100 - sales_order.discount) * price_list.price_list) AS value, item.type
 					FROM delivery_order
 					JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
 					JOIN price_list ON sales_order.price_list_id = price_list.id
 					JOIN item ON price_list.item_id = item.id
-					JOIN item_class ON item.type = item_class.id
-					GROUP BY item_class.id
+					JOIN code_delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order.id
+					JOIN invoice ON code_delivery_order.invoice_id = invoice.id
+					JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
+					WHERE invoice.is_confirm = '1'
+					AND invoice.date >= '$dateStart'
+					AND invoice.date <= '$dateEnd'
+					AND code_sales_order.customer_id = '$customerId'
+					GROUP BY item.type
 				) a
-				ON a.id = item_class.id
+				ON a.type = item_class.id
+				LEFT JOIN (
+					SELECT SUM(sales_return_received.quantity * sales_return.price) AS value, item.type
+					FROM sales_return_received
+					JOIN sales_return ON sales_return_received.sales_return_id
+					JOIN code_sales_return_received ON sales_return_received.code_sales_return_received_id = code_sales_return_received.id
+					JOIN delivery_order ON sales_return.delivery_order_id = delivery_order.id
+					JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
+					JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
+					JOIN price_list ON sales_order.price_list_id = price_list.id
+					JOIN item ON price_list.item_id = item.id
+					WHERE code_sales_order.customer_id = '$customerId'
+					AND code_sales_return_received.date <= '$dateEnd'
+					AND code_sales_return_received.date >= '$dateStart'
+					AND code_sales_return_received.is_confirm = '1'
+					GROUP BY item.type
+				) b
+				ON b.type = item_class.id
 			");
 
 			$result			= $query->result();
@@ -1614,6 +1656,26 @@ class Invoice_model extends CI_Model {
 			");
 
 			$result		= $query->row();
+			return $result;
+		}
+
+		public function getOtherByMonthYear($month, $year)
+		{
+			$this->db->select_sum('invoice.value');
+			$this->db->select('debt_type.*');
+			$this->db->from('invoice');
+			$this->db->join('debt_type', 'invoice.type = debt_type.id');
+			$this->db->where('YEAR(invoice.date)', $year);
+			if($month != 0){
+				$this->db->where('MONTH(invoice.date)', $month);
+			}
+			$this->db->where('invoice.opponent_id IS NOT NULL OR invoice.customer_id IS NOT NULL');
+			$this->db->where('invoice.is_confirm', 1);
+			$this->db->group_by('invoice.type');
+			$this->db->order_by('debt_type.name');
+			
+			$query			= $this->db->get();
+			$result			= $query->result();
 			return $result;
 		}
 	}

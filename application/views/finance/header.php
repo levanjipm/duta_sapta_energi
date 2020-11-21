@@ -26,7 +26,7 @@
 ?>
 	</div>
 	<div class='sidenav_bar_functions'>
-		<button class='container_button'><p style='font-family:museo'>Bank</p></button>
+		<button class='container_button'><p style='font-family:museo'>Bank</p> <i class="fa fa-caret-down"></i></button>
 		<div class='container_bar'>
 			<a href='<?= site_url('Bank/transactionDashboard') ?>'><button><p style='font-family:museo'>Transaction</p></button></a>
 			<a href='<?= site_url('Bank/accountDashboard') ?>'><button><p style='font-family:museo'>Account</p></button></a>
@@ -34,24 +34,24 @@
 			<a href='<?= site_url('Bank/assignDashboard') ?>'><button><p style='font-family:museo'>Assign</p></button></a>
 			<a href='<?= site_url('Bank/opponent') ?>'><button><p style='font-family:museo'>Opponent</p></button></a>
 		</div>
-		<button class='container_button'><p style='font-family:museo'>Petty cash</p></button>
+		<button class='container_button'><p style='font-family:museo'>Petty cash</p> <i class="fa fa-caret-down"></i></button>
 		<div class='container_bar'>
 			<a href='<?= site_url('Petty_cash/transaction') ?>'><button><p style='font-family:museo'>Transaction</p></button></a>
 			<a href='<?= site_url('Petty_cash/mutation') ?>'><button><p style='font-family:museo'>Mutation</p></button></a>
 		</div>
-		<button class='container_button'><p style='font-family:museo'>Expense</p></button>
+		<button class='container_button'><p style='font-family:museo'>Expense</p> <i class="fa fa-caret-down"></i></button>
 		<div class='container_bar'>
 			<a href='<?= site_url('Expense') ?>'><button><p style='font-family:museo'>Class</p></button></a>
 			<a href='<?= site_url('Expense/reportDashboard') ?>'><button><p style='font-family:museo'>Report</p></button></a>
 		</div>
-		<button class='container_button'><p style='font-family:museo'>Income</p></button>
+		<button class='container_button'><p style='font-family:museo'>Income</p> <i class="fa fa-caret-down"></i></button>
 		<div class='container_bar'>
 			<a href='<?= site_url('Income/class') ?>'><button><p style='font-family:museo'>Class</p></button></a>
 			<a href='<?= site_url('Income/reportDashboard') ?>'><button><p style='font-family:museo'>Report</p></button></a>
 		</div>
 		<a href='<?= site_url('Receivable/finance') ?>'><button><p>Receivable</p></button></a>
 		<a href='<?= site_url('Payable/finance') ?>'><button><p>Payable</p></button></a>
-		<button class='container_button'><p style='font-family:museo'>Billing</p></button>
+		<button class='container_button'><p style='font-family:museo'>Billing</p> <i class="fa fa-caret-down"></i></button>
 		<div class='container_bar'>
 			<a href='<?= site_url('Billing/createDashboard') ?>'><button><p style='font-family:museo'>Create</p></button></a>
 			<a href='<?= site_url('Billing/confirmDashboard') ?>'><button><p style='font-family:museo'>Confirm</p></button></a>

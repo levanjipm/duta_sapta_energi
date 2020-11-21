@@ -94,48 +94,47 @@
 
 		<label>Purchase Invoice</label>
 <?php if(count($purchaseInvoice) > 0){ ?>
-			<table class='table table-bordered'>
-				<tr>
-					<th>Item</th>
-					<th>Value</th>
-				</tr>
+		<table class='table table-bordered'>
+			<tr>
+				<th>Item</th>
+				<th>Value</th>
+			</tr>
 <?php foreach($purchaseInvoice as $invoice){ ?>
-				<tr>
-					<td>
-						<label><?= $invoice->name ?></label>
-						<p><?= $invoice->description ?></p>
-					</td>
-					<td>
-						Rp. <?= number_format($invoice->value,2) ?>
-						<div class='progressBarWrapper'>
-							<p id='progressBarText-<?= $invoice->id ?>'></p>
-							<div class='progressBar' data-progress='<?= $invoice->value ?>' id='progressBar-<?= $invoice->id ?>'></div>
-							
-						</div>
-					</td>
-				</tr>
+			<tr>
+				<td>
+					<label><?= $invoice->name ?></label>
+					<p><?= $invoice->description ?></p>
+				</td>
+				<td>
+					Rp. <?= number_format($invoice->value,2) ?>
+					<div class='progressBarWrapper'>
+						<p id='progressBarText-<?= $invoice->id ?>'></p>
+						<div class='progressBar' data-progress='<?= $invoice->value ?>' id='progressBar-<?= $invoice->id ?>'></div>
+						
+					</div>
+				</td>
+			</tr>
 <?php $totalInvoice += $invoice->value; } ?>
-				<tr>
-					<td><label>Total</label></td>
-					<td>Rp. <?= number_format($totalInvoice,2) ?></td>
-				</tr>
-			</table>
-			<script>
-				$('div[id^="progressBar-"]').each(function(){
-					var id			= $(this).attr('id');
-					var uid			= parseInt(id.substring(12, 267));
-					var value		= parseFloat($(this).attr('data-progress'));
-					var percentage	= value / <?= $totalInvoice ?>;
-					var progress	= percentage * 100;
+			<tr>
+				<td><label>Total</label></td>
+				<td>Rp. <?= number_format($totalInvoice,2) ?></td>
+			</tr>
+		</table>
+		<script>
+			$('div[id^="progressBar-"]').each(function(){
+				var id			= $(this).attr('id');
+				var uid			= parseInt(id.substring(12, 267));
+				var value		= parseFloat($(this).attr('data-progress'));
+				var percentage	= value / <?= $totalInvoice ?>;
+				var progress	= percentage * 100;
 
-					$(this).animate({
-						width: progress + "%",
-					}, 200)
-					
-					$('#progressBarText-' + uid).html(numeral(percentage).format('0,0.00%'));
-				})
-			</script>
-		</div>
+				$(this).animate({
+					width: progress + "%",
+				}, 200)
+				
+				$('#progressBarText-' + uid).html(numeral(percentage).format('0,0.00%'));
+			})
+		</script>
 <?php } else { ?>
 		<p id='purchaseInvoiceTableText'>There is no purchase invoice found.</p>
 <?php } ?>

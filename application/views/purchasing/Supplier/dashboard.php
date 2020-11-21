@@ -5,6 +5,7 @@
 	<div class='dashboard_head'>
 		<p style='font-family:museo'><a href='<?= site_url('Purchasing') ?>' title='Purchasing'><i class='fa fa-briefcase'></i></a> /Supplier</p>
 	</div>
+	<br>
 	<div class='dashboard_in'>
 		<div class='input_group'>
 			<input type='text' class='form-control' id='search_bar' placeholder="Search supplier">
@@ -79,7 +80,7 @@
 </div>
 
 <div class='alert_wrapper' id='edit_supplier_wrapper'>
-	<button class='slide_alert_close_button'>&times </button>
+	<button class='slide_alert_close_button'>&times;</button>
 	<div class='alert_box_slide'>
 		<form action='<?= site_url('Supplier/updateById') ?>' method='POST'>
 			<h3 style='font-family:bebasneue'>Edit supplier</h3>
@@ -296,7 +297,7 @@
 						complete_address	+= ', ' + supplier_postal;
 					}
 					
-					$('#supplierTableContent').append("<tr><td>" + supplier_name + "</td><td><p>" + complete_address + "</p><p>" + supplier_city + "</p></td><td><button type='button' class='button button_success_dark' onclick='open_edit_form(" + supplier_id + ")'><i class='fa fa-pencil'></i></button> <button type='button' class='button button_danger_dark' onclick='confirm_delete(" + supplier_id + ")'><i class='fa fa-trash'></i></button> <button type='button' class='button button_default_dark'><i class='fa fa-eye'></i></button></td></tr>");
+					$('#supplierTableContent').append("<tr><td>" + supplier_name + "</td><td><p>" + complete_address + "</p><p>" + supplier_city + "</p></td><td><button type='button' class='button button_success_dark' onclick='open_edit_form(" + supplier_id + ")'><i class='fa fa-pencil'></i></button> <button type='button' class='button button_danger_dark' onclick='confirm_delete(" + supplier_id + ")'><i class='fa fa-trash'></i></button> <button type='button' class='button button_default_dark' onclick='goToDetail(" + supplier_id + ")'><i class='fa fa-eye'></i></button></td></tr>");
 					supplierCount++;
 				});
 
@@ -309,5 +310,9 @@
 				}
 			}
 		});
+	}
+
+	function goToDetail(n){
+		window.location.href='<?= site_url('Supplier/viewDetail/') ?>' + n;
 	}
 </script>

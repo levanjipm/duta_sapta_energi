@@ -57,6 +57,7 @@ class Purchase_report extends CI_Controller {
 
 		$this->load->model("Debt_other_model");
 		$data['otherPurchaseInvoice']	= $this->Debt_other_model->getBySupplierIdPeriod($supplierId, $month, $year);
+		
 		$this->load->view('purchasing/Report/report', $data);
 	}
 }

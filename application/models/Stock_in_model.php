@@ -325,7 +325,14 @@ class Stock_in_model extends CI_Model {
 						JOIN code_event ON event.code_event_id = code_event.id
 					) eventTable
 					ON eventTable.id = stock_out.event_id
-					WHERE COALESCE(deliveryOrderTable.date, eventTable.date) <= '$date'
+					LEFT JOIN 
+					(
+						SELECT code_purchase_return_sent.date, purchase_return_sent.id
+						FROM purchase_return_sent
+						JOIN code_purchase_return_sent ON purchase_return_sent.code_purchase_return_sent_id = code_purchase_return_sent.id
+					) purchaseReturnTable
+					ON purchaseReturnTable.id = stock_out.purchase_return_id
+					WHERE COALESCE(deliveryOrderTable.date, eventTable.date, purchaseReturnTable.date) <= '$date'
 					GROUP BY stock_out.in_id
 				) AS stockOutTable
 				ON stockOutTable.in_id = stock_in.id

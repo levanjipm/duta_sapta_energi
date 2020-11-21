@@ -81,7 +81,6 @@
 			line-height:1px;
 		}
 	</style>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" integrity="sha512-+4zCK9k+qNFUR5X+cKL9EIR+ZOhtIloNl9GIKS57V1MyNsYpYcUrUeQc9vNfzsWfV28IaLL3i96P9sdNyeRssA==" crossorigin="anonymous" />
 </head>
 <div class='dashboard' style='padding-top:100px'>
@@ -148,6 +147,71 @@
 						</div>
 					</div>
 				</div>
+
+				<div class="col-md-12 col-sm-12 col-xs-12">
+					<table class="table table-bordered">
+						<tr>
+							<td>Sales</td>
+							<td>Rp. <span id='salesP'></span></td>
+						</tr>
+						<tr>
+							<td>Purchase</td>
+							<td>Rp. <span id='purchaseP'></span></td>
+						</tr>
+						<tr>
+							<td>Stock Change</td>
+							<td>Rp. <span id='stockChangeP'></span></td>
+						</tr>
+						<tr>
+							<td><label>Gross Operational Profit</label></td>
+							<td>Rp. <span id='grossOperationalProfitP'></span></td>
+						</tr>
+						<tr>
+							<td>Other sales (Operational)</td>
+							<td>Rp. <span id='operationalSalesP'></p>
+						</tr>
+						<tr>
+							<td>Other sales ( Non - operational )</td>
+							<td>Rp. <span id='nonOperationalSalesP'></p>
+						</tr>
+						<tr>
+							<td>Other purchase (Operational)</td>
+							<td>Rp. <span id='operationalPurchaseP'></p>
+						</tr>
+						<tr>
+							<td>Other purchase ( Non - operational )</td>
+							<td>Rp. <span id='nonOperationalPurchaseP'></p>
+						</tr>
+						<tr>
+							<td><label>Gross Other Profit</label></td>
+							<td>Rp. <span id='grossOtherProfitP'></span></td>
+						</tr>
+						<tr>
+							<td><label>Gross Total Profit</label></td>
+							<td>Rp. <span id='grossTotalProfitP'></span></td>
+						</tr>
+						<tr>
+							<td>Income</td>
+							<td>Rp. <span id='incomeP'></p></td>
+						</tr>
+						<tr>
+							<td>Expense</td>
+							<td>Rp. <span id='expenseP'></p></td>
+						</tr>
+						<tr>
+							<td><label>Net Profit Before Tax</label></td>
+							<td>Rp. <span id='netProfitBeforeTaxP'></span></p>
+						</tr>
+						<tr>
+							<td><label>Tax</label></td>
+							<td>Rp. <span id='taxP'></span></p>
+						</tr>
+						<tr>
+							<td><label>Net Profit</label></td>
+							<td>Rp. <span id='netProfitAfterTaxP'></span></p>
+						</tr>
+					</table>
+				</div>
 			</div>
 		</div>
 		<div class='viewWrapper' id='balanceStatement' style='display:none'>
@@ -181,6 +245,101 @@
 		</div>
     </div>
 </div>
+
+<div class='alert_wrapper' id='otherSalesWrapper'>
+	<h3 style='font-family:bebasneue'>Other Sales</h3>
+	<hr>
+	<label>Other Operational Sales</label>
+	<table class='table table-bordered' id='otherOperationalSalesTable'>
+		<tr>
+			<th>Type</th>
+			<th>Value</th>
+		</tr>
+		<tbody id='otherOperationalSalesTableContent'></tbody>
+	</table>
+
+	<p id='otherOperationalSalesTableText'>There is no sales found.</p>
+	
+	<label>Other Non Operational Sales</label>
+	<table class='table table-bordered' id='otherNonOperationalSalesTable'>
+		<tr>
+			<th>Type</th>
+			<th>Value</th>
+		</tr>
+		<tbody id='otherNonOperationalSalesTableContent'></tbody>
+	</table>
+
+	<p id='otherNonOperationalSalesTableText'>There is no sales found.</p>
+</div>
+
+<div class='alert_wrapper' id='otherPurchaseWrapper'>
+	<h3 style='font-family:bebasneue'>Other Purchase</h3>
+	<hr>
+	<label>Other Operational Purchase</label>
+	<table class='table table-bordered' id='otherOperationalPurchaseTable'>
+		<tr>
+			<th>Type</th>
+			<th>Value</th>
+		</tr>
+		<tbody id='otherOperationalPurchaseTableContent'></tbody>
+	</table>
+
+	<p id='otherOperationalPurchaseTableText'>There is no purchase found.</p>
+	
+	<label>Other Non Operational Purchase</label>
+	<table class='table table-bordered' id='otherNonOperationalPurchaseTable'>
+		<tr>
+			<th>Type</th>
+			<th>Value</th>
+		</tr>
+		<tbody id='otherNonOperationalPurchaseTableContent'></tbody>
+	</table>
+
+	<p id='otherNonOperationalPurchaseTableText'>There is no purchase found.</p>
+</div>
+
+<div class='alert_wrapper' id='incomeWrapper'>
+	<h3 style='font-family:bebasneue'>Income</h3>
+	<hr>
+	<table class='table table-bordered' id='incomeTable'>
+		<tr>
+			<th>Type</th>
+			<th>Value</th>
+		</tr>
+		<tbody id='incomeTableContent'></tbody>
+	</table>
+
+	<p id='incomeTableText'>There is no income found.</p>
+</div>
+
+<div class='alert_wrapper' id='expenseWrapper'>
+	<h3 style='font-family:bebasneue'>Expense</h3>
+	<hr>
+	<table class='table table-bordered' id='expenseTable'>
+		<tr>
+			<th>Type</th>
+			<th>Value</th>
+		</tr>
+		<tbody id='expenseTableContent'></tbody>
+	</table>
+
+	<p id='expenseTableText'>There is no expense found.</p>
+</div>
+
+<div class='alert_wrapper' id='taxWrapper'>
+	<h3 style='font-family:bebasneue'>Tax Expense</h3>
+	<hr>
+	<table class='table table-bordered' id='taxTable'>
+		<tr>
+			<th>Type</th>
+			<th>Value</th>
+		</tr>
+		<tbody id='taxTableContent'></tbody>
+	</table>
+
+	<p id='taxTableText'>There is no tax found.</p>
+</div>
+
 <script>
 	$(document).ready(function(){
 		$('#generalButton').click();
@@ -241,27 +400,191 @@
 
 	function getIncomeStatement(){
 		$.ajax({
-			url:"<?= site_url('Director/getIncomeStatment') ?>",
+			url:"<?= site_url('Director/getIncomeStatement') ?>",
 			data:{
-				month: $('#month').val(),
-				year: $('#year').val()
+				month: $('#incomeMonth').val(),
+				year: $('#incomeYear').val()
 			},
 			success:function(response){
-				var sales			= response.sales;
-				var purchase		= response.purchase;
+				var sales			= parseFloat(response.sales);
+				var purchase		= parseFloat(response.purchase);
+				var stockChange		= parseFloat(response.stockChange);
+
+				var salesReturn		= parseFloat(response.salesReturn);
+				var purchaseReturn	= parseFloat(response.purchaseReturn);
+
+				$('#salesP').html(numeral(sales - salesReturn).format('0,0.00'));
+				$('#purchaseP').html(numeral(purchase - purchaseReturn).format('0,0.00'));
+				$('#stockChangeP').html(numeral(stockChange).format('0,0.00'));
+
+				var grossOperationalProfit		= sales + stockChange - purchase;
+				$('#grossOperationalProfitP').html(numeral(grossOperationalProfit).format('0,0.00'));
+
+				var taxExpense		= 0;
+				var taxCount		= 0;
+				$('#taxTableContent').html("");
+
 				var expense			= response.expense;
 				var expenseValue 	= 0;
-				$.each(expense, function(index, item)){
+				var expenseCount	= 0;
+				$('#expenseTableContent').html("");
+
+				$.each(expense, function(index, item){
 					var value	= item.value;
-					expenseValue += parseFloat(value);	
+					var type	= item.type;
+
+					if(type == 1 || type == 2){
+						expenseValue += parseFloat(value);
+						$('#expenseTableContent').append("<tr><td>" + item.name + "</td><td>Rp. " + numeral(value).format('0,0.00') + "</td></tr>");
+						expenseCount++;
+					} else if(type == 3){
+						taxExpense += parseFloat(value);
+						$('#taxTableContent').append("<tr><td>" + item.name + "</td><td>Rp. " + numeral(value).format('0,0.00') + "</td></tr>");
+						taxCount++;
+					}
+				});
+
+				$('#taxP').html(numeral(taxExpense).format('0,0.00'));
+
+				if(expenseCount > 0){
+					$('#expenseTable').show();
+					$('#expenseTableText').hide();
+				} else {
+					$('#expenseTableText').show();
+					$('#expenseTable').hide();
 				}
+
+				if(taxCount > 0){
+					$('#taxTable').show();
+					$('#taxTableText').hide();
+				} else {
+					$('#taxTableText').show();
+					$('#taxTable').hide();
+				}
+
+				$('#expenseP').html(numeral(expenseValue).format('0,0.00'));
 
 				var income			= response.income;
 				var incomeValue		= 0;
-				$.each(income, function(index, item)){
+				var incomeCount	= 0;
+				$('#incomeTableContent').html("");
+
+				$.each(income, function(index, item){
 					var value	= item.value;
-					incomeValue += parseFloat(value);	
-				}			
+					incomeValue += parseFloat(value);
+					$('#incomeTableContent').append("<tr><td>" + item.name + "</td><td>Rp. " + numeral(value).format('0,0.00') + "</td></tr>");	
+					incomeCount++;
+				});
+
+				if(incomeCount > 0){
+					$('#incomeTable').show();
+					$('#incomeTableText').hide();
+				} else {
+					$('#incomeTableText').show();
+					$('#incomeTable').hide();
+				}
+
+				$('#incomeP').html(numeral(incomeValue).format('0,0.00'));
+
+				var otherSales		= response.otherSales;
+
+				var operationalSales	= 0;
+				var operationalSalesCount = 0;
+				$('#otherOperationalSalesTableContent').html("");
+
+				var nonOperationalSales	 = 0;
+				var nonOperationalSalesCount = 0;
+				$('#otherNonOperationalSalesTableContent').html("");
+
+				$.each(otherSales, function(index, item){
+					var name			= item.name;
+					var is_operational	= item.is_operational;
+					var value			= parseFloat(item.value);
+					if(is_operational == 1){
+						$('#otherOperationalSalesTableContent').append("<tr><td>" + name + "</td><td>Rp. " + numeral(value).format('0,0.00'));
+						operationalSales += value;
+						operationalSalesCount++;
+					} else {
+						$('#otherNonOperationalSalesTableContent').append("<tr><td>" + name + "</td><td>Rp. " + numeral(value).format('0,0.00'));
+						nonOperationalSales += value;
+						nonOperationalSalesCount++;
+					}
+				});
+
+				if(operationalSalesCount > 0){
+					$('#otherOperationalSalesTable').show();
+					$('#otherOperationalSalesTableText').hide();
+				} else {
+					$('#otherOperationalSalesTable').hide();
+					$('#otherOperationalSalesTableText').show();
+				}
+
+				if(nonOperationalSalesCount > 0){
+					$('#otherNonOperationalSalesTable').show();
+					$('#otherNonOperationalSalesTableText').hide();
+				} else {
+					$('#otherOperationalSalesTable').hide();
+					$('#otherNonOperationalSalesTableText').show();
+				}
+
+				$('#operationalSalesP').html(numeral(operationalSales).format('0,0.00'));
+				$('#nonOperationalSalesP').html(numeral(nonOperationalSales).format('0,0.00'));
+
+				var otherPurchase	= response.otherPurchase;
+
+				var operationalPurchase	= 0;
+				var operationalPurchaseCount = 0;
+				$('#otherOperationalPurchaseTableContent').html("");
+
+				var nonOperationalPurchase	 = 0;
+				var nonOperationalPurchaseCount = 0;
+				$('#otherNonOperationalPurchaseTableContent').html("");
+
+				$.each(otherPurchase, function(index, item){
+					var name			= item.name;
+					var is_operational	= item.is_operational;
+					var value			= parseFloat(item.value);
+					if(is_operational == 1){
+						$('#otherOperationalPurchaseTableContent').append("<tr><td>" + name + "</td><td>Rp. " + numeral(value).format('0,0.00'));
+						operationalPurchase += value;
+						operationalPurchaseCount++;
+					} else {
+						$('#otherNonOperationalPurchaseTableContent').append("<tr><td>" + name + "</td><td>Rp. " + numeral(value).format('0,0.00'));
+						nonOperationalPurchase += value;
+						nonOperationalPurchaseCount++;
+					}
+				});
+
+				if(operationalPurchaseCount > 0){
+					$('#otherOperationalPurchaseTable').show();
+					$('#otherOperationalPurchaseTableText').hide();
+				} else {
+					$('#otherOperationalPurchaseTable').hide();
+					$('#otherOperationalPurchaseTableText').show();
+				}
+
+				if(nonOperationalPurchaseCount > 0){
+					$('#otherNonOperationalPurchaseTable').show();
+					$('#otherNonOperationalPurchaseTableText').hide();
+				} else {
+					$('#otherNonOperationalPurchaseTable').hide();
+					$('#otherNonOperationalPurchaseTableText').show();
+				}
+
+				$('#operationalPurchaseP').html(numeral(operationalPurchase).format('0,0.00'));
+				$('#nonOperationalPurchaseP').html(numeral(nonOperationalPurchase).format('0,0.00'));
+
+				var grossOtherProfit = (operationalSales + nonOperationalSales) - (operationalPurchase + nonOperationalPurchase);
+				$('#grossOtherProfitP').html(numeral(grossOtherProfit).format('0,0.00'));
+
+				var grossTotalProfit	= grossOtherProfit + grossOperationalProfit;
+				$('#grossTotalProfitP').html(numeral(grossTotalProfit).format('0,0.00'));
+
+				var netProfit		= grossTotalProfit + incomeValue - expenseValue;
+				$('#netProfitBeforeTaxP').html(numeral(netProfit).format('0,0.00'));
+
+				var profit			= netProfit - taxExpense;
+				$('#netProfitAfterTaxP').html(numeral(profit).format('0,0.00'));
 			}
 		})
 	}

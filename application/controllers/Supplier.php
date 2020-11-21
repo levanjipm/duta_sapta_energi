@@ -22,7 +22,7 @@ class Supplier extends CI_Controller {
 		$this->load->view('head');
 		$this->load->view('purchasing/header', $data);
 		
-		$this->load->view('purchasing/supplierDashboard');
+		$this->load->view('purchasing/supplier/dashboard');
 	}
 	
 	public function showItems()
@@ -71,5 +71,46 @@ class Supplier extends CI_Controller {
 		
 		header('Content-Type: application/json');
 		echo json_encode($item);
+	}
+
+	public function viewDetail($supplierId)
+	{
+		$user_id		= $this->session->userdata('user_id');
+		$this->load->model('User_model');
+		$data['user_login'] = $this->User_model->getById($user_id);
+		
+		$this->load->model('Authorization_model');
+		$data['departments']	= $this->Authorization_model->getByUserId($user_id);
+
+		$this->load->view('head');
+		$this->load->view('purchasing/header', $data);
+		
+		$data					= array();
+		$this->load->model("Supplier_model");
+		$data['supplier']		= $this->Supplier_model->getById($supplierId);
+
+		$this->load->view('purchasing/supplier/detailDashboard', $data);		
+	}
+
+	public function getPurchaseBySupplierId()
+	{
+		$id			= $this->input->get("id");
+		$this->load->model("Debt_model");
+		$data		= $this->Debt_model->getValueByPeriod($id, date("Y-m-t", mktime(0,0,0, date("m"), 1, date("Y"))), date("Y-m-d", mktime(0,0,0,date('m'), 1, date("Y") - 1)));
+
+		header("Content-type: application/json");
+		echo json_encode($data);
+	}
+
+	public function getValueByDateRange()
+	{
+		$dateStart		= $this->input->post('start');
+		$dateEnd		= $this->input->post('end');
+		$supplierId		= $this->input->post('supplierId');
+		$this->load->model("Debt_model");
+		
+		$data	= $this->Debt_model->getValueByDateRange($supplierId, $dateStart, $dateEnd);
+		header("Content-type: application/json");
+		echo json_encode($data);
 	}
 }

@@ -122,6 +122,24 @@ class Payable extends CI_Controller {
 		$this->load->view('accounting/payable/supplierPayable', $data);
 	}
 
+	public function viewFinanceBySupplierId($supplierId)
+	{
+		$user_id		= $this->session->userdata('user_id');
+		$this->load->model('User_model');
+		$data['user_login'] = $this->User_model->getById($user_id);
+		
+		$this->load->model('Authorization_model');
+		$data['departments']	= $this->Authorization_model->getByUserId($user_id);
+		
+		$this->load->view('head');
+		$this->load->view('finance/header', $data);
+
+		$this->load->model('Supplier_model');
+		$data['supplier'] = $this->Supplier_model->getById($supplierId);
+		$this->load->view('finance/payable/supplierPayable', $data);
+	}
+
+
 	public function getCompletePayableBySupplierId()
 	{
 		$supplierId			= $this->input->get('id');
@@ -198,6 +216,23 @@ class Payable extends CI_Controller {
 		$this->load->model("Opponent_model");
 		$data['opponent']		= $this->Opponent_model->getById($opponentId);
 		$this->load->view('accounting/payable/opponentPayable', $data);
+	}
+
+	public function viewFinanceByOpponentId($opponentId)
+	{
+		$user_id		= $this->session->userdata('user_id');
+		$this->load->model('User_model');
+		$data['user_login'] = $this->User_model->getById($user_id);
+		
+		$this->load->model('Authorization_model');
+		$data['departments']	= $this->Authorization_model->getByUserId($user_id);
+		
+		$this->load->view('head');
+		$this->load->view('finance/header', $data);
+
+		$this->load->model("Opponent_model");
+		$data['opponent']		= $this->Opponent_model->getById($opponentId);
+		$this->load->view('finance/payable/opponentPayable', $data);
 	}
 
 	public function resetByBankId()

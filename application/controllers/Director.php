@@ -90,21 +90,37 @@ class Director extends CI_Controller {
 			
 			//Sales//
 			$this->load->model("Invoice_model");
-			$sales		= $this->Invoice_model->getValueByMonthYear($month, $year);
+			$sales		= (float)$this->Invoice_model->getValueByMonthYear($month, $year);
 
 			$this->load->model("Sales_return_received_model");
-			$salesReturn	= $this->Sales_return_received_model->getValueByMonthYear($month, $year);
+			$salesReturn	= (float)$this->Sales_return_received_model->getValueByMonthYear($month, $year);
 
-			$data['sales']		= $sales - $salesReturn;
+			$data['sales']		= $sales;
+			$data['salesReturn']	= $salesReturn;
 
 			//Purchasing//
 			$this->load->model("Debt_model");
-			$purchase	= $this->Debt_model->getValueByMonthYear($month, $year);
+			$purchase	= (float)$this->Debt_model->getValueByMonthYear($month, $year);
 			
 			$this->load->model("Purchase_return_sent_model");
-			$purchaseReturn		= $this->Purchase_return_sent_model->getValueByMonthYear($month, $year);
+			$purchaseReturn		= (float)$this->Purchase_return_sent_model->getValueByMonthYear($month, $year);
 
-			$data['purchase']	= $purchase - $purchaseReturn;
+			$data['purchase']	= $purchase;
+			$data['purchaseReturn']	= $purchaseReturn;
+
+			//Stock Value//
+			$this->load->model("Stock_in_model");
+			if($month == 0){
+				$initialDate		= $year . "-01-01";
+				$endDate			= $year . "-12-31";
+			} else {
+				$initialDate		= date("Y-m-t", mktime(0,0,0,$month - 1, 1, $year));
+				$endDate			= date("Y-m-t", mktime(0,0,0,$month, 1, $year));
+			}
+
+			$stockInitial			= $this->Stock_in_model->calculateValue($initialDate);
+			$stockEnd				= $this->Stock_in_model->calculateValue($endDate);
+			$data['stockChange']	= $stockEnd - $stockInitial;
 
 			//Cost and Gain of setting invoice as done//
 			$this->load->model("Receivable_model");
@@ -120,6 +136,13 @@ class Director extends CI_Controller {
 			//Other income//
 			$this->load->model("Income_model");
 			$data['income']		= $this->Income_model->getByMonthYear($month, $year);
+
+			//Other invoice -- Operational//
+			$this->load->model("Invoice_model");
+			$data['otherSales']		= $this->Invoice_model->getOtherByMonthYear($month, $year);
+
+			$this->load->model("Debt_other_model");
+			$data['otherPurchase']	= $this->Debt_other_model->getByMonthYear($month, $year);
 
 			header('Content-Type: application/json');
 			echo json_encode($data);

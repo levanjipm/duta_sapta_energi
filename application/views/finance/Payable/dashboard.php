@@ -432,9 +432,9 @@
 
 	$('#viewPayableButton').click(function(){
 		if(supplierId == null){
-			window.location.href="<?= site_url('Payable/viewByOpponentId/') ?>" + opponentId;
+			window.location.href="<?= site_url('Payable/viewFinanceByOpponentId/') ?>" + opponentId;
 		} else {
-			window.location.href="<?= site_url('Payable/viewBySupplierId/') ?>" + supplierId;
+			window.location.href="<?= site_url('Payable/viewFinanceBySupplierId/') ?>" + supplierId;
 		}
 		
 	})
@@ -486,7 +486,7 @@
 						$('#supplierTableContent').append("<tr><td>" + supplierName + "</td><td><p>" + complete_address + "</p><p>" + supplier_city + "</p></td><td><button class='button button_default_dark' id='viewSupplierButton-" + id + "'><i class='fa fa-long-arrow-right'></i></button></td></tr>");
 						supplierCount++;
 						$('#viewSupplierButton-' + id).click(function(){
-							window.location.href="<?= site_url('Payable/viewBySupplierId/') ?>" + id;
+							window.location.href="<?= site_url('Payable/viewFinanceBySupplierId/') ?>" + id;
 						})
 
 					} else if(opponentType == 2){
@@ -498,7 +498,7 @@
 						$('#supplierTableContent').append("<tr><td>" + supplierName + "</td><td><p>" + complete_address + "</p><p>" + supplier_city + "</p></td><td><button class='button button_default_dark' id='viewOpponentButton-" + id + "'><i class='fa fa-long-arrow-right'></i></button></td></tr>");
 						supplierCount++;
 						$('#viewOpponentButton-' + id).click(function(){
-							window.location.href="<?= site_url('Payable/viewByOpponentId/') ?>" + id;
+							window.location.href="<?= site_url('Payable/viewFinanceByOpponentId/') ?>" + id;
 						})
 					}
 				});

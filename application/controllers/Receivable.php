@@ -172,6 +172,25 @@ class Receivable extends CI_Controller {
 		$this->load->view('accounting/Receivable/customerReceivable', $data);
 	}
 
+	public function viewFinanceByCustomerId($customerId)
+	{
+		$user_id		= $this->session->userdata('user_id');
+		$this->load->model('User_model');
+		$data['user_login'] = $this->User_model->getById($user_id);
+		
+		$this->load->model('Authorization_model');
+		$data['departments']	= $this->Authorization_model->getByUserId($user_id);
+		
+		$this->load->view('head');
+		$this->load->view('finance/header', $data);
+
+		$data = array();
+		$this->load->model("Customer_model");
+		$data['customer'] = $this->Customer_model->getById($customerId);
+
+		$this->load->view('finance/Receivable/customerReceivable', $data);
+	}
+
 	public function viewByOpponentId($opponentId)
 	{
 		$user_id		= $this->session->userdata('user_id');
@@ -189,6 +208,25 @@ class Receivable extends CI_Controller {
 		$data['opponent'] = $this->Opponent_model->getById($opponentId);
 
 		$this->load->view('accounting/Receivable/opponentReceivable', $data);
+	}
+
+	public function viewFinanceByOpponentId($opponentId)
+	{
+		$user_id		= $this->session->userdata('user_id');
+		$this->load->model('User_model');
+		$data['user_login'] = $this->User_model->getById($user_id);
+		
+		$this->load->model('Authorization_model');
+		$data['departments']	= $this->Authorization_model->getByUserId($user_id);
+		
+		$this->load->view('head');
+		$this->load->view('finance/header', $data);
+
+		$data = array();
+		$this->load->model("Opponent_model");
+		$data['opponent'] = $this->Opponent_model->getById($opponentId);
+
+		$this->load->view('finance/Receivable/opponentReceivable', $data);
 	}
 
 	public function getCustomerOpponentItems(){
@@ -285,5 +323,24 @@ class Receivable extends CI_Controller {
 		$data['customer'] = $this->Customer_model->getById($customerId);
 
 		$this->load->view('accounting/Receivable/customerCompleteReceivable', $data);
+	}
+
+	public function viewFinanceCompleteByCustomerId($customerId)
+	{
+		$user_id		= $this->session->userdata('user_id');
+		$this->load->model('User_model');
+		$data['user_login'] = $this->User_model->getById($user_id);
+		
+		$this->load->model('Authorization_model');
+		$data['departments']	= $this->Authorization_model->getByUserId($user_id);
+		
+		$this->load->view('head');
+		$this->load->view('finance/header', $data);
+
+		$data = array();
+		$this->load->model("Customer_model");
+		$data['customer'] = $this->Customer_model->getById($customerId);
+
+		$this->load->view('finance/Receivable/customerCompleteReceivable', $data);
 	}
 }

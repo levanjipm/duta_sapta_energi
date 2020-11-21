@@ -188,7 +188,7 @@
 						<br>
 						<p>Rp. <span id='CustomerValueP'>0.00</span></p>
 						<label>Information</label>
-						<p>The value mentioned above is the sum of invoices value of the current customer.</p>
+						<p>The value mentioned above is the sum of invoices value of the current customer subtracted by sum of returned received in that period.</p>
 					</form>
 					<hr>
 					<label>Target History</label>
@@ -604,7 +604,7 @@
 					$.each(distribution, function(index, item){
 						var name		= item.name;
 						var value		= item.value;
-
+						var returned	= item.returned;
 						totalValue += parseFloat(value);
 					});
 				}

@@ -254,4 +254,23 @@ class Debt_other_model extends CI_Model {
 			$result			= $this->db->affected_rows();
 			return $result;
 		}
+
+		public function getByMonthYear($month, $year)
+		{
+			$this->db->select_sum('value');
+			$this->db->select('debt_type.*');
+			$this->db->from($this->table_purchase_invoice);
+			$this->db->join('debt_type', 'purchase_invoice_other.type = debt_type.id');
+			$this->db->where('purchase_invoice_other.is_confirm', 1);
+			$this->db->where('YEAR(purchase_invoice_other.date)', $year);
+			if($month != 0){
+				$this->db->where('MONTH(purchase_invoice_other.date)', $month);
+			}
+			$this->db->order_by('debt_type.name');
+			$this->db->group_by('purchase_invoice_other.type');
+
+			$query			= $this->db->get();
+			$result			= $query->result();
+			return $result;
+		}
 }

@@ -700,8 +700,9 @@ class Debt_model extends CI_Model {
 		{
 			if($month == NULL){
 				$query		= $this->db->query("
-					SELECT a.value, a.name, a.description FROM (
-						SELECT (good_receipt.billed_price * good_receipt.quantity) AS value, item_class.name, item_class.description
+					SELECT COALESCE(SUM(a.value), 0) AS value, a.name, a.description 
+					FROM (
+						SELECT SUM(good_receipt.billed_price * good_receipt.quantity) AS value, item_class.name, item_class.id, item_class.description
 						FROM good_receipt
 						JOIN code_good_receipt ON good_receipt.code_good_receipt_id = code_good_receipt.id
 						JOIN purchase_order ON good_receipt.purchase_order_id = purchase_order.id
@@ -712,11 +713,23 @@ class Debt_model extends CI_Model {
 						AND purchase_invoice.is_confirm = '1'
 						AND YEAR(purchase_invoice.date) = '$year'
 						GROUP BY item_class.id
+						UNION (
+							SELECT SUM((-1) * purchase_return_sent.quantity * purchase_return.price) AS value, item_class.name, item_class.id, item_class.description
+							FROM purchase_return_sent
+							JOIN purchase_return ON purchase_return_sent.purchase_return_id = purchase_return.id
+							JOIN code_purchase_return_sent ON purchase_return_sent.code_purchase_return_sent_id = code_purchase_return_sent.id
+							JOIN item ON purchase_return.item_id = item.id
+							JOIN item_class ON item.type = item_class.id
+							WHERE YEAR(code_purchase_return_sent.date) = '$year'
+							AND code_purchase_return_sent.is_confirm = '1'
+							GROUP BY item_class.id
+						)
 					) AS a
+					GROUP BY a.id
 				");
 			} else {
 				$query		= $this->db->query("
-					SELECT a.value, a.name, a.id, a.description FROM (
+					SELECT COALESCE(SUM(a.value), 0) AS value, a.name, a.id, a.description FROM (
 						SELECT (good_receipt.billed_price * good_receipt.quantity) AS value, item_class.name, item_class.id, item_class.description
 						FROM good_receipt
 						JOIN code_good_receipt ON good_receipt.code_good_receipt_id = code_good_receipt.id
@@ -729,7 +742,20 @@ class Debt_model extends CI_Model {
 						AND YEAR(purchase_invoice.date) = '$year'
 						AND MONTH(purchase_invoice.date) = '$month'
 						GROUP BY item_class.id
+						UNION (
+							SELECT SUM((-1) * purchase_return_sent.quantity * purchase_return.price) AS value, item_class.name, item_class.id, item_class.description
+							FROM purchase_return_sent
+							JOIN purchase_return ON purchase_return_sent.purchase_return_id = purchase_return.id
+							JOIN code_purchase_return_sent ON purchase_return_sent.code_purchase_return_sent_id = code_purchase_return_sent.id
+							JOIN item ON purchase_return.item_id = item.id
+							JOIN item_class ON item.type = item_class.id
+							WHERE YEAR(code_purchase_return_sent.date) = '$year'
+							AND MONTH(code_purchase_return_sent.date) = '$month'
+							AND code_purchase_return_sent.is_confirm = '1'
+							GROUP BY item_class.id
+						)
 					) AS a
+					GROUP BY a.id
 					ORDER BY a.name ASC
 				");
 			}
@@ -835,7 +861,7 @@ class Debt_model extends CI_Model {
 					FROM good_receipt
 					JOIN code_good_receipt ON good_receipt.code_good_receipt_id = code_good_receipt.id
 					JOIN purchase_invoice ON code_good_receipt.invoice_id = purchase_invoice.id
-					WHERE MONTH(purchase_invoice.date) = '$month' AND YEAR(purchase_invoice.date) = '$year'
+					WHERE YEAR(purchase_invoice.date) = '$year'
 					AND purchase_invoice.is_confirm = '1'
 				");
 			} else {
@@ -851,6 +877,131 @@ class Debt_model extends CI_Model {
 
 			$result		= $query->row();
 			return $result->value;
+		}
+
+		public function getValueByPeriod($supplierId, $maxDate, $minDate)
+		{
+			$query			= $this->db->query("
+				SELECT SUM(goodReceiptTable.value) AS value, MONTH(purchase_invoice.date) AS month, YEAR(purchase_invoice.date) AS year
+				FROM
+				purchase_invoice	
+				JOIN (
+					SELECT SUM(good_receipt.billed_price * good_receipt.quantity) AS value, code_good_receipt.invoice_id
+					FROM good_receipt
+					JOIN code_good_receipt ON good_receipt.code_good_receipt_id = code_good_receipt.id
+					JOIN purchase_order ON good_receipt.purchase_order_id = purchase_order.id
+					JOIN code_purchase_order ON purchase_order.code_purchase_order_id = code_purchase_order.id
+					WHERE code_purchase_order.supplier_id = '$supplierId'
+					AND code_good_receipt.is_confirm = '1'
+					GROUP BY code_good_receipt.invoice_id
+				) goodReceiptTable
+				ON purchase_invoice.id = goodReceiptTable.invoice_id
+				WHERE purchase_invoice.date <= '$maxDate'
+				AND purchase_invoice.date >= '$minDate'
+				AND purchase_invoice.is_confirm = '1'
+				UNION (
+					SELECT SUM(purchase_invoice_other.value) AS value, MONTH(purchase_invoice_other.date) AS month, YEAR(purchase_invoice_other.date) AS year
+					FROM purchase_invoice_other
+					WHERE purchase_invoice_other.date <= '$maxDate'
+					AND purchase_invoice_other.date >= '$minDate'
+					AND purchase_invoice_other.is_confirm = '1'
+					AND purchase_invoice_other.supplier_id = '$supplierId'
+					GROUP BY MONTH(purchase_invoice_other.date), YEAR(purchase_invoice_other.date)
+				)
+				UNION (
+					SELECT SUM((-1) * purchase_return_sent.quantity * purchase_return.price) AS value, MONTH(code_purchase_return_sent.date) AS month, YEAR(code_purchase_return_sent.date) AS year
+					FROM purchase_return_sent
+					JOIN code_purchase_return_sent ON purchase_return_sent.code_purchase_return_sent_id = code_purchase_return_sent.id
+					JOIN purchase_return ON purchase_return_sent.purchase_return_id = purchase_return.id
+					JOIN code_purchase_return ON purchase_return.code_purchase_return_id = code_purchase_return.id
+					WHERE code_purchase_return_sent.date <= '$maxDate'
+					AND code_purchase_return_sent.date >= '$minDate'
+					AND code_purchase_return_sent.is_confirm = '1'
+					AND code_purchase_return.supplier_id = '$supplierId'
+					GROUP BY MONTH(code_purchase_return_sent.date), YEAR(code_purchase_return_sent.date)
+				)
+			");
+
+			$result		= $query->result();
+			$response	= array();
+			foreach($result as $item){
+				$month		= $item->month;
+				$year		= $item->year;
+
+				$index		= (date("m", strtotime($maxDate)) - $month) + 12 * (date("Y", strtotime($maxDate)) - $year);
+				if(!array_key_exists($index, $response)){
+					$response[$index]	= array(
+						"value" => $item->value,
+						"label" => date("M Y", mktime(0,0,0,$month, 1, $year))
+					);
+				} else {
+					$response[$index]['value']	+= $item->value;
+				}
+
+				next($result);
+			}
+			
+			$difference		= (date("m", strtotime($maxDate)) - date("m", strtotime($minDate))) + 12 * (date("Y", strtotime($maxDate)) - date("Y", strtotime($minDate)));
+			for($i = 0 ;$i <= $difference; $i++){
+				if(!array_key_exists($i, $response)){
+					$date		= mktime(0, 0, 0, date('m', strtotime("-" . $i . "month", strtotime($maxDate))), 1, date('Y', strtotime("-" . $i . "month", strtotime($maxDate))));
+					$response[$i] = array(
+						"value" => 0,
+						"label" => date("M Y", $date)
+					);
+				}
+			}
+
+			return $response;
+		}
+
+		public function getValueByDateRange($supplierId, $dateStart, $dateEnd)
+		{
+			$query			= $this->db->query("
+				SELECT COALESCE(SUM(goodReceiptTable.value), 0) AS value FROM purchase_invoice
+				JOIN (
+					SELECT SUM(good_receipt.billed_price * good_receipt.quantity) AS value, code_good_receipt.invoice_id
+					FROM good_receipt
+					JOIN code_good_receipt ON good_receipt.code_good_receipt_id = code_good_receipt.id
+					JOIN purchase_order ON good_receipt.purchase_order_id = purchase_order.id
+					JOIN code_purchase_order ON purchase_order.code_purchase_order_id = code_purchase_order.id
+					WHERE code_purchase_order.supplier_id = '$supplierId'
+					AND code_good_receipt.is_confirm = '1'
+					GROUP BY code_good_receipt.invoice_id
+				) goodReceiptTable
+				ON goodReceiptTable.invoice_id = purchase_invoice.id
+				WHERE purchase_invoice.date <= '$dateEnd'
+				AND purchase_invoice.date >= '$dateStart'
+				AND purchase_invoice.is_confirm = '1'
+				UNION (
+					SELECT SUM(purchase_invoice_other.value) AS value
+					FROM purchase_invoice_other
+					WHERE purchase_invoice_other.is_confirm = '1'
+					AND purchase_invoice_other.supplier_id = '$supplierId'
+					AND purchase_invoice_other.date <= '$dateEnd'
+					AND purchase_invoice_other.date >= '$dateStart'
+					AND purchase_invoice_other.is_confirm = '1'
+				)
+				UNION (
+					SELECT ((-1) * purchase_return_sent.quantity * purchase_return.price) AS value
+					FROM purchase_return_sent
+					JOIN purchase_return ON purchase_return_sent.purchase_return_id = purchase_return.id
+					JOIN code_purchase_return_sent ON purchase_return_sent.code_purchase_return_sent_id = code_purchase_return_sent.id
+					JOIN code_purchase_return ON purchase_return.code_purchase_return_id = code_purchase_return_id
+					WHERE code_purchase_return.supplier_id = '$supplierId'
+					AND code_purchase_return_sent.date <= '$dateEnd'
+					AND code_purchase_return_sent.date >= '$dateStart'
+					AND code_purchase_return_sent.is_confirm = '1'
+					GROUP BY purchase_return_sent.id
+				)
+			");
+
+			$result			= $query->result();
+			$totalValue		= 0;
+			foreach($result as $item){
+				$totalValue	+= (float) $item->value;
+			}
+			return $totalValue;
 		}
 	}
 ?>
