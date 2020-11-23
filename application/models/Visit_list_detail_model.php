@@ -113,14 +113,25 @@ class Visit_list_detail_model extends CI_Model {
 
 		public function getRecap($year, $month, $sales)
 		{
-			$query			= $this->db->query("
-				SELECT visit_list.customer_id, DATE_FORMAT(code_visit_list.date, '%d') AS date, visit_list.result 
-				FROM visit_list
-				JOIN code_visit_list ON visit_list.code_visit_list_id = code_visit_list.id
-				WHERE MONTH(code_visit_list.date) = '$month' AND YEAR(code_visit_list.date) = '$year'
-				AND code_visit_list.visited_by = '$sales'
-				AND code_visit_list.is_confirm = '1'
-			");
+			if($sales == 0){
+				$query			= $this->db->query("
+					SELECT visit_list.customer_id, DATE_FORMAT(code_visit_list.date, '%d') AS date, visit_list.result 
+					FROM visit_list
+					JOIN code_visit_list ON visit_list.code_visit_list_id = code_visit_list.id
+					WHERE MONTH(code_visit_list.date) = '$month' AND YEAR(code_visit_list.date) = '$year'
+					AND code_visit_list.is_confirm = '1'
+				");
+			} else {
+				$query			= $this->db->query("
+					SELECT visit_list.customer_id, DATE_FORMAT(code_visit_list.date, '%d') AS date, visit_list.result 
+					FROM visit_list
+					JOIN code_visit_list ON visit_list.code_visit_list_id = code_visit_list.id
+					WHERE MONTH(code_visit_list.date) = '$month' AND YEAR(code_visit_list.date) = '$year'
+					AND code_visit_list.visited_by = '$sales'
+					AND code_visit_list.is_confirm = '1'
+				");
+			}
+			
 			$result		= $query->result();
 			return $result;
 		}

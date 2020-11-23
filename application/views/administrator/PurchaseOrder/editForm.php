@@ -151,7 +151,7 @@
 						<td><?= $item->name ?></td>
 						<td><input type='number' class='form-control' name='pricelist[<?= $item->id ?>]' value='<?= $item->price_list ?>' <?= ($item->received > 0) ? "readonly" : "required"; ?> min='1'></td>
 						<td><input type='number' class='form-control' min='0' max='100' name='discount[<?= $item->id ?>]' value='<?= (1 - ($item->net_price / $item->price_list)) * 100 ?>' <?= ($item->received > 0) ? "readonly" : "required"; ?>></td>
-						<td><input type='number' class='form-control' name='quantity[<?= $item->id ?>]' value='<?= $item->quantity ?>' min='<?= max(1, $item->received) ?>' <?= ($item->received > 0) ? "readonly" : "required"; ?>></td>
+						<td><input type='number' class='form-control' name='quantity[<?= $item->id ?>]' value='<?= $item->quantity ?>' min='<?= max(0, $item->received) ?>'></td>
 						<td><?= number_format($item->received, 0) ?></td>
 						<td><button type='button' class='button button_danger_dark' <?= ($item->received > 0) ? "disabled" : ""; ?> onclick='deleteExistingItem(<?= $item->id ?>)'><i class='fa fa-trash'></i></button></td>
 					</tr>

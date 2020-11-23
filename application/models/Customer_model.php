@@ -582,4 +582,16 @@ class Customer_model extends CI_Model {
 			$result			= $query->result();
 			return $result;
 		}
+
+		public function getAllCustomers()
+		{
+			$this->db->select('customer.*, customer_area.name AS area');
+			$this->db->from('customer');
+			$this->db->join('customer_area', 'customer.area_id = customer_area.id');
+			$this->db->order_by('customer.name');
+
+			$query		= $this->db->get();
+			$result		= $query->result();
+			return $result;
+		}
 }

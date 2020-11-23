@@ -39,6 +39,7 @@
 			<?php if($user_login->access_level > 2){ ?>
 			<a href='<?= site_url('Plafond/confirmDashboard') ?>'><button><p>Plafond Submission status</p></button></a>
 			<?php } ?>
+			<a href='<?= site_url('Customer/map') ?>'><button><p>Map</p></button></a>
 		</div>
 		<a href='<?= site_url('Area') ?>'><button><p>Area</p></button></a>
 		<a href='<?= site_url('Item') ?>'><button><p>Item</p></button></a>

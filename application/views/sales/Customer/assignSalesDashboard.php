@@ -85,7 +85,7 @@
 						var imageUrl = "<?= base_url() . '/assets/ProfileImages/' ?>" + item.image_url;
 					}
 
-					$('#userTableContent').append("<tr><td><img src='" + imageUrl + "' style='width:30px;height:30px;border-radius:50%'> " + name + "</td><td><button class='button button_default_dark' type='button' id='selectUserButton-" + id + "'><i class='fa fa-long-arrow-right'></i></button> <button class='button button_success_dark' onclick='viewSalesAssignment(" + id + ")'><i class='fa fa-eye'></i></button></td></tr>");
+					$('#userTableContent').append("<tr><td><img src='" + imageUrl + "' style='width:30px;height:30px;border-radius:50%'> " + name + "</td><td><button class='button button_default_dark' type='button' id='selectUserButton-" + id + "'><i class='fa fa-long-arrow-right'></i></button> <button class='button button_default_dark' onclick='viewSalesAssignment(" + id + ")'><i class='fa fa-eye'></i></button></td></tr>");
 
 					$('#selectUserButton-' + id).click(function(){
 						$("#selectSales").html(name);

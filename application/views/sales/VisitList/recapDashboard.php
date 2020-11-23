@@ -19,6 +19,7 @@
 <?php } ?>
 			</select>
 			<select class='form-control' id='sales'>
+				<option value='0'>Select All Sales</option>
 <?php foreach($sales as $item){ ?>
 				<option value='<?= $item->id ?>'><?= $item->name ?></option>
 <?php } ?>
@@ -186,13 +187,12 @@
 					var customer_id	= parseInt(value.customer_id);
 					
 					if(result == 0){
-						$('#customer-' + customer_id + '-' + date).css('background-color', "#f63e21");
-						if(!scheduledCustomer.includes(customer_id)){
-							scheduledCustomer.push(customer_id);
+						if(!successCustomer.includes(customer_id)){
+							$('#customer-' + customer_id + '-' + date).css('background-color', "#f63e21");
+							if(!scheduledCustomer.includes(customer_id)){
+								scheduledCustomer.push(customer_id);
+							}
 						}
-
-						$('#tableCustomer-' + customer_id).parent().removeClass('emptyCustomer');
-						$('#tableCustomer-' + customer_id).parent().addClass('notEmptyCustomer');
 						scheduled++;
 					} else {
 						$('#customer-' + customer_id + '-' + date).css('background-color', "rgb(1, 187, 0)");

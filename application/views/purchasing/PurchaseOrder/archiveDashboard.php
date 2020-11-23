@@ -62,6 +62,8 @@
 		<p style='font-family:museo' id='purchase_order_status_p'></p>
 		<p style='font-family:museo' id='purchase_order_taxing_p'></p>
 
+		<p>Created by <span id='purchase_order_creator_p'></span>, Confirmed by <span id='purchase_order_confirm_p'></p>
+
 		<label>Delivery address</label>
 		<p style='font-family:museo' id='delivery_address_p'></p>
 		<p style='font-family:museo' id='delivery_city_p'></p>
@@ -85,7 +87,7 @@
 			<tbody id='good_receipt_table'></tbody>
 		</table>
 
-		<p style='font-family:museo;text-align:right;color:#333;font-size:10px'>Created by <span id='purchase_order_creator_p'></span>, Confirmed by <span id='purchase_order_confirm_p'></p>
+		
 	</div>
 </div>
 

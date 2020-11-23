@@ -734,7 +734,7 @@ class Sales_order_model extends CI_Model {
 		public function getByCustomerUID($customerUID)
 		{
 			$query			= $this->db->query("
-				SELECT SUM(price_list.price_list * (100 - sales_order.discount) * sales_order.quantity) AS value, SUM(price_list.price_list * (100 - sales_order.discount) * sales_order.sent) AS sentValue, MONTH(code_sales_order.date) AS month, YEAR(code_sales_order.date) AS year
+				SELECT SUM(price_list.price_list * (100 - sales_order.discount) * sales_order.quantity / 100) AS value, SUM(price_list.price_list * (100 - sales_order.discount) * sales_order.sent / 100) AS sentValue, MONTH(code_sales_order.date) AS month, YEAR(code_sales_order.date) AS year
 				FROM sales_order
 				JOIN price_list ON sales_order.price_list_id = price_list.id
 				JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id

@@ -53,7 +53,7 @@
 					<th>Invoice</th>
 					<th>Due date</th>
 					<th>Value</th>
-					<th>Paid</th>
+					<th>Remaining</th>
 					<th>Action</th>
 				</tr>
 				<tbody id='invoiceTableContent'></tbody>
@@ -61,7 +61,7 @@
 		</div>
 		<p id='invoiceTableText'>There is no invoice found.</p>
 	</div>
-	<input type='number' style='display:none'id='copyValue'>
+	<input type='text' style='display:none'id='copyValue'>
 </div>
 <script>
 	var paymentValue;
@@ -106,7 +106,7 @@
 					var dueDate				= new Date(date.setDate(date.getDate() + payment));
 					var formattedDueDate	= dueDate.getFullYear() + "-" + (dueDate.getMonth() + 1).toString().padStart(2, "0") + "-" + dueDate.getDate().toString().padStart(2, "0");
 
-					$('#invoiceTableContent').append("<tr><td>" + my_date_format(formattedDate) + "</td><td><p><strong>" + invoice_document + "</strong></p><p>" + tax_document + "</p></td><td>" + my_date_format(formattedDueDate) + "</td><td><p>Rp. " + numeral(value).format('0,0.000') + "</p><button class='button button_default_dark' onclick='copyValue(" + value + ")'><i class='fa fa-copy'></i></button></td><td>Rp. " + numeral(paid).format('0,0.00') + "</td><td><input type='checkbox' class='paymentCheckBox' data-value='" + (value - paid) + "'></td></tr>")
+					$('#invoiceTableContent').append("<tr><td>" + my_date_format(formattedDate) + "</td><td><p><strong>" + invoice_document + "</strong></p><p>" + tax_document + "</p><button class='button button_mini_tab' onclick='copyValue(`" + invoice_document + "`)'><i class='fa fa-copy'></i></button></td><td>" + my_date_format(formattedDueDate) + "</td><td><p>Rp. " + numeral(value).format('0,0.000') + "</p></td><td><p>Rp. " + numeral(value - paid).format('0,0.00') + "</p><button class='button button_mini_tab' onclick='copyValue(" + value + ")'><i class='fa fa-copy'></i></button></td><td><input type='checkbox' class='paymentCheckBox' data-value='" + (value - paid) + "'></td></tr>")
 
 					itemCount++;
 				});
