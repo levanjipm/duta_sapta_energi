@@ -513,4 +513,45 @@ class Sales_return extends CI_Controller {
 			echo 0;
 		}
 	}
+
+	public function cancelDashboard()
+	{
+		$user_id		= $this->session->userdata('user_id');
+		$this->load->model('User_model');
+		$data['user_login'] = $this->User_model->getById($user_id);
+		
+		$this->load->model('Authorization_model');
+		$data['departments']	= $this->Authorization_model->getByUserId($user_id);
+		
+		$this->load->view('head');
+		$this->load->view('administrator/header', $data);
+		if($data['user_login']->access_level > 3)
+		{
+			$this->load->view('administrator/SalesReturn/cancelDashboard');
+		} else {
+			redirect(site_url());
+		}
+	}
+
+	public function getConfirmedReturn()
+	{
+		$page			= $this->input->get('page');
+		$month			= $this->input->get('month');
+		$year			= $this->input->get('year');
+		$offset			= ($page - 1) * 10;
+		$this->load->model("Sales_return_model");
+		$data['items']		= $this->Sales_return_model->getIncompletedReturn($offset, $month, $year);
+		$data['pages']		= max(1, ceil($this->Sales_return_model->countIncompletedReturn($month, $year)/10));
+
+		header('Content-Type: application/json');
+		echo json_encode($data);
+	}
+
+	public function closeSalesReturnById()
+	{
+		$id			= $this->input->post('id');
+		$this->load->model("Sales_return_detail_model");
+		$this->Sales_return_detail_model->closeByCodeId($id);
+		echo 1;
+	}
 }

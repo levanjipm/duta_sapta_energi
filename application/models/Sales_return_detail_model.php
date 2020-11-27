@@ -279,5 +279,12 @@ class Sales_return_detail_model extends CI_Model {
 			};
 			$this->db->update_batch($this->table_sales_return, $updateBatch, 'id');
 		}
+
+		public function closeByCodeId($id)
+		{
+			$this->db->where('code_sales_return_id', $id);
+			$this->db->set('is_done', 1);
+			$this->db->update($this->table_sales_return);
+		}
 	}
 ?>

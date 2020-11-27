@@ -95,7 +95,7 @@
     <div class='dashboard_in'>
         <div class='row'>
             <div class='col-md-6 col-sm-12 col-xs-12'>
-                <div class='dashboardBox clickable' onclick='window.location.href="<?= site_url('Invoice') ?>"'>
+                <div class='dashboardBox clickable' onclick='window.location.href="<?= site_url('Bank/mutationDashboard') ?>"'>
                     <div class='leftSide'>
                         <h4><b>Current</b></h4>
                         <p>Cash</p>
@@ -107,7 +107,7 @@
                 </div>
             </div>
             <div class='col-md-6 col-sm-12 col-xs-12'>
-                <div class='dashboardBox'>
+                <div class='dashboardBox clickable' onclick='window.location.href="<?= site_url('Petty_cash/mutation') ?>"'>
                     <div class='leftSide'>
                         <h4><b>Current</b></h4>
                         <p>Petty Cash</p>

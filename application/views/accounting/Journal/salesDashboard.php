@@ -1,44 +1,49 @@
 <head>
-	<title>Invoice archive</title>
+	<title>Sales Journal</title>
+	<script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
 </head>
+
 <div class='dashboard'>
 	<div class='dashboard_head'>
-		<p style='font-family:museo'><a href='<?= site_url('Accounting') ?>' title='Accounting'><i class='fa fa-briefcase'></i></a> / Invoice/ Archive</p>
+		<p style='font-family:museo'><a href='<?= site_url('Accounting') ?>' title='Accounting'><i class='fa fa-briefcase'></i></a> /Journal /Sales</p>
 	</div>
 	<br>
 	<div class='dashboard_in'>
-		<div class='row'>
-			<div class='col-md-2 col-sm-4 col-xs-6'>
-				<select class='form-control' id='month'>
-				<?php
-	for($i = 1; $i <= 12; $i++){
-?>
-					<option value='<?= $i ?>' <?php if($i == date('m')){ echo('selected');} ?>><?= date('F', mktime(0,0,0,$i, 1)) ?></option>
-<?php
-	}
-?>
-				</select>
-			</div>
-			<div class='col-md-2 col-sm-4 col-xs-6'>
-				<select class='form-control' id='year'>
-<?php
-	foreach($years as $year){
-?>
-					<option value='<?= $year->years ?>' <?php if($year->years == date('Y')){ echo('selected');} ?>><?= $year->years ?></option>
-<?php
-	}
-?>
-				</select>
-			</div>
+		<label>Period</label>
+		<div class='input_group'>
+			<select class='form-control' id='month'>
+			<?php for($i = 1; $i <= 12; $i++){ ?>
+				<option value='<?= $i ?>' <?= ($i == date("m")) ? "selected" : "" ?>><?= date("F", mktime(0,0,0,$i, 1, date("Y"))) ?></option>
+			<?php } ?>
+			</select>
+			<select class='form-control' id='year'>
+			<?php for($i = 2020; $i <= date("Y"); $i++){ ?>
+				<option value='<?= $i ?>'><?= $i ?></option>
+			<?php } ?>
+			</select>
 		</div>
-		<br><br>
-		<div id='archiveTable'></div>
-		<p id='archiveTableText'>There is no archive found.</p>
 		<br>
+		<label>Daily Sales</label>
+		<canvas id='lineChart' height="50"></canvas>
+		<label>Monthly Sales</label>
+		<p>Rp. <span id='monthlySales'>0.00</span></p>
+		<div id='invoiceTable'>
+			<table class='table table-bordered'>
+				<tr>
+					<th>Date</th>
+					<th>Invoice</th>
+					<th>Customer</th>
+					<th>Value</th>
+					<th>Action</th>
+				</tr>
+				<tbody id='invoiceTableContent'></tbody>
+			</table>
 
-		<select class='form-control' id='page' style='width:100px'>
-			<option value='1'>1</option>
-		</select>
+			<select class='form-control' id='page' style='width:100px'>
+				<option value='1'>1</option>
+			</select>
+		</div>
+		<p id='invoiceTableText'>There is no sales invoice found.</p>
 	</div>
 </div>
 
@@ -93,10 +98,11 @@
 		</div>
 	</div>
 </div>
+
 <script>
 	$(document).ready(function(){
 		refreshView();
-	})
+	});
 
 	$('#month').change(function(){
 		refreshView(1);
@@ -106,103 +112,113 @@
 		refreshView(1);
 	})
 
+	$('#page').change(function(){
+		refreshView();
+	})
+
+	var ctx = document.getElementById('lineChart').getContext('2d');
+
 	function refreshView(page = $('#page').val()){
 		$.ajax({
-			url:'<?= site_url('Invoice/getItems') ?>',
+			url:"<?= site_url('Invoice/getItems') ?>",
 			data:{
 				page: page,
 				month: $('#month').val(),
 				year: $('#year').val()
 			},
-			type:"GET",
 			beforeSend:function(){
-				$('#archiveTable').html('');
+				getValue();
 			},
 			success:function(response){
-				var items = response.items;
-				var pages = response.pages;
-				var invoiceCount = 0;
-
+				var items		= response.items;
+				var itemCount = 0;
+				$('#invoiceTableContent').html("");
 				$.each(items, function(index, item){
-					var name = item.name;
-					var date = item.date;
-					var taxInvoice = item.taxInvoice;
-					var isConfirm = item.is_confirm;
-					var taxing = item.taxing;
-					var id = item.id;
-					
-					var customer = item.customer;
-					if(customer != null){
-						var customer_name = customer.name;
-						var complete_address = customer.address;
-						var customer_number = customer.number;
-						var customer_block = customer.block;
-						var customer_rt = customer.rt;
-						var customer_rw = customer.rw;
-						var customer_city = customer.city;
-						var customer_postal = customer.postal;
-					
-						if(customer_number != null){
-							complete_address	+= ' No. ' + customer_number;
-						}
-					
-						if(customer_block != null && customer_block != '000'){
-							complete_address	+= ' Blok ' + customer_block;
-						}
-				
-						if(customer_rt != '000'){
-							complete_address	+= ' RT ' + customer_rt;
-						}
-					
-						if(customer_rw != '000' && customer_rt != '000'){
-							complete_address	+= ' /RW ' + customer_rw;
-						}
-					
-						if(customer_postal != null){
-							complete_address	+= ', ' + customer_postal;
-						}
-					} else {
-						var opponent			= item.opponent;
-						var customer_name		= opponent.name;
-						var complete_address	= opponent.description;
-						var customer_city		= opponent.type;
-					}
+					var id			= item.id;
+					var name		= item.name;
+					var date		= item.date;
+					var value		= parseFloat(item.value);
+					var delivery	= parseFloat(item.delivery);
+					var discount	= parseFloat(item.discount);
+					var type		= parseInt(item.type);
+					var customer	= item.customer;
+					var taxDocument	= (item.taxInvoice == null) ? "<i>Not available</i>" : item.taxInvoice;
 
-					if(isConfirm == 0){
-						$('#archiveTable').append("<div class='row archive_row'><div class='col-md-3 col-sm-3 col-xs-4'><p><strong>" + name + "</strong></p></div><div class='col-md-3 col-sm-3 col-xs-3'><p><strong>" + customer_name + "</strong></p><p>" + complete_address + "</p><p>" + customer_city + "</p></div><div class='col-md-4 col-sm-5 col-xs-5 col-md-offset-2 col-sm-offset-1 col-xs-offset-2'><p style='display:inline-block'>" + my_date_format(date) + " <strong>|</strong> </p> <button type='button' class='button button_transparent' onclick='openView(" + id + ")' title='View " + name + "'><i class='fa fa-eye'></i></button></div>");
-					} else {
-						$('#archiveTable').append("<div class='row archive_row'><div class='col-md-3 col-sm-3 col-xs-4'><p><strong>" + name + "</strong></p></div><div class='col-md-3 col-sm-3 col-xs-3'><p><strong>" + customer_name + "</strong></p><p>" + complete_address + "</p><p>" + customer_city + "</p></div><div class='col-md-4 col-sm-5 col-xs-5 col-md-offset-2 col-sm-offset-1 col-xs-offset-2'><p style='display:inline-block'>" + my_date_format(date) + " <strong>|</strong> </p> <button type='button' class='button button_transparent' onclick='openView(" + id + ")' title='View " + name + "'><i class='fa fa-eye'></i></button> <button type='button' class='button button_verified' title='Confirmed'><i class='fa fa-check'></i></button></div>");
-					}
+					var customerName	= customer.name;
+					var customerCity	= customer.city;
 
-					invoiceCount++;
-				})
 
-				if(invoiceCount > 0){
-					$('#archiveTableText').hide();
-					$('#archiveTable').show();
-				} else {
-					$('#archiveTableText').show();
-					$('#archiveTable').hide();
-				}
+					var invoiceValue	= value + delivery - discount;
+					$('#invoiceTableContent').append("<tr><td>" + my_date_format(date) + "</td><td><p>" + name + "</p><p>" + taxDocument + "</p></td><td>" + customerName + ", " + customerCity + "</td><td>Rp. " + numeral(invoiceValue).format('0,0.00') + "</td><td><button class='button button_default_dark' onclick='viewById(" + id + ")'><i class='fa fa-eye'></i></button></td></tr>");
+					
+					itemCount++;
+				});
 
-				$('#page').html('');
-
+				var pages		= response.pages;
+				$('#page').html("");
 				for(i = 1; i <= pages; i++){
 					if(i == page){
-						$('#page').append("<option value='" + i + "' selected>" + i + "</option>")
+						$('#page').append("<option value='i' selected>" + i + "</option>")
 					} else {
-						$('#page').append("<option value='" + i + "'>" + i + "</option>")
-					}			
-				}	
+						$('#page').append("<option value='i'>" + i + "</option>")
+					}
+				}
+
+				if(itemCount > 0){
+					$('#invoiceTable').show();
+					$('#invoiceTableText').hide();
+				} else {
+					$('#invoiceTable').hide();
+					$('#invoiceTableText').show();
+				}
 			}
 		})
 	}
 
-	function openView(n){
+	function getValue()
+	{
+		$.ajax({
+			url:"<?= site_url('Invoice/getValueByMonthYearDaily') ?>",
+			data:{
+				month: $('#month').val(),
+				year: $('#year').val()
+			},
+			success:function(response){
+				var labelArray = [];
+				var valueArray = [];
+				var value	= 0;
+				$.each(response, function(index, item){
+					labelArray.push(index);
+					valueArray.push(item);
+					value += parseFloat(item);
+				})
+				var myLineChart = new Chart(ctx, {
+					type: 'line',
+					data: {
+						labels: labelArray,
+						datasets: [{
+							backgroundColor: 'rgba(225, 155, 60, 0.4)',
+							borderColor: 'rgba(225, 155, 60, 1)',
+							data: valueArray
+						}],
+					},
+					options: {
+						legend:{
+							display:false
+						}
+					}
+				});
+
+				$('#monthlySales').html(numeral(value).format('0,0.00'));
+			}
+		})
+	}
+
+	function viewById(id){
 		$.ajax({
 			url:'<?= site_url('Invoice/getById') ?>',
 			data:{
-				id:n
+				id:id
 			},
 			success:function(response){
 				var customer = response.customer;
@@ -330,13 +346,12 @@
 					$('#otherInvoice').show();
 					$('#regularInvoice').hide();
 				}
-			}, complete:function(){
+			}, 
+			complete:function(){
 				$('#viewInvoiceWrapper').fadeIn(300, function(){
 					$('#viewInvoiceWrapper .alert_box_slide').show("slide", { direction: "right" }, 250);
 				});
 			}
 		})
 	}
-
-	
 </script>

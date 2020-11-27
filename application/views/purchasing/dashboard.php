@@ -119,11 +119,12 @@
                     </tr>
                     <tbody id='itemTableContent'></tbody>
                 </table>
+
+                <button type='button' class='button button_default_dark' onclick='addAllItemsNeeded()'><i class='fa fa-plus'></i> Add All Items</button> <button type='button' id='createPurchaseOrderButton' class='button button_default_dark'><i class='fa fa-long-arrow-right'></i></button>
+                <input type='hidden' id='totalItem' min='1'>
+            
             </div>
             <p id='itemTableText'>No items need to be bought.</p>
-
-            <input type='hidden' id='totalItem' min='1'>
-            <button type='button' id='createPurchaseOrderButton' class='button button_default_dark'><i class='fa fa-long-arrow-right'></i></button>
         </form>
     </div>
 </div>
@@ -369,4 +370,12 @@
 
         purchaseChart.draw(data, options);
 	}
+
+    function addAllItemsNeeded(){
+        $('input[name^="items["]').each(function(){
+            $(this).attr('checked', true);
+        });
+
+        updateCheck();
+    }
 </script>

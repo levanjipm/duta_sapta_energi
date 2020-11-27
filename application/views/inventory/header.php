@@ -49,6 +49,7 @@
 		<button class='container_button'><p style='font-family:museo'>Cases</p><i class='fa fa-caret-down'></i></button>
 		<div class='container_bar'>
 			<a href='<?= site_url('Inventory_case') ?>'><p>Create</p></a>
+			<a href='<?= site_url('Inventory_case/confirmDashboard') ?>'><p>Confirm</p></a>
 			<a href='<?= site_url('Inventory_case/archiveDashboard') ?>'><p>Archive</p></a>
 		</div>
 		<button class='container_button'><p style='font-family:museo'><p>Pending</p><i class='fa fa-caret-down'></i></button>

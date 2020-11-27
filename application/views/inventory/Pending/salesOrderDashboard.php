@@ -36,7 +36,7 @@
 </style>
 <div class="dashboard">
 	<div class='dashboard_head'>
-		<p style='font-family:museo'><a href='<?= site_url('Sales') ?>' title='Sales'><i class='fa fa-briefcase'></i></a> /Pending Sales Orders</p>
+		<p style='font-family:museo'><a href='<?= site_url('Inventory') ?>' title='Inventory'><i class='fa fa-briefcase'></i></a> /Pending Sales Orders</p>
 	</div>
 	<br>
 	<div class='dashboard_in'>
@@ -91,6 +91,10 @@
 <script>
 	$(document).ready(function(){
 		refreshView();
+	});
+
+	$('#page').change(function(){
+		refreshView();
 	})
 
 	function refreshView(page = $('#page').val()){
@@ -136,7 +140,7 @@
 						complete_address	+= ', ' + customer_postal;
 					}
 
-					$('#salesOrderTableContent').append("<tr><td><p>" + customer_name + "</p><p>" + complete_address + "</p><p>" + customer_city + "</p></td><td>" + numeral(count).format('0,0') + "</td><td><button class='button button_default_dark' id='viewPendingSalesOrderButton-" + customer_id + "'><i class='fa fa-eye'></i></button></td></tr>");
+					$('#salesOrderTableContent').append("<tr><td><label>" + customer_name + "</label><p>" + complete_address + "</p><p>" + customer_city + "</p></td><td>" + numeral(count).format('0,0') + "</td><td><button class='button button_default_dark' id='viewPendingSalesOrderButton-" + customer_id + "'><i class='fa fa-eye'></i></button></td></tr>");
 
 					$('#viewPendingSalesOrderButton-' + customer_id).click(function(){
 						$('#customerName_p').html(customer_name);

@@ -43,6 +43,11 @@
 			<a href='<?= site_url('Debt_type') ?>'><button><p style='font-family:museo'>Types</p></button></a>
 			<a href='<?= site_url('Debt/archiveDashboard') ?>'><button><p style='font-family:museo'>Archive</p></button></a>
 		</div>
+		<button class='container_button'><p>Journal</p><i class='fa fa-caret-down'></i></button>
+		<div class='container_bar'>
+			<a href='<?= site_url('Invoice/journalDashboard') ?>'><button><p>Sales Journal</p></button></a>
+			<a href='<?= site_url('Debt/journalDashboard') ?>'><button><p>Purchase Journal</p></button></a>
+		</div>
 		<a href='<?= site_url('Receivable') ?>'><button><p style='font-family:museo'>Receivable</p></button></a>
 		<a href='<?= site_url('Payable') ?>'><button><p style='font-family:museo'>Payable</p></button></a>
 		<button class='container_button'><p>Bank</p><i class='fa fa-caret-down'></i></button>

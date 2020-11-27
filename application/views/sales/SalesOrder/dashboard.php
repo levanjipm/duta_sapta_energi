@@ -166,7 +166,12 @@
 				
 				$('#page').html('');
 				for(i = 1; i <= pages; i++){
-					$('#page').append("<option value='" + i + "'>" + i + "</option>");
+					if(i == page){
+						$('#page').append("<option value='" + i + "' selected>" + i + "</option>");
+					} else {
+						$('#page').append("<option value='" + i + "'>" + i + "</option>");
+					}
+					
 				};
 				
 				setTimeout(function(){

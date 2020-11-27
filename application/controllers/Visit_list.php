@@ -269,4 +269,31 @@ class Visit_list extends CI_Controller {
 		header('Content-Type: application/json');
 		echo json_encode($data);
 	}
+
+	public function cancelDashboard()
+	{
+		$user_id		= $this->session->userdata('user_id');
+		$this->load->model('User_model');
+		$data['user_login'] = $this->User_model->getById($user_id);
+		
+		$this->load->model('Authorization_model');
+		$data['departments']	= $this->Authorization_model->getByUserId($user_id);
+		
+		$this->load->view('head');
+		$this->load->view('administrator/header', $data);
+		if($data['user_login']->access_level > 3)
+		{
+			$this->load->view('administrator/VisitList/cancelDashboard');
+		} else {
+			redirect(site_url());
+		}
+	}
+
+	public function cancelById()
+	{
+		$id			= $this->input->get('id');
+		$this->load->model("Visit_list_model");
+		$result		= $this->Visit_list_model->cancelById($id);
+		echo $result;
+	}
 }

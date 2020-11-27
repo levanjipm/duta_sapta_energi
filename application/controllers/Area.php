@@ -104,6 +104,14 @@ class Area extends CI_Controller {
 
 		$this->load->model("Customer_model");
 		$data['customers']	= $this->Customer_model->getByAreaId($id);
+
+		$this->load->model("Invoice_model");
+		$data['payments'] = array(
+			$this->Invoice_model->calculatePaymentsByAreaId(1, $id),
+			$this->Invoice_model->calculatePaymentsByAreaId(2, $id),
+			$this->Invoice_model->calculatePaymentsByAreaId(3, $id),
+			$this->Invoice_model->calculatePaymentsByAreaId(4, $id)
+		);
 		
 		$this->load->view('sales/Area/detailDashboard', $data);
 	}
@@ -121,15 +129,23 @@ class Area extends CI_Controller {
 		foreach($invoiceObject as $invoiceItem){
 			$year		= $invoiceItem->year;
 			$month		= $invoiceItem->month;
+			$label		= date("F Y", mktime(0,0,0,$month, 1, $year));
 			$date		= mktime(0,0,0,$month, 1, $year);
 
 			$difference	= round(($currentDate - $date) / (60 * 60 * 24 * 30));
-			$invoiceValue[$difference]	= (float)$invoiceItem->value;
+			$invoiceValue[$difference]	= array(
+				"value" => (float)$invoiceItem->value,
+				"label" => $label
+			);
 		}
 
-		for($i = 1; $i <= 6; $i++){
+		for($i = 0; $i <= 6; $i++){
 			if(!array_key_exists($i, $invoiceValue)){
-				$invoiceValue[$i] = 0;
+				$label = date("F Y", strtotime("-" . $i . "month", mktime(0,0,0,date('m'), 1, date("Y"))));
+				$invoiceValue[$i]	= array(
+					"value" => 0,
+					"label" => $label
+				);
 			}
 		}
 
@@ -164,14 +180,18 @@ class Area extends CI_Controller {
 			}			
 		}
 
-		$targetArray		= array_fill(0, 6, 0);
+		$targetArray		= array_fill(0, 7, 0);
 		foreach($customerArray as $customerItem){
 			for($i = 0; $i < 6; $i++){
-				$currentValue		= $targetArray[$i];
+				$label 				= date("F Y", strtotime("-" . $i . "month", mktime(0,0,0,date('m'), 1, date("Y"))));
+				$currentValue		= $targetArray[$i]['value'];
 				$value				= $customerItem[$i];
 				$nextValue			= $currentValue + $value;
 				
-				$targetArray[$i]	= $nextValue;
+				$targetArray[$i]	= array(
+					"value" => $nextValue,
+					"label" => $label
+				);
 			}			
 		}
 

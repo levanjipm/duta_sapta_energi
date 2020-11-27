@@ -7,7 +7,7 @@
 	</div>
 	<br>
 	<div class='dashboard_in'>
-		<form action='<?= site_url('Purchase_order/inputItem') ?>' method='POST' id='purchase_order_form'>
+		<form action='<?= site_url('Purchase_order/insertItem') ?>' method='POST' id='purchase_order_form'>
 			<input type='hidden' value='<?= $guid ?>'name='guid'>
 	
 			<label>Date</label>
@@ -24,6 +24,9 @@
 				<label>Send date request</label>
 				<input type='date' class='form-control' name='request_date' required min='2020-01-01'>
 			</div>
+
+			<label>Payment</label>
+			<input type='number' class='form-control' name='payment' required min='0'>
 			
 			<label>Supplier</label>
 			<button type='button' class='form-control' id='supplierButton' onclick='openSupplierView(1)' style='text-align:left!important'></button>
@@ -573,7 +576,7 @@
 						complete_address	+= ', ' + supplier_postal;
 					}
 
-					$('#supplierTableContent').append("<tr><td>" + name + "</td><td><p>" + complete_address + "</p><p>" + supplier_city + "</p></td><td><button class='button button_default_dark'><i class='fa fa-long-arrow-right' onclick='selectSupplier(" + id + ")'></i></button></td></tr>");
+					$('#supplierTableContent').append("<tr><td>" + name + "</td><td><p>" + complete_address + "</p><p>" + supplier_city + "</p></td><td><button class='button button_default_dark' onclick='selectSupplier(" + id + ")'><i class='fa fa-long-arrow-right'></i></button></td></tr>");
 					supplierCount++;
 				});
 

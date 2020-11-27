@@ -1,11 +1,15 @@
 <head>
 	<title>Administrators</title>
 	<style>
+		.departmentBoxWrapper{
+			margin-bottom:20px;
+		}
 		.departmentBox{
 			border-radius:10px;
 			background-color:white;
 			width:100%;
 			margin-bottom:20px;
+			height:100%;
 		}
 
 		.departmentBoxHeader{
@@ -29,7 +33,7 @@
 ?>
 <div class='row' style='padding:20px; padding-top:120px; margin:0;'>
 	<?php if(in_array(1, $departmentArray)){ ?>
-	<div class='col-md-3 col-sm-4 col-xs-6'>
+	<div class='col-md-3 col-sm-4 col-xs-6 departmentBoxWrapper'>
 		<div class='departmentBox'>
 			<div class='departmentBoxHeader'>
 				<label>Accounting</label>
@@ -42,7 +46,7 @@
 	</div>
 	<?php } ?>
 	<?php if(in_array(5, $departmentArray)){ ?>
-	<div class='col-md-3 col-sm-4 col-xs-6'>
+	<div class='col-md-3 col-sm-4 col-xs-6 departmentBoxWrapper'>
 		<div class='departmentBox'>
 			<div class='departmentBoxHeader'>
 				<label>Finance</label>
@@ -55,7 +59,7 @@
 	</div>
 	<?php } ?>
 	<?php if(in_array(4, $departmentArray)){ ?>
-	<div class='col-md-3 col-sm-4 col-xs-6'>
+	<div class='col-md-3 col-sm-4 col-xs-6 departmentBoxWrapper'>
 		<div class='departmentBox'>
 			<div class='departmentBoxHeader'>
 				<label>Inventory</label>
@@ -70,7 +74,7 @@
 	</div>
 	<?php } ?>
 	<?php if(in_array(3, $departmentArray)){ ?>
-	<div class='col-md-3 col-sm-4 col-xs-6'>
+	<div class='col-md-3 col-sm-4 col-xs-6 departmentBoxWrapper'>
 		<div class='departmentBox'>
 			<div class='departmentBoxHeader'>
 				<label>Purchasing</label>
@@ -79,6 +83,19 @@
 				<a href='<?= site_url('Purchase_order/editDashboard') ?>'><p style='font-family:museo'>Edit Purchase Order</p></a>
 				<a href='<?= site_url('Purchase_order/closeDashboard') ?>'><p style='font-family:museo'>Close Purchase Order</p></a>
 				<a href='<?= site_url('Purchase_return/cancelDashboard') ?>'><p style='font-family:museo'>Cancel Purchase Return</p></a>
+			</div>
+		</div>
+	</div>
+	<?php } ?>
+	<?php if(in_array(2, $departmentArray)){ ?>
+	<div class='col-md-3 col-sm-4 col-xs-6 departmentBoxWrapper'>
+		<div class='departmentBox'>
+			<div class='departmentBoxHeader'>
+				<label>Sales</label>
+			</div>
+			<div class='departmentBoxFunctionsWrapper'>
+			<a href='<?= site_url('Visit_list/cancelDashboard') ?>'><p style='font-family:museo'>Cancel Visit List</p></a>
+			<a href='<?= site_url('Sales_return/cancelDashboard') ?>'><p style='font-family:museo'>Cancel Sales Return</p></a>
 			</div>
 		</div>
 	</div>

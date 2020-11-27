@@ -325,5 +325,29 @@ class Debt extends CI_Controller {
 		header('Content-Type: application/json');
 		echo json_encode($data);
 	}
+
+	public function journalDashboard()
+	{
+		$user_id		= $this->session->userdata('user_id');
+		$this->load->model('User_model');
+		$data['user_login'] = $this->User_model->getById($user_id);
+		
+		$this->load->model('Authorization_model');
+		$data['departments']	= $this->Authorization_model->getByUserId($user_id);
+		
+		$this->load->view('head');
+		$this->load->view('accounting/header', $data);
+		$this->load->view('accounting/journal/purchaseDashboard');
+	}
+
+	public function getValueByMonthYearDaily()
+	{
+		$month			= $this->input->get('month');
+		$year			= $this->input->get('year');
+		$this->load->model("Debt_model");
+		$data			= $this->Debt_model->getValueByMonthYearDaily($month, $year);
+		header('Content-Type: application/json');
+		echo json_encode($data);
+	}
 }
 ?>

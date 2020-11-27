@@ -1,10 +1,42 @@
 <head>
 	<title>Customer Area</title>
 	<script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
-	<script src="https://js.api.here.com/v3/3.1/mapsjs-core.js" type="text/javascript" charset="utf-8"></script>
-	<script src="https://js.api.here.com/v3/3.1/mapsjs-service.js" type="text/javascript" charset="utf-8"></script>
+	<script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
+	<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBX4UnIiCLVbq-LPeTA__c3NKIEZA1rhAw&callback=initMap&libraries=&v=weekly" defer></script>
+	<style>
+		#map {
+			height: 300px;
+			width:100%;
+		}
+
+		.viewPane{
+			width:100%;
+			display:none;
+		}
+	</style>
 	<script>
-		var markers		= [];
+		let map;
+		function initMap() {
+			map = new google.maps.Map(document.getElementById("map"), {
+				zoom: 8,
+			});
+			var bounds = new google.maps.LatLngBounds();
+			<?php foreach($customers as $customer){ ?>
+				<?php if($customer['latitude'] != null && $customer['longitude'] != 0){ ?>
+				var place = new google.maps.LatLng(<?= $customer['latitude'] ?>, <?= $customer['longitude'] ?>)
+				var marker = new google.maps.Marker({
+					position: place,
+					map: map,
+					title: "<?= $customer['name'] ?>",
+					icon:'<?= base_url('assets/Icons/location.png') ?>'
+				});
+				bounds.extend(place);
+				<?php } ?>
+			<?php } ?>
+			map.fitBounds(bounds);
+			var zoom = map.getZoom();
+			map.setZoom(zoom > 11 ? 11 : zoom);
+		}
 	</script>
 </head>
 <div class='dashboard'>
@@ -14,31 +46,37 @@
 	<br>
 	<div class='dashboard_in'>
 		<div class='row'>
-			<div class='col-sm-6' style='flex:1'>
-				<label>Area</label>
-				<p><?= $area->name ?></p>
-				
-				<div style="width: 100%; height: calc(100% - 50px)" id="map"></div>
+			<div class='col-sm-12'>
+				<button class='button button_mini_tab' id='generalButton'><i class='fa fa-database'></i> General Data</button>
+				<button class='button button_mini_tab' id='customerButton'><i class='fa fa-table'></i> Customers</button>
+				<button class='button button_mini_tab' id='paymentButton'><i class='fa fa-money'></i> Payment</button>
+				<hr>
 			</div>
-			<div class='col-sm-6' style='flex:1'>
-				<label>Current target</label>
-				<p id='customerTarget'></p>
+			<div class='viewPane' id='generalView'>
+				<div class='col-sm-6'>
+					<label>Area</label>
+					<p><?= $area->name ?></p>
+					
+					<div id="map"></div>
+				</div>
+				<div class='col-sm-6'>
+					<label>Current target</label>
+					<p id='customerTarget'></p>
 
-				<label>Achivement vs Target History</label>
-				<canvas id='lineChart'></canvas>
+					<label>Achivement vs Target History</label>
+					<canvas id='lineChart'></canvas>
+				</div>
 			</div>
-		</div>
-		<hr>
-		<div class="row">
-			<div class="col-sm-12">
-				<label>Customers (<?= count($customers) ?>)</label> <button class='button button_mini_tab' onclick='$("#customerTable").toggle(300)'><i class='fa fa-eye'></i></button>
-				<table class='table table-bordered' id='customerTable' style='display:none'>
+			<div class='viewPane' id='customerView'>
+				<table class='table table-bordered'>
 					<tr>
 						<th>Customer</th>
 						<th>Information</th>
 						<th>Target</th>
 					</tr>
 				<?php 
+				$page				= 1;
+				$i					= 0;
 				$totalTarget		= 0;
 				foreach($customers as $customer){ 
 					
@@ -68,25 +106,59 @@
 
 					$target		= $customer['target'];
 					$totalTarget += $target;
-					
-					if($customer['latitude'] != NULL && $customer['longitude'] != NULL){
 				?>
-					<script>
-						var icon = new H.map.Icon('<?= base_url("assets/Icons/location.png") ?>');
-						var coords	= {lat:<?= $customer['latitude'] ?>, lng:<?= $customer['longitude'] ?>};
-						var marker = new H.map.Marker(coords, {icon: icon});
-						markers.push(marker);
-					</script>
-				<?php
-					}
-				?>
-					<tr>
+					<tr class='table-<?= $page?>'>
 						<td><?= $customerName ?></td>
-						<td><p><?= $complete_address ?></p>
-						<p><?= $customer_city ?></p></td>
+						<td><p><?= $complete_address ?>, <?= $customer_city ?></p></td>
 						<td>Rp. <?= number_format($target, 2) ?></td>
 					</tr>
+				<?php 
+					$i++;
+					if($i % 10 == 0){
+						$page++;
+					}
+				}
+				?>
+				</table>
+				<br>
+				<select class='form-control' id='page' style='width:100px' onchange='changePage()'>
+				<?php for($x = 1; $x <= $page; $x++){ ?>
+					<option value='<?= $x ?>' <?= ($x == 1) ? "selected" : "" ?>><?= $x ?></option>
 				<?php } ?>
+				</select>
+			</div>
+			<div class='viewPane' id='paymentView'>
+				<table class='table table-bordered'>
+					<tr>
+						<th>Property</th>
+						<th>Value - Weighted Average</th>
+						<th>Plain Average</th>
+						<th>Value</th>
+					</tr>
+					<tr>
+						<td>3 months</td>
+						<td><?= number_format($payments[0]->vwa,2) ?></td>
+						<td><?= number_format($payments[0]->pa,2) ?></td>
+						<td>Rp. <?= number_format($payments[0]->value,2) ?> (<?= $payments[0]->count ?>)</td>
+					</tr>
+					<tr>
+						<td>6 months</td>
+						<td><?= number_format($payments[1]->vwa,2) ?></td>
+						<td><?= number_format($payments[1]->pa,2) ?></td>
+						<td>Rp. <?= number_format($payments[1]->value,2) ?> (<?= $payments[1]->count ?>)</td>
+					</tr>
+					<tr>
+						<td>12 months</td>
+						<td><?= number_format($payments[2]->vwa,2) ?></td>
+						<td><?= number_format($payments[2]->pa,2) ?></td>
+						<td>Rp. <?= number_format($payments[2]->value,2) ?> (<?= $payments[2]->count ?>)</td>
+					</tr>
+					<tr>
+						<td>Overall</td>
+						<td><?= number_format($payments[3]->vwa,2) ?></td>
+						<td><?= number_format($payments[3]->pa,2) ?></td>
+						<td>Rp. <?= number_format($payments[3]->value,2) ?> (<?= $payments[3]->count ?>)</td>
+					</tr>
 				</table>
 			</div>
 		</div>
@@ -95,6 +167,11 @@
 
 <script>
 	$(document).ready(function(){
+		$('tr[class^="table-"]').hide();
+		$('.table-1').show();
+
+		$('#generalButton').click();
+
 		$('#customerTarget').html("Rp. " + numeral(<?= $totalTarget ?>).format('0,0.00'));
 		$.ajax({
 			url:"<?= site_url('Area/getChartItems') ?>",
@@ -103,19 +180,21 @@
 			},
 			success:function(response){
 				var result = JSON.parse(response);
-				var valueArray	= result.value;
-				var targetArray	= result.target;
+				var valueArrays	= result.value;
+				var targetArrays	= result.target;
 
-				var monthArray = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 				var labelArray		= [];
-				var currentDate		= new Date();
-				for(i = 0; i < 6; i++){
-					var paramDate	= new Date(currentDate.setMonth(currentDate.getMonth() - i));
-					var label		= monthArray[paramDate.getMonth()] + paramDate.getFullYear();
-					labelArray.push(label);
-				}
+				var valueArray		= [];
+				var targetArray		= [];
 
-				labelArray.reverse();
+				$.each(valueArrays, function (index, value){
+					labelArray.push(value.label);
+					valueArray.push(value.value);
+				});
+
+				$.each(targetArrays, function(index, value){
+					targetArray.push(value.value);
+				})
 
 				var ctx = document.getElementById('lineChart').getContext('2d');
 				var myLineChart = new Chart(ctx, {
@@ -140,29 +219,40 @@
 				});
 			}
 		});
-
-		addMarkersToMap(map);
 	});
 
-	function addMarkersToMap(map){
-		var group = new H.map.Group();
-		group.addObjects(markers);
-		map.addObject(group);
-
-		map.getViewModel().setLookAtData({
-			bounds: group.getBoundingBox()
-		});
+	function changePage(){
+		var page		= $('#page').val();
+		$('tr[class^="table-"]').hide();
+		$('.table-' + page).show();
 	}
 
-	var platform = new H.service.Platform({
-	  'apikey': '8852D09jOONrOtfoZZhCszVYPU7C5EBuQdtAZ4HANh4'
+	$('.button_mini_tab').click(function(){
+		$('.button_mini_tab').removeClass('active');
+		$('.button_mini_tab').attr('disabled', false);
+
+		$(this).addClass('active');
+		$(this).attr('disabled', true);
 	});
 
-	var defaultLayers = platform.createDefaultLayers();
-
-	var map = new H.Map(document.getElementById('map'),
-	  defaultLayers.vector.normal.map,{
-	  center: {lat:50, lng:5},
-	  zoom: 4
+	$('#generalButton').click(function(){
+		$('.viewPane').fadeOut(300);
+		setTimeout(function(){
+			$('#generalView').fadeIn(300);
+		}, 300);
 	});
+
+	$('#customerButton').click(function(){
+		$('.viewPane').fadeOut(300);
+		setTimeout(function(){
+			$('#customerView').fadeIn(300);
+		}, 300);
+	});
+
+	$('#paymentButton').click(function(){
+		$('.viewPane').fadeOut(300);
+		setTimeout(function(){
+			$('#paymentView').fadeIn(300);
+		}, 300);
+	})
 </script>

@@ -81,4 +81,19 @@ class Item_class extends CI_Controller {
 		
 		echo $result;
 	}
+
+	public function viewDetail($itemClassId)
+	{
+		$user_id		= $this->session->userdata('user_id');
+		$this->load->model('User_model');
+		$data['user_login'] = $this->User_model->getById($user_id);
+		
+		$this->load->model('Authorization_model');
+		$data['departments']	= $this->Authorization_model->getByUserId($user_id);
+		
+		$this->load->view('head');
+		$this->load->view('sales/header', $data);
+		
+		$this->load->view('sales/ItemClass/dashboard');
+	}
 }

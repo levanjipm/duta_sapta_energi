@@ -42,6 +42,15 @@
 				<label>Period</label>
 				<p><?= date('F Y', mktime(0,0,0,$month, 1, $year)) ?></p>
 
+				<label>Action</label>
+				<br>
+				<form action='<?= site_url('SalesAnalytics/exportSalesReportCSV') ?>' method="POST">
+					<input type='hidden' name='month' value='<?= $month ?>'>
+					<input type='hidden' name='year' value='<?= $year ?>'>
+					<button type='button' class='button button_mini_tab' onclick='window.print()'><i class='fa fa-print'></i> Print</button>
+					<button class='button button_mini_tab'><i class='fa fa-file-excel-o'></i> Save as CSV</button>
+				</form>
+				<br>
 				<label>Customer Area Overview</label>
 				<table class='table table-bordered'>
 					<tr>
@@ -63,9 +72,8 @@
 			</div>
 			<div class='col-xs-12'>
 	<?php if(count($customers) > 0){ ?>
-				<button class='button button_default_dark' onclick='window.print()'><i class='fa fa-print'></i></button>
 				<br><br>
-				<table class='table table-bordered' style='display:none'>
+				<table class='table table-bordered'>
 					<tr>
 						<th>Customer</th>
 						<th>Information</th>

@@ -635,5 +635,36 @@ class Visit_list_model extends CI_Model {
 			$result			= $query->result();
 			return $result;
 		}
+
+		public function cancelById($id)
+		{
+			$this->db->where('id', $id);
+			$query		= $this->db->get($this->table_visit);
+			$result		= $query->row();
+			if($result->is_confirm == 1 && $result->is_reported == 1){
+				// Has been reported//
+				$this->db->set('is_reported', 0);
+				$this->db->where('id', $id);
+				$this->db->update($this->table_visit);
+				$response		= $this->db->affected_rows();
+				if($response == 1){
+					$this->db->set('note', "");
+					$this->db->set('result', 0);
+					$this->db->where('code_visit_list_id', $id);
+					$this->db->update('visit_list');
+					return 1;
+				} else {
+					return 0;
+				}	
+			} else if($result->is_confirm == 1 && $result->is_reported == 0){
+				$this->db->set('is_confirm', 0);
+				$this->db->where('id', $id);
+				$this->db->update($this->table_visit);
+				$response		= $this->db->affected_rows();
+				return $response;
+			} else {
+				return 0;
+			}
+		}
 	}
 ?>

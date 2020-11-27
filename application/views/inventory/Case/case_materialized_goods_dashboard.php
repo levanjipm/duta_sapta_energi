@@ -3,7 +3,6 @@
 		float:right;
 	}
 </style>
-<h4><strong>Materialized</strong></h4>
 <form action='<?= site_url('Inventory_case/insertItem/materialized') ?>' method="POST" id='materializedForm'>
     <div class='row'>
         <div class='col-sm-12 col-xs-12'>
@@ -14,7 +13,7 @@
         <div class='col-sm-4 col-xs-12'>
             <label>Materialized item</label> 
             <input type='hidden' id='itemMatId' name='itemMatId'>
-            <button type='button' class='button button_default_dark' id='addMatItemButton'>Add item</button>
+            <button type='button' class='button button_default_dark' id='addMatItemButton'><i class='fa fa-plus'></i> Add item</button>
 
             <div id='itemMatDetail' style='display:none'>
                 <hr>
@@ -26,7 +25,7 @@
         </div>
         <div class='col-sm-8 col-xs-12'>
             <label>Source item</label>
-            <button type='button' class='button button_default_dark' id='addProductItemButton'>Add Item</button>
+            <button type='button' class='button button_default_dark' id='addProductItemButton'><i class='fa fa-plus'></i> Add Item</button>
             <hr>
             <table class='table table-bordered' id='productItemTable' style='display:none'>
                 <tr>

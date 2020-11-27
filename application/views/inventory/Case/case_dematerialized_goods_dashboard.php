@@ -3,7 +3,6 @@
         float:right;
     }
 </style>
-<h4><strong>Dematerialized</strong></h4>
 <form action='<?= site_url('Inventory_case/insertItem/dematerialized') ?>' method="POST" id='dematerializedForm'>
     <div class='row'>
         <div class='col-sm-12 col-xs-12'>
@@ -14,7 +13,7 @@
         <div class='col-sm-4 col-xs-12'>
             <label>Dematerialized item</label> 
             <input type='hidden' id='itemDemId' name='itemIdDem'>
-            <button type='button' class='button button_default_dark' id='addDemItemButton'>Add item</button>
+            <button type='button' class='button button_default_dark' id='addDemItemButton'><i class='fa fa-plus'></i> Add item</button>
 
             <div id='itemDemDetail' style='display:none'>
                 <hr>
@@ -26,7 +25,7 @@
         </div>
         <div class='col-sm-8 col-xs-12'>
             <label>Product item</label>
-            <button type='button' class='button button_default_dark' id='addProductItemButton'>Add Item</button>
+            <button type='button' class='button button_default_dark' id='addProductItemButton'><i class='fa fa-plus'></i> Add Item</button>
             <hr>
             <table class='table table-bordered' id='productItemTable' style='display:none'>
                 <tr>

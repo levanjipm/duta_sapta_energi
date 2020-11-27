@@ -295,6 +295,7 @@ class Purchase_order_model extends CI_Model {
 					) as a
 					ON a.id = code_purchase_order.id
 					WHERE code_purchase_order.supplier_id = '$supplier_id'
+					AND code_purchase_order.is_confirm = '1'
 				");
 			} else {
 				$query = $this->db->query("
@@ -304,6 +305,7 @@ class Purchase_order_model extends CI_Model {
 						WHERE purchase_order.status= '0'
 					) as a
 					ON a.id = code_purchase_order.id
+					WHERE code_purchase_order.is_confirm = '1'
 				");
 			}
 			

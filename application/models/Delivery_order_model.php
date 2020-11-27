@@ -527,4 +527,44 @@ class Delivery_order_model extends CI_Model {
 			$result			= $query->num_rows();
 			return $result;
 		}
+
+		public function getDailyShipments($limit, $offset)
+		{
+			$query			= $this->db->query("
+				SELECT COUNT(code_delivery_order.id) AS count, code_delivery_order.is_sent, code_delivery_order.date
+				FROM code_delivery_order
+				WHERE code_delivery_order.is_delete = '0'
+				AND code_delivery_order.is_confirm = '1'
+				AND code_delivery_order.date >= DATE_ADD(CURDATE(), INTERVAL -$limit DAY)
+				AND code_delivery_order.date <= DATE_ADD(CURDATE(), INTERVAL -$offset DAY)
+				GROUP BY code_delivery_order.date, code_delivery_order.is_sent
+			");
+
+			$result			= $query->result();
+
+			$paramDate		= mktime(0,0,0,date("m", strtotime("-" . $offset . "day")), date("d", strtotime("-" . $offset . "day")), date("Y", strtotime("-" . $offset . "day")));
+			$response		= array();
+
+			for($i = $offset; $i <= $limit; $i++){
+				$response[$i]['label']	= date("d M Y", strtotime("-" . $i . "day"));
+				$response[$i]['sent']	= 0;
+				$response[$i]['confirmed'] = 0;
+			}
+
+			foreach($result as $data)
+			{
+				$date			= strtotime($data->date);
+				$difference		= ($paramDate - $date) / (60 * 60 * 24);
+				if($data->is_sent == 1){
+					$response[$difference]['sent']	= $data->count;
+				} else {
+					$response[$difference]['confirmed']	= $data->count;
+				}
+				
+			}
+
+			$response = array_reverse($response);
+
+			return $response;
+		}
 }

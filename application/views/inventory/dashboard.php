@@ -39,7 +39,7 @@
             text-align:right;
         }
     </style>
-    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
 </head>
 <div class='dashboard'>
     <br>
@@ -58,7 +58,7 @@
                 </div>
             </div>
             <div class='col-md-4 col-sm-12 col-xs-12'>
-                <div class='dashboardBox'>
+                <div class='dashboardBox clickable' onclick="window.location.href='<?= site_url('Inventory/pendingPurchaseOrderDashboard') ?>'">
                     <div class='leftSide'>
                         <h4><b>Pending</b></h4>
                         <p>Purchase Order</p>
@@ -70,7 +70,7 @@
                 </div>
             </div>
             <div class='col-md-4 col-sm-12 col-xs-12'>
-                <div class='dashboardBox'>
+                <div class='dashboardBox clickable' onclick="window.location.href='<?= site_url('Inventory/pendingSalesOrderDashboard') ?>'">
                     <div class='leftSide'>
                         <h4><b>Pending</b></h4>
                         <p>Sales Order</p>
@@ -80,6 +80,10 @@
                         <p>&nbsp;</p>
                     </div>
                 </div>
+            </div>
+            <div class='col-md-8 col-sm-12 col-xs-12' style='margin-top:20px'>
+                <label>Daily Shipments</label>
+                <canvas id='chartWrapper' width="100" height="40"></canvas>
             </div>
         </div>
     </div>
@@ -99,4 +103,47 @@
 			}
 		})
 	}
+
+    $(document).ready(function(){
+        $.ajax({
+            url:"<?= site_url('Inventory/getDailyShipments') ?>",
+            dataType: "json",
+            success:function(response){
+                var sentArray = [];
+                var confirmedArray = [];
+                var labelArray = [];
+
+                $.each(response, function(index, item){
+                    labelArray.push(item.label);
+                    confirmedArray.push(item.confirmed);
+                    sentArray.push(item.sent);
+                });
+
+                var ctx = document.getElementById('chartWrapper').getContext('2d');
+                var myLineChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labelArray,
+                        datasets: [{
+                            label: 'Confirmed Delivery Order',
+                            backgroundColor: 'rgba(43, 47, 56, 0.4)',
+                            borderColor: 'rgba(43, 47, 56, 1)',
+                            data: confirmedArray
+                        }, {
+                            label: 'Sent Delivery Order',
+                            backgroundColor: 'rgba(225, 155, 60, 0.4)',
+                            borderColor: 'rgba(225, 155, 60, 1)',
+                            data: sentArray
+                        }],
+                    },
+                    options: {
+                        legend:{
+                            display:true
+                        }
+                    }
+                });
+
+            }
+        });
+    });		
 </script>

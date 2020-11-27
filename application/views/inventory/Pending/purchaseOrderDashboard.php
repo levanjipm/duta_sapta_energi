@@ -36,7 +36,7 @@
 </style>
 <div class="dashboard">
 	<div class='dashboard_head'>
-		<p style='font-family:museo'><a href='<?= site_url('Sales') ?>' title='Sales'><i class='fa fa-briefcase'></i></a> /Pending Purchase Orders</p>
+		<p style='font-family:museo'><a href='<?= site_url('Inventory') ?>' title='Inventory'><i class='fa fa-briefcase'></i></a> /Pending Purchase Orders</p>
 	</div>
 	<br>
 	<div class='dashboard_in'>

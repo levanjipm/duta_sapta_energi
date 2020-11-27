@@ -124,12 +124,12 @@
 						$('#item_class_table').append("<tr><td id='name-" + id + "'>" + name + "</td><td id='description-" + id + "'>" + description + "</td>" +
 							"<td><button type='button' class='button button_success_dark' onclick='open_edit_form(" + id + ")'><i class='fa fa-pencil'></i></button> " +
 							"<button type='button' class='button button_danger_dark' onclick='confirm_delete(" + id + ")'><i class='fa fa-trash'></i></button> " +
-							"<button type='button' class='button button_default_dark'><i class='fa fa-eye'></i></button></td></tr>");
+							"<button type='button' class='button button_default_dark' onclick='viewDetail(" + id + ")'><i class='fa fa-eye'></i></button></td></tr>");
 					} else {
 						$('#item_class_table').append("<tr><td id='name-" + id + "'>" + name + "</td><td id='description-" + id + "'>" + description + "</td>" +
 							"<td><button type='button' class='button button_success_dark' onclick='open_edit_form(" + id + ")'><i class='fa fa-pencil'></i></button> " +
 							"<button type='button' class='button button_danger_dark' disabled><i class='fa fa-trash'></i></button> " +
-							"<button type='button' class='button button_default_dark'><i class='fa fa-eye'></i></button></td></tr>");
+							"<button type='button' class='button button_default_dark' onclick='viewDetail(" + id + ")'><i class='fa fa-eye'></i></button></td></tr>");
 					}
 
 					classCount++;
@@ -274,5 +274,7 @@
 		}
 	}
 	
-	
+	function viewDetail(n){
+		window.location.href='<?= site_url('Item_class/viewDetail/') ?>' + n;
+	}
 </script>

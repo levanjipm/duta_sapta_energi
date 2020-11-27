@@ -130,6 +130,76 @@ class SalesAnalytics extends CI_Controller {
 		$this->load->view('sales/Analytics/salesReport', $data);
 	}
 
+	public function exportSalesReportCSV()
+	{
+		$month			= $this->input->post('month');
+		$year			= $this->input->post('year');
+		
+		$file_name = 'salesReport' . $month . $year . '.csv'; 
+		header("Content-Description: File Transfer"); 
+		header("Content-Disposition: attachment; filename=$file_name"); 
+		header("Content-Type: application/csv;");
+   
+		$this->load->model("Customer_target_model");
+		$customers		= $this->Customer_target_model->getItems(0, "", $month, $year, 0);
+ 
+		$file = fopen('php://output', 'w');
+		$header = array("Name","Address", "City", "Area", "Previous Target", "Current Target", "Previous Achivement", "Current Achivement"); 
+		fputcsv($file, $header);
+		foreach ($customers as $customer)
+		{ 
+			$complete_address	= $customer->address;
+			$customer_number	= $customer->number;
+			$customer_block		= $customer->block;
+			$customer_rt		= $customer->rt;
+			$customer_rw		= $customer->rw;
+			$customer_city		= $customer->city;
+			$customer_postal	= $customer->postal_code;
+			$areaName			= $customer->areaName;
+
+			if($customer_number != null && $customer_number != ''){
+				$complete_address	.= ' no. ' . $customer_number;
+			};
+			
+			if($customer_block != null && $customer_block != ''){
+				$complete_address	.= ', blok ' . $customer_block;
+			};
+			
+			if($customer_rt != '000'){
+				$complete_address	.= ', RT ' . $customer_rt . ', RW ' . $customer_rw;
+			}
+			
+			if($customer_postal != ''){
+				$complete_address .= ', ' . $customer_postal;
+			}
+
+			$value			= $customer->value;
+			$returned		= $customer->returned;
+			$totalValue		= $value - $returned;
+			$currentTarget	= $customer->target;
+
+			$prevValue		= $customer->previousValue;
+			$prevReturned	= $customer->previousReturned;
+			$prevTotalValue	= $prevValue - $prevReturned;
+			$prevTarget		= $customer->previousTarget;
+
+			$value		= array(
+				$customer->name,
+				$complete_address,
+				$customer_city,
+				$areaName,
+				$prevTarget,
+				$currentTarget,
+				$prevTotalValue,
+				$totalValue				
+			);
+
+			fputcsv($file, $value); 
+		}
+		fclose($file); 
+		exit; 
+	}
+
 	public function getNoo()
 	{
 		$month			= $this->input->get('month');

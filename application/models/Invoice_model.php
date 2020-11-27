@@ -1362,6 +1362,132 @@ class Invoice_model extends CI_Model {
 			}
 		}
 
+		public function calculatePaymentsByAreaId($type, $areaId)
+		{
+			if($type == 1){
+				$query			= $this->db->query("
+					SELECT COUNT(a.id) as count, SUM(invoice.value + invoice.delivery - invoice.discount) AS value, SUM(DATEDIFF(a.date, invoice.date) * (invoice.value + invoice.delivery - invoice.discount)) / SUM(invoice.value + invoice.delivery - invoice.discount) AS vwa, AVG(DATEDIFF(a.date, invoice.date)) AS pa
+					FROM invoice
+					JOIN (
+						SELECT receivableTable.date, invoice.id
+						FROM invoice
+						JOIN (
+							SELECT MAX(date) AS date, receivable.invoice_id FROM receivable
+							GROUP BY receivable.invoice_id
+						) receivableTable
+						ON receivableTable.invoice_id = invoice.id
+						WHERE invoice.is_done = '1'
+						AND invoice.date >= DATE_ADD(CURDATE(), INTERVAL -3 MONTH)
+						AND invoice.customer_id IS NULL AND invoice.opponent_id IS NULL
+						AND invoice.id IN (
+							SELECT DISTINCT(code_delivery_order.invoice_id)
+							FROM code_delivery_order
+							JOIN delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order.id
+							JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
+							JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
+							JOIN customer ON code_sales_order.customer_id = customer.id
+							WHERE customer.area_id = '$areaId'
+						)
+					) a
+					ON a.id = invoice.id
+				");
+
+				$result		= $query->row();
+				return $result;
+			} else if($type == 2) {
+				$query			= $this->db->query("
+					SELECT COUNT(a.id) as count, SUM(invoice.value + invoice.delivery - invoice.discount) AS value, SUM(DATEDIFF(a.date, invoice.date) * invoice.value) / SUM(invoice.value + invoice.delivery - invoice.discount) AS vwa, AVG(DATEDIFF(a.date, invoice.date)) AS pa
+					FROM invoice
+					JOIN (
+						SELECT receivableTable.date, invoice.id
+						FROM invoice
+						JOIN (
+							SELECT MAX(date) AS date, receivable.invoice_id FROM receivable
+							GROUP BY receivable.invoice_id
+						) receivableTable
+						ON receivableTable.invoice_id = invoice.id
+						WHERE invoice.is_done = '1'
+						AND invoice.date >= DATE_ADD(CURDATE(), INTERVAL -6 MONTH)
+						AND invoice.customer_id IS NULL AND invoice.opponent_id IS NULL
+						AND invoice.id IN (
+							SELECT DISTINCT(code_delivery_order.invoice_id)
+							FROM code_delivery_order
+							JOIN delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order.id
+							JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
+							JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
+							JOIN customer ON code_sales_order.customer_id = customer.id
+							WHERE customer.area_id = '$areaId'
+						)
+					) a
+					ON a.id = invoice.id
+				");
+
+				$result		= $query->row();
+				return $result;
+			} else if($type == 3){
+				$query			= $this->db->query("
+					SELECT COUNT(a.id) as count, SUM(invoice.value + invoice.delivery - invoice.discount) AS value, SUM(DATEDIFF(a.date, invoice.date) * (invoice.value + invoice.delivery - invoice.discount)) / SUM(invoice.value + invoice.delivery - invoice.discount) AS vwa, AVG(DATEDIFF(a.date, invoice.date)) AS pa
+					FROM invoice
+					JOIN (
+						SELECT receivableTable.date, invoice.id
+						FROM invoice
+						JOIN (
+							SELECT MAX(date) AS date, receivable.invoice_id 
+							FROM receivable
+							GROUP BY receivable.invoice_id
+						) receivableTable
+						ON receivableTable.invoice_id = invoice.id
+						WHERE invoice.is_done = '1'
+						AND invoice.date >= DATE_ADD(CURDATE(), INTERVAL -12 MONTH)
+						AND invoice.customer_id IS NULL AND invoice.opponent_id IS NULL
+						AND invoice.id IN (
+							SELECT DISTINCT(code_delivery_order.invoice_id)
+							FROM code_delivery_order
+							JOIN delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order.id
+							JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
+							JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
+							JOIN customer ON code_sales_order.customer_id = customer.id
+							WHERE customer.area_id = '$areaId'
+						)
+					) a
+					ON a.id = invoice.id
+				");
+
+				$result		= $query->row();
+				return $result;
+			} else if($type == 4){
+				$query			= $this->db->query("
+					SELECT COUNT(a.id) as count, SUM(invoice.value + invoice.delivery - invoice.discount) AS value, SUM(DATEDIFF(a.date, invoice.date) * (invoice.value + invoice.delivery - invoice.discount)) / SUM(invoice.value + invoice.delivery - invoice.discount) AS vwa, AVG(DATEDIFF(a.date, invoice.date)) AS pa
+					FROM invoice
+					JOIN (
+						SELECT receivableTable.date, invoice.id
+						FROM invoice
+						JOIN (
+							SELECT MAX(date) AS date, receivable.invoice_id 
+							FROM receivable
+							GROUP BY receivable.invoice_id
+						) receivableTable
+						ON receivableTable.invoice_id = invoice.id
+						WHERE invoice.is_done = '1'
+						AND invoice.customer_id IS NULL AND invoice.opponent_id IS NULL
+						AND invoice.id IN (
+							SELECT DISTINCT(code_delivery_order.invoice_id)
+							FROM code_delivery_order
+							JOIN delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order.id
+							JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
+							JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
+							JOIN customer ON code_sales_order.customer_id = customer.id
+							WHERE customer.area_id = '$areaId'
+						)
+					) a
+					ON a.id = invoice.id
+				");
+
+				$result		= $query->row();
+				return $result;
+			}
+		}
+
 		public function setInvoiceAsDone($invoiceId)
 		{
 			$this->db->set('is_done', 1);
@@ -1677,6 +1803,33 @@ class Invoice_model extends CI_Model {
 			$query			= $this->db->get();
 			$result			= $query->result();
 			return $result;
+		}
+
+		public function getByMonthYearDaily($month, $year)
+		{
+			$query			= $this->db->query("
+				SELECT SUM(invoice.value) AS value, invoice.date
+				FROM invoice
+				WHERE MONTH(invoice.date) = '$month'
+				AND YEAR(invoice.date) = '$year'
+				AND invoice.is_confirm = '1'
+				GROUP BY invoice.date
+			");
+
+			$result			= $query->result();
+			$response		= array();
+			$endOfMonth		=  date("t", mktime(0,0,0,$month, 1, $year));
+			for($i = 1; $i <= $endOfMonth; $i++){
+				$response[$i] = 0;
+			}
+
+			foreach($result as $data){
+				$date			= $data->date;
+				$day			= date("d", strtotime($date));
+				$response[$day]	= (float)$data->value;
+			}
+
+			return $response;
 		}
 	}
 ?>

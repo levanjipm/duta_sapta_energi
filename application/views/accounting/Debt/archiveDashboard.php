@@ -29,9 +29,9 @@
 			<div class='col-md-2 col-sm-4 col-xs-6'>
 				<select class='form-control' id='year'>
 <?php
-	foreach($years as $year){
+	for($i = 2020; $i <= date("Y"); $i++){
 ?>
-					<option value='<?= $year->years ?>' <?php if($year->years == date('Y')){ echo('selected');} ?>><?= $year->years ?></option>
+					<option value='<?= $i ?>'><?= $i ?></option>
 <?php
 	}
 ?>

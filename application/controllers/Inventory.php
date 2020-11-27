@@ -144,4 +144,12 @@ class Inventory extends CI_Controller {
 
 		$this->load->view('inventory/Pending/deliveryOrderDashboard');
 	}
+
+	public function getDailyShipments($limit = 14, $offset = 0)
+	{
+		$this->load->model("Delivery_order_model");
+		$data		= $this->Delivery_order_model->getDailyShipments($limit, $offset);
+		header("Content-Type:application/json");
+		echo json_encode($data);
+	}
 }

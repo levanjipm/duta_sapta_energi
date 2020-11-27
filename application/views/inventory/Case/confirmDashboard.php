@@ -1,55 +1,60 @@
-<h4><strong>Confirm case(s)</strong></h4>
-<br>
-<div id='inventoryCaseTable'>
-	<table class='table table-bordered'>	
-		<tr>
-			<th>Date</th>
-			<th>Type</th>
-			<th>Created by</th>
-			<th>Action</th>
-		</tr>
-		<tbody id='inventoryCaseTableContent'></tbody>
-	</table>
-
-	<select class='form-control' id='page' style='width:100px'>
-		<option value='1'>1</option>
-	</select>
-</div>
-<p id='inventoryCaseTableText'>There is no case to be confirmed.</p>
-
-<div class='alert_wrapper' id='view_inventory_case_wrapper'>
-	<button type='button' class='slide_alert_close_button'>&times;</button>
-	<div class='alert_box_slide'>
-		<h3 style='font-family:bebasneue'>Confirm event</h3>
-		<hr>
-		<label>Date</label>
-		<p style='font-family:museo' id='view_date_p'></p>
-		
-		<label>Type</label>
-		<p style='font-family:museo' id='type_p'></p>
-		
-		<label>Created by</label>
-		<p style='font-family:museo' id='created_p'></p>
-		
-		<table class='table table-bordered' style='margin-bottom:0'>
+<div class='dashboard'>
+	<div class='dashboard_head'>
+		<p style='font-family:museo'><a href='<?= site_url('Inventory') ?>' title='Inventory'><i class='fa fa-briefcase'></i></a> /Cases/ Create</p>
+	</div>
+	<br>
+	<div class='dashboard_in'>
+	<div id='inventoryCaseTable'>
+		<table class='table table-bordered'>	
 			<tr>
-				<th>Reference</th>
-				<th>Name</th>
-				<th>Price</th>
-				<th>Quantity</th>
-				<th>Total price</th>
+				<th>Date</th>
+				<th>Type</th>
+				<th>Created by</th>
+				<th>Action</th>
 			</tr>
-			<tbody id='event_table'></tbody>
+			<tbody id='inventoryCaseTableContent'></tbody>
 		</table>
-		<div style='padding:2px 10px;background-color:#ffc107;width:100%;display:none;' id='warning_text'><p style='font-family:museo'><i class='fa fa-exclamation-triangle'></i> Warning! Insufficient stock detected.</p></div><br>
-		<input type='hidden' name='id' id='event_id'>
-		<input type='hidden' name='status' id='status'>
 
-		<button type='button' class='button button_default_dark' onclick='confirmEvent()'><i class='fa fa-long-arrow-right'></i></button>
-		<button type='button' class='button button_danger_dark' onclick='deleteEvent()'><i class='fa fa-trash'></i></button>
+		<select class='form-control' id='page' style='width:100px'>
+			<option value='1'>1</option>
+		</select>
+	</div>
+	<p id='inventoryCaseTableText'>There is no case to be confirmed.</p>
 
-		<div class='notificationText danger' id='deleteFailedNotification'><p>Failed to delete event.</p></div>
-		<div class='notificationText danger' id='confirmFailedNotification'><p>Failed to confirm event.</p></div>
+	<div class='alert_wrapper' id='view_inventory_case_wrapper'>
+		<button type='button' class='slide_alert_close_button'>&times;</button>
+		<div class='alert_box_slide'>
+			<h3 style='font-family:bebasneue'>Confirm event</h3>
+			<hr>
+			<label>Date</label>
+			<p style='font-family:museo' id='view_date_p'></p>
+			
+			<label>Type</label>
+			<p style='font-family:museo' id='type_p'></p>
+			
+			<label>Created by</label>
+			<p style='font-family:museo' id='created_p'></p>
+			
+			<table class='table table-bordered' style='margin-bottom:0'>
+				<tr>
+					<th>Reference</th>
+					<th>Name</th>
+					<th>Price</th>
+					<th>Quantity</th>
+					<th>Total price</th>
+				</tr>
+				<tbody id='event_table'></tbody>
+			</table>
+			<div style='padding:2px 10px;background-color:#ffc107;width:100%;display:none;' id='warning_text'><p style='font-family:museo'><i class='fa fa-exclamation-triangle'></i> Warning! Insufficient stock detected.</p></div><br>
+			<input type='hidden' name='id' id='event_id'>
+			<input type='hidden' name='status' id='status'>
+
+			<button type='button' class='button button_default_dark' onclick='confirmEvent()'><i class='fa fa-long-arrow-right'></i></button>
+			<button type='button' class='button button_danger_dark' onclick='deleteEvent()'><i class='fa fa-trash'></i></button>
+
+			<div class='notificationText danger' id='deleteFailedNotification'><p>Failed to delete event.</p></div>
+			<div class='notificationText danger' id='confirmFailedNotification'><p>Failed to confirm event.</p></div>
+		</div>
 	</div>
 </div>
 <script>

@@ -7,7 +7,7 @@
 	<label>Date</label>
 	<input type='date' class='form-control' name='date' id='case_date' required><br>
 	
-	<button type='button' class='button button_default_dark' id='add_item_button'>Add item</button><br><br>
+	<button type='button' class='button button_default_dark' id='add_item_button'><i class='fa fa-plus'></i> Add item</button><br><br>
 	
 	<table class='table table-bordered' id='cart_products_table' style='display:none'>
 		<tr>

@@ -21,7 +21,7 @@ class Inventory_case extends CI_Controller {
 		$this->load->view('head');
 		$this->load->view('inventory/header', $data);
 		
-		$this->load->view('inventory/case/case_dashboard');
+		$this->load->view('inventory/case/createDashboard');
 	}
 
 	public function createDashboard($event)
@@ -42,6 +42,21 @@ class Inventory_case extends CI_Controller {
 			default:
 				redirect(site_url("Inventory_case"));
 		}
+	}
+
+	public function confirmDashboard()
+	{
+		$user_id		= $this->session->userdata('user_id');
+		$this->load->model('User_model');
+		$data['user_login'] = $this->User_model->getById($user_id);
+		
+		$this->load->model('Authorization_model');
+		$data['departments']	= $this->Authorization_model->getByUserId($user_id);
+		
+		$this->load->view('head');
+		$this->load->view('inventory/header', $data);
+		
+		$this->load->view('inventory/case/confirmDashboard');
 	}
 
 	public function insertItem($event)
@@ -234,11 +249,6 @@ class Inventory_case extends CI_Controller {
 		$this->load->view('inventory/Case/ResultSubmission/failedSubmission');
 	}
 	
-	public function confirmDashboard()
-	{
-		$this->load->view('inventory/Case/case_confirm_dashboard');
-	}
-	
 	public function view_unconfirmed_case()
 	{
 		$page		= $this->input->get('page');
@@ -288,20 +298,24 @@ class Inventory_case extends CI_Controller {
 		
 		$stock = $this->Stock_in_model->checkStock($stock_array);
 		if($stock){
-			$this->load->model('Stock_out_model');
-			$this->Stock_out_model->insertByEvent($stock_array);
-
-			$stockInArray 	= $this->Inventory_case_detail_model->get_stock_in_batch_by_code_event_id($id);
-		
-			if(!empty($stockInArray)){
-				$this->load->model('Stock_in_model');
-				$this->Stock_in_model->insertItem($stockInArray);
-			}
-
 			$this->load->model('Inventory_case_model');
 			$result = $this->Inventory_case_model->updateById(1, $id);
-
-			echo $result;
+			if($result == 1){
+				if(count($stockArray > 0)){
+					$this->load->model('Stock_out_model');
+					$this->Stock_out_model->insertByEvent($stock_array);
+				}
+	
+				$stockInArray 	= $this->Inventory_case_detail_model->get_stock_in_batch_by_code_event_id($id);
+			
+				if(!empty($stockInArray)){
+					$this->load->model('Stock_in_model');
+					$this->Stock_in_model->insertItem($stockInArray);
+				}
+				echo 1;
+			} else {
+				echo 0;
+			}
 		} else {
 			echo 0;
 		}
