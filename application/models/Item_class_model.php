@@ -158,4 +158,27 @@ class Item_class_model extends CI_Model {
 				return 0;
 			}
 		}
+
+		public function getByClassId($offset = 0, $itemClassId, $limit = 10)
+		{
+			$query			= $this->db->query("
+				SELECT item.*
+				FROM item
+				WHERE item.type = '$itemClassId'
+				ORDER BY item.name
+				LIMIT $limit OFFSET $offset
+			");
+
+			$result			= $query->result();
+			return $result;
+		}
+
+		public function countByClassId($itemClassId)
+		{
+			$this->db->select('item.id');
+			$this->db->where('item.type', $itemClassId);
+			$query			= $this->db->get('item');
+			$result			= $query->num_rows();
+			return $result;	
+		}
 }

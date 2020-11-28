@@ -134,8 +134,9 @@ class SalesAnalytics extends CI_Controller {
 	{
 		$month			= $this->input->post('month');
 		$year			= $this->input->post('year');
-		
-		$file_name = 'salesReport' . $month . $year . '.csv'; 
+		$areaArray		= array();
+
+		$file_name = 'customerSalesReport' . $month . $year . '.csv'; 
 		header("Content-Description: File Transfer"); 
 		header("Content-Disposition: attachment; filename=$file_name"); 
 		header("Content-Type: application/csv;");
@@ -144,10 +145,14 @@ class SalesAnalytics extends CI_Controller {
 		$customers		= $this->Customer_target_model->getItems(0, "", $month, $year, 0);
  
 		$file = fopen('php://output', 'w');
-		$header = array("Name","Address", "City", "Area", "Previous Target", "Current Target", "Previous Achivement", "Current Achivement"); 
-		fputcsv($file, $header);
+		$headerInformation = array("Period", date("m", mktime(0,0,0,$month, $year)), date("m", mktime(0,0,0,$month, $year)));
+		fputcsv($file, $headerInformation, ';');
+
+		$header = array("Name","Address", "City", "Area", "PreviousTarget", "CurrentTarget", "PreviousAchivement", "CurrentAchivement"); 
+		fputcsv($file, $header, ';');
+
 		foreach ($customers as $customer)
-		{ 
+		{
 			$complete_address	= $customer->address;
 			$customer_number	= $customer->number;
 			$customer_block		= $customer->block;
@@ -156,12 +161,13 @@ class SalesAnalytics extends CI_Controller {
 			$customer_city		= $customer->city;
 			$customer_postal	= $customer->postal_code;
 			$areaName			= $customer->areaName;
+			$areaId				= $customer->area_id;
 
 			if($customer_number != null && $customer_number != ''){
 				$complete_address	.= ' no. ' . $customer_number;
 			};
 			
-			if($customer_block != null && $customer_block != ''){
+			if($customer_block != null && $customer_block != '' && $customer_block != "000"){
 				$complete_address	.= ', blok ' . $customer_block;
 			};
 			
@@ -183,7 +189,7 @@ class SalesAnalytics extends CI_Controller {
 			$prevTotalValue	= $prevValue - $prevReturned;
 			$prevTarget		= $customer->previousTarget;
 
-			$value		= array(
+			$valueArray		= array(
 				$customer->name,
 				$complete_address,
 				$customer_city,
@@ -194,10 +200,33 @@ class SalesAnalytics extends CI_Controller {
 				$totalValue				
 			);
 
-			fputcsv($file, $value); 
+			if(!array_key_exists($areaId, $areaArray)){
+				$areaArray[$areaId]		= array(
+					"name" => $areaName,
+					"value" => $totalValue,
+					"target" => $currentTarget
+				);
+			} else {
+				$areaArray[$areaId]['value'] += $totalValue;
+				$areaArray[$areaId]['target'] += $currentTarget;
+			}
+
+			fputcsv($file, $valueArray, ';');
 		}
+
+		$header = array("Area", "Target", "Value"); 
+		fputcsv($file, $header, ';');
+		foreach($areaArray as $area){
+			$value		= $area['value'];
+			$target		= $area['target'];
+			$name		= $area['name'];
+			$rowData	= array($name, $target, $value);
+			fputcsv($file, $rowData, ';');
+		}
+
 		fclose($file); 
-		exit; 
+
+		exit;
 	}
 
 	public function getNoo()

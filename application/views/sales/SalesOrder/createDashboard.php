@@ -198,12 +198,17 @@
 </div>
 <script>
 	$('#sellerButton').click(function(){
+		$('#sellerSearch').val("");
 		refreshSeller(1);
 		$('#selectSellerWrapper').fadeIn();
 	})
 
 	$('#sellerPage').change(function(){
 		refreshSeller();
+	});
+
+	$('#sellerSearch').change(function(){
+		refreshSeller(1);
 	})
 
 	function refreshSeller(page = $('#sellerPage').val())
@@ -211,7 +216,7 @@
 		$.ajax({
 			url:"<?= site_url('Users/getSalesItems') ?>",
 			data:{
-				page: page
+				page: page,
 			},
 			success:function(response){
 				var items = response.users;

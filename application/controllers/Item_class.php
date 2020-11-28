@@ -93,7 +93,24 @@ class Item_class extends CI_Controller {
 		
 		$this->load->view('head');
 		$this->load->view('sales/header', $data);
+
+		$data			= array();
+		$this->load->model("Item_class_model");
+		$data['general']		= $this->Item_class_model->showById($itemClassId);
 		
-		$this->load->view('sales/ItemClass/dashboard');
+		$this->load->view('sales/ItemClass/detailDashboard', $data);
+	}
+
+	public function getItemsById()
+	{
+		$itemClassId		= $this->input->get('id');
+		$page				= $this->input->get('page');
+		$offset				= ($page - 1) * 10;
+		$this->load->model("Item_class_model");
+		$data['items']		= $this->Item_class_model->getByClassId($offset, $itemClassId);
+		$data['pages']		= max(1, ceil($this->Item_class_model->countByClassId($itemClassId)/10));
+
+		header('Content-Type: application/json');
+		echo json_encode($data);
 	}
 }

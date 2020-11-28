@@ -466,7 +466,7 @@ class Sales_order_model extends CI_Model {
 			return $items;
 		}
 		
-		public function getUnconfirmedSalesOrder($offset = 0, $filter = '', $limit = 25)
+		public function getUnconfirmedSalesOrder($offset = 0, $filter = '', $limit = 10)
 		{
 			$this->db->select('DISTINCT(sales_order.code_sales_order_id) as id, code_sales_order.*, customer.name as customer_name, customer.address as customer_address, customer.city as customer_city, customer.city as customer_city, customer.rt as customer_rt, customer.rw as customer_rw, customer.block as customer_block, customer.postal_code as customer_postal_code, customer.number as customer_number, users.name as seller');
 			$this->db->from('sales_order');

@@ -26,17 +26,17 @@
 ?>
 	</div>
 	<div class='sidenav_bar_functions'>
-		<button class='container_button'><p style='font-family:museo'>Users</p></button>
+		<button class='container_button'><p style='font-family:museo'>Users</p><i class='fa fa-caret-down'></i></button>
 		<div class='container_bar'>
 			<a href='<?= site_url('Users') ?>'><button><p style='font-family:museo'>Manage</p></button></a>
 			<a href='<?= site_url('Users_authorization') ?>'><button><p style='font-family:museo'>Authorization</p></button></a>
 		</div>
-		<button class='container_button'><p style='font-family:museo'>Salary Slip</p></button>
+		<button class='container_button'><p style='font-family:museo'>Salary Slip</p><i class='fa fa-caret-down'></i></button>
 		<div class='container_bar'>
 			<a href='<?= site_url('Salary_slip') ?>'><button><p style='font-family:museo'>Create</p></button></a>
 			<a href='<?= site_url('Salary_slip/ArchiveDashboard') ?>'><button><p style='font-family:museo'>Archive</p></button></a>
 		</div>
-		<button class='container_button'><p style='font-family:museo'>Attendance</p></button>
+		<button class='container_button'><p style='font-family:museo'>Attendance</p><i class='fa fa-caret-down'></i></button>
 		<div class='container_bar'>
 			<a href='<?= site_url('Attendance') ?>'><button><p style='font-family:museo'>List</p></button></a>
 			<a href='<?= site_url('Attendance/statusDashboard') ?>'><button><p style='font-family:museo'>Status</p></button></a>
