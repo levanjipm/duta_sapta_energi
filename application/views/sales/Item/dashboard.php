@@ -58,6 +58,11 @@
 			<label>Pricelist</label>
 			<input type='number' class='form-control' id='priceList' name='priceList' required min='0'>
 
+			<label>
+				<input type='checkbox' name='isNotify' id='isNotify'> Notify when stock level is low?
+			</label>
+			<br>
+
 			<label>Confidence Level</label>
 			<input type='number' class='form-control' min='0' max='100' required id='confidenceLevel' name='confidenceLevel'>
 			<br>
@@ -202,7 +207,7 @@
 
 	$('#submitAddItemButton').click(function(){
 		if($('#addItemForm').valid()){
-			if($('#isNotifiedEdit').attr('checked') == true){
+			if($('#isNotify').prop('checked') == true){
 				var isNotified = 1;
 			} else {
 				var isNotified = 0;
@@ -215,7 +220,7 @@
 					class: $('#itemClass').val(),
 					notify: isNotified,
 					priceList: $('#priceList').val(),
-					confidenceLevel: $('#confidenceLevel').val()
+					confidenceLevel: $('#confidenceLevel').val(),
 				},
 				type:'POST',
 				beforeSend:function(){

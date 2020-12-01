@@ -8,6 +8,10 @@
 			width:100%;
 		}
 	</style>
+	<script>
+		var includedAreas	= [];
+		var areas			= [];
+	</script>
 </head>
 <div class='dashboard'>
 	<div class='dashboard_head'>
@@ -20,8 +24,27 @@
 		<?php foreach($areas as $area){ ?>
 			<div class='col-sm-2'>
 				<label>
-					<input type='checkbox' value='<?= $area->id ?>' checked> <?= $area->name ?>
+					<input type='checkbox' value='<?= $area->id ?>' checked id='checkbox-<?= $area->id ?>'><?= $area->name ?>
 				</label>
+				<script>
+					areas.push(parseInt(<?= $area->id ?>));
+					$('#checkbox-<?= $area->id ?>').change(function(){
+						if($(this).is(":checked") && !includedAreas.includes(parseInt(<?= $area->id ?>))){
+							includedAreas.push(parseInt(<?= $area->id ?>));
+						} else {
+							includedAreas.splice(includedAreas.indexOf(<?= $area->id ?>), 1);
+						}
+
+						if(includedAreas.length == 0){
+							includedAreas = areas;
+							$('input[id^="checkbox-"]').each(function(){
+								$(this).prop('checked', true);
+							})
+						}
+						setMapOnAll(map);
+					})
+					includedAreas.push(parseInt(<?= $area->id ?>));
+				</script>
 			</div>
 		<?php } ?>
 		<div id="map"></div>
@@ -29,31 +52,47 @@
 </div>
 <script>
 	let map;
+	let markers = [];
+	var customers = <?= json_encode($customers) ?>;
 
 	function initMap() {
 		map = new google.maps.Map(document.getElementById("map"), {
 			center: { lat: -34.397, lng: 150.644 },
 			zoom: 8,
 		});
-		var bounds = new google.maps.LatLngBounds();
-		<?php foreach($customers as $customer){ ?>
-			<?php if($customer->latitude != null && $customer->latitude != 0){ ?>
-			var place = new google.maps.LatLng(<?= $customer->latitude ?>, <?= $customer->longitude ?>)
+
+		$.each(customers, function(index, customer){
+			var place = new google.maps.LatLng(parseFloat(customer.latitude), parseFloat(customer.longitude));
 			var marker = new google.maps.Marker({
 				position: place,
 				map: map,
-				title: "<?= $customer->name ?>",
+				title: customer.name,
 				icon:'<?= base_url('assets/Icons/location.png') ?>'
 			});
-			bounds.extend(place);
-			google.maps.event.addListener(marker, 'click', function(marker){
-				return function() {
-					infowindow.setContent("<?= $customer->name ?>");
-					infowindow.open(map, marker);
+
+			markers.push(marker);
+		})
+
+		setMapOnAll(map);
+	}
+
+	function setMapOnAll(map){
+		for (let i = 0; i < markers.length; i++) {
+			markers[i].setMap(null);
+		};
+
+		var bounds = new google.maps.LatLngBounds();
+		$.each(customers, function(index, customer){
+			if(customer.latitude != null && customer.latitude != 0){
+				if(includedAreas.includes(parseInt(customer.area_id))){
+					var marker		= markers[index];
+					marker.setMap(map);
+					bounds.extend(marker.position);
+					marker.setMap(map);
 				}
-			});
-			<?php } ?>
-		<?php } ?>
+			}
+		});
+
 		map.fitBounds(bounds);
 	}
 </script>

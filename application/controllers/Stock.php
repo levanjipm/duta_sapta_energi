@@ -66,7 +66,10 @@ class Stock extends CI_Controller {
 	{
 		$itemId			= $this->input->get('id');
 		$this->load->model('Stock_in_model');
-		$data = $this->Stock_in_model->viewCard($itemId);
+		$data['items'] = $this->Stock_in_model->viewCard($itemId);
+
+		$this->load->model("Delivery_order_model");
+		$data['progress']	= $this->Delivery_order_model->viewOnProgressByItemId($itemId);
 
 		header('Content-Type: application/json');
 		echo json_encode($data);

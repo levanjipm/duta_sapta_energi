@@ -220,5 +220,41 @@ class Attendance_model extends CI_Model {
 			$result		= $query->result();
 			return $result;
 		}
+
+		public function deleteById($id)
+		{
+			$query			= $this->db->query("
+				SELECT attendance_list.date, attendance_list.user_id
+				FROM attendance_list
+				WHERE id = '$id'
+			");
+
+			$result			= $query->row();
+			if($result != null){
+				$date			= $result->date;
+				$month			= date('m', strtotime($date));
+				$year			= date("Y", strtotime($date));
+				$userId			= $result->user_id;
+
+				$query			= $this->db->query("
+					SELECT * 
+					FROM salary_slip
+					WHERE month = '$month'
+					AND year = '$year'
+					AND user_id = '$userId'
+				");
+
+				$result			= $query->num_rows();
+				if($result	== 0){
+					$this->db->where('id', $id);
+					$this->db->delete($this->table_attendance);
+					return $this->db->affected_rows();
+				} else {
+					return 0;
+				}
+			} else {
+				return 0;
+			}
+		}
 	}
 ?>

@@ -72,6 +72,7 @@
 		<p id='statusDescription_p'></p>
 
 		<button class='button button_danger_dark' onclick='deleteAttendance()'><i class='fa fa-trash'></i></button>
+		<div class='notificationText danger' id='failedDeleteNotificationText'><p>Failed to delete data.</p></div>
 	</div>
 </div>
 
@@ -382,7 +383,28 @@
 	});
 
 	function deleteAttendance(){
-		alert(attendanceId);
+		$.ajax({
+			url:"<?= site_url('Attendance/deleteById') ?>",
+			data:{
+				id: attendanceId
+			},
+			beforeSend:function(){
+				$('button').attr('disabled', true);
+			},
+			success:function(response){
+				$('button').attr('disabled', false);
+				if(response == 1){
+					refreshView();
+					attendanceId = null;
+					$('#attendanceWrapper .slide_alert_close_button').click();
+				} else {
+					$('#failedDeleteNotificationText').fadeTo(1, 300);
+					setTimeout(function(){
+						$('#failedDeleteNotificationText').fadeTo(0, 300);
+					}, 1000);
+				}
+			}
+		})
 	}
 
 	$('.alert_full_close_button').click(function(){

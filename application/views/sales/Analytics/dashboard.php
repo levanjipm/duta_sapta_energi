@@ -114,7 +114,7 @@
 				<div class='input_group'>
 					<select class='form-control' id='month' placeholder='Month'>
 					<?php for($i = 1; $i <= 12; $i++){ ?>
-						<option value='<?= $i ?>'><?= date('F', mktime(0,0,0,$i, 1, date('Y'))) ?></option>
+						<option value='<?= $i ?>' <?= ($i == date('m')) ? "selected" : "" ?>><?= date('F', mktime(0,0,0,$i, 1, date('Y'))) ?></option>
 					<?php } ?>
 					</select>
 					<select class='form-control' id='year'>
@@ -141,7 +141,7 @@
 					<div class='input_group'>
 						<select class='form-control' id='customerMonth' placeholder='Month'>
 						<?php for($i = 1; $i <= 12; $i++){ ?>
-							<option value='<?= $i ?>'><?= date('F', mktime(0,0,0,$i, 1, date('Y'))) ?></option>
+							<option value='<?= $i ?>' <?= ($i == date('m')) ? "selected" : "" ?>><?= date('F', mktime(0,0,0,$i, 1, date('Y'))) ?></option>
 						<?php } ?>
 						</select>
 						<select class='form-control' id='customerYear'>
@@ -188,7 +188,7 @@
 					<div class='input_group'>
 						<select class='form-control' id='nooMonth' placeholder='Month'>
 						<?php for($i = 1; $i <= 12; $i++){ ?>
-							<option value='<?= $i ?>'><?= date('F', mktime(0,0,0,$i, 1, date('Y'))) ?></option>
+							<option value='<?= $i ?>' <?= ($i == date('m')) ? "selected" : "" ?>><?= date('F', mktime(0,0,0,$i, 1, date('Y'))) ?></option>
 						<?php } ?>
 						</select>
 						<select class='form-control' id='nooYear'>

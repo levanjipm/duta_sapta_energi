@@ -9,6 +9,7 @@
     <div class='dashboard_in'>
         <h3 style='font-family:bebasneue'><?= $item->reference ?></h3>
         <p><?= $item->name ?>
+        <button class='button button_mini_tab' id='progressButton'><i class='fa fa-car'></i></button>
         <hr>
         <div id='stockTable'>
             <table class='table table-bordered'>
@@ -27,6 +28,22 @@
             </select>
         </div>
         <p id='stockTableText'>There is no data found.</p>
+    </div>
+</div>
+
+<div class='alert_wrapper' id='progressWrapper'>
+    <button type='button' class='slide_alert_close_button'>&times;</button>
+	<div class='alert_box_slide'>
+        <h3 style='font-family:bebasneue'>Delivery On Progress</h3>
+        <hr>
+        <table class='table table-bordered'>
+            <tr>
+                <th>Customer</th>
+                <th>Delivery Order</th>
+                <th>Quantity</th>
+            </tr>
+            <tbody id='progressTableContent'></tbody>
+        </table>
     </div>
 </div>
 
@@ -55,6 +72,7 @@
 <script>
     $(document).ready(function(){
         refresh_view();
+        $('#progressButton').hide();
     });
     
     function refresh_view(){
@@ -62,9 +80,10 @@
             url:"<?= site_url('Stock/viewCard') ?>",
             data:{
                 id:<?= $item->id ?>,
-                page: $("#page").val()
             },
-            success:function(response){
+            success:function(responseData){
+                var response        = responseData.items;
+                var i           = 0;
                 var finalStock = 0;
                 var itemCount = 0;
                 $.each(response, function(index, item){
@@ -74,27 +93,43 @@
                     var date = item.date;
                     var type    = item.documentType;
                     var id      = item.documentId;
-
+                    
+                    var page        = Math.floor(i / 10) + 1;
                     if(date != null){
                         finalStock += quantity;
                         if(type == "goodReceipt"){
-                            $('#stockTableContent').append("<tr><td>" + my_date_format(date) + "</td><td>" + documentName + "<button class='button button_mini_tab' onclick='viewDocument(" + id + ",1)'><i class='fa fa-eye'></i></button></td><td>" + name + "</td><td>" + numeral(quantity).format('0,0') + "</td><td>" + numeral(finalStock).format('0,0') + "</td></tr>");
+                            $('#stockTableContent').prepend("<tr class='stockRow-" + page + "'><td>" + my_date_format(date) + "</td><td>" + documentName + "<button class='button button_mini_tab' onclick='viewDocument(" + id + ",1)'><i class='fa fa-eye'></i></button></td><td>" + name + "</td><td>" + numeral(quantity).format('0,0') + "</td><td>" + numeral(finalStock).format('0,0') + "</td></tr>");
                             itemCount++;
                         } else if(type == "salesReturn"){
-                            $('#stockTableContent').append("<tr><td>" + my_date_format(date) + "</td><td>" + documentName + "<button class='button button_mini_tab' onclick='viewDocument(" + id + ",2)'><i class='fa fa-eye'></i></button></td><td>" + name + "</td><td>" + numeral(quantity).format('0,0') + "</td><td>" + numeral(finalStock).format('0,0') + "</td></tr>");
+                            $('#stockTableContent').prepend("<tr class='stockRow-" + page + "'><td>" + my_date_format(date) + "</td><td>" + documentName + "<button class='button button_mini_tab' onclick='viewDocument(" + id + ",2)'><i class='fa fa-eye'></i></button></td><td>" + name + "</td><td>" + numeral(quantity).format('0,0') + "</td><td>" + numeral(finalStock).format('0,0') + "</td></tr>");
                             itemCount++;
                         } else if(type == "event"){
-                            $('#stockTableContent').append("<tr><td>" + my_date_format(date) + "</td><td>" + documentName + "<button class='button button_mini_tab' onclick='viewDocument(" + id + ",3)'><i class='fa fa-eye'></i></button></td><td>" + name + "</td><td>" + numeral(quantity).format('0,0') + "</td><td>" + numeral(finalStock).format('0,0') + "</td></tr>");
+                            $('#stockTableContent').prepend("<tr class='stockRow-" + page + "'><td>" + my_date_format(date) + "</td><td>" + documentName + "<button class='button button_mini_tab' onclick='viewDocument(" + id + ",3)'><i class='fa fa-eye'></i></button></td><td>" + name + "</td><td>" + numeral(quantity).format('0,0') + "</td><td>" + numeral(finalStock).format('0,0') + "</td></tr>");
                             itemCount++;
                         } else if(type == "deliveryOrder"){
-                            $('#stockTableContent').append("<tr><td>" + my_date_format(date) + "</td><td>" + documentName + "<button class='button button_mini_tab' onclick='viewDocument(" + id + ",4)'><i class='fa fa-eye'></i></button></td><td>" + name + "</td><td>" + numeral(quantity).format('0,0') + "</td><td>" + numeral(finalStock).format('0,0') + "</td></tr>");
+                            $('#stockTableContent').prepend("<tr class='stockRow-" + page + "'><td>" + my_date_format(date) + "</td><td>" + documentName + "<button class='button button_mini_tab' onclick='viewDocument(" + id + ",4)'><i class='fa fa-eye'></i></button></td><td>" + name + "</td><td>" + numeral(quantity).format('0,0') + "</td><td>" + numeral(finalStock).format('0,0') + "</td></tr>");
                             itemCount++;
                         } else if(type == "purchaseReturn"){
-                            $('#stockTableContent').append("<tr><td>" + my_date_format(date) + "</td><td>" + documentName + "<button class='button button_mini_tab' onclick='viewDocument(" + id + ",5)'><i class='fa fa-eye'></i></button></td><td>" + name + "</td><td>" + numeral(quantity).format('0,0') + "</td><td>" + numeral(finalStock).format('0,0') + "</td></tr>");
+                            $('#stockTableContent').prepend("<tr class='stockRow-" + page + "'><td>" + my_date_format(date) + "</td><td>" + documentName + "<button class='button button_mini_tab' onclick='viewDocument(" + id + ",5)'><i class='fa fa-eye'></i></button></td><td>" + name + "</td><td>" + numeral(quantity).format('0,0') + "</td><td>" + numeral(finalStock).format('0,0') + "</td></tr>");
                             itemCount++;
                         }
+
+                        i++;
                     }
                 });
+
+                var progress            = responseData.progress;
+                if(progress.length > 0){
+                    $('#progressButton').show();
+                }
+                $.each(progress, function(index, item){
+                    var customerName        = item.customerName;
+                    var date                = item.date;
+                    var name                = item.name;
+                    var quantity            = parseInt(item.quantity);
+
+                    $('#progressTableContent').append("<tr><td>" + customerName + "</td><td><label>" + name + "</label><p>" + my_date_format(date) + "</td><td>" + numeral(quantity).format('0,0') + "</td></tr>");
+                })
 
                 var pages = Math.max(Math.ceil(itemCount/20),1);
                 $('#page').html("");
@@ -109,9 +144,28 @@
                     $('#stockTable').hide();
                     $('#stockTableText').show();
                 }
+
+                $('.tr[id^="stockRow-"]').each(function(){
+                    $(this).hide();
+                })
+
+                $('.stockRow-1').each(function(){
+                    $(this).show();
+                })
             }
         })
     }
+
+    $('#progressButton').click(function(){
+        $('#progressWrapper').fadeIn(300, function(){
+            $('#progressWrapper .alert_box_slide').show("slide", { direction: "right" }, 250);
+        });
+    })
+
+    $('#page').change(function(){
+        $('#stockTableContent').hide();
+        $('.stockRow-' + $('#page').val()).show();
+    })
 
     function viewDocument(id, type)
     {
@@ -192,7 +246,63 @@
                         id:id
                     },
                     success:function(response){
-                        console.log(response);
+                        var customer                = response.customer;
+                        var complete_address		= '';
+                        var customer_name			= customer.name;
+                        complete_address			+= customer.address;
+                        var customer_city			= customer.city;
+                        var customer_number			= customer.number;
+                        var customer_rt				= customer.rt;
+                        var customer_rw				= customer.rw;
+                        var customer_postal			= customer.postal_code;
+                        var customer_block			= customer.block;
+                        var customer_id				= customer.id;
+            
+                        if(customer_number != null){
+                            complete_address	+= ' No. ' + customer_number;
+                        }
+                        
+                        if(customer_block != null && customer_block != "000"){
+                            complete_address	+= ' Blok ' + customer_block;
+                        }
+                    
+                        if(customer_rt != '000'){
+                            complete_address	+= ' RT ' + customer_rt;
+                        }
+                        
+                        if(customer_rw != '000' && customer_rt != '000'){
+                            complete_address	+= ' /RW ' + customer_rw;
+                        }
+                        
+                        if(customer_postal != null){
+                            complete_address	+= ', ' + customer_postal;
+                        }
+
+                        $('#opponentLabel').html("Customer");
+                        $('#opponentNameP').html(customer_name);
+                        $('#opponentAddressP').html(complete_address);
+
+                        var items       = response.items;
+                        $('#tableItem').html("");
+                        $.each(items, function(index, item){
+                            var reference       = item.reference;
+                            var name            = item.name;
+                            var quantity        = item.quantity;
+                            $('#tableItem').append("<tr><td>" + reference + "</td><td>" + name + "</td><td>" + numeral(quantity).format('0,0') + "</td></tr>");
+                        });
+
+                        var general         = response.general;
+                        var date            = general.date;
+                        var name            = general.name;
+
+                        $('#documentLabel').html("Sales Return");
+                        $('#documentNameP').html(name);
+                        $('#documentDateP').html(my_date_format(date));
+                    },
+                    complete:function(){
+                        $('#documentWrapper').fadeIn(300, function(){
+                            $('#documentWrapper .alert_box_slide').show("slide", { direction: "right" }, 250);
+                        });
                     }
                 });
                 break;

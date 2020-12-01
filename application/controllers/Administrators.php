@@ -117,6 +117,9 @@ class Administrators extends CI_Controller {
 				echo 0;
 			}
 		} else if($type == "blank"){
+			$this->load->model("Debt_other_model");
+			$result		= $this->Debt_other_model->deleteById($id);
+			echo $result;
 		}		
 	}
 

@@ -155,7 +155,7 @@ class Area_model extends CI_Model {
 
 		public function getAllItems()
 		{
-			$this->db->order_by('name');
+			$this->db->order_by('name', 'ASC');
 			$query = $this->db->get($this->table_area);
 			$result = $query->result();
 

@@ -567,4 +567,23 @@ class Delivery_order_model extends CI_Model {
 
 			return $response;
 		}
+
+		public function viewOnProgressByItemId($itemId)
+		{
+			$query			= $this->db->query("
+				SELECT customer.name AS customerName, customer.city, code_delivery_order.name, code_delivery_order.date, delivery_order.quantity
+				FROM delivery_order
+				JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
+				JOIN code_delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order.id
+				JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
+				JOIN customer ON code_sales_order.customer_id = customer.id
+				JOIN price_list ON sales_order.price_list_id = price_list.id
+				WHERE price_list.item_id = '$itemId'
+				AND code_delivery_order.is_confirm = '1' AND code_delivery_order.is_sent = '0'
+				ORDER BY code_delivery_order.date ASC
+			");
+
+			$result			= $query->result();
+			return $result;
+		}
 }

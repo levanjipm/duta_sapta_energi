@@ -18,12 +18,12 @@ class Sales_order extends CI_Controller {
 
 		if($data['user_login']->access_level > 1){
 			$this->load->model('Authorization_model');
-		$data['departments']	= $this->Authorization_model->getByUserId($user_id);
+			$data['departments']	= $this->Authorization_model->getByUserId($user_id);
 
-		$this->load->view('head');
-		$this->load->view('sales/header', $data);
+			$this->load->view('head');
+			$this->load->view('sales/header', $data);
 
-		$this->load->view('sales/SalesOrder/dashboard');
+			$this->load->view('sales/SalesOrder/dashboard');
 		} else {
 			redirect(site_url("Sales"));
 		}		
@@ -551,6 +551,60 @@ class Sales_order extends CI_Controller {
 
 		$this->load->model("Sales_order_model");
 		$data = $this->Sales_order_model->getPendingSalesOrdersByCustomerId($customerId);
+
+		header('Content-Type: application/json');
+		echo json_encode($data);
+	}
+
+	public function recapDashboard()
+	{
+		$user_id		= $this->session->userdata('user_id');
+		$this->load->model('User_model');
+		$data['user_login'] = $this->User_model->getById($user_id);
+
+		if($data['user_login']->access_level > 1){
+			$this->load->model('Authorization_model');
+			$data['departments']	= $this->Authorization_model->getByUserId($user_id);
+
+			$this->load->view('head');
+			$this->load->view('sales/header', $data);
+
+			$data		= array();
+			$this->load->model("Customer_model");
+			$data['customers']		= $this->Customer_model->getAllCustomers();
+
+			$this->load->view('sales/SalesOrder/recapDashboard', $data);
+		} else {
+			redirect(site_url('Sales_order'));
+		}
+	}
+
+	public function getRecap()
+	{
+		$month			= $this->input->get('month');
+		$year			= $this->input->get('year');	
+		$page			= $this->input->get('page');
+		$offset			= ($page - 1) * 10;
+
+		$this->load->model("Sales_order_model");
+		$data			= $this->Sales_order_model->getRecap($month, $year);
+
+		header('Content-Type: application/json');
+		echo json_encode($data);
+	}
+
+	public function getByCustomerIdDate()
+	{
+		$month			= $this->input->get('month');
+		$date			= $this->input->get('date');
+		$year			= $this->input->get('year');
+		$customerId		= $this->input->get('id');
+
+		$this->load->model("Customer_model");	
+		$data['customer']		= $this->Customer_model->getById($customerId);
+
+		$this->load->model("Sales_order_model");
+		$data['items']			= $this->Sales_order_model->getByCustomerDate($customerId, date("Y-m-d", mktime(0,0,0,$month, $date, $year)));
 
 		header('Content-Type: application/json');
 		echo json_encode($data);

@@ -278,7 +278,6 @@ class Stock_in_model extends CI_Model {
 			");
 			
 			$result		= $query->result();
-			
 			return $result;
 		}
 

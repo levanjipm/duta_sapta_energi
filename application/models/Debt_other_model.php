@@ -273,4 +273,13 @@ class Debt_other_model extends CI_Model {
 			$result			= $query->result();
 			return $result;
 		}
+
+		public function deleteById($id)
+		{
+			$this->db->db_debug = false;
+			$this->db->where("id", $id);
+			$this->db->delete($this->table_purchase_invoice);
+
+			return $this->db->affected_rows();
+		}
 }

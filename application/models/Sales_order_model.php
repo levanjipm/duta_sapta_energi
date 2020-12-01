@@ -747,4 +747,79 @@ class Sales_order_model extends CI_Model {
 			$result			= $query->result();
 			return $result;
 		}
+
+		public function getRecap($month, $year)
+		{
+			$query			= $this->db->query("
+				SELECT COUNT(code_sales_order.id) AS count, code_sales_order.customer_id, code_sales_order.date
+				FROM code_sales_order
+				WHERE MONTH(code_sales_order.date) = '$month'
+				AND YEAR(code_sales_order.date) = '$year'
+				AND code_sales_order.is_confirm = '1'
+				GROUP BY code_sales_order.date, code_sales_order.customer_id
+			");
+
+			$result			= $query->result();
+			$response		= array();
+			foreach($result as $item)
+			{
+				$customerId		= $item->customer_id;
+				$count			= (int)$item->count;
+				$date			= date('d', strtotime($item->date));
+				
+				if(!array_key_exists($customerId, $response)){
+					$response[$customerId] = array();
+				}
+
+				if(!array_key_exists($date, $response[$customerId]))
+				{
+					$response[$customerId][$date] = $count;
+				} else {
+					$response[$customerId][$date] += $count;
+				}
+			}
+
+			return $response;
+		}
+
+		public function getByCustomerDate($customerId, $date)
+		{
+			$query			= $this->db->query("
+				SELECT code_sales_order.*, createdTable.name AS created_by, sellerTable.name AS seller
+				FROM code_sales_order
+				JOIN (
+					SELECT id, name
+					FROM users
+				) createdTable
+				ON code_sales_order.created_by = createdTable.id
+				LEFT JOIN (
+					SELECT id, name
+					FROM users
+				) sellerTable
+				ON code_sales_order.seller = sellerTable.id
+				WHERE code_sales_order.customer_id = '$customerId'
+				AND code_sales_order.date = '$date'
+				AND code_sales_order.is_confirm = '1'
+			");
+			
+			$result			= $query->result();
+
+			$response		= array();
+
+			$salesOrderIdArray		= array();
+			foreach($result as $item){
+				$id					= $item->id;
+				array_push($salesOrderIdArray, $id);
+				$response[$item->id]		= (array) $item;
+				$response[$item->id]['items']	= array();
+			}
+
+			$this->load->model("Sales_order_detail_model");
+			$items		= $this->Sales_order_detail_model->getByCodeSalesOrderIdArray($salesOrderIdArray);
+			foreach($items as $item){
+				array_push($response[$item->code_sales_order_id]['items'], (array) $item);
+			}
+
+			return $response;
+		}
 }

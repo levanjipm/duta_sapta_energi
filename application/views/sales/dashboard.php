@@ -58,7 +58,7 @@
                 </div>
             </div>
 			<div class='col-md-4 col-sm-12 col-xs-12'>
-                <div class='dashboardBox clickable' onclick='viewPendingSalesOrders()' >
+                <div class='dashboardBox clickable' onclick='viewUnformedSalesOrders()' >
                     <div class='leftSide'>
                         <h4><b>Unconfirmed</b></h4>
                         <p>Sales order</p>
@@ -225,5 +225,9 @@
 
     function viewPendingSalesOrders(){
 		window.location.href="<?= site_url('Sales_order/trackDashboard') ?>"   
+    }
+
+    function viewUnformedSalesOrders(){
+        window.location.href="<?= site_url('Sales_order/confirmDashboard') ?>";
     }
 </script>

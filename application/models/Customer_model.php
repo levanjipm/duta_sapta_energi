@@ -321,28 +321,6 @@ class Customer_model extends CI_Model {
 			return $result;
 		}
 		
-		public function show_search_result($limit, $offset)
-		{
-			$term			= $this->input->get('term');
-			if($term == '' || empty($term)){
-				$this->load->model('Customer_model');
-				$this->Customer_model->show_limited($limit, $offset);
-			} else {
-				$this->db->like('name', $term , 'both');
-				$this->db->or_like('address', $term , 'both');
-				$this->db->or_like('postal_code', $term , 'both');
-				$this->db->or_like('block', $term , 'both');
-				$this->db->or_like('pic_name', $term , 'both');
-				$this->db->or_like('rt', $term , 'both');
-				$this->db->or_like('rw', $term , 'both');
-				$this->db->or_like('city', $term , 'both');
-			}
-			
-			$query = $this->db->get($this->table_customer, $limit, $offset);
-			$items	= $query->result();
-			return $items;
-		}
-		
 		public function show_all_by_id($customer_id_array)
 		{
 			$this->db->where_in('id', $customer_id_array);
@@ -537,6 +515,7 @@ class Customer_model extends CI_Model {
 				SELECT customer.*, customer_area.name AS area_name
 				FROM customer
 				JOIN customer_area ON customer.area_id = customer_area.id
+				ORDER BY customer_area.name ASC, customer.name ASC
 			");
 
 			$result			= $query->result();

@@ -142,11 +142,16 @@ class Sales_order_detail_model extends CI_Model {
 		
 		public function show_by_code_sales_order_id($id)
 		{
-			$query = $this->db->query("SELECT sales_order.id, item.name, item.reference, price_list.price_list, sales_order.quantity, (stock_table.stock - sendingTable.sending) AS stock, sales_order.sent, sales_order.discount
-				FROM sales_order JOIN price_list ON price_list.id = sales_order.price_list_id
+			$query = $this->db->query("
+				SELECT sales_order.id, item.name, item.reference, price_list.price_list, sales_order.quantity,
+				(COALESCE(stock_table.stock,0) - COALESCE(sendingTable.sending,0)) AS stock, sales_order.sent, sales_order.discount
+				FROM sales_order 
+				JOIN price_list ON price_list.id = sales_order.price_list_id
 				JOIN item ON price_list.item_id = item.id
 				LEFT JOIN (
-					SELECT SUM(residue) as stock, item_id FROM stock_in GROUP BY item_id
+					SELECT SUM(residue) as stock, item_id 
+					FROM stock_in 
+					GROUP BY item_id
 				) as stock_table
 				ON item.id = stock_table.item_id
 				LEFT JOIN (
@@ -155,14 +160,15 @@ class Sales_order_detail_model extends CI_Model {
 					JOIN code_delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order.id
 					JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
 					JOIN price_list ON sales_order.price_list_id = price_list.id
-					WHERE code_delivery_order.is_confirm = '0' AND code_delivery_order.is_delete = '0'
+					WHERE code_delivery_order.is_confirm = '0' 
+					AND code_delivery_order.is_delete = '0'
 					GROUP BY price_list.item_id
 				) sendingTable
 				ON item.id = sendingTable.item_id
 				WHERE sales_order.code_sales_order_id = '$id'
-			");			
+			");	
+
 			$items	= $query->result();
-			
 			return $items;
 		}
 		
@@ -297,5 +303,18 @@ class Sales_order_detail_model extends CI_Model {
 			}
 
 			$this->db->update_batch($this->table_sales_order, $batch, 'id');
+		}
+
+		public function getByCodeSalesOrderIdArray($idArray)
+		{
+			$this->db->select('sales_order.*, item.reference, item.name, price_list.price_list');
+			$this->db->from('sales_order');
+			$this->db->join('price_list', 'sales_order.price_list_id = price_list.id');
+			$this->db->join('item', 'price_list.item_id = item.id');
+			$this->db->where_in('sales_order.code_sales_order_id', $idArray);
+			
+			$query			= $this->db->get();
+			$result			= $query->result();
+			return $result;
 		}
 }

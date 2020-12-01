@@ -238,7 +238,8 @@
 					$('#warning_text_invoice').show();
 					$('#invoice_status').val(0);
 				}
-				
+			},
+			complete:function(){
 				$('#view_sales_order_wrapper').fadeIn(300, function(){
 					$('#view_sales_order_wrapper .alert_box_slide').show("slide", { direction: "right" }, 250);
 				});

@@ -304,6 +304,7 @@
 				id: id
 			},
 			success:function(response){
+				blankDeleteInvoiceId = id;
 				var general = response.debt;
 				var name = general.invoice_document;
 				var tax = (general.tax_document == null || general.tax_document == "") ? "<i>Not Available</i>" : general.tax_document;
@@ -405,10 +406,11 @@
 
 	function deleteInvoice(){
 		var deleteMode = (deleteInvoiceId == null) ? "blank" : "regular";
+		var deleteId = (deleteInvoiceId == null) ? blankDeleteInvoiceId: deleteInvoiceId;
 		$.ajax({
 			url:"<?= site_url('Administrators/deleteDebtById') ?>",
 			data:{
-				id:deleteInvoiceId,
+				id:deleteId,
 				type:deleteMode
 			},
 			type:"POST",

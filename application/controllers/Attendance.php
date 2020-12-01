@@ -175,5 +175,12 @@ class Attendance extends CI_Controller {
 		header('Content-Type: application/json');
 		echo json_encode($data);
 	}
+
+	public function deleteById()
+	{
+		$id			= $this->input->get('id');
+		$this->load->model("Attendance_model");
+		echo $this->Attendance_model->deleteById($id);
+	}
 }
 ?>

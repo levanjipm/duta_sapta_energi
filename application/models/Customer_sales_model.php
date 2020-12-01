@@ -134,8 +134,8 @@ class Customer_sales_model extends CI_Model {
 		{
 			if($status == 0){
 				$this->db->where_in('customer_id', $customerArray);
+				$this->db->where('sales_id', $salesId);
 				$this->db->delete($this->table_customer_sales);
-
 			} else if($status == 1){
 				$this->db->where_in('customer_id', $customerArray);
 				$this->db->where('sales_id', $salesId);

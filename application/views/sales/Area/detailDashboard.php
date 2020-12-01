@@ -14,34 +14,10 @@
 			display:none;
 		}
 	</style>
-	<script>
-		let map;
-		function initMap() {
-			map = new google.maps.Map(document.getElementById("map"), {
-				zoom: 8,
-			});
-			var bounds = new google.maps.LatLngBounds();
-			<?php foreach($customers as $customer){ ?>
-				<?php if($customer['latitude'] != null && $customer['longitude'] != 0){ ?>
-				var place = new google.maps.LatLng(<?= $customer['latitude'] ?>, <?= $customer['longitude'] ?>)
-				var marker = new google.maps.Marker({
-					position: place,
-					map: map,
-					title: "<?= $customer['name'] ?>",
-					icon:'<?= base_url('assets/Icons/location.png') ?>'
-				});
-				bounds.extend(place);
-				<?php } ?>
-			<?php } ?>
-			map.fitBounds(bounds);
-			var zoom = map.getZoom();
-			map.setZoom(zoom > 11 ? 11 : zoom);
-		}
-	</script>
 </head>
 <div class='dashboard'>
 	<div class='dashboard_head'>
-		<p style='font-family:museo'><a href='<?= site_url('Sales') ?>' title='Sales'><i class='fa fa-briefcase'></i></a> /Area</p>
+		<p style='font-family:museo'><a href='<?= site_url('Sales') ?>' title='Sales'><i class='fa fa-briefcase'></i></a> /<a href='<?= site_url('Area') ?>'>Area</a> /<?= $area->name ?></p>
 	</div>
 	<br>
 	<div class='dashboard_in'>
@@ -56,7 +32,6 @@
 				<div class='col-sm-6'>
 					<label>Area</label>
 					<p><?= $area->name ?></p>
-					
 					<div id="map"></div>
 				</div>
 				<div class='col-sm-6'>
@@ -78,8 +53,7 @@
 				$page				= 1;
 				$i					= 0;
 				$totalTarget		= 0;
-				foreach($customers as $customer){ 
-					
+				foreach($customers as $customer){
 					$customerName		= $customer['name'];
 					$complete_address	= $customer['address'];
 					$customer_number	= $customer['number'];
@@ -255,4 +229,24 @@
 			$('#paymentView').fadeIn(300);
 		}, 300);
 	})
+	let map;
+	function initMap() {
+		map = new google.maps.Map(document.getElementById("map"), {
+			zoom: 8,
+		});
+		var bounds = new google.maps.LatLngBounds();
+		<?php foreach($customers as $customer){ ?>
+			<?php if($customer['latitude'] != null && $customer['longitude'] != 0){ ?>
+			var place = new google.maps.LatLng(<?= $customer['latitude'] ?>, <?= $customer['longitude'] ?>)
+			var marker = new google.maps.Marker({
+				position: place,
+				map: map,
+				title: "<?= $customer['name'] ?>",
+				icon:'<?= base_url('assets/Icons/location.png') ?>'
+			});
+			bounds.extend(place);
+			<?php } ?>
+		<?php } ?>
+		map.fitBounds(bounds);
+	}
 </script>

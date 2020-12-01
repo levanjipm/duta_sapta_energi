@@ -584,7 +584,7 @@
 						"<td id='name-" + n + "'>" + name + "</td>" + 
 						"<td>Rp. " + numeral(price_list).format('0,0.00') + "</td><input type='hidden' id='price_list-" + n + "' value='" + price_list+ "'>" +
 						"<td><input type='number' class='form-control' min='0' max='100' required name='discount[" + n + "]' id='discount-" + n + "'></td>" +
-						"<td><input type='number' class='form-control' min='0' max='100' required name='quantity[" + n + "]' id='quantity-" + n + "'></td>" + 
+						"<td><input type='number' class='form-control' min='1' required name='quantity[" + n + "]' id='quantity-" + n + "'></td>" + 
 						"<td><button type='button' class='button button_danger_dark' onclick='removeItem(" + n + ")'><i class='fa fa-trash'></i></button></td></tr>");
 				}
 				
