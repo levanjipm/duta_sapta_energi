@@ -86,9 +86,15 @@ class Item_model extends CI_Model {
 		{
 			if($filter != ''){
 				$query = $this->db->query("
-					SELECT price_list.id, price_list.price_list, item.id as item_id, item.reference, item.name
+					SELECT price_list.id, price_list.price_list, item.id as item_id, item.reference, item.name, COALESCE(stockTable.residue, 0) AS stock
 					FROM price_list
 					JOIN item ON item.id = price_list.item_id
+					LEFT JOIN (
+						SELECT SUM(residue) AS residue, stock_in.item_id
+						FROM stock_in
+						GROUP BY stock_in.item_id
+					) stockTable
+					ON stockTable.item_id = item.id
 					WHERE price_list.id IN (
 						SELECT MAX(price_list.id)
 						FROM price_list
@@ -98,9 +104,15 @@ class Item_model extends CI_Model {
 					LIMIT $limit OFFSET $offset");
 			} else {
 				$query = $this->db->query("
-					SELECT price_list.id, price_list.price_list, item.id as item_id, item.reference, item.name
+					SELECT price_list.id, price_list.price_list, item.id as item_id, item.reference, item.name, COALESCE(stockTable.residue, 0) AS stock
 					FROM price_list
 					JOIN item ON item.id = price_list.item_id
+					LEFT JOIN (
+						SELECT SUM(residue) AS residue, stock_in.item_id
+						FROM stock_in
+						GROUP BY stock_in.item_id
+					) stockTable
+					ON stockTable.item_id = item.id
 					WHERE price_list.id IN (
 						SELECT MAX(price_list.id)
 						FROM price_list
@@ -266,5 +278,119 @@ class Item_model extends CI_Model {
 			$query		= $this->db->get();
 			$result		= $query->row();
 			return $result;
+		}
+
+		public function getValueByItemArray($itemArray)
+		{
+			$itemIdArray		= array();
+			$quantityArray		= array();
+			$stockValueArray	= array();
+			$responseArray		= array();
+
+			foreach($itemArray as $itemId => $quantity){
+				array_push($itemIdArray, $itemId);
+				$stockValueArray[$itemId] = array();
+				$responseArray[$itemId]	= array();
+				next($itemArray);
+			}
+
+			$query			= $this->db->query("
+				SELECT stock_in.price, stock_in.residue, stock_in.item_id
+				FROM stock_in
+				LEFT JOIN (
+					SELECT SUM(stock_out.quantity) AS quantity, stock_out.in_id, COALESCE(deliveryOrderTable.date, eventTable.date) as date 
+					FROM stock_out
+					LEFT JOIN 
+					(
+						SELECT code_delivery_order.date, delivery_order.id 
+						FROM delivery_order
+						JOIN code_delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order.id
+					) deliveryOrderTable
+					ON stock_out.delivery_order_id = deliveryOrderTable.id
+					LEFT JOIN (
+						SELECT code_event.date, event.id
+						FROM event
+						JOIN code_event ON event.code_event_id = code_event.id
+					) eventTable
+					ON eventTable.id = stock_out.event_id
+					LEFT JOIN 
+					(
+						SELECT code_purchase_return_sent.date, purchase_return_sent.id
+						FROM purchase_return_sent
+						JOIN code_purchase_return_sent ON purchase_return_sent.code_purchase_return_sent_id = code_purchase_return_sent.id
+					) purchaseReturnTable
+					ON purchaseReturnTable.id = stock_out.purchase_return_id
+					GROUP BY stock_out.in_id
+				) AS stockOutTable
+				ON stockOutTable.in_id = stock_in.id
+				LEFT JOIN (
+					SELECT code_good_receipt.date, good_receipt.id
+					FROM good_receipt
+					JOIN code_good_receipt ON good_receipt.code_good_receipt_id = code_good_receipt.id
+				) AS goodReceiptTable
+				ON goodReceiptTable.id = stock_in.good_receipt_id
+				LEFT JOIN (
+					SELECT code_sales_return_received.date, sales_return_received.id
+					FROM sales_return_received
+					JOIN code_sales_return_received ON sales_return_received.code_sales_return_received_id = code_sales_return_received.id
+				) AS salesReturnTable
+				ON salesReturnTable.id = stock_in.sales_return_received_id
+				LEFT JOIN (
+					SELECT code_event.date, event.id
+					FROM event
+					JOIN code_event ON event.code_event_id = code_event.id
+				) eventTable
+				ON stock_in.event_id = eventTable.id
+				WHERE stock_in.item_id IN (" . implode($itemIdArray, ",") . ")
+				AND stock_in.residue > 0
+				ORDER BY COALESCE(eventTable.date, goodReceiptTable.date, salesReturnTable.date) ASC
+			");
+
+			$result			= $query->result();
+			foreach($result as $item)
+			{
+				$itemId		= $item->item_id;
+				array_push($stockValueArray[$itemId], (array) $item);
+				next($result);
+			}
+
+			$value				= array();
+			foreach($itemArray as $itemId => $quantity)
+			{
+				$value[$itemId]		= 0;
+				$paramQuantity		= $quantity;
+				$stockValue			= $stockValueArray[$itemId];
+				$i				= 0;
+				while($paramQuantity > 0){
+					if($paramQuantity >= $stockValue[$i]['residue']){
+						$value[$itemId]		+= $stockValue[$i]['residue'] * $stockValue[$i]['price'];
+						$paramQuantity		-= $stockValue[$i]['residue'];
+						$i++;
+					} else {
+						$value[$itemId]		+= $paramQuantity * $stockValue[$i]['price'];
+						$paramQuantity		= 0;
+					}
+				}
+
+				$value[$itemId]		= $value[$itemId] / $quantity;
+				next($itemArray);
+			}
+
+			$query			= $this->db->query("
+				SELECT item.reference, item.name, item.id
+				FROM item
+				WHERE item.id IN (" . implode($itemIdArray, ",") . ")
+			");
+
+			$result			= $query->result();
+			foreach($result as $item){
+				$responseArray[$item->id]['reference']	= $item->reference;
+				$responseArray[$item->id]['name']		= $item->name;
+				$responseArray[$item->id]['value']		= $value[$item->id];
+				$responseArray[$item->id]['quantity']	= $itemArray[$item->id];
+				next($result);
+			}
+
+			return $responseArray;
 		}
 }

@@ -250,4 +250,24 @@ class Petty_cash_model extends CI_Model {
 			$result		= $this->db->affected_rows();
 			return $result;
 		}
+
+		public function getBalanceByDate($date)
+		{
+			$query = $this->db->query("
+				SELECT COALESCE(SUM(value), 0) AS value FROM petty_cash WHERE transaction = '1'
+				AND date <= '$date'
+			");
+			$result = $query->row();
+
+			$expense = $result->value;
+
+			$query = $this->db->query("
+				SELECT COALESCE(SUM(value), 0) AS value FROM petty_cash WHERE transaction = '2'
+				AND date <= '$date'
+			");
+			$result = $query->row();
+			$income = $result->value;
+
+			return $income - $expense;
+		}
 }

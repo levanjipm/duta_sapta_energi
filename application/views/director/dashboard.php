@@ -148,7 +148,7 @@
 					</div>
 				</div>
 
-				<div class="col-md-12 col-sm-12 col-xs-12">
+				<div class="col-md-12 col-sm-12 col-xs-12" style="margin-top:20px">
 					<table class="table table-bordered">
 						<tr>
 							<td>Sales</td>
@@ -234,6 +234,41 @@
 							<button class='button button_default_dark' onclick='getBalanceStatement()'><i class='fas fa-long-arrow-alt-right'></i></button>
 						</div>
 					</div>
+					<br>
+					<label>Assets</label>
+					<table class='table table-bordered'>
+						<tr>
+							<td><label>Cash on Hand</label></td>
+							<td id='cashOnHandP'>Rp. 0.00</p>
+						</tr>
+						<tr>
+							<td><label>Cash on Account</label></td>
+							<td id='cashOnAccountP'>Rp. 0.00</p>
+						</tr>
+						<tr>
+							<td><label>Receivable</label></td>
+							<td id='receivableP'>Rp. 0.00</p>
+						</tr>
+						<tr>
+							<td><label>Inventory Value</label></td>
+							<td id='inventoryP'>Rp. 0.00</p>
+						</tr>
+						<tr>
+							<td>Fixed Assets</td>
+							<td id='assetsP'>Rp. 0.00</p>
+						</tr>
+						<tr>
+							<td>Fixed Assets' depreciation</td>
+							<td id='depreciationP'>Rp. 0.00</p>
+						</tr>
+						<tr>
+							<td><label>Next Fixed Assets' value</label></td>
+							<td id='assetsValueP'>Rp. 0.00</p>
+						</tr>
+						<tr>
+							<td><label>Assets Value</label></td>
+							<td id='totalAssetsValueP'>Rp. 0.00</td>
+					</table>
 				</div>
 			</div>
 		</div>
@@ -244,6 +279,21 @@
 			</div>
 		</div>
     </div>
+</div>
+
+<div class='alert_wrapper' id='cashOnAccountWrapper'>
+	<h3 style='font-family:bebasneue'>Cash On Accounts</h3>
+	<hr>
+	<label>Other Operational Sales</label>
+	<table class='table table-bordered' id='cashOnAccountTable'>
+		<tr>
+			<th>Type</th>
+			<th>Value</th>
+		</tr>
+		<tbody id='cashOnAccountTableContent'></tbody>
+	</table>
+
+	<p id='cashOnAccountTableText'>There is no balance data found.</p>
 </div>
 
 <div class='alert_wrapper' id='otherSalesWrapper'>
@@ -585,6 +635,58 @@
 
 				var profit			= netProfit - taxExpense;
 				$('#netProfitAfterTaxP').html(numeral(profit).format('0,0.00'));
+			}
+		})
+	}
+
+	function getBalanceStatement(){
+		$.ajax({
+			url:"<?= site_url('Director/getBalanceStatement') ?>",
+			data:{
+				month: $('#balanceMonth').val(),
+				year: $('#balanceYear').val()
+			},
+			success:function(response){
+				var cashOnHand		= parseFloat(response.cashOnHand);
+				var cashOnAccount	= parseFloat(response.cashOnAccount);
+				var receivable		= parseFloat(response.receivable);
+				var assetValue		= parseFloat(response.assetValue);
+				var depreciation	= parseFloat(response.depreciation);
+				var stock			= parseFloat(response.stock);
+				var assetInitialValue	= assetValue + depreciation;
+
+				$('#cashOnAccountTable').html("");
+				var cashOnAccountItem = 0;
+				var cashOnAccountValue = 0;
+				$.each(cashOnAccount, function(index, item){
+					var name		= item.name;
+					var credit		= item.credit;
+					var debit		= item.debit;
+					var balance		= credit - balance;
+					$('#cashOnAccountTable').append("<tr><td>" + name + "</td><td>Rp. " + numeral(balance).format('0,0.00') + "</td></tr>");
+					cashOnAccountValue += balance;
+					cashOnAccountItem++;
+				});
+
+				var totalValue		= cashOnHand + cashOnAccountValue + receivable + assetValue + stock;
+
+				if(cashOnAccountItem > 0){
+					$('#cashOnAccountTable').show();
+					$('#cashOnAccountTableText').hide();
+				} else {
+					$('#cashOnAccountTableText').show();
+					$('#cashOnAccountTable').hide();
+				}
+
+				$('#cashOnHandP').html("Rp. " + numeral(cashOnHand).format('0,0.00'));
+				$('#cashOnAccountP').html("Rp. " + numeral(cashOnAccountValue).format('0,0.00'));
+				$('#receivableP').html("Rp. " + numeral(receivable).format('0,0.00'));
+				$('#assetsValueP').html("Rp. " + numeral(assetValue).format('0,0.00'));
+				$('#depreciationP').html("RP. " + numeral(depreciation).format('0,0.00'));
+				$('#assetsP').html("Rp. " + numeral(assetInitialValue).format('0,0.00'));
+				$('#inventoryP').html("Rp. " + numeral(stock).format('0,0.00'));
+
+				$('#totalAssetsValueP').html("<strong>Rp. " + numeral(totalValue).format('0,0.00') + "</strong>");
 			}
 		})
 	}

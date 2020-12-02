@@ -987,4 +987,42 @@ class Bank_model extends CI_Model {
 
 			return ($credit - $debit);
 		}
+
+		public function getBalanceByDate($date)
+		{
+			$response			= array();
+			$query			= $this->db->query("
+				SELECT internal_bank_account.name, SUM(bank_transaction.value) AS value,internal_bank_account.id, bank_transaction.transaction
+				FROM bank_transaction
+				JOIN internal_bank_account ON bank_transaction.account_id = internal_bank_account.id
+				WHERE bank_transaction.date <= '$date'
+				AND bank_transaction.is_delete = '0'
+				AND bank_transaction.bank_transaction_major IS NULL
+				GROUP BY bank_transaction.account_id, bank_transaction.transaction
+			");
+
+			$result			= $query->result();
+			foreach($result as $item)
+			{
+				$accountId			= $item->id;
+				$value				= $item->value;
+				$transaction		= (int)$item->transaction;
+				$name				= $item->name;
+
+				if(!array_key_exists($accountId, $response)){
+					$response[$accountId] = array();
+					$response[$accountId]['name'] = $name;
+					$response[$accountId]['credit']	= 0;
+					$response[$accountId]['debit']	= 0;
+				};
+
+				if($transaction == 1){
+					$response[$accountId]['credit'] = (float)$value;
+				} else if($transaction == 2) {
+					$response[$accountId]['debit']	 = (float)$value;
+				}
+			}
+
+			return $response;
+		}
 }

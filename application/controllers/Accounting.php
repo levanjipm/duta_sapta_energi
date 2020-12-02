@@ -130,4 +130,43 @@ class Accounting extends CI_Controller {
 		header('Content-Type: application/json');
 		echo json_encode($data);
 	}
+
+	public function checkValueDashboard()
+	{
+		$user_id		= $this->session->userdata('user_id');
+		$this->load->model('User_model');
+		$data['user_login'] = $this->User_model->getById($user_id);
+		
+		if($data['user_login']->access_level > 3){
+			$this->load->model('Authorization_model');
+			$data['departments']	= $this->Authorization_model->getByUserId($user_id);
+			
+			$this->load->view('head');
+			$this->load->view('accounting/header', $data);
+			$this->load->view('accounting/checkValue/dashboard');
+		} else {
+			redirect(site_url('Accounting'));
+		}
+	}
+
+	public function checkValue()
+	{
+		$user_id		= $this->session->userdata('user_id');
+		$this->load->model('User_model');
+		$data['user_login'] = $this->User_model->getById($user_id);
+		
+		if($data['user_login']->access_level > 3){
+			$this->load->model('Authorization_model');
+			$data['departments']	= $this->Authorization_model->getByUserId($user_id);
+			
+			$this->load->view('head');
+			$this->load->view('accounting/header', $data);
+
+			$this->load->model("Item_model");
+			$data['values']		= $this->Item_model->getValueByItemArray($this->input->post('quantity'));
+			$this->load->view('accounting/checkValue/result', $data);
+		} else {
+			redirect(site_url('Accounting'));
+		}
+	}
 }

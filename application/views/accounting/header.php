@@ -75,6 +75,9 @@
 <?php if($user_login->access_level > 1){ ?>
 		<a href='<?= site_url('Customer/assignAccountantDashboard') ?>'><button><p style='font-family:museo'>Assign Customer</p></button></a>
 <?php } ?>
+<?php if($user_login->access_level > 3){ ?>
+		<a href='<?= site_url('Accounting/checkValueDashboard') ?>'><button><p style='font-family:museo'>Check Value</p></button></a>
+<?php } ?>
 	</div>
 </div>
 <script>
