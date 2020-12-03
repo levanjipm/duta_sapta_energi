@@ -84,7 +84,7 @@ class Billing_detail_model extends CI_Model {
 		public function getByCodeId($codeBillingId)
 		{
 			$query			= $this->db->query("
-				SELECT invoice.nextBillingDate, billing.note, billing.result, customer.id as customerId, invoice.value, invoice.name, invoice.date, customer.name as customerName, customer.address, customer.city, customer.number, customer.block, customer.rt, customer.rw, customer.postal_code, billing.id, billing.result, billing.note, billing.invoice_id, COALESCE(receivableTable.value,0) as paid
+				SELECT invoice.nextBillingDate, billing.note, billing.result, customer.id as customerId, (invoice.value + invoice.delivery - invoice.discount) AS value, invoice.name, invoice.date, customer.name as customerName, customer.address, customer.city, customer.number, customer.block, customer.rt, customer.rw, customer.postal_code, billing.id, billing.result, billing.note, billing.invoice_id, COALESCE(receivableTable.value,0) as paid
 				FROM billing
 				JOIN invoice ON invoice.id = billing.invoice_id
 				JOIN (

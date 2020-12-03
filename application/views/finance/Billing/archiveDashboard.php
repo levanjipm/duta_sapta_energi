@@ -35,7 +35,7 @@
 		<div class='row'>
 			<div class='col-xs-12' id='archiveRow'></div>
 		</div>
-		<div class='row'>
+		<div class='row' style='margin-top:20px'>
 			<div class='col-xs-12'>
 				<select class='form-control' id='page' style='width:100px'>
 					<option value='1'>1</option>

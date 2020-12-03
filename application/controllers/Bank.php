@@ -663,4 +663,19 @@ class Bank extends CI_Controller {
 			$this->Bank_model->mergeByParentId($parentId);
 		}
 	}
+
+	public function getMutationByOpponent()
+	{
+		$type			= $this->input->get('type');
+		$id				= $this->input->get('id');
+		$page			= $this->input->get('page');
+		$offset			= ($page - 1) * 10;
+
+		$this->load->model("Bank_model");
+		$data['items']		= $this->Bank_model->getMutationByOpponent($id, $type, $offset);
+		$data['pages']		= max(1, ceil($this->Bank_model->countMutationByOpponent($id, $type)/10));
+
+		header('Content-Type: application/json');
+		echo json_encode($data);
+	}
 }

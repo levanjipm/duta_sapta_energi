@@ -315,9 +315,9 @@ class Purchase_return extends CI_Controller {
 		$type			= "supplier";
 
 		$this->load->model("Bank_model");
-		$result			= $this->Bank_model->insertItem($date, $value, 2, $type, $supplierId, $account, NULL, 1, 0);
+		$result			= $this->Bank_model->insertItem($date, $value, 2, $type, $supplierId, $account, NULL, 0, 0);
 		if($result != null){
-			$bankId		= $this->Bank_model->insertItem($date, $value, 1, $type, $supplierId, $account, NULL, 0, 0, $result);
+			$bankId		= $this->Bank_model->insertItem($date, $value, 1, $type, $supplierId, $account, NULL, 1, 0, $result);
 			$response = $this->Purchase_return_sent_model->updateBankById($bankId, $id);
 
 			echo 1;
@@ -361,6 +361,8 @@ class Purchase_return extends CI_Controller {
 	{
 		$id			= $this->input->post('id');
 		$this->load->model("Bank_model");
+
+		//Transaction with transaction value 1//
 		$bankTransaction		= $this->Bank_model->getById($id);
 		$transactionReference	= $bankTransaction->transaction_reference;
 		if($transactionReference != null){

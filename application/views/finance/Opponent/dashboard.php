@@ -21,7 +21,7 @@
 		<div id='opponentTable'>
 			<table class='table table-bordered'>
 				<tr>
-					<th>Name</th>
+					<th>Opponent</th>
 					<th>Action</th>
 				</tr>
 				<tbody id='opponentTableContent'></tbody>
@@ -38,7 +38,9 @@
 <script>
 	$('#add_other_opponent_form').validate();
 	
-	refresh_view();
+	$(document).ready(function(){
+		refresh_view(1);
+	})
 	
 	$('#opponent_type').change(function(){
 		$('#search_bar').val('');
@@ -73,12 +75,12 @@
 						var name			= opponent.name;
 						var description		= opponent.description;
 						var id				= opponent.id;
-						$('#opponentTableContent').append("<tr><td><label>" + name + "</label><p>" + description + "</p></td><td><button type='button' class='button button_default_dark' title='View " + name + "' onclick='view(`" + type + "`," + id + ")'><i class='fa fa-eye'></i></button></td></tr>");
+						$('#opponentTableContent').append("<tr><td><p><strong>" + name + "</strong>, " + description + "</p></td><td><button type='button' class='button button_default_dark' title='View " + name + "' onclick='view(`" + type + "`," + id + ")'><i class='fa fa-eye'></i></button></td></tr>");
 					} else {
 						var name		= opponent.name;
 						var city		= opponent.city;
 						var id			= opponent.id;
-						$('#opponentTableContent').append("<tr><td><label>" + name + "</label><p>" + city + "</p></td><td><button type='button' class='button button_default_dark' title='View " + name + "' onclick='view(`" + type + "`," + id + ")'><i class='fa fa-eye'></i></button></td></tr>");
+						$('#opponentTableContent').append("<tr><td><p><strong>" + name + "</strong>, " + city + "</p></td><td><button type='button' class='button button_default_dark' title='View " + name + "' onclick='view(`" + type + "`," + id + ")'><i class='fa fa-eye'></i></button></td></tr>");
 					}
 					
 					opponentCount++;

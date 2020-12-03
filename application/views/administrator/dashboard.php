@@ -54,6 +54,7 @@
 			<div class='departmentBoxFunctionsWrapper'>
 			<a href='<?= site_url('Bank/deleteDashboard') ?>'><p style='font-family:museo'>Delete Bank Data</p></a>
 			<a href='<?= site_url('Petty_cash/deleteDashboard') ?>'><p style='font-family:museo'>Delete Petty Cash Data</p></a>
+			<a href='<?= site_url('Billing/deleteDashboard') ?>'><p style='font-family:museo'>Delete Delete Billing</p></a>
 			</div>
 		</div>
 	</div>

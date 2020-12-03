@@ -147,4 +147,11 @@ class Administrators extends CI_Controller {
 			echo 0;
 		}
 	}
+
+	public function cancelBillingById()
+	{
+		$id			= $this->input->post('id');
+		$this->load->model("Billing_model");
+		echo $this->Billing_model->cancelById($id);
+	}
 }

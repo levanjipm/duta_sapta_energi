@@ -806,7 +806,7 @@ class Debt_model extends CI_Model {
 		public function getIncompletedTransactionByDate($date)
 		{
 			$query			= $this->db->query("
-				SELECT COALESCE(SUM(debtTable.value - debtTable.paid), 0) AS value
+				SELECT (COALESCE(SUM(debtTable.value), 0) - COALESCE(SUM(debtTable.paid), 0)) AS value
 				FROM (
 					SELECT purchase_invoice_other.id, COALESCE(purchase_invoice_other.value,0) AS value, COALESCE(payableTable.value,0) AS paid
 					FROM purchase_invoice_other
@@ -814,10 +814,12 @@ class Debt_model extends CI_Model {
 						SELECT SUM(payable.value) AS value, payable.other_purchase_id
 						FROM payable
 						JOIN bank_transaction ON payable.bank_id = bank_transaction.id
+						WHERE bank_transaction.date <= '$date'
 						GROUP BY payable.other_purchase_id
 					) payableTable
 					ON purchase_invoice_other.id = payableTable.other_purchase_id
 					WHERE purchase_invoice_other.is_confirm = '1'
+					AND purchase_invoice_other.date <= '$date'
 					UNION (
 						SELECT purchaseInvoiceTable.id, COALESCE(purchaseInvoiceTable.value, 0) AS value, COALESCE(payableTable.value) AS paid
 						FROM (
@@ -845,12 +847,13 @@ class Debt_model extends CI_Model {
 						JOIN code_good_receipt ON good_receipt.code_good_receipt_id = code_good_receipt.id
 						WHERE code_good_receipt.is_confirm = '1'
 						AND code_good_receipt.invoice_id IS NULL
+						AND code_good_receipt.date <= '$date'
 					)
 				) debtTable
 			");
 
 			$result		= $query->row();
-			return $result->value;
+			return (float)$result->value;
 		}
 
 		public function getValueByMonthYear($month, $year)

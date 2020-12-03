@@ -244,4 +244,15 @@ class Billing_model extends CI_Model {
 			$result		= $query->num_rows();
 			return $result;
 		}
+
+		public function cancelById($id)
+		{
+			$this->db->set('is_confirm', 0);
+			$this->db->where('id', $id);
+			$this->db->where('is_confirm', 1);
+			$this->db->where('is_reported', 0);
+			$this->db->update($this->table_billing);
+			$result			= $this->db->affected_rows();
+			return $result;
+		}
 }

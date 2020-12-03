@@ -1,6 +1,6 @@
 <div class='dashboard'>
 	<div class='dashboard_head'>
-		<p style='font-family:museo'><a href='<?= site_url('Finance') ?>' title='Finance'><i class='fa fa-briefcase'></i></a> /Bank/ Opponent</p>
+		<p style='font-family:museo'><a href='<?= site_url('Finance') ?>' title='Finance'><i class='fa fa-briefcase'></i></a> /Bank/ <a href='<?= site_url('Bank/Opponent') ?>'>Opponent</a> / <?= $opponent->name ?></p>
 	</div>
 	<br>
 	<div class='dashboard_in'>
@@ -85,23 +85,77 @@
 <?php
 	}
 ?>
-		<table class='table table-bordered'>
-			<tr>
-				<th>Date</th>
-				<th>Account</th>
-				<th>Debit</th>
-				<th>Credit</th>
-			</tr>
-			<tbody id='transactionTableContent'></tbody>
-		</table>
+		<div  id='transactionTable'>
+			<table class='table table-bordered'>
+				<tr>
+					<th>Date</th>
+					<th>Account</th>
+					<th>Debit</th>
+					<th>Credit</th>
+				</tr>
+				<tbody id='transactionTableContent'></tbody>
+			</table>
+
+			<select class='form-control' id='page' style='width:100px'>
+				<option value='1'>1</option>
+			</select>
+		</div>
+		<p id='transactionTableText'>There is no transaction found.</p>
 	</div>
 </div>
 <script>
-	function refreshView(page = $('#page').val()){
-		url:"<?= site_url('Bank/getMutationByOpponent') ?>",
-		data:{
-			page:page,
+	$(document).ready(function(){
+		refreshView();
+	});
 
-		}
+	$('#page').change(function(){
+		refreshView();
+	})
+
+	function refreshView(page = $('#page').val()){
+		$.ajax({
+			url:"<?= site_url('Bank/getMutationByOpponent') ?>",
+			data:{
+				page:page,
+				id: <?= $opponent->id ?>,
+				type:"<?= $type ?>"
+			},
+			success:function(response){
+				var pages		= response.pages;
+				$('#page').html("");
+				for(i = 1; i <= pages; i++){
+					if(i == page){
+						$('#page').append("<option value='" + i + "' selected>" + i + "</option>");
+					} else {
+						$('#page').append("<option value='" + i + "'>" + i + "</option>");
+					}
+				}
+
+				var items			= response.items;
+				var itemCount = 0;
+				$('#transactionTableContent').html("");
+				$.each(items, function(index, item){
+					var date		= item.date;
+					var accountName	= item.accountName;
+					var transaction	= item.transaction;
+					var value		= parseFloat(item.value);
+
+					if(transaction == 1){
+						$('#transactionTableContent').append("<tr><td>" + my_date_format(date) + "</td><td>" + accountName + "</td><td style='width:20%'></td><td style='width:20%'>Rp. " + numeral(value).format('0,0.00') + "</td></tr>");
+					} else {
+						$('#transactionTableContent').append("<tr><td>" + my_date_format(date) + "</td><td>" + accountName + "</td><td style='width:20%'>Rp. " + numeral(value).format('0,0.00') + "</td><td style='width:20%'></td></tr>");
+					}
+					itemCount++;
+				});
+
+				if(itemCount > 0){
+					$('#transactionTable').show();
+					$('#transactionTableText').hide();
+				} else {
+					$('#transactionTable').hide();
+					$('#transactionTableText').show();
+				}
+			}
+		})
 	}
 </script>

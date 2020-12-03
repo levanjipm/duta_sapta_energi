@@ -269,6 +269,11 @@
 							<td><label>Assets Value</label></td>
 							<td id='totalAssetsValueP'>Rp. 0.00</td>
 					</table>
+					<label>Liabilities</label>
+					<p id='debtP'>Rp. 0.00</p>
+
+					<label>Equity</label>
+					<p id='equityP'>Rp. 0.00</p>
 				</div>
 			</div>
 		</div>
@@ -687,6 +692,12 @@
 				$('#inventoryP').html("Rp. " + numeral(stock).format('0,0.00'));
 
 				$('#totalAssetsValueP').html("<strong>Rp. " + numeral(totalValue).format('0,0.00') + "</strong>");
+
+				var debt		= response.debt;
+				$('#debtP').html("Rp. " + numeral(debt).format('0,0.00'));
+
+				var equity		= totalValue - debt;
+				$('#equityP').html("Rp. " + numeral(equity).format('0,0.00'));
 			}
 		})
 	}

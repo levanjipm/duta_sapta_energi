@@ -399,6 +399,7 @@ class Customer_model extends CI_Model {
 					FROM customer
 					LEFT JOIN customer_accountant
 					ON customer.id = customer_accountant.customer_id
+					ORDER BY customer.name
 				");
 			} else {
 				$query			= $this->db->query("
@@ -407,6 +408,7 @@ class Customer_model extends CI_Model {
 					LEFT JOIN customer_accountant
 					ON customer.id = customer_accountant.customer_id
 					WHERE customer.name LIKE '%$term%' OR customer.address LIKE '%$term%' OR customer.city LIKE '%$term%'
+					ORDER BY customer.name
 					LIMIT $limit OFFSET $offset;
 				");
 			}

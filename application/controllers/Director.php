@@ -198,6 +198,9 @@ class Director extends CI_Controller {
 		$data['assetValue'] 	= $assetValue;
 		$data['depreciation']	= $depreciationValue;
 
+		$this->load->model("Debt_model");
+		$data['debt']			= $this->Debt_model->getIncompletedTransactionByDate($date);
+
 		header('Content-Type: application/json');
 		echo json_encode($data);
 	}

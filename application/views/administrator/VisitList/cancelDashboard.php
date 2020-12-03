@@ -130,27 +130,41 @@
 					
 					if(is_confirm == 1){
 						if(is_reported == 1){
-							$('#visitListTableContent').append("<tr><td>" + my_date_format(date) + "</td><td><label>Salesman</label><p>" + visited_by + "</p><label>Created by</label><p>" + created_by + "</p></td><td><button class='button button_transparent' onclick='viewVisitList(" + id + ")'><i class='fa fa-eye'></i></button><button class='button button_verified' style='width:30px;height:30px' title='Confirmed by " + confirmed_by + "'><i class='fa fa-check'></i></button>&nbsp;&nbsp;<button class='button button_verified' style='width:30px;height:30px;opacity:0.5' title='Reported'><i class='fa fa-file-text-o'></i></button><br><br><p><strong>Confirmed by</strong> " + confirmed_by + "</p></td></tr>");
+							$('#visitListTableContent').append("<tr><td>" + my_date_format(date) + "</td><td><label>Salesman</label><p>" + visited_by + "</p><label>Created by</label><p>" + created_by + "</p></td><td><button class='button button_transparent' id='viewVisitListButton-" + id + "'><i class='fa fa-eye'></i></button><button class='button button_verified' style='width:30px;height:30px' title='Confirmed by " + confirmed_by + "'><i class='fa fa-check'></i></button>&nbsp;&nbsp;<button class='button button_verified' style='width:30px;height:30px;opacity:0.5' title='Reported'><i class='fa fa-file-text-o'></i></button><br><br><p><strong>Confirmed by</strong> " + confirmed_by + "</p></td></tr>");
 
-							$('#cancelReportButton').hide();
-							$('#deleteReportButton').show();
+							$('#viewVisitListButton-' + id).click(function(){
+								$('#cancelReportButton').hide();
+								$('#deleteReportButton').show();
 
-							$('#deleteReportButton').click(function(){
-								openDeleteConfirmation(id);
+								$('#deleteReportButton').click(function(){
+									openDeleteConfirmation(id);
+								});
+
+								viewVisitList(id);
 							});
 						} else {
-							$('#visitListTableContent').append("<tr><td>" + my_date_format(date) + "</td><td><label>Salesman</label><p>" + visited_by + "</p><label>Created by</label><p>" + created_by + "</p></td><td><button class='button button_transparent' onclick='viewVisitList(" + id + ")'><i class='fa fa-eye'></i></button><button class='button button_verified' style='width:30px;height:30px' title='Confirmed by " + confirmed_by + "'><i class='fa fa-check'></i></button><br><br><p><strong>Confirmed by</strong> " + confirmed_by + "</p></td></tr>");
-							$('#cancelReportButton').show();
-							$('#deleteReportButton').hide();
+							$('#visitListTableContent').append("<tr><td>" + my_date_format(date) + "</td><td><label>Salesman</label><p>" + visited_by + "</p><label>Created by</label><p>" + created_by + "</p></td><td><button class='button button_transparent' id='viewVisitListButton-" + id + "'><i class='fa fa-eye'></i></button><button class='button button_verified' style='width:30px;height:30px' title='Confirmed by " + confirmed_by + "'><i class='fa fa-check'></i></button><br><br><p><strong>Confirmed by</strong> " + confirmed_by + "</p></td></tr>");
 
-							$('#cancelReportButton').click(function(){
-								openCancelConfirmation(id);
+							$('#viewVisitListButton-' + id).click(function(){
+								$('#cancelReportButton').show();
+								$('#deleteReportButton').hide();
+
+								$('#cancelReportButton').click(function(){
+									openCancelConfirmation(id);
+								});
+
+								viewVisitList(id);
 							});
+							
 						}
 					} else {
-						$('#visitListTableContent').append("<tr><td>" + my_date_format(date) + "</td><td><label>Salesman</label><p>" + visited_by + "</p><label>Created by</label><p>" + created_by + "</p></td><td><button class='button button_transparent' onclick='viewVisitList(" + id + ")'><i class='fa fa-eye'></i></button></td></tr>");
-						$('#cancelReportButton').hide();
-						$('#deleteReportButton').hide();
+						$('#visitListTableContent').append("<tr><td>" + my_date_format(date) + "</td><td><label>Salesman</label><p>" + visited_by + "</p><label>Created by</label><p>" + created_by + "</p></td><td><button class='button button_transparent' id='viewVisitListButton-" + id + "'><i class='fa fa-eye'></i></button></td></tr>");
+
+						$('#viewVisitListButton-' + id).click(function(){
+							$('#cancelReportButton').hide();
+							$('#deleteReportButton').hide();
+							viewVisitList(id);
+						});
 					}
 					
 					itemCount++;

@@ -639,6 +639,7 @@ class Bank_model extends CI_Model {
 		{
 			$this->db->select_sum('value');
 			$this->db->select('transaction');
+			$this->db->where('bank_transaction_major', NULL);
 			$this->db->where('account_id', $account);
 			$this->db->where('date <', date("Y-m-d", strtotime($date)));
 			$this->db->group_by('transaction');
@@ -711,7 +712,6 @@ class Bank_model extends CI_Model {
 		public function getCurrentBalance($accountId)
 		{
 			$this->db->select_sum('value');
-			$this->db->where('is_delete', 0);
 			$this->db->where('account_id', $accountId);
 			$this->db->where('transaction', 2);
 			$this->db->where('bank_transaction_major', null);
@@ -720,7 +720,6 @@ class Bank_model extends CI_Model {
 			$debit		= $result->value;
 
 			$this->db->select_sum('value');
-			$this->db->where('is_delete', 0);
 			$this->db->where('account_id', $accountId);
 			$this->db->where('transaction', 1);
 			$this->db->where('bank_transaction_major', null);
@@ -1024,5 +1023,37 @@ class Bank_model extends CI_Model {
 			}
 
 			return $response;
+		}
+
+		public function getMutationByOpponent($id, $type, $offset = 0, $limit = 10)
+		{
+			$this->db->select('bank_transaction.*, internal_bank_account.name AS accountName');
+			$this->db->from('bank_transaction');
+			$this->db->join('internal_bank_account', 'internal_bank_account.id = bank_transaction.account_id');
+			$this->db->where("bank_transaction_major", NULL);
+			if($type == "Customer"){
+				$this->db->where('customer_id', $id);
+			} else if($type == "Supplier"){
+				$this->db->where('supplier_id', $id);
+			} else if($type == "Other"){
+				$this->db->where('other_id', $id);
+			}
+
+			$this->db->order_by("date", "desc");
+			$this->db->limit($limit, $offset);
+			$query			= $this->db->get();
+			$result			= $query->result();
+			array_reverse($result);
+			return $result;
+		}
+
+		public function countMutationByOpponent($id, $type)
+		{
+			$this->db->where("bank_transaction_major", NULL);
+			if($type == "Customer"){
+				$this->db->where('customer_id', $id);
+			}
+			$query			= $this->db->get($this->table_bank);
+			$result			= $query->num_rows();
 		}
 }

@@ -16,12 +16,7 @@
 		<label>User</label>
 		<button type='button' class='form-control' id='accountantButton' style='text-align:left'></button>
 		<br>
-		<button type='button' id='saveAccountantButton' class='button button_default_dark' disabled><i class='fa fa-long-arrow-right'></i></button> <button class='button button_danger_dark' id='selectAllCustomerButton' disabled>Assign All</button>
-		<br><br>
-		<div id='warningText' style='display:none'>
-			<label>Warning</label>
-			<p class="subtitleText">Assigning all customers to an accountang could lead to significant work change. Please be cautious to execute this operation.</p>
-		</div>
+		<button type='button' id='saveAccountantButton' class='button button_default_dark' disabled><i class='fa fa-long-arrow-right'></i></button>
 		<hr> 
 		<div id='customerTableWrapper' style='display:none'>
 			<input type='text' class='form-control' id='search_bar'>
@@ -63,21 +58,6 @@
 			</select>
 		</div>
 		<p id='accountantTableText'>There is no accountant available.</p>
-	</div>
-</div>
-
-<div class='alert_wrapper' id='selectAllCustomerWrapper'>
-	<div class='alert_box_confirm_wrapper'>
-		<div class='alert_box_confirm_icon'><i class='fa fa-trash'></i></div>
-		<div class='alert_box_confirm'>
-			<h3>Select All Confirmation</h3>
-			
-			<p>You are assign all customers to this accountant.</p>
-			<p>Are you sure?</p>
-			<button class='button button_default_dark' onclick="$('#selectAllCustomerWrapper').fadeOut()">Cancel</button>
-			<button class='button button_danger_dark' onclick='selectAllCustomer()'>Confirm</button>
-			<br><br><br>
-		</div>
 	</div>
 </div>
 
@@ -295,24 +275,4 @@
 	$('#selectAllCustomerButton').click(function(){
 		$('#selectAllCustomerWrapper').fadeIn();
 	});
-
-	function selectAllCustomer(){
-		$.ajax({
-			url:"<?= site_url('Customer/assignAllCustomersToAccountant') ?>",
-			data:{
-				accountant: accountantId
-			},
-			type:"POST",
-			beforeSend:function(){
-				$('input').attr('readonly', true);
-				$('button').attr('disabled', true);
-			},
-			success:function(){
-				refreshView();
-				$('input').attr('readonly', false);
-				$('button').attr('disabled', false);
-				$('#selectAllCustomerWrapper').fadeOut();
-			}
-		})
-	}
 </script>

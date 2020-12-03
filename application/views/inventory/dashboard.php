@@ -126,13 +126,13 @@
                         labels: labelArray,
                         datasets: [{
                             label: 'Confirmed Delivery Order',
-                            backgroundColor: 'rgba(43, 47, 56, 0.4)',
-                            borderColor: 'rgba(43, 47, 56, 1)',
+                            backgroundColor: 'rgba(225, 155, 60, 0.4)',
+                            borderColor: 'rgba(225, 155, 60, 1)',
                             data: confirmedArray
                         }, {
                             label: 'Sent Delivery Order',
-                            backgroundColor: 'rgba(225, 155, 60, 0.4)',
-                            borderColor: 'rgba(225, 155, 60, 1)',
+                            backgroundColor: 'rgba(1, 187, 0, 0.4)',
+                            borderColor: 'rgba(1, 187, 0, 1)',
                             data: sentArray
                         }],
                     },
