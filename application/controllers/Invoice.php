@@ -33,23 +33,11 @@ class Invoice extends CI_Controller {
 		$offset		= ($page - 1) * 10;
 		$accountant	= $this->session->userdata('user_id');
 
-		$this->load->model("User_model");
-		$user		= $this->User_model->getById($accountant);
-		if($user->access_level < 2){
-			$this->load->model('Delivery_order_model');
-			$result = $this->Delivery_order_model->getUninvoicedDeliveryOrders($type, $offset, $term, NULL);
-			$data['delivery_orders'] = $result;
-			
-			$result = $this->Delivery_order_model->countUninvoicedDeliveryOrders($type, $term, NULL);
-			$data['pages'] = max(1, ceil($result / 10));
-		} else {
-			$this->load->model('Delivery_order_model');
-			$result = $this->Delivery_order_model->getUninvoicedDeliveryOrders($type, $offset, $term, $accountant);
-			$data['delivery_orders'] = $result;
-			
-			$result = $this->Delivery_order_model->countUninvoicedDeliveryOrders($type, $term, $accountant);
-			$data['pages'] = max(1, ceil($result / 10));
-		}
+		$this->load->model('Delivery_order_model');
+		$result = $this->Delivery_order_model->getUninvoicedDeliveryOrders($type, $offset, $term);
+		$data['delivery_orders'] = $result;
+		$result = $this->Delivery_order_model->countUninvoicedDeliveryOrders($type, $term);
+		$data['pages'] = max(1, ceil($result / 10));
 		
 		header('Content-Type: application/json');
 		echo json_encode($data);

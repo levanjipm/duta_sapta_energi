@@ -247,8 +247,14 @@ class Bank_model extends CI_Model {
 		
 		public function countUnassignedTransactions($account, $type)
 		{
-			$this->db->where('account_id', $account);
-			$this->db->where('transaction', $type);
+			if($account != 0){
+				$this->db->where('account_id', $account);
+			}
+			
+			if($type != 0){
+				$this->db->where('transaction', $type);
+			}
+			
 			$this->db->where('is_done', 0);
 			$this->db->where('is_delete', 0);
 			$this->db->order_by('date');

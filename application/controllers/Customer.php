@@ -151,20 +151,6 @@ class Customer extends CI_Controller {
 		echo json_encode($data);
 	}
 
-	public function assignAccountantDashboard()
-	{
-		$user_id		= $this->session->userdata('user_id');
-		$this->load->model('User_model');
-		$data['user_login'] = $this->User_model->getById($user_id);
-		
-		$this->load->model('Authorization_model');
-		$data['departments']	= $this->Authorization_model->getByUserId($user_id);
-		
-		$this->load->view('head');
-		$this->load->view('accounting/header', $data);
-		$this->load->view('accounting/assignAccountantDashboard');
-	}
-
 	public function viewCustomerDetail($customerId)
 	{
 		$user_id		= $this->session->userdata('user_id');
@@ -186,45 +172,6 @@ class Customer extends CI_Controller {
 		$data['area'] = $this->Area_model->getItemById($customer->area_id);
 
 		$this->load->view('sales/Customer/detailDashboard', $data);
-	}
-
-	public function showCustomerAccountantItems()
-	{
-		$term		= $this->input->get('term');
-		$page		= $this->input->get('page');
-		$offset		= ($page - 1) * 10;
-		$user		= $this->input->get('accountant_id');
-
-		if(!isset($term)){
-			$this->load->model('Customer_model');
-			$data['customers'] = $this->Customer_model->showCustomerAccountantItems(0, "", $user, 0);
-		} else {
-			$this->load->model('Customer_model');
-			$data['customers'] = $this->Customer_model->showCustomerAccountantItems($offset, $term, $user);
-			$item = $this->Customer_model->countItems($term);
-			$data['pages'] = max(1, ceil($item / 10));
-		}
-		
-		header('Content-Type: application/json');
-		echo json_encode($data);
-	}
-
-	public function assignAccountant()
-	{
-		$includedCustomerArray = $this->input->post('included');
-		$excludedCustomerArray = $this->input->post('excluded');
-		$accountantId			= $this->input->post('accountant');
-
-		$this->load->model("Customer_accountant_model");
-		$this->Customer_accountant_model->updateByAccountant(0, $excludedCustomerArray, $accountantId);
-		$this->Customer_accountant_model->updateByAccountant(1, $includedCustomerArray, $accountantId);
-	}
-
-	public function assignAllCustomersToAccountant()
-	{
-		$accountantId = $this->input->post('accountant');
-		$this->load->model("Customer_accountant_model");
-		$includedResult = $this->Customer_accountant_model->updateByAccountant(2, array(), $accountantId);
 	}
 
 	public function getCurrentTarget()

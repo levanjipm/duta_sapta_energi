@@ -7,6 +7,19 @@
 			height: 400px;
 			width:100%;
 		}
+
+		.headerText{
+			font-family:sans-serif;
+			font-size:14px;
+			font-weight:700;
+		}
+
+		.bodyText{
+			font-family:sans-serif;
+			font-size:12px;
+			color:#333;
+			margin-bottom:0;
+		}
 	</style>
 	<script>
 		var includedAreas	= [];
@@ -68,6 +81,50 @@
 				map: map,
 				title: customer.name,
 				icon:'<?= base_url('assets/Icons/location.png') ?>'
+			});
+			var complete_address		= '';
+			complete_address		+= customer.address;
+			var customer_city			= customer.city;
+			var customer_number			= customer.number;
+			var customer_rt				= customer.rt;
+			var customer_rw				= customer.rw;
+			var customer_postal			= customer.postal_code;
+			var customer_block			= customer.block;
+			var customer_id				= customer.id;
+
+			if(customer_number != null){
+				complete_address	+= ' No. ' + customer_number;
+			}
+			
+			if(customer_block != null && customer_block != "000"){
+				complete_address	+= ' Blok ' + customer_block;
+			}
+		
+			if(customer_rt != '000'){
+				complete_address	+= ' RT ' + customer_rt;
+			}
+			
+			if(customer_rw != '000' && customer_rt != '000'){
+				complete_address	+= ' /RW ' + customer_rw;
+			}
+			
+			if(customer_postal != null){
+				complete_address	+= ', ' + customer_postal;
+			}
+
+			const contentString =
+				'<div id="content"><h4 class="headerText">' + customer.name + '</h4>' +
+				'<div id="bodyContent">' +
+				"<p class='bodyText'>" + complete_address + "</p>" +
+				"<p class='bodyText'>" + customer_city + "</p>" +
+				"</div>" +
+				"</div>";
+			const infowindow = new google.maps.InfoWindow({
+				content: contentString,
+			});
+
+			marker.addListener("click", () => {
+				infowindow.open(map, marker);
 			});
 
 			markers.push(marker);

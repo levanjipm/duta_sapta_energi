@@ -59,17 +59,21 @@
 <div class='alert_wrapper' id='salesOrderReportWrapper'>
 	<button class='slide_alert_close_button'>&times;</button>
 	<div class='alert_box_slide'>
-		<h3 style='font-family:bebasneue'>Sales Report Summary</h3>
+		<h3 style='font-family:bebasneue'>Sales Order Summary</h3>
 		<hr>
 		<label>Period</label>
 		<p id='monthP'></p>
 		<p id='yearP'></p>
 
-		<label>Sales Order Count</label>
+		<label>Sales Order</label>
 		<p id='salesOrderCount'></p>
+		<p>Average per sales order: <span id='salesOrderValueAverageP'></span></p>
 
 		<label>Customer Count</label>
 		<p id='customerCount'></p>
+
+		<label>Total Value</label>
+		<p id="totalValueP"></p>
 	</div>
 </div>
 
@@ -91,6 +95,7 @@
 <script>
 	var salesOrderCount = 0;
 	var customerCount	= 0;
+	var totalValue		= 0;
 
 	$(document).ready(function(){
 		refreshView();
@@ -155,10 +160,14 @@
 
 				salesOrderCount = 0;
 				customerCount	= 0;
+				totalValue		= 0;
 			},
 			success:function(response){
 				$.each(response, function(customerId, items){
-					$.each(items, function(date, count){
+					$.each(items, function(date, item){
+						var count		= parseInt(item.count);
+						var value		= parseFloat(item.value);
+
 						$('#customer-' + customerId + '-' + date).html(count);
 						$('#tableCustomer-' + customerId).parent().removeClass('emptyCustomer');
 						$('#customer-' + customerId + '-' + date).addClass('actived');
@@ -168,6 +177,7 @@
 						})
 
 						salesOrderCount		+= count;
+						totalValue			+= value;
 					})
 
 					customerCount++;
@@ -175,6 +185,8 @@
 
 				$('#salesOrderCount').html(numeral(salesOrderCount).format('0,0'));
 				$('#customerCount').html(numeral(customerCount).format('0,0'));
+				$('#totalValueP').html("Rp. " + numeral(totalValue).format('0,0.00'));
+				$('#salesOrderValueAverageP').html("Rp. " + numeral(totalValue / salesOrderCount).format('0,0.00'));
 			}
 		})
 	}

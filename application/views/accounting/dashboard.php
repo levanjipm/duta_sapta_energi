@@ -119,13 +119,13 @@
                 </div>
             </div>
 			<div class='col-md-4 col-sm-12 col-xs-12'>
-                <div class='dashboardBox' id='unassignedCustomersBox'>
+                <div class='dashboardBox clickable' onclick='window.location.href="<?= site_url('Bank/assignDashboard') ?>"'>
                     <div class='leftSide'>
-                        <h4><b>Unassigned</b></h4>
-                        <p>Customers</p>
+                        <h4><b>Pending</b></h4>
+                        <p>Bank Data</p>
                     </div>
                     <div class='rightSide'>
-                        <h3 id='pendingCustomers'></h3>
+                        <h3 id='pendingBank'></h3>
                         <p>&nbsp;</p>
                     </div>
                 </div>
@@ -189,48 +189,26 @@
 </div>
 <script>
 	$(document).ready(function(){
-		refreshInvoice();
-		refreshDebt();
-		refreshPendingCustomers();
+		getGeneralInformation();
 		getReceivable();
 		getPayable();
-	})
-	function refreshInvoice(){
-		$.ajax({
-			url:'<?= site_url('Accounting/getPendingInvoice') ?>',
-			success:function(response){
-				$('#pendingInvoice').html(response);
-			}
-		})
-	}
-
-	function refreshDebt()
-	{
-		$.ajax({
-			url:'<?= site_url('Accounting/getPendingDebt') ?>',
-			success:function(response){
-				$('#pendingDebt').html(response);
-			}
-		})
-	}
-
-	function refreshPendingCustomers()
-	{
-		$.ajax({
-			url:'<?= site_url('Accounting/getPendingCustomers') ?>',
-			success:function(response){
-				var unassigned = response.unassigned;
-				var total = response.total;
-				$('#pendingCustomers').html(numeral(unassigned).format('0,0') + " / " + numeral(total).format('0,0'));
-			}
-		})
-	}
-
-	$('#unassignedCustomersBox').click(function(){
-		if(<?= $user_login->access_level ?> > 1){
-			window.location.href='<?= site_url('Customer/assignAccountantDashboard') ?>';
-		}
 	});
+
+	function getGeneralInformation(){
+		$.ajax({
+			url:"<?= site_url('Accounting/getGeneralInformation') ?>",
+			success:function(response){
+				console.log(response);
+				var pendingInvoice = response.invoice;
+				var pendingDebt = response.debt;
+				var pendingBank	= response.bank;
+
+				$('#pendingInvoice').html(numeral(pendingInvoice).format('0,0'));
+				$('#pendingDebt').html(numeral(pendingDebt).format('0,0'));
+				$('#pendingBank').html(numeral(pendingBank).format('0,0'));
+			}
+		})
+	}
 
 	function getReceivable(){
 		$.ajax({

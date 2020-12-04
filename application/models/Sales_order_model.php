@@ -751,8 +751,15 @@ class Sales_order_model extends CI_Model {
 		public function getRecap($month, $year)
 		{
 			$query			= $this->db->query("
-				SELECT COUNT(code_sales_order.id) AS count, code_sales_order.customer_id, code_sales_order.date
+				SELECT COUNT(code_sales_order.id) AS count, code_sales_order.customer_id, code_sales_order.date, salesOrderTable.value AS value
 				FROM code_sales_order
+				JOIN (
+					SELECT SUM(price_list.price_list * sales_order.quantity * (100 - sales_order.discount) / 100) AS value, sales_order.code_sales_order_id
+					FROM sales_order
+					JOIN price_list ON sales_order.price_list_id = price_list.id
+					GROUP BY sales_order.code_sales_order_id
+				) salesOrderTable
+				ON code_sales_order.id = salesOrderTable.code_sales_order_id
 				WHERE MONTH(code_sales_order.date) = '$month'
 				AND YEAR(code_sales_order.date) = '$year'
 				AND code_sales_order.is_confirm = '1'
@@ -766,6 +773,7 @@ class Sales_order_model extends CI_Model {
 				$customerId		= $item->customer_id;
 				$count			= (int)$item->count;
 				$date			= date('d', strtotime($item->date));
+				$value			= $item->value;
 				
 				if(!array_key_exists($customerId, $response)){
 					$response[$customerId] = array();
@@ -773,9 +781,11 @@ class Sales_order_model extends CI_Model {
 
 				if(!array_key_exists($date, $response[$customerId]))
 				{
-					$response[$customerId][$date] = $count;
+					$response[$customerId][$date]['count'] = $count;
+					$response[$customerId][$date]['value'] = $value;
 				} else {
-					$response[$customerId][$date] += $count;
+					$response[$customerId][$date]['count'] += $count;
+					$response[$customerId][$date]['value'] += $value;
 				}
 			}
 

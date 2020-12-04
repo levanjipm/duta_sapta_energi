@@ -52,18 +52,17 @@ class Accounting extends CI_Controller {
 		$this->load->view('accounting/return/purchaseReturnDashboard');
 	}
 
-	public function getPendingInvoice()
-	{
+	public function getGeneralInformation(){
 		$this->load->model("Delivery_order_model");
-		$result			= $this->Delivery_order_model->countUninvoicedDeliveryOrders(0);
-		echo $result;
-	}
-
-	public function getPendingDebt()
-	{
+		$data['invoice']			= $this->Delivery_order_model->countUninvoicedDeliveryOrders(0);
 		$this->load->model("Good_receipt_model");
-		$result			= $this->Good_receipt_model->count_uninvoiced_documents(0);
-		echo $result;
+		$data['debt']			= $this->Good_receipt_model->count_uninvoiced_documents(0);
+
+		$this->load->model("Bank_model");
+		$data['bank']			= $this->Bank_model->countUnassignedTransactions(0, 0);
+
+		header('Content-Type: application/json');
+		echo json_encode($data);
 	}
 
 	public function getPendingCustomers()
