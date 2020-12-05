@@ -235,18 +235,63 @@
 			zoom: 8,
 		});
 		var bounds = new google.maps.LatLngBounds();
-		<?php foreach($customers as $customer){ ?>
-			<?php if($customer['latitude'] != null && $customer['longitude'] != 0){ ?>
-			var place = new google.maps.LatLng(<?= $customer['latitude'] ?>, <?= $customer['longitude'] ?>)
-			var marker = new google.maps.Marker({
-				position: place,
-				map: map,
-				title: "<?= $customer['name'] ?>",
-				icon:'<?= base_url('assets/Icons/location.png') ?>'
-			});
-			bounds.extend(place);
-			<?php } ?>
-		<?php } ?>
+		$.each(<?= json_encode($customers) ?>, function(index, customer){
+			if(customer.latitude != 0 && customer.latitude != null){
+				var place = new google.maps.LatLng(parseFloat(customer.latitude), parseFloat(customer.longitude));
+				var marker = new google.maps.Marker({
+					position: place,
+					map: map,
+					title: customer.name,
+					icon:'<?= base_url('assets/Icons/location.png') ?>'
+				});
+				var complete_address		= '';
+				complete_address		+= customer.address;
+				var customer_city			= customer.city;
+				var customer_number			= customer.number;
+				var customer_rt				= customer.rt;
+				var customer_rw				= customer.rw;
+				var customer_postal			= customer.postal_code;
+				var customer_block			= customer.block;
+				var customer_id				= customer.id;
+
+				if(customer_number != null){
+					complete_address	+= ' No. ' + customer_number;
+				}
+				
+				if(customer_block != null && customer_block != "000"){
+					complete_address	+= ' Blok ' + customer_block;
+				}
+			
+				if(customer_rt != '000'){
+					complete_address	+= ' RT ' + customer_rt;
+				}
+				
+				if(customer_rw != '000' && customer_rt != '000'){
+					complete_address	+= ' /RW ' + customer_rw;
+				}
+				
+				if(customer_postal != null){
+					complete_address	+= ', ' + customer_postal;
+				}
+
+				const contentString =
+					'<div id="content"><h4 class="headerText">' + customer.name + '</h4>' +
+					'<div id="bodyContent">' +
+					"<p class='bodyText'>" + complete_address + "</p>" +
+					"<p class='bodyText'>" + customer_city + "</p>" +
+					"</div>" +
+					"</div>";
+				const infowindow = new google.maps.InfoWindow({
+					content: contentString,
+				});
+
+				marker.addListener("click", () => {
+					infowindow.open(map, marker);
+				});
+
+				bounds.extend(marker.position);
+			}
+		})	
 		map.fitBounds(bounds);
 	}
 </script>

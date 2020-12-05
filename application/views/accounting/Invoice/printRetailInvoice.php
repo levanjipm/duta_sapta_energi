@@ -136,11 +136,11 @@
 					<tr>
 						<td><?= $reference ?></td>
 						<td><?= $name ?></td>
-						<td>Rp. <?= number_format($price_list,2) ?></td>
+						<td>Rp.&nbsp;<?= number_format($price_list,2) ?></td>
 						<td><?= number_format($discount,2) ?>%</td>
-						<td>Rp. <?= number_format($unit_price,2) ?></td>
+						<td>Rp.&nbsp;<?= number_format($unit_price,2) ?></td>
 						<td><?= number_format($quantity) ?></td>
-						<td>Rp. <?= number_format($item_value,2) ?></td>
+						<td>Rp.&nbsp;<?= number_format($item_value,2) ?></td>
 					</tr>
 <?php
 	}
@@ -154,10 +154,10 @@
 							<p>Grand total</p>
 						</td>
 						<td>
-							<p>Rp. <?= number_format($invoice_value,2) ?></p>
-							<p>Rp. <?= number_format($invoiceDiscount,2) ?></p>
-							<p>Rp. <?= number_format($invoiceDelivery,2) ?></p>
-							<p>Rp. <?= number_format($invoice_value - $invoiceDiscount + $invoiceDelivery,2) ?></p>
+							<p>Rp.&nbsp;<?= number_format($invoice_value,2) ?></p>
+							<p>Rp.&nbsp;<?= number_format($invoiceDiscount,2) ?></p>
+							<p>Rp.&nbsp; <?= number_format($invoiceDelivery,2) ?></p>
+							<p>Rp.&nbsp;<?= number_format($invoice_value - $invoiceDiscount + $invoiceDelivery,2) ?></p>
 						</td>
 					</tr>
 					<tr>

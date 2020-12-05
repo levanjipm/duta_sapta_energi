@@ -7,7 +7,7 @@
 	</div>
 	<br>
 	<div class='dashboard_in'>
-
+		<input type='text' id='customerlocationurl' style='margin-left:-5000px'>
 		<div id='visitListTable'>
 			<table class='table table-bordered'>
 				<tr>
@@ -55,6 +55,9 @@
 
 			<div class='notificationText danger' id='failedUpdateReport'><p>Failed to update report.</p></div>
 		</form>
+	</div>
+	<div class='alert_snackbar' id='customerLocation' style='left:0;right:0;margin:auto;max-width:350px;background-color:#21f6a8;color:white'>
+		<p>Successfully copied customer's location to clipboard</p>
 	</div>
 </div>
 
@@ -158,7 +161,14 @@
 						complete_address += ', ' + customer_postal;
 					}
 
-					$('#customerTableContent').append("<tr><td><label>" + name + "</label><p>" + complete_address + "</p></td><td><label>Result</label><select class='form-control' name='result[" + id + "]'><option value='0'>Failed</option><option value='1'>Success</option></select><label>Note</label><textarea class='form-control' name='note[" + id + "]' rows='3' style='resize:none' required minlength='10'></textarea></td></tr>");
+					var latitude		= item.latitude;
+					var longitude		= item.longitude;
+
+					if(latitude != null && latitude != 0){
+						$('#customerTableContent').append("<tr><td><label>" + name + "</label><p>" + complete_address + "</p><br><button class='button button_success_dark' type='button' onclick='shareLocation(" + latitude + "," + longitude + ")'><i class='fa fa-share-alt'></i> Share location</button></td><td><label>Result</label><select class='form-control' name='result[" + id + "]'><option value='0'>Failed</option><option value='1'>Success</option></select><label>Note</label><textarea class='form-control' name='note[" + id + "]' rows='3' style='resize:none' required minlength='10'></textarea></td></tr>");
+					} else {
+						$('#customerTableContent').append("<tr><td><label>" + name + "</label><p>" + complete_address + "</p></td><td><label>Result</label><select class='form-control' name='result[" + id + "]'><option value='0'>Failed</option><option value='1'>Success</option></select><label>Note</label><textarea class='form-control' name='note[" + id + "]' rows='3' style='resize:none' required minlength='10'></textarea></td></tr>");
+					}	
 				});
 			},
 			complete:function(){
@@ -197,5 +207,18 @@
 				}
 			})
 		}
+	}
+
+	function shareLocation(latitude, longitude){
+		var url = "https://maps.google.com/maps?q=" + latitude + "," + longitude;
+		$('#customerlocationurl').val(url);
+		var copyText = document.getElementById("customerlocationurl");
+		copyText.select();
+		document.execCommand("copy");
+
+		$('#customerLocation').fadeIn(250);
+		setTimeout(function(){
+			$('#customerLocation').fadeOut(250)
+		}, 1000);
 	}
 </script>

@@ -56,8 +56,13 @@
 				$.each(items, function(index, item){
 					var reference		= item.reference;
 					var name			= item.name;
+					var id				= item.id;
 
-					$('#itemTableContent').append("<tr><td>" + reference + "</td><td>" + name + "</td><td><button class='button button_default_dark'><i class='fa fa-eye'></i></button></td></tr>");
+					$('#itemTableContent').append("<tr><td>" + reference + "</td><td>" + name + "</td><td><button class='button button_default_dark' id='detailButton-" + id + "'><i class='fa fa-eye'></i></button></td></tr>");
+
+					$('#detailButton-' + id).click(function(){
+						window.location.href='<?= site_url('Item/viewDetail/') ?>' + reference;
+					})
 					itemCount++;
 				});
 

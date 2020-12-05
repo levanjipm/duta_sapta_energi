@@ -150,6 +150,7 @@
                 year: <?= date('Y') ?>
             },
             success:function(response){
+                console.log(response);
                 var headerArray = ["Customer", "Sales", { role: 'style'}];
                 customerData.push(headerArray);
                 var opacity = 1;

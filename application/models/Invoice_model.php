@@ -788,18 +788,19 @@ class Invoice_model extends CI_Model {
 		public function getByMonthYear($month, $year, $offset)
 		{
 			$query = $this->db->query("
-				SELECT (a.value - COALESCE(returnTable.value, 0)) AS value, a.name 
+				SELECT (a.value - COALESCE(returnTable.value, 0)) AS value, a.name, a.id
 				FROM (
-					SELECT COALESCE(SUM(invoice.value + invoice.delivery - invoice.discount), 0) as value, customer.name, customer.id
+					SELECT customer.name, customer.id, invoice.value
 					FROM invoice
-					JOIN code_delivery_order ON code_delivery_order.invoice_id = invoice.id
+					JOIN code_delivery_order ON invoice.id = code_delivery_order.invoice_id
 					JOIN delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order.id
 					JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
 					JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
 					JOIN customer ON code_sales_order.customer_id = customer.id
 					WHERE MONTH(invoice.date) = '$month'
 					AND YEAR(invoice.date) = '$year'
-					GROUP BY code_sales_order.customer_id
+					AND invoice.is_confirm = '1'
+					GROUP BY customer.id
 				) a
 				LEFT JOIN (
 					SELECT COALESCE(SUM(sales_return.price * sales_return_received.quantity), 0) AS value, code_sales_order.customer_id
@@ -814,7 +815,7 @@ class Invoice_model extends CI_Model {
 					GROUP BY code_sales_order.customer_id
 				) returnTable
 				ON returnTable.customer_id = a.id
-				ORDER BY value ASC
+				ORDER BY a.value ASC
 			");
 			$result = $query->result();
 			return $result;
@@ -1756,8 +1757,12 @@ class Invoice_model extends CI_Model {
 					JOIN sales_return ON sales_return_received.sales_return_id = sales_return.id
 					JOIN delivery_order ON sales_return.delivery_order_id = delivery_order.id
 					JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
+					JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
+					JOIN customer ON code_sales_order.customer_id = customer.id
 					JOIN price_list ON sales_order.price_list_id = price_list.id
 					WHERE code_sales_return_received.date <= '$offsetDate' AND code_sales_return_received.date >= '$limitDate'
+					AND code_sales_return_received.is_confirm = '1'
+					AND customer.area_id = '$areaId'
 					GROUP BY YEAR(code_sales_return_received.date), MONTH(code_sales_return_received.date)
 				)
 			");
@@ -1825,7 +1830,7 @@ class Invoice_model extends CI_Model {
 
 			foreach($result as $data){
 				$date			= $data->date;
-				$day			= date("d", strtotime($date));
+				$day			= (int)date("d", strtotime($date));
 				$response[$day]	= (float)$data->value;
 			}
 
