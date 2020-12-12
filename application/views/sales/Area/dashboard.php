@@ -3,7 +3,7 @@
 </head>
 <div class='dashboard'>
 	<div class='dashboard_head'>
-		<p style='font-family:museo'><a href='<?= site_url('Sales') ?>' title='Sales'><i class='fa fa-briefcase'></i></a> /Area</p>
+		<p style='font-family:museo'><a href='<?= site_url('Sales') ?>' title='Sales'><i class='fa fa-line-chart'></i></a> /Area</p>
 	</div>
 	<br>
 	<div class='dashboard_in'>

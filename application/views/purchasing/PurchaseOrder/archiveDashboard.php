@@ -9,7 +9,7 @@
 </head>
 <div class='dashboard'>
 	<div class='dashboard_head'>
-		<p style='font-family:museo'><a href='<?= site_url('Purchasing') ?>' title='Purchasing'><i class='fa fa-briefcase'></i></a> /Purchase Order / Archive</p>
+		<p style='font-family:museo'><a href='<?= site_url('Purchasing') ?>' title='Purchasing'><i class='fa fa-shopping-cart'></i></a> /Purchase Order / Archive</p>
 	</div>
 	<br>
 	<div class='dashboard_in'>

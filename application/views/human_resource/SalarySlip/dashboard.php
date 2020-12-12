@@ -3,7 +3,7 @@
 </head>
 <div class='dashboard'>
 	<div class='dashboard_head'>
-		<p style='font-family:museo'><a href='<?= site_url('Human_resource') ?>' title='Human resource'><i class='fa fa-briefcase'></i></a> /Salary slip</p>
+		<p style='font-family:museo'><a href='<?= site_url('Human_resource') ?>' title='Human resource'><i class='fa fa-user'></i></a> /Salary slip</p>
 	</div>
 	<br>
 	<div class='dashboard_in'>

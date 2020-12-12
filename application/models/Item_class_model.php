@@ -181,4 +181,48 @@ class Item_class_model extends CI_Model {
 			$result			= $query->num_rows();
 			return $result;	
 		}
+
+		public function getOutput($itemTypeId)
+		{
+			$query			= $this->db->query("
+				SELECT SUM(delivery_order.quantity) AS quantity, item_class.name, MONTH(code_delivery_order.date) AS month, YEAR(code_delivery_order.date) AS year
+				FROM delivery_order
+				JOIN code_delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order.id
+				JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
+				JOIN price_list ON sales_order.price_list_id = price_list.id
+				JOIN item ON price_list.item_id = item.id
+				JOIN item_class ON item.type = item_class.id
+				WHERE item.type = '$itemTypeId'
+				AND code_delivery_order.is_confirm = '1'
+				AND code_delivery_order.is_sent = '1'
+				GROUP BY MONTH(code_delivery_order.date), YEAR(code_delivery_order.date)
+			");
+
+			$result			= $query->result();
+			$response		= array();
+			foreach($result as $item){
+				$month			= $item->month;
+				$year			= $item->year;
+				$name			= $item->name;
+				$quantity		= $item->quantity;
+
+				$date			= mktime(0,0,0,$month, 1, $year);
+				$difference		= (-1) * (date('m', mktime(0,0,0,$month, 1, $year)) - date('m')) + 12 * (date("Y", mktime(0,0,0,$month, 1, $year)) - date("Y"));
+				$response[$difference]		= array(
+					"label" => date("M Y", $date),
+					"value" => (int)$quantity
+				);
+			}
+
+			for($i = 0 ; $i <= 12; $i++){
+				if(!array_key_exists($i, $response)){
+					$response[$i]		= array(
+						"label" => date("M Y", strtotime("-" . $i . "months")),
+						"value" => 0
+					);
+				}
+			}
+
+			return $response;
+		}
 }

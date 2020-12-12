@@ -9,7 +9,7 @@
 </head>
 <div class='dashboard'>
 	<div class='dashboard_head'>
-		<p style='font-family:museo'><a href='<?= site_url('Finance') ?>' title='Finance'><i class='fa fa-briefcase'></i></a> / Report Billing</p>
+		<p style='font-family:museo'><a href='<?= site_url('Finance') ?>' title='Finance'><i class='fa fa-usd'></i></a> / Report Billing</p>
 	</div>
 	<br>
 	<div class='dashboard_in'>
@@ -64,7 +64,6 @@
 			<tbody id='billingItemTable'></tbody>
 		</table>
 		</div>
-		<button class='button button_default_dark' type='button' onclick='submitBillingReport()'><i class='fa fa-long-arrow-right'></i></button>
 	</div>
 </div>
 
@@ -221,8 +220,8 @@
 
 					$('#billingItemTable').append("<tr><td>" + my_date_format(date) + "</td><td>" + name + "</td><td><label>" + customerName + "</label><p>" + complete_address + "</p><p>" + customer_city + "</p></td><td>Rp. " + numeral(remainder).format('0,0.00') + "</td><td><label>Result</label><p>" + resultText + "</p><label>Note</label><p>" + noteText + "</p><label>NextBillingDate</label><p>" + nextBillingDateText + "</p></td></tr>");
 				})
-					
-
+			},
+			complete:function(){
 				$('#billingWrapper').fadeIn(300, function(){
 					$('#billingWrapper .alert_box_slide').show("slide", { direction: "right" }, 250);
 				});

@@ -3,14 +3,14 @@
 </head>
 <div class='dashboard'>
 	<div class='dashboard_head'>
-		<p style='font-family:museo'><a href='<?= site_url('Finance') ?>' title='Finance'><i class='fa fa-briefcase'></i></a> /Bank/ Account</p>
+		<p style='font-family:museo'><a href='<?= site_url('Finance') ?>' title='Finance'><i class='fa fa-usd'></i></a> /Bank/ Account</p>
 	</div>
 	<br>
 	<div class='dashboard_in'>
 		<div class='input_group'>
 			<input type='text' class='form-control' id='search_bar'>
 			<div class='input_group_append'>
-				<button type='button' class='button button_default_dark' id='addBankAccountButton'>Create new</button>
+				<button type='button' class='button button_default_dark' id='addBankAccountButton'><i class='fa fa-plus'></i> Create new</button>
 			</div>
 		</div>
 		<br>

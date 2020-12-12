@@ -165,7 +165,7 @@ class Api extends CI_Controller {
         $postdata = file_get_contents("php://input");
         $customerUID         = $postdata;
         $this->load->model("Sales_order_model");
-        $data       = $this->Sales_order_model->getByCustomerUID($customerUID);
+        $data       = $this->Sales_order_model->getByCustomerUIDMonthly($customerUID);
         $result     = array();
         foreach($data as $datum){
             $year       = $datum->year;
@@ -180,6 +180,29 @@ class Api extends CI_Controller {
             );
         }
         echo json_encode($result);
+    }
+
+    public function getSalesOrderHistory()
+    {
+        header('Access-Control-Allow-Origin: *');
+        header("Access-Control-Allow-Methods: *");
+        header("Content-Type:application/json");
+        
+        $id             = $this->input->get('id');
+        $this->load->model("Sales_order_model");
+        $data           = $this->Sales_order_model->getByCustomerUid($id);
+        echo json_encode($data);
+    }
+
+    public function getSalesOrderByName($name)
+    {
+        header('Access-Control-Allow-Origin: *');
+        header("Access-Control-Allow-Methods: *");
+        header("Content-Type:application/json");
+
+        $this->load->model("Sales_order_model");
+        $data           = $this->Sales_order_model->getByName($name);
+        echo json_encode($data);
     }
 }
 ?>

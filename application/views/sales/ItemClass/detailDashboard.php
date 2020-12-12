@@ -1,9 +1,10 @@
 <head>
 	<title>Manage item classes</title>
+	<script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
 </head>
 <div class='dashboard'>
 	<div class='dashboard_head'>
-		<p style='font-family:museo'><a href='<?= site_url('Sales') ?>' title='Sales'><i class='fa fa-briefcase'></i></a> /<a href='<?= site_url('Item_class') ?>'>Item classes</a> / <?= $general->name ?></p>
+		<p style='font-family:museo'><a href='<?= site_url('Sales') ?>' title='Sales'><i class='fa fa-line-chart'></i></a> /<a href='<?= site_url('Item_class') ?>'>Item classes</a> / <?= $general->name ?></p>
 	</div>
 	<br>
 	<div class='dashboard_in'>
@@ -29,10 +30,23 @@
 			</div>
 			<p id='itemTableText'>There is no item found.</p>
 		</div>
+		<div class='viewPane' id='analyticsView' style='display:none'>
+			<div class="row">
+				<div class="col-sm-8">
+					<label>Monthly output</label>
+					<canvas id='lineChart' width="100" height="40"></canvas'>
+				</div>
+				<div class="col-sm-4">
+					<label>
+				</div>
+			</div>
+		</div>
 	</div>
 </div>
 
 <script>
+	var myLineChart;
+
 	$(document).ready(function(){
 		getItemsByClass(1);
 		$('#itemButton').click();
@@ -41,6 +55,10 @@
 	$('#itemPage').change(function(){
 		getItemsByClass();
 	});
+
+	$("#analyticsButton").click(function(){
+		getAnalyticsByClass();
+	})
 
 	function getItemsByClass(page = $('#itemPage').val()){
 		$.ajax({
@@ -87,6 +105,54 @@
 		})
 	}
 
+	function getAnalyticsByClass(){
+		$.ajax({
+			url:"<?= site_url('Item_class/getAnalyticsById') ?>",
+			data:{
+				id: <?= $general->id ?>
+			},
+			success:function(response){
+				var ctx = document.getElementById('lineChart').getContext('2d');
+				var labelArray		= [];
+				var valueArray		= [];
+
+				var data			= response.output;
+				$.each(data, function(index, value){
+					labelArray.push(value.label);
+					valueArray.push(value.value);
+				});
+
+				valueArray.reverse();
+				labelArray.reverse();
+
+				myLineChart = new Chart(ctx, {
+					type: 'line',
+					data: {
+						labels: labelArray,
+						datasets: [{
+							backgroundColor: 'rgba(225, 155, 60, 0.4)',
+							borderColor: 'rgba(225, 155, 60, 1)',
+							data: valueArray,
+							click:function(e){
+								alert(e);
+							}
+						}],
+					},
+					options: {
+						legend:{
+							display:false
+						}
+					}
+				});
+			} 
+		})
+	}
+
+	$("#lineChart").click(function(e) {
+		var activeBars = myLineChart.getElementsAtEvent(e); 
+		console.log(activeBars[0]);
+	});
+
 	$('.button_mini_tab').click(function(){
 		$('.viewPane').fadeOut(300);
 		$('.button_mini_tab').removeClass('active');
@@ -99,6 +165,12 @@
 	$('#itemButton').click(function(){
 		setTimeout(function(){
 			$('#itemView').fadeIn(300);
+		}, 300);
+	})
+
+	$('#analyticsButton').click(function(){
+		setTimeout(function(){
+			$('#analyticsView').fadeIn(300);
 		}, 300);
 	})
 </script>

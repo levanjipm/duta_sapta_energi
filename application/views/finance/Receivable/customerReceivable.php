@@ -8,7 +8,7 @@
 </head>
 <div class='dashboard'>
 	<div class='dashboard_head'>
-		<p style='font-family:museo'><a href='<?= site_url('Finance') ?>' title='Finance'><i class='fa fa-briefcase'></i></a> /<a href='<?= site_url('Receivable/finance') ?>'>Receivable</a> / <?= $customerName ?></p>
+		<p style='font-family:museo'><a href='<?= site_url('Finance') ?>' title='Finance'><i class='fa fa-usd'></i></a> /<a href='<?= site_url('Receivable/finance') ?>'>Receivable</a> / <?= $customerName ?></p>
 	</div>
 	<br>
 	<div class='dashboard_in'>
@@ -17,7 +17,7 @@
 		<p><?= $customerAddress ?></p>
 		<p><?= $customerCity ?></p>
 
-		<label>Receivable</label><a role='button' href='<?= site_url("Receivable/viewFinanceCompleteByCustomerId/") . $customer->id ?>' class='button button_mini_tab'><i class='fa fa-history'></i></a>
+		<label>Receivable</label>
 		<div id='receivableTable'>
 			<table class='table table-bordered'>
 				<tr>

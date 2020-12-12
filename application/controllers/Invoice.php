@@ -507,4 +507,32 @@ class Invoice extends CI_Controller {
 		header('Content-Type: application/json');
 		echo json_encode($data);
 	}
+
+	public function getRecap()
+	{
+		$month			= $this->input->get('month');
+		$year			= $this->input->get('year');
+		$this->load->model("Invoice_model");
+		$data		= $this->Invoice_model->getRecap($month, $year);
+
+		header('Content-Type: application/json');
+		echo json_encode($data);
+	}
+
+	public function getByCustomerIdDate()
+	{
+		$customerId		= $this->input->get('id');
+		$date			= $this->input->get('date');
+		$month			= $this->input->get('month');
+		$year			= $this->input->get('year');
+
+		$this->load->model("Invoice_model");
+		$data['items']			= $this->Invoice_model->getByCustomerIdDate($customerId, date("Y-m-d", mktime(0,0,0,$month, $date, $year)));
+
+		$this->load->model("Customer_model");
+		$data['customer']			= $this->Customer_model->getById($customerId);
+
+		header('Content-Type: application/json');
+		echo json_encode($data);
+	}
 }

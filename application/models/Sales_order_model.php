@@ -161,6 +161,7 @@ class Sales_order_model extends CI_Model {
 					WHERE is_confirm = '1'	
 				)
 				AND (code_sales_order.name LIKE '%$term%' OR customer.name LIKE '%$term%' OR customer.city LIKE '%$term%')
+				ORDER BY code_sales_order.date ASC, customer.name ASC
 				LIMIT 10 OFFSET $offset
 			");
 
@@ -731,7 +732,7 @@ class Sales_order_model extends CI_Model {
 			return $result;
 		}
 
-		public function getByCustomerUID($customerUID)
+		public function getByCustomerUIDMonthly($customerUID)
 		{
 			$query			= $this->db->query("
 				SELECT SUM(price_list.price_list * (100 - sales_order.discount) * sales_order.quantity / 100) AS value, SUM(price_list.price_list * (100 - sales_order.discount) * sales_order.sent / 100) AS sentValue, MONTH(code_sales_order.date) AS month, YEAR(code_sales_order.date) AS year
@@ -831,5 +832,79 @@ class Sales_order_model extends CI_Model {
 			}
 
 			return $response;
+		}
+
+		public function getByCustomerUid($customerUID)
+		{
+			$query			= $this->db->query("
+				SELECT code_sales_order.date, code_sales_order.name, salesOrderTable.value, IF(salesOrderStatusTable.status = 0, 1, 0) AS status
+				FROM code_sales_order
+				JOIN customer ON code_sales_order.customer_id = customer.id
+				JOIN (
+					SELECT SUM(sales_order.quantity * price_list.price_list * ( 100 - sales_order.discount ) / 100) AS value, sales_order.code_sales_order_id
+					FROM sales_order
+					JOIN price_list ON sales_order.price_list_id = price_list.id
+					GROUP BY sales_order.code_sales_order_id
+				) salesOrderTable
+				ON salesOrderTable.code_sales_order_id = code_sales_order.id
+				JOIN (
+					SELECT SUM(a.count) AS status, a.code_sales_order_id
+					FROM (
+						SELECT COUNT(sales_order.id) AS count, sales_order.code_sales_order_id
+						FROM sales_order
+						JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
+						JOIN customer ON code_sales_order.customer_id = customer.id
+						WHERE customer.uid = '$customerUID'
+						GROUP BY sales_order.code_sales_order_id
+						UNION (
+							SELECT (-1 * COUNT(sales_order.id)) AS count, sales_order.code_sales_order_id
+							FROM sales_order
+							JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
+							JOIN customer ON code_sales_order.customer_id = customer.id
+							WHERE customer.uid = '$customerUID'
+							AND sales_order.status = '1'
+							GROUP BY sales_order.code_sales_order_id
+						)
+					) a
+					GROUP BY a.code_sales_order_id
+				) salesOrderStatusTable
+				ON salesOrderStatusTable.code_sales_order_id = code_sales_order.id
+				WHERE customer.uid = '$customerUID'
+				AND code_sales_order.is_confirm = '1'
+				ORDER BY code_sales_order.date DESC
+			");
+
+			$result			= $query->result();
+			foreach($result as $item){
+				$item->value		= (float) $item->value;
+			}
+
+			return $result;
+		}
+
+		public function getByName($name)
+		{
+			$this->db->where('name', $name);
+			$query			= $this->db->get($this->table_sales_order);
+			$result			= $query->row();
+		
+			if($result != null){
+				$response		= array();
+				$query			= $this->db->query("
+					SELECT item.name, item.reference, sales_order.quantity, sales_order.sent, sales_order.discount, price_list.price_list
+					FROM sales_order
+					JOIN price_list ON sales_order.price_list_id = price_list.id
+					JOIN item ON price_list.item_id = item.id
+					WHERE sales_order.code_sales_order_id = '$result->id'
+				");
+
+				$items			= $query->result();
+				$response		= (array) $result;
+				$response['items']	= (array) $items;
+
+				return $response;
+			} else {
+				return null;
+			}
 		}
 }

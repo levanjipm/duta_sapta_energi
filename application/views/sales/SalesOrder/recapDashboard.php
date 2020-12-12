@@ -17,17 +17,21 @@
 </head>
 <div class='dashboard'>
 	<div class='dashboard_head'>
-		<p style='font-family:museo'><a href='<?= site_url('Sales') ?>' title='Sales'><i class='fa fa-briefcase'></i></a> /<a href='<?= site_url('Sales order') ?>'>Sales order</a> / Recap</p>
+		<p style='font-family:museo'><a href='<?= site_url('Sales') ?>' title='Sales'><i class='fa fa-line-chart'></i></a> /<a href='<?= site_url('Sales order') ?>'>Sales order</a> / Recap</p>
 	</div>
 	<br>
 	<div class='dashboard_in'>
 		<div class='input_group'>
-			<select class='form-control' id='month'>
+			<select class='form-control' id='type' onchange='refreshView(1)'>
+				<option value='1'>Sales Order</option>
+				<option value='2'>Invoices</option>
+			</select>
+			<select class='form-control' id='month' onchange='refreshView(1)'>
 			<?php for($i = 1; $i <= 12; $i++){ ?>
 				<option value='<?= $i ?>' <?php if($i == date('m')){ echo('selected');} ?>><?= date('F', mktime(0,0,0,$i, 1)) ?></option>
 			<?php } ?>
 			</select>
-			<select class='form-control' id='year'>
+			<select class='form-control' id='year' onchange='refreshView(1)'>
 			<?php for($i = 2020; $i <= date('Y'); $i++){ ?>
 				<option value='<?= $i ?>' <?= ($i == date('Y')) ? 'selected': '' ?>><?= $i ?></option>
 			<?php } ?>
@@ -87,8 +91,21 @@
 		<p id='customerAddressP'></p>
 		<p id='customerCityP'></p>
 
-		<label>Sales Orders</label>
-		<div id='salesOrders'></div>
+		<div id='salesOrdersWrapper'>
+			<label>Sales Orders</label>
+			<div id='salesOrders'></div>
+		</div>
+		<div id='invoicesWrapper'>
+			<label>Invoices</label>
+			<table class='table table-bordered'>
+				<tr>
+					<th>Date</th>
+					<th>Invoice</th>
+					<th>Value</th>
+				</tr>
+				<tbody id='invoices'></tbody>
+			</table>
+		</div>
 	</div>
 </div>
 
@@ -101,109 +118,181 @@
 		refreshView();
 	});
 
-	$('#month').change(function(){
-		refreshView(1);
-	})
-
-	$('#year').change(function(){
-		refreshView(1);
-	})
-
 	function refreshView(page = $('#page').val()){
 		var month	= $('#month').val();
 		var year	= $('#year').val();
+		var type	= $('#type').val();
 
-		$.ajax({
-			url:"<?= site_url("Sales_order/getRecap") ?>",
-			data:{
-				month: month,
-				year: year
-			},
-			beforeSend:function(){
-				var monthArray		= ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+		if(type == 1){
+			$.ajax({
+				url:"<?= site_url("Sales_order/getRecap") ?>",
+				data:{
+					month: month,
+					year: year
+				},
+				beforeSend:function(){
+					var monthArray		= ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
-				$('#monthP').html(monthArray[month - 1]);
-				$('#yearP').html(year);
-				$('#tableHeader').siblings().remove();
-				var lastDayDate = new Date(year, month, 0);
-				var lastDay		= lastDayDate.getDay();
-				var lastDate	= lastDayDate.getDate();
-				
-				for(i = lastDate; i >= 1; i--){
-					var dayDate	= new Date(year, (month - 1), i);
-					var date	= dayDate.getDay();
-					if(date != 0){
-						$('#tableHeader').after("<th>" + i + "</th>")
-					}
-				}
-
-				var lastDayDate = new Date(year, month, 0);
-				var lastDay		= lastDayDate.getDay();
-				var lastDate	= lastDayDate.getDate();
-				$('td[id^="tableCustomer-"]').each(function(){
-					$(this).siblings().remove();
-					var tableCustomerId	= $(this).attr('id');
-					var tableCustomerUid	= parseInt(tableCustomerId.substr(14, 269));
-					$('#tableCustomer-' + tableCustomerUid).parent().removeClass('emptyCustomer');
-					$('#tableCustomer-' + tableCustomerUid).parent().addClass('emptyCustomer');
+					$('#monthP').html(monthArray[month - 1]);
+					$('#yearP').html(year);
+					$('#tableHeader').siblings().remove();
+					var lastDayDate = new Date(year, month, 0);
+					var lastDay		= lastDayDate.getDay();
+					var lastDate	= lastDayDate.getDate();
+					
 					for(i = lastDate; i >= 1; i--){
 						var dayDate	= new Date(year, (month - 1), i);
 						var date	= dayDate.getDay();
 						if(date != 0){
-							$('#tableCustomer-' + tableCustomerUid).after("<td id='customer-" + tableCustomerUid + "-" + i + "'></td>");
+							$('#tableHeader').after("<th>" + i + "</th>")
 						}
 					}
-				});
 
-				$('#hideEmptyButton').show();
-				$('#showEmptyButton').hide();
+					var lastDayDate = new Date(year, month, 0);
+					var lastDay		= lastDayDate.getDay();
+					var lastDate	= lastDayDate.getDate();
+					$('td[id^="tableCustomer-"]').each(function(){
+						$(this).siblings().remove();
+						var tableCustomerId	= $(this).attr('id');
+						var tableCustomerUid	= parseInt(tableCustomerId.substr(14, 269));
+						$('#tableCustomer-' + tableCustomerUid).parent().removeClass('emptyCustomer');
+						$('#tableCustomer-' + tableCustomerUid).parent().addClass('emptyCustomer');
+						for(i = lastDate; i >= 1; i--){
+							var dayDate	= new Date(year, (month - 1), i);
+							var date	= dayDate.getDay();
+							if(date != 0){
+								$('#tableCustomer-' + tableCustomerUid).after("<td id='customer-" + tableCustomerUid + "-" + i + "'></td>");
+							}
+						}
+					});
 
-				salesOrderCount = 0;
-				customerCount	= 0;
-				totalValue		= 0;
-			},
-			success:function(response){
-				$.each(response, function(customerId, items){
-					$.each(items, function(date, item){
-						var count		= parseInt(item.count);
-						var value		= parseFloat(item.value);
+					$('#hideEmptyButton').show();
+					$('#showEmptyButton').hide();
 
-						$('#customer-' + customerId + '-' + date).html(count);
-						$('#tableCustomer-' + customerId).parent().removeClass('emptyCustomer');
-						$('#customer-' + customerId + '-' + date).addClass('actived');
+					$('.emptyCustomer').show();
 
-						$('#customer-' + customerId + '-' + date).click(function(){
-							viewSalesOrdersByCustomerIdDate(customerId, date, month, year);
+					salesOrderCount = 0;
+					customerCount	= 0;
+					totalValue		= 0;
+				},
+				success:function(response){
+					$.each(response, function(customerId, items){
+						$.each(items, function(date, item){
+							var count		= parseInt(item.count);
+							var value		= parseFloat(item.value);
+
+							$('#customer-' + customerId + '-' + date).html(count);
+							$('#tableCustomer-' + customerId).parent().removeClass('emptyCustomer');
+							$('#customer-' + customerId + '-' + date).addClass('actived');
+
+							$('#customer-' + customerId + '-' + date).click(function(){
+								viewSalesOrdersByCustomerIdDate(customerId, date, month, year);
+							})
+
+							salesOrderCount		+= count;
+							totalValue			+= value;
 						})
 
-						salesOrderCount		+= count;
-						totalValue			+= value;
-					})
+						customerCount++;
+					});
 
-					customerCount++;
-				});
+					$('#salesOrderCount').html(numeral(salesOrderCount).format('0,0'));
+					$('#customerCount').html(numeral(customerCount).format('0,0'));
+					$('#totalValueP').html("Rp. " + numeral(totalValue).format('0,0.00'));
+					$('#salesOrderValueAverageP').html("Rp. " + numeral(totalValue / salesOrderCount).format('0,0.00'));
+				}
+			})
+		} else {
+			$.ajax({
+				url:"<?= site_url("Invoice/getRecap") ?>",
+				data:{
+					month: month,
+					year: year
+				},
+				beforeSend:function(){
+					var monthArray		= ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
-				$('#salesOrderCount').html(numeral(salesOrderCount).format('0,0'));
-				$('#customerCount').html(numeral(customerCount).format('0,0'));
-				$('#totalValueP').html("Rp. " + numeral(totalValue).format('0,0.00'));
-				$('#salesOrderValueAverageP').html("Rp. " + numeral(totalValue / salesOrderCount).format('0,0.00'));
-			}
-		})
+					$('#monthP').html(monthArray[month - 1]);
+					$('#yearP').html(year);
+					$('#tableHeader').siblings().remove();
+					var lastDayDate = new Date(year, month, 0);
+					var lastDay		= lastDayDate.getDay();
+					var lastDate	= lastDayDate.getDate();
+					
+					for(i = lastDate; i >= 1; i--){
+						var dayDate	= new Date(year, (month - 1), i);
+						var date	= dayDate.getDay();
+						if(date != 0){
+							$('#tableHeader').after("<th>" + i + "</th>")
+						}
+					}
+
+					var lastDayDate = new Date(year, month, 0);
+					var lastDay		= lastDayDate.getDay();
+					var lastDate	= lastDayDate.getDate();
+					$('td[id^="tableCustomer-"]').each(function(){
+						$(this).siblings().remove();
+						var tableCustomerId	= $(this).attr('id');
+						var tableCustomerUid	= parseInt(tableCustomerId.substr(14, 269));
+						$('#tableCustomer-' + tableCustomerUid).parent().removeClass('emptyCustomer');
+						$('#tableCustomer-' + tableCustomerUid).parent().addClass('emptyCustomer');
+						for(i = lastDate; i >= 1; i--){
+							var dayDate	= new Date(year, (month - 1), i);
+							var date	= dayDate.getDay();
+							if(date != 0){
+								$('#tableCustomer-' + tableCustomerUid).after("<td id='customer-" + tableCustomerUid + "-" + i + "'></td>");
+							}
+						}
+					});
+
+					$('#hideEmptyButton').show();
+					$('#showEmptyButton').hide();
+
+					$('.emptyCustomer').show();
+
+					salesOrderCount = 0;
+					customerCount	= 0;
+					totalValue		= 0;
+				},
+				success:function(response){
+					$.each(response, function(customerId, items){
+						$.each(items, function(date, item){
+							var count		= parseInt(item.count);
+							var value		= parseFloat(item.value);
+
+							$('#customer-' + customerId + '-' + date).html(count);
+							$('#tableCustomer-' + customerId).parent().removeClass('emptyCustomer');
+							$('#customer-' + customerId + '-' + date).addClass('actived');
+
+							$('#customer-' + customerId + '-' + date).click(function(){
+								viewInvoicesByCustomerIdDate(customerId, date, month, year);
+							})
+
+							salesOrderCount		+= count;
+							totalValue			+= value;
+						})
+
+						customerCount++;
+					});
+
+					$('#salesOrderCount').html(numeral(salesOrderCount).format('0,0'));
+					$('#customerCount').html(numeral(customerCount).format('0,0'));
+					$('#totalValueP').html("Rp. " + numeral(totalValue).format('0,0.00'));
+					$('#salesOrderValueAverageP').html("Rp. " + numeral(totalValue / salesOrderCount).format('0,0.00'));
+				}
+			})
+		}
 	}
 
 	$('#hideEmptyButton').click(function(){
-		$('.emptyCustomer').each(function(){
-			$(this).hide();
-		});
+		$('.emptyCustomer').hide();
 
 		$('#showEmptyButton').show();
 		$('#hideEmptyButton').hide();
 	});
 
 	$('#showEmptyButton').click(function(){
-		$('.emptyCustomer').each(function(){
-			$(this).show();
-		})
+		$('.emptyCustomer').show();
 
 		$('#showEmptyButton').hide();
 		$('#hideEmptyButton').show();
@@ -212,6 +301,75 @@
 	function viewReport(){
 		$('#salesOrderReportWrapper').fadeIn(300, function(){
 			$('#salesOrderReportWrapper .alert_box_slide').show("slide", { direction: "right" }, 250);
+		});
+	}
+
+	function viewInvoicesByCustomerIdDate(customerId, date, month, year){
+		$.ajax({
+			url:"<?= site_url('Invoice/getByCustomerIdDate') ?>",
+			data:{
+				date: date,
+				month: month, 
+				year: year,
+				id: customerId
+			},
+			beforeSend:function(){
+				$('#salesOrders').html("");
+				$('#invoices').html("");
+				$('#invoicesWrapper').show();
+				$('#salesOrdersWrapper').hide();
+			},
+			success:function(response){
+				var customer				= response.customer;
+				var complete_address		= '';
+				var customer_name			= customer.name;
+				complete_address			+= customer.address;
+				var customer_city			= customer.city;
+				var customer_number			= customer.number;
+				var customer_rt				= customer.rt;
+				var customer_rw				= customer.rw;
+				var customer_postal			= customer.postal_code;
+				var customer_block			= customer.block;
+				var customer_id				= customer.id;
+	
+				if(customer_number != null){
+					complete_address	+= ' No. ' + customer_number;
+				}
+				
+				if(customer_block != null && customer_block != "000"){
+					complete_address	+= ' Blok ' + customer_block;
+				}
+			
+				if(customer_rt != '000'){
+					complete_address	+= ' RT ' + customer_rt;
+				}
+				
+				if(customer_rw != '000' && customer_rt != '000'){
+					complete_address	+= ' /RW ' + customer_rw;
+				}
+				
+				if(customer_postal != null){
+					complete_address	+= ', ' + customer_postal;
+				}
+
+				$('#customerNameP').html(customer_name);
+				$('#customerAddressP').html(complete_address);
+				$('#customerCityP').html(customer_city);
+
+				var invoices		= response.items;
+				var element			= "";
+				$.each(invoices, function(index, invoice){
+					var name			= invoice.name;
+					var date			= invoice.date;
+					var value			= invoice.value;
+					$('#invoices').append("<tr><td>" + my_date_format(date) + "</td><td>" + name + "</td><td>Rp. " + numeral(value).format('0,0.00') + "</td></tr>");
+				});
+			},
+			complete:function(){
+				$('#salesOrderWrapper').fadeIn(300, function(){
+					$('#salesOrderWrapper .alert_box_slide').show("slide", { direction: "right" }, 250);
+				});
+			}
 		});
 	}
 
@@ -226,6 +384,9 @@
 			},
 			beforeSend:function(){
 				$('#salesOrders').html("");
+				$('#invoices').html("");
+				$('#invoicesWrapper').hide();
+				$('#salesOrdersWrapper').show();
 			},
 			success:function(response){
 				var customer				= response.customer;

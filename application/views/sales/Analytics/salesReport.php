@@ -26,7 +26,7 @@
 </head>
 <div class='dashboard'>
 	<div class='dashboard_head'>
-		<p style='font-family:museo'><a href='<?= site_url('Sales') ?>' title='Inventory'><i class='fa fa-briefcase'></i></a> /<a href='<?= site_url('SalesAnalytics') ?>'>Analytics</a> / Sales Report</p>
+		<p style='font-family:museo'><a href='<?= site_url('Sales') ?>' title='Inventory'><i class='fa fa-line-chart'></i></a> /<a href='<?= site_url('SalesAnalytics') ?>'>Analytics</a> / Sales Report</p>
 	</div>
 	<br>
 	<div class='dashboard_in'>
@@ -43,7 +43,6 @@
 				<p><?= date('F Y', mktime(0,0,0,$month, 1, $year)) ?></p>
 
 				<label>Action</label>
-				<br>
 				<form action='<?= site_url('SalesAnalytics/exportSalesReportCSV') ?>' method="POST">
 					<input type='hidden' name='month' value='<?= $month ?>'>
 					<input type='hidden' name='year' value='<?= $year ?>'>
@@ -72,7 +71,7 @@
 			</div>
 			<div class='col-xs-12'>
 	<?php if(count($customers) > 0){ ?>
-				<br><br>
+				<br>
 				<table class='table table-bordered'>
 					<tr>
 						<th>Customer</th>

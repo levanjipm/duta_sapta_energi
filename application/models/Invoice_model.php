@@ -1069,7 +1069,8 @@ class Invoice_model extends CI_Model {
 				");
 			}
 
-			$result = $query->result();
+			$result = $query->affected_rows();
+			return $result;
 		}
 
 		public function calculateAspect($aspect, $month, $year)
@@ -1835,6 +1836,76 @@ class Invoice_model extends CI_Model {
 			}
 
 			return $response;
+		}
+
+		public function getRecap($month, $year)
+		{
+			$query			= $this->db->query("
+				SELECT invoice.date, invoice.value, deliveryOrderTable.customer_id
+				FROM invoice
+				JOIN (
+					SELECT DISTINCT(code_delivery_order.invoice_id) AS id, code_sales_order.customer_id
+					FROM code_delivery_order
+					LEFT JOIN delivery_order ON code_delivery_order.id = delivery_order.code_delivery_order_id
+					JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
+					JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
+				) deliveryOrderTable
+				ON invoice.id = deliveryOrderTable.id
+				WHERE invoice.id IN (
+					SELECT DISTINCT(code_delivery_order.invoice_id) AS id
+					FROM code_delivery_order
+					JOIN delivery_order ON delivery_order.code_delivery_order_id
+					JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
+					JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
+				)
+				AND MONTH(invoice.date) = '$month'
+				AND YEAR(invoice.date) = '$year'
+				AND invoice.is_confirm = '1'
+			");
+
+			$result			= $query->result();
+			$response		= array();
+			foreach($result as $item){
+				$customerId		= $item->customer_id;
+				$value			= (float) $item->value;
+				$date			= date("j", strtotime($item->date));
+				if(!array_key_exists($customerId, $response)){
+					$response[$customerId]		= array();
+				}
+
+				if(!array_key_exists($date, $response[$customerId])){
+					$response[$customerId][$date]		= array(
+						"value" => 0,
+						"count" => 0
+					);
+				}
+
+				$response[$customerId][$date]['value']	+= $value;
+				$response[$customerId][$date]['count']++;
+			}
+
+			return $response;
+		}
+
+		public function getByCustomerIdDate($customerId, $date)
+		{
+			$query			= $this->db->query("
+				SELECT invoice.*
+				FROM invoice
+				WHERE invoice.id IN (
+					SELECT code_delivery_order.invoice_id
+					FROM code_delivery_order
+					LEFT JOIN delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order.id
+					JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
+					JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
+					WHERE code_sales_order.customer_id = '$customerId'
+				)
+				AND invoice.date = '$date'
+				AND invoice.is_confirm = '1'
+			");
+
+			$result			= $query->result();
+			return $result;
 		}
 	}
 ?>

@@ -32,7 +32,7 @@
 ?>
 <div class="dashboard">
 	<div class='dashboard_head'>
-		<p style='font-family:museo'><a href='<?= site_url('Inventory') ?>' title='Inventory'><i class='fa fa-briefcase'></i></a> /<a href='<?= site_url('Inventory/pendingSalesOrderDashboard') ?>'>Pending Sales Orders</a> / Detail</p>
+		<p style='font-family:museo'><a href='<?= site_url('Inventory') ?>' title='Inventory'><i class='fa fa-th'></i></a> /<a href='<?= site_url('Inventory/pendingSalesOrderDashboard') ?>'>Pending Sales Orders</a> / Detail</p>
 	</div>
 	<br>
 	<div class='dashboard_in'>

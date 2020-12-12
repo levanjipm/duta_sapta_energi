@@ -113,4 +113,15 @@ class Item_class extends CI_Controller {
 		header('Content-Type: application/json');
 		echo json_encode($data);
 	}
+
+	public function getAnalyticsById()
+	{
+		$itemClassId		= $this->input->get('id');
+
+		$this->load->model("Item_class_model");
+		$data['output']				= $this->Item_class_model->getOutput($itemClassId);
+
+		header('Content-Type: application/json');
+		echo json_encode($data);
+	}
 }

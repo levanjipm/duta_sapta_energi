@@ -31,7 +31,7 @@
 </head>
 <div class='dashboard'>
 	<div class='dashboard_head'>
-		<p style='font-family:museo'><a href='<?= site_url('Purchasing') ?>' title='Purchasing'><i class='fa fa-briefcase'></i></a> /<a href="<?= site_url('Supplier') ?>">Supplier</a> / <?= $supplier->name ?></p>
+		<p style='font-family:museo'><a href='<?= site_url('Purchasing') ?>' title='Purchasing'><i class='fa fa-shopping-cart'></i></a> /<a href="<?= site_url('Supplier') ?>">Supplier</a> / <?= $supplier->name ?></p>
 	</div>
 	<br>
 	<div class='dashboard_in'>
