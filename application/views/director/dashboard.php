@@ -90,7 +90,6 @@
 				<button class='button button_mini_tab' id='generalButton'><i class='fas fa-database'></i> General Information</button>
 				<button class='button button_mini_tab' id='incomeButton'><i class='fas fa-file-contract'></i> Income Statement</button>
 				<button class='button button_mini_tab' id='balanceButton'><i class='fas fa-balance-scale'></i> Balance Sheet</button>
-				<button class='button button_mini_tab' id='cashButton'><i class='fas fa-chart-line'></i> Cash Flow</button>
 			</div>
 		</div>
 		<div class='viewWrapper' id='generalInformation' style='display:none'>
@@ -277,12 +276,6 @@
 				</div>
 			</div>
 		</div>
-		<div class='viewWrapper' id='cashStatement' style='display:none'>
-			<div class='row' style='padding-top:20px'>
-				<div class='col-md-12 col-sm-12 col-xs-12'>
-				</div>
-			</div>
-		</div>
     </div>
 </div>
 
@@ -420,12 +413,6 @@
 			$('#balanceStatement').fadeIn(250);
 		}, 250)
 	});
-	$('#cashButton').click(function(){
-		$('.viewWrapper').fadeOut(250);
-		setTimeout(function(){
-			$('#cashStatement').fadeIn(250);
-		}, 250)
-	})
 	$('.button_mini_tab').click(function(){
 		$('.button_mini_tab').removeClass('active');
 		$('.button_mini_tab').attr('disabled', false);

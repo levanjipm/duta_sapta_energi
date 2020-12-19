@@ -23,10 +23,10 @@
 			</select>
 		</div>
 		<br>
-		<label>Daily Sales</label>
+		<label>Daily Purchase</label>
 		<canvas id='lineChart' height="50"></canvas>
-		<label>Monthly Sales</label>
-		<p>Rp. <span id='monthlySales'>0.00</span></p>
+		<label>Monthly Purchase</label>
+		<p>Rp. <span id='monthlyPurchase'>0.00</span></p>
 		<div id='invoiceTable'>
 			<table class='table table-bordered'>
 				<tr>
@@ -43,7 +43,7 @@
 				<option value='1'>1</option>
 			</select>
 		</div>
-		<p id='invoiceTableText'>There is no sales invoice found.</p>
+		<p id='invoiceTableText'>There is no purchase invoice found.</p>
 	</div>
 </div>
 
@@ -144,8 +144,10 @@
 </div>
 
 <script>
-	$(document).ready(function(){
-		refreshView();
+	var myLineChart;
+
+	$('document').ready(function(){
+		refreshView(1);
 	});
 
 	$('#month').change(function(){
@@ -160,8 +162,6 @@
 		refreshView();
 	})
 
-	var ctx = document.getElementById('lineChart').getContext('2d');
-
 	function refreshView(page = $('#page').val()){
 		$.ajax({
 			url:"<?= site_url('Debt/getItems') ?>",
@@ -169,9 +169,6 @@
 				page: page,
 				month: $('#month').val(),
 				year: $('#year').val()
-			},
-			beforeSend:function(){
-				getValue();
 			},
 			success:function(response){
 				var items		= response.items;
@@ -203,9 +200,6 @@
 					} else {
 						$('#invoiceTableContent').append("<tr><td>" + my_date_format(date) + "</td><td><p>" + name + "</p><p>" + taxDocument + "</p></td><td>" + supplierName + ", " + supplierCity + "</td><td>Rp. " + numeral(invoiceValue).format('0,0.00') + "</td><td><button class='button button_default_dark' onclick='viewBlankById(" + id + ")'><i class='fa fa-eye'></i></button></td></tr>");
 					}
-
-					
-					
 					itemCount++;
 				});
 
@@ -226,6 +220,8 @@
 					$('#invoiceTable').hide();
 					$('#invoiceTableText').show();
 				}
+
+				getValue();
 			}
 		})
 	}
@@ -239,15 +235,18 @@
 				year: $('#year').val()
 			},
 			success:function(response){
+				var ctx = document.getElementById('lineChart').getContext('2d');
 				var labelArray = [];
 				var valueArray = [];
 				var value	= 0;
+
 				$.each(response, function(index, item){
 					labelArray.push(index);
 					valueArray.push(item);
 					value += parseFloat(item);
-				})
-				var myLineChart = new Chart(ctx, {
+				});
+				if (myLineChart) myLineChart.destroy();
+				myLineChart = new Chart(ctx, {
 					type: 'line',
 					data: {
 						labels: labelArray,
@@ -264,7 +263,7 @@
 					}
 				});
 
-				$('#monthlySales').html(numeral(value).format('0,0.00'));
+				$('#monthlyPurchase').html(numeral(value).format('0,0.00'));
 			}
 		})
 	}

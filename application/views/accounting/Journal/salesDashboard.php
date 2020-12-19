@@ -100,6 +100,7 @@
 </div>
 
 <script>
+	var myLineChart;
 	$(document).ready(function(){
 		refreshView();
 	});
@@ -115,8 +116,6 @@
 	$('#page').change(function(){
 		refreshView();
 	})
-
-	var ctx = document.getElementById('lineChart').getContext('2d');
 
 	function refreshView(page = $('#page').val()){
 		$.ajax({
@@ -192,7 +191,10 @@
 					valueArray.push(item);
 					value += parseFloat(item);
 				})
-				var myLineChart = new Chart(ctx, {
+
+				var ctx = document.getElementById('lineChart').getContext('2d');
+				if (myLineChart) myLineChart.destroy();
+				myLineChart = new Chart(ctx, {
 					type: 'line',
 					data: {
 						labels: labelArray,

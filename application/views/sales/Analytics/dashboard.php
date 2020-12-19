@@ -204,6 +204,10 @@
 			</div>
 			<div class='col-sm-12'>
 				<br>
+				<label>Action</label>
+				<br>
+				<button class='button button_mini_tab' id='saveNooTableButton' style='display:none'><i class="fa fa-file-excel-o"></i> Save As CSV</button>
+				<br><br>
 				<table class='table table-bordered' id='nooTable' style='display:none'>
 					<tr>
 						<th>Name</th>
@@ -731,9 +735,11 @@
 					if(itemCount > 0){
 						$('#nooTable').show();
 						$('#nooTableText').hide();
+						$('#saveNooTableButton').show();
 					} else {
 						$('#nooTableText').show();
 						$('#nooTable').hide();
+						$('#saveNooTableButton').hide();
 					}
 				}
 			});
@@ -980,4 +986,8 @@
 			}
 		})
 	}
+
+	$('#saveNooTableButton').click(function(){
+		window.open("<?= site_url('SalesAnalytics/GetNooCsv') ?>" + "?month=" + $('#nooMonth').val() + "&year=" + $('#nooYear').val(), '_blank');
+	})
 </script>

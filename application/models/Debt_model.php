@@ -1045,7 +1045,7 @@ class Debt_model extends CI_Model {
 			foreach($result as $data){
 				$date		= $data->date;
 				$value		= $data->value;
-				$day		= date("d", strtotime($date));
+				$day		= (int)date("d", strtotime($date));
 				$response[$day] += $value;
 			}
 

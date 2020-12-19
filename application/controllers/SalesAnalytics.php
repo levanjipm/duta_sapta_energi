@@ -145,7 +145,7 @@ class SalesAnalytics extends CI_Controller {
 		$customers		= $this->Customer_target_model->getItems(0, "", $month, $year, 0);
  
 		$file = fopen('php://output', 'w');
-		$headerInformation = array("Period", date("m", mktime(0,0,0,$month, $year)), date("m", mktime(0,0,0,$month, $year)));
+		$headerInformation = array("Period", date("m", mktime(0, 0, 0, $month, 1,$year)), date("Y", mktime(0,0,$month, 1, $year)));
 		fputcsv($file, $headerInformation, ';');
 
 		$header = array("Name","Address", "City", "Area", "PreviousTarget", "CurrentTarget", "PreviousAchivement", "CurrentAchivement"); 
@@ -238,5 +238,72 @@ class SalesAnalytics extends CI_Controller {
 
 		header('Content-Type: application/json');
 		echo json_encode($data);
+	}
+
+	public function GetNooCsv()
+	{
+		$month			= $this->input->get('month');
+		$year			= $this->input->get('year');
+
+		$file_name = 'nooReport' . $month . $year . '.csv'; 
+		header("Content-Description: File Transfer"); 
+		header("Content-Disposition: attachment; filename=$file_name"); 
+		header("Content-Type: application/csv;");
+   
+		$this->load->model("Customer_target_model");
+		$customers		= $this->Customer_target_model->getItems(0, "", $month, $year, 0);
+ 
+		$file = fopen('php://output', 'w');
+		$headerInformation = array("Period", date("m", mktime(0, 0, 0, $month, 1, $year)), date("Y", mktime(0,0,$month, 1, $year)));
+		fputcsv($file, $headerInformation, ';');
+
+		$header = array("Name","Address", "City", "Area"); 
+		fputcsv($file, $header, ';');
+
+		$this->load->model("Customer_model");
+		$customers		= $this->Customer_model->getNoo($month, $year);
+
+		foreach ($customers as $customer)
+		{
+			$complete_address	= $customer->address;
+			$customer_name		= $customer->name;
+			$customer_number	= $customer->number;
+			$customer_block		= $customer->block;
+			$customer_rt		= $customer->rt;
+			$customer_rw		= $customer->rw;
+			$customer_city		= $customer->city;
+			$customer_postal	= $customer->postal_code;
+			$areaName			= $customer->area;
+			$areaId				= $customer->area_id;
+
+			if($customer_number != null && $customer_number != ''){
+				$complete_address	.= ' no. ' . $customer_number;
+			};
+			
+			if($customer_block != null && $customer_block != '' && $customer_block != "000"){
+				$complete_address	.= ', blok ' . $customer_block;
+			};
+			
+			if($customer_rt != '000'){
+				$complete_address	.= ', RT ' . $customer_rt . ', RW ' . $customer_rw;
+			}
+			
+			if($customer_postal != ''){
+				$complete_address .= ', ' . $customer_postal;
+			}
+
+			$valueArray		= array(
+				"name" => $customer_name,
+				"address" => $complete_address,
+				"city" => $customer_city,
+				"area" => $areaName
+			);
+
+			fputcsv($file, $valueArray, ';');
+		}
+
+		fclose($file); 
+		exit;
+		
 	}
 }
