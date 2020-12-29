@@ -575,4 +575,13 @@ class Customer_model extends CI_Model {
 			$result		= $query->result();
 			return $result;
 		}
+
+		public function resetPasswordById($customerId)
+		{
+			$this->db->set('password', null);
+			$this->db->where('id', $customerId);
+			$this->db->where('password !=', null);
+			$this->db->update($this->table_customer);
+			return $this->db->affected_rows();
+		}
 }

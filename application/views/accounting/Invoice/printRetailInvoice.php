@@ -3,6 +3,8 @@
 	$delivery_order_date		= $deliveryOrder->date;
 	$sales_order_name			= $deliveryOrder->sales_order_name;
 	$seller						= $deliveryOrder->seller;
+	$payment					= $deliveryOrder->payment;
+	$overdueDate				= strtotime("+" . $payment . " days", strtotime($delivery_order_date));
 	
 	$invoiceDiscount					= $invoice->discount;
 	$invoiceDelivery					= $invoice->delivery;
@@ -25,7 +27,7 @@
 		$complete_address	.= ' No. ' . $customer_number;
 	}
 	
-	if($customer_block != NULL){
+	if($customer_block != NULL && $customer_block != "000"){
 		$complete_address	.= ' Blok ' . $customer_block;
 	}
 	
@@ -59,7 +61,7 @@
 	}
 	
 	@page {
-	  size: 21.59cm 13.97cm;
+	  size: 9.5in 5.5in;
 	}
 }
 
@@ -82,30 +84,28 @@
 				<p style='margin-top:4px'>PT Duta Sapta Energi - BDG</p>
 			</div>
 			<div class='col-xs-5' style='text-align:center'>
-				<h1 style='font-family:bebasneue;letter-spacing:4px;margin-top:0'>Invoice</h1>
+				<h1 style='font-family:bebasneue;letter-spacing:4px;margin-top:0;margin-bottom:0'>Invoice</h1>
 				<hr style='border-top:2px solid #424242;margin:0;'>
+				<p style="margin-bottom:0">INV.DSE<?= $delivery_order_name ?></p>
 			</div>
 		</div>
 		<div class='row'>
 			<div class='col-xs-4'>
-				<label>Konsumen</label>
-				<p><?= $customer_name ?></p>
-				<p><?= $complete_address ?></p>
-				<p><?= $customer_city ?></p>
+				<label style="margin-bottom:0">Konsumen</label>
+				<p style="margin-bottom:0"><?= $customer_name ?></p>
+				<p style="margin-bottom:0"><?= $complete_address ?></p>
+				<p style="margin-bottom:0"><?= $customer_city ?></p>
 			</div>
 			<div class='col-xs-4'>
-				<label>Nomor Faktur</label>
-				<p>INV.DSE<?= $delivery_order_name ?></p>
-				
-				<label>Tanggal</label>
-				<p><?= date('d M Y', strtotime($delivery_order_date)) ?></p>
+				<label style="margin-bottom:0">Tanggal</label>
+				<p style="margin-bottom:0"><?= date('d M Y', strtotime($delivery_order_date)) ?> ( JT : <?= date("d M Y", $overdueDate) ?> )</p>
 			</div>
 			<div class='col-xs-4'>
-				<label>Sales order</label>
-				<p><?= $sales_order_name ?></p>
+				<label style="margin-bottom:0">Sales order</label>
+				<p style="margin-bottom:0"><?= $sales_order_name ?></p>
 				
-				<label>Sales</label>
-				<p><?= $seller ?></p>
+				<label style="margin-bottom:0">Sales</label>
+				<p style="margin-bottom:0"><?= $seller ?></p>
 			</div>
 		</div>
 		<br><br>
@@ -144,36 +144,42 @@
 					</tr>
 <?php
 	}
+
+	if(count($details) < 5){
+		for($i = 1; $i <= (5 - count($details)); $i++){
 ?>
-					<tr>
-						<td colspan='4'><p>Barang yang sudah dibeli tidak dapat dikembalikan. Harap periksa barang pada saat penerimaan.</p><label>Terbilang</label><p id='value_say'></p></td>
-						<td colspan='2'>
-							<p>Total</p>
-							<p>Potongan Harga</p>
-							<p>Ongkos Pengiriman</p>
-							<p>Grand total</p>
-						</td>
-						<td>
-							<p>Rp.&nbsp;<?= number_format($invoice_value,2) ?></p>
-							<p>Rp.&nbsp;<?= number_format($invoiceDiscount,2) ?></p>
-							<p>Rp.&nbsp; <?= number_format($invoiceDelivery,2) ?></p>
-							<p>Rp.&nbsp;<?= number_format($invoice_value - $invoiceDiscount + $invoiceDelivery,2) ?></p>
-						</td>
-					</tr>
-					<tr>
-						<td colspan='7'>Pembayaran dengan menggunakan cek atau giro dianggap sah setelah berhasil dicairkan.</td>
-					</tr>
+			<tr>
+				<td>&nbsp;</td><td></td><td></td><td></td><td></td><td></td><td></td>
+			</tr>
+<?php 
+		}
+	}
+?>
 				</table>
 			</div>
 		</div>
-		<br><br>
 		<div class='row'>
 			<div class='col-xs-12'>
 				<table class='table_footer'>
 					<tr>
-						<td style='width:30%'><p>Penerima</p><br><br><br><br></td>
-						<td style='width:30%'><p>Pengirim</p><br><br><br><br></td>
-						<td style='width:30%'><p>Hormat kami</p><br><br><br><br></td>
+						<td style='width:20%'><p>Penerima</p><br><br><br><br></td>
+						<td style='width:10%'><p>Pengirim</p><br><br><br><br></td>
+						<td style='width:45%'>
+							<p style="margin-bottom:0;text-align:left">Barang yang sudah dibeli tidak dapat dikembalikan. Harap periksa barang pada saat penerimaan.</p>
+							<p style="margin-bottom:0;text-align:left"><strong>Terbilang</strong> <span id='value_say'></span></p>
+						</td>
+						<td colspan='2'>
+							<p style="margin-bottom:0;text-align:left">Total</p>
+							<p style="margin-bottom:0;text-align:left">Potongan Harga</p>
+							<p style="margin-bottom:0;text-align:left">Ongkos Pengiriman</p>
+							<p style="margin-bottom:0;text-align:left"><strong>Grand total</strong></p>
+						</td>
+						<td>
+							<p style="margin-bottom:0;text-align:left">Rp.&nbsp;<?= number_format($invoice_value,2) ?></p>
+							<p style="margin-bottom:0;text-align:left">Rp.&nbsp;<?= number_format($invoiceDiscount,2) ?></p>
+							<p style="margin-bottom:0;text-align:left">Rp.&nbsp; <?= number_format($invoiceDelivery,2) ?></p>
+							<p style="margin-bottom:0;text-align:left"><strong>Rp.&nbsp;<?= number_format($invoice_value - $invoiceDiscount + $invoiceDelivery,2) ?></strong></p>
+						</td>
 					</tr>
 				</table>
 			</div>

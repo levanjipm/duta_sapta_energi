@@ -509,10 +509,10 @@ class Debt_model extends CI_Model {
 		public function getItems($offset, $month, $year)
 		{
 			$query = $this->db->query("
-				SELECT purchase_invoice.id, purchase_invoice.date, purchase_invoice.tax_document, purchase_invoice.invoice_document, a.supplier_id, NULL as other_opponent_id, NULL as type, 'regular' as class
+				SELECT purchase_invoice.id, purchase_invoice.date, purchase_invoice.tax_document, purchase_invoice.invoice_document, a.supplier_id, NULL as other_opponent_id, NULL as type, 'regular' as class, a.value
 				FROM purchase_invoice
 				JOIN (
-					SELECT DISTINCT(code_good_receipt.invoice_id) AS id, code_purchase_order.supplier_id 
+					SELECT DISTINCT(code_good_receipt.invoice_id) AS id, code_purchase_order.supplier_id, SUM(good_receipt.billed_price * good_receipt.quantity) AS value 
 					FROM code_good_receipt
 					JOIN good_receipt ON good_receipt.code_good_receipt_id = code_good_receipt.id
 					JOIN purchase_order ON good_receipt.purchase_order_id = purchase_order.id
@@ -523,7 +523,7 @@ class Debt_model extends CI_Model {
 				WHERE MONTH(purchase_invoice.date) = '$month' AND YEAR(purchase_invoice.date) = '$year'
 				AND purchase_invoice.is_delete = '0'
 				UNION (
-					SELECT purchase_invoice_other.id, purchase_invoice_other.date, purchase_invoice_other.tax_document, purchase_invoice_other.invoice_document, purchase_invoice_other.supplier_id, purchase_invoice_other.other_opponent_id, debt_type.name as type, 'blank' as class
+					SELECT purchase_invoice_other.id, purchase_invoice_other.date, purchase_invoice_other.tax_document, purchase_invoice_other.invoice_document, purchase_invoice_other.supplier_id, purchase_invoice_other.other_opponent_id, debt_type.name as type, 'blank' as class, purchase_invoice_other.value
 					FROM purchase_invoice_other
 					JOIN debt_type ON purchase_invoice_other.type = debt_type.id
 					WHERE MONTH(purchase_invoice_other.date) = '$month' AND YEAR(purchase_invoice_other.date) = '$year'
@@ -880,6 +880,50 @@ class Debt_model extends CI_Model {
 
 			$result		= $query->row();
 			return $result->value;
+		}
+
+		public function getAllItemsByMonthYear($month, $year)
+		{
+			$query = $this->db->query("
+				SELECT purchase_invoice.id, purchase_invoice.date, purchase_invoice.tax_document, purchase_invoice.invoice_document, a.supplier_id, NULL as other_opponent_id, NULL as type, 'regular' as class, a.value
+				FROM purchase_invoice
+				JOIN (
+					SELECT DISTINCT(code_good_receipt.invoice_id) AS id, code_purchase_order.supplier_id, SUM(good_receipt.billed_price * good_receipt.quantity) AS value 
+					FROM code_good_receipt
+					JOIN good_receipt ON good_receipt.code_good_receipt_id = code_good_receipt.id
+					JOIN purchase_order ON good_receipt.purchase_order_id = purchase_order.id
+					JOIN code_purchase_order ON purchase_order.code_purchase_order_id = code_purchase_order.id
+					GROUP BY code_good_receipt.invoice_id
+				) AS a
+				ON a.id = purchase_invoice.id
+				WHERE MONTH(purchase_invoice.date) = '$month' AND YEAR(purchase_invoice.date) = '$year'
+				AND purchase_invoice.is_delete = '0'
+				UNION (
+					SELECT purchase_invoice_other.id, purchase_invoice_other.date, purchase_invoice_other.tax_document, purchase_invoice_other.invoice_document, purchase_invoice_other.supplier_id, purchase_invoice_other.other_opponent_id, debt_type.name as type, 'blank' as class, purchase_invoice_other.value
+					FROM purchase_invoice_other
+					JOIN debt_type ON purchase_invoice_other.type = debt_type.id
+					WHERE MONTH(purchase_invoice_other.date) = '$month' AND YEAR(purchase_invoice_other.date) = '$year'
+					AND purchase_invoice_other.is_delete = '0'
+				)
+				ORDER BY date ASC
+			");
+
+			$result = $query->result();
+			$this->load->model("Supplier_model");
+			$this->load->model("Opponent_model");
+			$response		= array();
+			foreach($result as $item){
+				$responseItem = (array) $item;
+				if($item->supplier_id != null){
+					$responseItem['opponent']	= $this->Supplier_model->getById($item->customer_id)->name;
+				} else {
+					$responseItem['opponent']	= $this->Opponent_model->getById($item->other_opponent_id)->name;
+				}
+
+				array_push($response, $responseItem);
+			}
+			
+			return $response;
 		}
 
 		public function getValueByPeriod($supplierId, $maxDate, $minDate)

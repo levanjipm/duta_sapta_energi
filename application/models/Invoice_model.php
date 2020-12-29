@@ -300,7 +300,7 @@ class Invoice_model extends CI_Model {
 					break;
 				case 2:
 					$query	= $this->db->query("
-						SELECT (SUM(invoice.value + invoice.delivery - invoice.discount) - COALESCE(a.value, 0)) as value, COALESCE(customer.name, other_opponent.name) as name, COALESCE(customer.city, '') as city, deliveryOrderTable.customer_id as customerId, deliveryOrderTable.opponent_id as opponentId, COALESCE(MIN(deliveryOrderTable.difference),0) as difference
+						SELECT (SUM(invoice.value + invoice.delivery - invoice.discount) - COALESCE(a.value, 0)) as value, COALESCE(customer.name, other_opponent.name) as name, COALESCE(customer.city, '') as city, deliveryOrderTable.customer_id as customerId, deliveryOrderTable.opponent_id as opponentId, COALESCE(MIN(deliveryOrderTable.difference),0) as difference, deliveryOrderTable.payment
 						FROM invoice
 						LEFT JOIN (
 							SELECT SUM(receivable.value) as value, invoice_id
@@ -311,22 +311,23 @@ class Invoice_model extends CI_Model {
 							) a
 						ON invoice.id = a.invoice_id
 						JOIN(
-							SELECT DISTINCT(code_delivery_order.invoice_id) as id, code_sales_order.customer_id, NULL as opponent_id, DATEDIFF(NOW(), invoice.date) AS difference
+							SELECT DISTINCT(code_delivery_order.invoice_id) as id, code_sales_order.customer_id, NULL as opponent_id, DATEDIFF(NOW(), invoice.date) AS difference, code_sales_order.payment
 							FROM code_delivery_order
 							JOIN delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order.id
 							JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
 							JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
 							JOIN invoice ON code_delivery_order.invoice_id = invoice.id
 							UNION (
-								SELECT id, customer_id, opponent_id, DATEDIFF(NOW(), invoice.date) AS difference
+								SELECT invoice.id, invoice.customer_id, invoice.opponent_id, DATEDIFF(NOW(), invoice.date) AS difference, COALESCE(customer.term_of_payment, 0) AS payment
 								FROM invoice
+								LEFT JOIN customer ON invoice.customer_id = customer.id
 								WHERE customer_id IS NOT NULL OR opponent_id IS NOT NULL AND invoice.is_done = '0'
 							)
 						) as deliveryOrderTable
 						ON deliveryOrderTable.id = invoice.id
 						LEFT JOIN customer ON deliveryOrderTable.customer_id = customer.id
 						LEFT JOIN other_opponent ON deliveryOrderTable.opponent_id = other_opponent.id
-						WHERE difference > IF(deliveryOrderTable.customer_id IS NOT NULL, customer.term_of_payment, 0)
+						WHERE difference > IF(deliveryOrderTable.customer_id IS NOT NULL, payment, 0)
 						AND invoice.is_confirm = '1'
 						GROUP BY deliveryOrderTable.customer_id, deliveryOrderTable.opponent_id
 					");
@@ -472,14 +473,17 @@ class Invoice_model extends CI_Model {
 					$opponent_id		= $receivable->opponentId;
 					$customer_name		= $receivable->name;
 					$customer_city		= $receivable->city;
-					$invoice_value		= $receivable->value;
-					$chart_array[] = array(
-						'customer_id' => $customer_id,
-						'opponent_id' => $opponent_id,
-						'name' => $customer_name,
-						'city' => $customer_city,
-						'value' => $invoice_value
-					);
+					$invoice_value		= (float) $receivable->value;
+					if($invoice_value > 0){
+						$chart_array[] = array(
+							'customer_id' => $customer_id,
+							'opponent_id' => $opponent_id,
+							'name' => $customer_name,
+							'city' => $customer_city,
+							'value' => $invoice_value
+						);
+					}
+					
 				}
 	
 				usort($chart_array, function($a, $b) {
@@ -731,6 +735,47 @@ class Invoice_model extends CI_Model {
 			$this->db->update($this->table_invoice);
 			
 			return $this->db->affected_rows();
+		}
+
+		public function getAllItemsByMonthYear($month, $year)
+		{
+			$query		= $this->db->query("
+				SELECT invoice.*, a.customer_id, NULL as opponent_id, a.taxing
+				FROM invoice
+				JOIN (
+					SELECT DISTINCT(invoice.id) AS id, code_sales_order.customer_id, code_sales_order.taxing
+					FROM invoice
+					JOIN code_delivery_order ON invoice.id = code_delivery_order.invoice_id
+					JOIN delivery_order ON code_delivery_order.id = delivery_order.code_delivery_order_id
+					JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
+					JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
+					WHERE MONTH(invoice.date) = '$month' AND YEAR(invoice.date) = '$year'
+				) a
+				ON a.id = invoice.id
+				UNION (
+					SELECT invoice.*, invoice.customer_id, invoice.opponent_id, IF((invoice.taxInvoice = '' OR invoice.taxInvoice IS NULL), 1, 0) AS taxing
+					FROM invoice
+					WHERE MONTH(invoice.date) = '$month' AND YEAR(invoice.date) = '$year'
+					AND (invoice.customer_id IS NOT NULL || invoice.opponent_id IS NOT NULL)
+				)
+			");
+
+			$result = $query->result();
+			$this->load->model("Customer_model");
+			$this->load->model("Opponent_model");
+			$response		= array();
+			foreach($result as $item){
+				$responseItem = (array) $item;
+				if($item->customer_id != null){
+					$responseItem['opponent']	= $this->Customer_model->getById($item->customer_id)->name;
+				} else {
+					$responseItem['opponent']	= $this->Opponent_model->getById($item->opponent_id)->name;
+				}
+
+				array_push($response, $responseItem);
+			}
+			
+			return $response;
 		}
 
 		public function getItems($offset, $month, $year)

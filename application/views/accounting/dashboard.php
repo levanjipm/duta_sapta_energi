@@ -198,7 +198,6 @@
 		$.ajax({
 			url:"<?= site_url('Accounting/getGeneralInformation') ?>",
 			success:function(response){
-				console.log(response);
 				var pendingInvoice = response.invoice;
 				var pendingDebt = response.debt;
 				var pendingBank	= response.bank;

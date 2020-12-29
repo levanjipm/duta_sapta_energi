@@ -21,6 +21,7 @@
 				<option value='<?= $i ?>'><?= $i ?></option>
 			<?php } ?>
 			</select>
+			<button onclick='downloadFile()' class='button button_default_dark'><i class='fa fa-file-text'></i></button>
 		</div>
 		<br>
 		<label>Daily Sales</label>
@@ -101,6 +102,11 @@
 
 <script>
 	var myLineChart;
+
+	function downloadFile(){
+		window.open("<?= site_url('Invoice/downloadMonthYearReport') ?>" + "?month=" + $('#month').val() + "&year=" + $('#year').val(), '_blank');
+	}
+
 	$(document).ready(function(){
 		refreshView();
 	});

@@ -230,17 +230,6 @@ CREATE TABLE `billing` (
   `code_billing_id` int(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
---
--- Dumping data untuk tabel `billing`
---
-
-INSERT INTO `billing` (`id`, `invoice_id`, `result`, `note`, `code_billing_id`) VALUES
-(1, 3, 0, '', 1),
-(2, 5, 0, '', 2),
-(3, 3, 0, '', 2),
-(4, 5, 0, '', 3),
-(5, 3, 0, '', 3);
-
 -- --------------------------------------------------------
 
 --
@@ -260,15 +249,6 @@ CREATE TABLE `code_billing` (
   `reported_by` int(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
---
--- Dumping data untuk tabel `code_billing`
---
-
-INSERT INTO `code_billing` (`id`, `date`, `name`, `created_by`, `billed_by`, `is_confirm`, `is_delete`, `is_reported`, `confirmed_by`, `reported_by`) VALUES
-(1, '2020-12-03', 'CB-2020-00590327', 1, 1, 0, 1, 0, 1, NULL),
-(2, '2020-12-05', 'CB-2020-56332311', 1, 1, 1, 0, 1, 1, 1),
-(3, '2020-12-08', 'CB-2020-80265098', 1, 1, 1, 0, 1, 1, 1);
-
 -- --------------------------------------------------------
 
 --
@@ -286,23 +266,6 @@ CREATE TABLE `code_delivery_order` (
   `invoice_id` int(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
---
--- Dumping data untuk tabel `code_delivery_order`
---
-
-INSERT INTO `code_delivery_order` (`id`, `date`, `name`, `is_confirm`, `is_delete`, `is_sent`, `guid`, `invoice_id`) VALUES
-(1, '2020-11-13', 'DO-DSE-202011-00010', 0, 1, 0, 'CF0C05D9-D546-45AF-A8A0-6474CF7FEDEE', NULL),
-(2, '2020-11-13', 'DO-DSE-202011-00020', 1, 0, 1, '39613540-4F8A-467F-BFA0-7D4CC1AFBB60', 1),
-(3, '2020-12-02', 'DO-DSE-202012-00010', 1, 0, 1, '7E1D833E-0400-45CC-831A-D2C14D0C1AD4', 3),
-(4, '2020-12-05', 'DO-DSE-202012-00020', 1, 0, 1, '1220308D-7730-4439-8E03-02B9A8BC8245', 5),
-(5, '2020-12-10', 'DO-DSE-202012-00030', 1, 0, 1, 'A5C0E96C-839A-46B2-BE65-213BFC9A0D32', 6),
-(6, '2020-12-19', 'DO-DSE-202012-00040', 1, 0, 0, 'C64CAFDA-A2D5-47A2-ACF9-359FA6FDF627', 7);
-
--- --------------------------------------------------------
-
---
--- Struktur dari tabel `code_event`
---
 
 CREATE TABLE `code_event` (
   `id` int(255) NOT NULL,
@@ -313,20 +276,6 @@ CREATE TABLE `code_event` (
   `is_confirm` tinyint(1) NOT NULL DEFAULT '0',
   `confirmed_by` int(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
---
--- Dumping data untuk tabel `code_event`
---
-
-INSERT INTO `code_event` (`id`, `type`, `name`, `created_by`, `date`, `is_confirm`, `confirmed_by`) VALUES
-(1, 4, 'EVT-202011-27742064', 1, '2020-11-13', 1, 1),
-(2, 2, 'EVT-202011-54833249', 1, '2020-11-27', 1, 1);
-
--- --------------------------------------------------------
-
---
--- Struktur dari tabel `code_good_receipt`
---
 
 CREATE TABLE `code_good_receipt` (
   `id` int(255) NOT NULL,
@@ -341,19 +290,6 @@ CREATE TABLE `code_good_receipt` (
   `guid` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
---
--- Dumping data untuk tabel `code_good_receipt`
---
-
-INSERT INTO `code_good_receipt` (`id`, `name`, `date`, `is_confirm`, `is_delete`, `invoice_id`, `received_date`, `created_by`, `confirmed_by`, `guid`) VALUES
-(1, 'PI-CK-SL-AADEF', '2020-11-13', 1, 0, 2, '2020-11-13', 1, 1, 'D5750C93-E225-43C7-AF57-BAF225D188CB'),
-(2, 'abcdc', '2020-12-05', 1, 0, 3, '2020-12-05', 1, 1, '0491BC51-C010-444D-BCB8-92707D6F0332');
-
--- --------------------------------------------------------
-
---
--- Struktur dari tabel `code_purchase_order`
---
 
 CREATE TABLE `code_purchase_order` (
   `id` int(255) NOT NULL,
@@ -377,15 +313,6 @@ CREATE TABLE `code_purchase_order` (
   `note` text NOT NULL,
   `payment` int(2) NOT NULL DEFAULT '60'
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
---
--- Dumping data untuk tabel `code_purchase_order`
---
-
-INSERT INTO `code_purchase_order` (`id`, `date`, `name`, `supplier_id`, `created_by`, `confirmed_by`, `is_closed`, `promo_code`, `dropship_address`, `dropship_city`, `dropship_contact_person`, `dropship_contact`, `taxing`, `date_send_request`, `status`, `guid`, `is_delete`, `is_confirm`, `note`, `payment`) VALUES
-(1, '2020-11-13', 'PO.DSE-202011-5474', 1, 1, 1, 0, NULL, 'Jalan Kopo no. 123', 'Bandung', 'Daniel Tri', '+62 85290000241', 1, NULL, 'TOP URGENT', '59A6D7F2-357D-483E-80C4-0DA2E407C6FC', 0, 1, 'Mohon dikirimkan ke alamat tertera.', 60),
-(2, '2020-11-27', 'PO.DSE-202011-5631', 1, 1, 1, 0, '', NULL, NULL, NULL, NULL, 1, NULL, 'URGENT', '\r\n<div style=\"border:1px solid #990000;padding-lef', 0, 1, '', 60);
-
 -- --------------------------------------------------------
 
 --
@@ -405,12 +332,7 @@ CREATE TABLE `code_purchase_return` (
 
 --
 -- Dumping data untuk tabel `code_purchase_return`
---
-
-INSERT INTO `code_purchase_return` (`id`, `name`, `supplier_id`, `created_by`, `created_date`, `is_confirm`, `is_delete`, `confirmed_by`) VALUES
-(1, 'PRS-202011-04692551', 1, 1, '2020-11-13', 1, 0, 1),
-(2, 'PRS-202011-61601699', 1, 1, '2020-11-16', 1, 0, 1);
-
+-
 -- --------------------------------------------------------
 
 --
@@ -430,14 +352,6 @@ CREATE TABLE `code_purchase_return_sent` (
   `bank_id` int(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
---
--- Dumping data untuk tabel `code_purchase_return_sent`
---
-
-INSERT INTO `code_purchase_return_sent` (`id`, `created_by`, `created_date`, `confirmed_by`, `is_confirm`, `is_delete`, `name`, `date`, `is_done`, `bank_id`) VALUES
-(1, 1, '2020-11-13', 1, 0, 1, 'ABGG123', '2020-11-13', 0, NULL),
-(2, 1, '2020-11-13', 1, 0, 1, 'ABGG1234', '2020-11-14', 0, NULL),
-(3, 1, '2020-11-17', 1, 1, 0, 'PRS-202011-04692551', '2020-11-17', 1, 20);
 
 -- --------------------------------------------------------
 
@@ -480,61 +394,6 @@ CREATE TABLE `code_sales_order` (
   `note` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
---
--- Dumping data untuk tabel `code_sales_order`
---
-
-INSERT INTO `code_sales_order` (`id`, `customer_id`, `name`, `date`, `taxing`, `seller`, `is_confirm`, `confirmed_by`, `guid`, `created_by`, `invoicing_method`, `is_delete`, `note`) VALUES
-(1, 274, '202011.34217896', '2020-11-13', 0, 2, 1, 1, '4B4A8584-C1AD-4B63-B8A9-BFDF87040E51', 1, 1, 0, ''),
-(2, 421, '202011.44657356', '2020-11-23', 0, 2, 1, 1, 'EFA07FA2-AA02-4059-BF28-AF0B673EE34E', 1, 1, 0, ''),
-(3, 374, '202011.11516117', '2020-11-23', 0, 2, 1, 1, '55B9164E-8D84-40E5-86FF-E7DB11C4B313', 1, 1, 0, ''),
-(4, 136, '202011.96005964', '2020-11-23', 0, 2, 1, 1, '31625F5F-232C-45A9-8C1C-0776CB5CE494', 1, 1, 0, ''),
-(5, 5, '202011.01640718', '2020-11-23', 0, 2, 1, 1, 'FD9AE235-E6D5-4246-9C07-1B5157ED65F1', 1, 1, 0, ''),
-(6, 285, '202011.33934322', '2020-11-23', 0, NULL, 0, NULL, 'EFFACBBD-B2F2-49A3-B564-2C7563856334', 1, 1, 1, ''),
-(7, 285, '202011.55021415', '2020-11-23', 0, 4, 1, 1, '8BC0EC5E-F3F3-4613-962D-5BE2CFA31353', 1, 1, 0, ''),
-(8, 334, '202011.55743265', '2020-11-23', 0, 4, 1, 1, 'F01B332A-6DAB-4D2C-8982-058FBB26B173', 1, 1, 0, ''),
-(9, 63, '202011.98605994', '2020-11-23', 0, 4, 1, 1, 'E7CD1047-948F-4410-A1E7-8A0DF7A7F713', 1, 1, 0, ''),
-(10, 93, '202011.97533502', '2020-11-23', 0, 4, 1, 1, 'DA573A3E-B87D-49C8-B313-CD56CB5D2AA2', 1, 1, 0, ''),
-(11, 290, '202011.51383325', '2020-11-25', 0, 3, 1, 1, '54B2D314-EB45-445C-AA0A-196911DE6CF7', 1, 1, 0, 'Bonus voucher 50.000'),
-(12, 388, '202011.03854048', '2020-11-25', 0, 2, 1, 1, 'A3BE105E-E02B-4A9F-8F2A-3B4846806233', 1, 1, 0, ''),
-(13, 287, '202011.85163073', '2020-11-25', 0, 3, 1, 1, '0F9D04B0-36D4-4575-832E-4D94E66AC1B4', 1, 1, 0, ''),
-(14, 347, '202011.23161802', '2020-11-25', 0, 4, 1, 1, 'E46B8FCE-EBF9-4FFD-80DE-973310F518BE', 1, 1, 0, ''),
-(15, 347, '202011.12074835', '2020-11-25', 0, NULL, 1, 1, '3C72FA41-5D39-43A7-9ABC-F279A706AB6D', 1, 1, 0, ''),
-(16, 427, '202011.62044500', '2020-11-26', 0, 4, 1, 1, 'ABF5E679-B0DB-4C1F-85C4-741CEC9E5B2B', 1, 1, 0, ''),
-(17, 392, '202011.31391060', '2020-11-26', 0, 2, 1, 1, '5B18D072-B184-4D00-8F15-B1307DBE0A8B', 1, 1, 0, ''),
-(18, 7, '202011.81161453', '2020-11-26', 0, 2, 1, 1, 'AED2699C-1B8E-47E0-AF76-31A1D11D1AD3', 1, 1, 0, ''),
-(19, 281, '202011.49969010', '2020-11-26', 0, 4, 1, 1, '87335C1A-619B-4F7D-837A-0CF78E09A532', 1, 1, 0, ''),
-(20, 342, '202011.28092911', '2020-11-26', 0, 4, 1, 1, 'B48C5087-EFB9-4D41-A85C-BA18629837ED', 1, 1, 0, ''),
-(21, 381, '202011.64737409', '2020-11-26', 0, 2, 0, NULL, 'C4923C98-509F-4181-98E4-2DAE0A8F1E87', 1, 1, 1, ''),
-(22, 386, '202011.97173751', '2020-11-26', 0, 2, 0, NULL, 'C2F0BB50-04AE-41E0-90F2-A4FA9BE4C07F', 1, 1, 1, ''),
-(23, 5, '202011.83878992', '2020-11-27', 0, 2, 1, 1, '56E3D0AF-DA08-4522-89B2-E431CA24BCD8', 1, 1, 0, ''),
-(24, 32, '202011.65634928', '2020-11-27', 0, 2, 1, 1, 'C52E8EAE-016A-4613-91DE-A1F36603646D', 1, 1, 0, ''),
-(25, 37, '202011.72064296', '2020-11-27', 0, 2, 1, 1, '2823E254-71E7-4225-A0C1-B80FF107B64C', 1, 1, 0, ''),
-(26, 23, '202011.56717478', '2020-11-27', 0, 2, 1, 1, '6B7A8BDA-14BF-4AB9-A214-2D6CFA2470DA', 1, 1, 0, ''),
-(27, 287, '202011.17601457', '2020-11-28', 0, 4, 1, 1, 'B21DDAAA-2789-42E9-93F8-4F8CFAA81629', 1, 1, 0, ''),
-(28, 325, '202011.15672693', '2020-11-28', 0, 2, 1, 1, '35545544-3962-467B-A3BE-71BCEEE720C5', 1, 1, 0, ''),
-(29, 385, '202011.16061705', '2020-11-28', 0, 2, 1, 1, '1B43B771-156C-4156-B54D-45450838DA05', 1, 1, 0, ''),
-(30, 114, '202011.68408068', '2020-11-28', 0, 2, 1, 1, '630F8654-B57F-4DA5-B913-12F77B6A7A8A', 1, 1, 0, ''),
-(31, 431, '202011.02716190', '2020-11-28', 0, 4, 1, 1, '7D47DA81-BDBD-47AF-9EF4-9FE3D6D15A78', 1, 1, 0, ''),
-(32, 19, '202011.73223460', '2020-11-28', 0, 2, 1, 1, '8EBF12E2-C288-41A6-BDA2-B80E2DFF5568', 1, 1, 0, ''),
-(33, 385, '202011.45400231', '2020-11-28', 0, 2, 1, 1, 'C9EE4080-8DCF-4F0E-AABF-6B83A65EBA96', 1, 1, 0, ''),
-(34, 271, '202011.91396966', '2020-11-30', 0, 3, 1, 1, '518A9701-9290-4C65-B248-87D8F44BAB8B', 1, 1, 0, ''),
-(35, 5, '202011.77387826', '2020-11-30', 0, 2, 1, 1, '380D0096-9F8C-42D3-908E-94710CC6DAA7', 1, 1, 0, ''),
-(36, 381, '202011.99035410', '2020-11-30', 0, 5, 1, 1, '40FA66FB-4314-4834-B173-742ED438F7BC', 1, 1, 0, ''),
-(37, 381, '202012.04323418', '2020-12-02', 0, NULL, 0, NULL, '8420B992-FF59-4D67-9E4D-5EF4D4778205', 1, 1, 1, ''),
-(38, 344, '202012.81970056', '2020-12-02', 0, NULL, 0, NULL, 'E944570B-CFDC-4BCE-BE80-E7C1DDB6D67E', 1, 1, 1, ''),
-(39, 21, '202012.78263381', '2020-12-02', 0, 4, 1, 1, 'C53EB543-7698-4F55-A431-DFDC505F76CB', 1, 1, 0, ''),
-(40, 17, '202012.98261151', '2020-12-02', 0, 5, 1, 1, '49F647B4-9C81-4398-8A70-68E63A64242C', 1, 1, 0, ''),
-(41, 381, '202012.55662996', '2020-12-02', 0, 4, 0, NULL, '151488E2-C22E-4B62-A304-ABF306C7412E', 1, 1, 1, ''),
-(42, 381, '202012.97227747', '2020-12-02', 0, 5, 1, 1, '8DE15E11-D19B-4B82-9AD4-3760F9073F8A', 1, 1, 0, ''),
-(43, 344, '202012.26508264', '2020-12-02', 0, NULL, 1, 1, '1FA51C44-E2AC-442D-A443-95A692081F4B', 1, 1, 0, ''),
-(44, 5, '202011.43509320', '2020-11-30', 0, 2, 1, 1, '7271F530-4879-4B9E-967E-23B34787D0AB', 1, 1, 0, ''),
-(45, 376, '202011.17257314', '2020-11-30', 0, 5, 1, 1, 'C7778594-60E4-405C-AD22-4B3CAE1799DF', 1, 1, 0, ''),
-(46, 18, '202011.94324426', '2020-11-30', 0, 5, 1, 1, 'FCB7D5FE-513E-4906-ADD0-96BC569A11FA', 1, 1, 0, ''),
-(47, 276, '202011.68081644', '2020-11-30', 0, 5, 1, 1, 'DA5243FE-95D6-4EED-B353-0056CC7E18E4', 1, 1, 0, ''),
-(48, 55, '202012.82077983', '2020-12-03', 0, 2, 1, 1, 'AF9F6B7F-43F5-4608-93C1-DB3D0DFF1236', 1, 1, 0, ''),
-(49, 48, '202012.62171330', '2020-12-03', 0, 5, 0, NULL, 'A93CA23E-7DB4-4795-BC23-E21B5466590E', 1, 1, 0, ''),
-(50, 113, '202012.73103763', '2020-12-03', 0, 2, 0, NULL, '4AD32562-BC8F-4FC9-86A9-649BB94EC32B', 1, 1, 0, '');
 
 -- --------------------------------------------------------
 
@@ -573,10 +432,6 @@ CREATE TABLE `code_sales_return` (
 -- Dumping data untuk tabel `code_sales_return`
 --
 
-INSERT INTO `code_sales_return` (`id`, `name`, `created_by`, `created_date`, `is_confirm`, `is_delete`, `confirmed_by`) VALUES
-(8, 'SRS-202011-02630476', 1, '2020-11-14', 0, 1, 1),
-(9, 'SRS-202011-79058235', 1, '2020-11-14', 1, 0, 1);
-
 -- --------------------------------------------------------
 
 --
@@ -599,11 +454,6 @@ CREATE TABLE `code_sales_return_received` (
 --
 -- Dumping data untuk tabel `code_sales_return_received`
 --
-
-INSERT INTO `code_sales_return_received` (`id`, `created_by`, `created_date`, `is_confirm`, `is_delete`, `confirmed_by`, `name`, `date`, `is_done`, `bank_id`) VALUES
-(1, 1, '2020-11-14', 0, 1, 1, 'DO-DSE-202011-00020', '2020-11-14', 0, NULL),
-(2, 1, '2020-11-16', 0, 1, 1, 'DO-DSE-202011-00020-R-0', '2020-11-16', 0, NULL),
-(3, 1, '2020-11-16', 1, 0, 1, 'asdf', '2020-11-16', 1, 4);
 
 -- --------------------------------------------------------
 
@@ -2035,12 +1885,6 @@ CREATE TABLE `event` (
 --
 -- Dumping data untuk tabel `event`
 --
-
-INSERT INTO `event` (`id`, `item_id`, `quantity`, `transaction`, `code_event_id`, `price`) VALUES
-(1, 1, 2, 'OUT', 1, '0.0000'),
-(2, 2, 1, 'IN', 1, '0.0000'),
-(3, 184, 5, 'IN', 2, '10000.0000');
-
 -- --------------------------------------------------------
 
 --

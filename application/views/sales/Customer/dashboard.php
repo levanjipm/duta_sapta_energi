@@ -180,6 +180,25 @@
 	</div>
 </div>
 
+<div class='alert_wrapper' id='reset_customer_wrapper'>
+	<div class='alert_box_confirm_wrapper'>
+		<div class='alert_box_confirm_icon'><i class='fa fa-undo'></i></div>
+		<div class='alert_box_confirm'>
+			<input type='hidden' id='reset_customer_id'>
+			<h3>Reset Password confirmation</h3>
+			
+			<p>You are about to reset this password.</p>
+			<p>Are you sure?</p>
+			<button class='button button_default_dark' onclick="$('#reset_customer_wrapper').fadeOut()">Cancel</button>
+			<button class='button button_danger_dark' onclick='reset_password()'>Reset</button>
+			
+			<br><br>
+			
+			<p style='font-family:museo;background-color:#f63e21;width:100%;padding:5px;color:white;position:relative;bottom:0;left:0;opacity:0' id='error_reset_customer'>Deletation failed.</p>
+		</div>
+	</div>
+</div>
+
 <script>
 	$(document).ready(function(){
 		refresh_view();
@@ -366,8 +385,6 @@
 		});
 	});
 	
-	
-	
 	function refresh_view(page = $('#page').val()){
 		$.ajax({
 			url:'<?= site_url('Customer/showItems') ?>',
@@ -418,7 +435,12 @@
 						complete_address	+= ', ' + customer_postal;
 					}
 					
-					$('#customerTableContent').append("<tr><td>" + customer_name + "</td><td><p>" + complete_address + "</p><p>" + customer_city + "</p></td><td><button type='button' class='button button_success_dark' onclick='open_edit_form(" + customer_id + ")'><i class='fa fa-pencil'></i></button> <button type='button' class='button button_danger_dark' onclick='confirm_delete(" + customer_id + ")'><i class='fa fa-trash'></i></button> <button type='button' onclick='viewCustomerDetail(" + customer_id + ")' class='button button_default_dark'><i class='fa fa-eye'></i></button></tr>");
+					if(customer.password != null){
+						$('#customerTableContent').append("<tr><td>" + customer_name + "</td><td><p>" + complete_address + "</p><p>" + customer_city + "</p></td><td><button type='button' class='button button_success_dark' onclick='open_edit_form(" + customer_id + ")'><i class='fa fa-pencil'></i></button> <button type='button' class='button button_danger_dark' onclick='confirm_delete(" + customer_id + ")'><i class='fa fa-trash'></i></button> <button type='button' onclick='viewCustomerDetail(" + customer_id + ")' class='button button_default_dark'><i class='fa fa-eye'></i></button> <button type='button' class='button button_default_dark' onclick='resetPassword(" + customer_id + ")'><i class='fa fa-undo'></i></button></td></tr>");
+					} else {
+						$('#customerTableContent').append("<tr><td>" + customer_name + "</td><td><p>" + complete_address + "</p><p>" + customer_city + "</p></td><td><button type='button' class='button button_success_dark' onclick='open_edit_form(" + customer_id + ")'><i class='fa fa-pencil'></i></button> <button type='button' class='button button_danger_dark' onclick='confirm_delete(" + customer_id + ")'><i class='fa fa-trash'></i></button> <button type='button' onclick='viewCustomerDetail(" + customer_id + ")' class='button button_default_dark'><i class='fa fa-eye'></i></button></td></tr>");
+					}
+					
 					customerCount++;
 				});
 
@@ -441,6 +463,35 @@
 			
 		});
 	};
+
+	function resetPassword(customerId)
+	{
+		$('#reset_customer_id').val(customerId);
+		$('#reset_customer_wrapper').fadeIn();
+	}
+
+	function reset_password()
+	{
+		var customerId = $('#reset_customer_id').val();
+		$.ajax({
+			url:"<?= site_url('Customer/resetPassword') ?>",
+			data:{
+				id: customerId
+			},
+			success:function(response){
+				refresh_view();
+				if(response == 1){
+					$("#reset_customer_id").val("");
+					$('#reset_customer_wrapper').fadeOut();
+				} else {
+					$('#error_reset_customer').fadeTo(1, 500);
+					setTimeout(function(){
+						$('#error_reset_customer').fadeTo(0, 500);
+					}, 1000)
+				}
+			}
+		})
+	}
 
 	function viewCustomerDetail(n){
 		window.location.href='<?= site_url('Customer/viewCustomerDetail/') ?>' + n;

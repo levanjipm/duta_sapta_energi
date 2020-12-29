@@ -239,7 +239,10 @@ class Purchase_order extends CI_Controller {
 		$this->load->view('head');
 		$this->load->view('purchasing/header', $data);
 		$data = array();
+
 		$data = $_POST;
+		$this->load->model("Purchase_order_model");
+		$data['guid']			= $this->Purchase_order_model->create_guid();
 
 		$this->load->view('purchasing/PurchaseOrder/createFromDashboard', $data);
 	}

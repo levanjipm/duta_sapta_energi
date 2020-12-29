@@ -15,6 +15,7 @@ class Sales_order_model extends CI_Model {
 		public $invoicing_method;
 		public $created_by;
 		public $note;
+		public $payment;
 		
 		public $customer_name;
 		public $customer_address;
@@ -38,6 +39,7 @@ class Sales_order_model extends CI_Model {
 			$this->invoicing_method		= $db_item->invoicing_method;
 			$this->created_by			= $db_item->created_by;
 			$this->note					= $db_item->note;
+			$this->payment				= $db_item->payment;
 			
 			return $this;
 		}
@@ -57,6 +59,7 @@ class Sales_order_model extends CI_Model {
 			$db_item->invoicing_method		= $this->invoicing_method;
 			$db_item->created_by			= $this->created_by;
 			$db_item->note					= $this->note;
+			$db_item->payment				= $this->payment;
 			
 			return $db_item;
 		}
@@ -76,6 +79,7 @@ class Sales_order_model extends CI_Model {
 			$stub->invoicing_method		= $db_item->invoicing_method;
 			$stub->created_by			= $db_item->created_by;
 			$stub->note					= $db_item->note;
+			$stub->payment				= $db_item->payment;
 			
 			$stub->customer_name 		= $db_item->customer_name;
 			$stub->customer_address 	= $db_item->customer_address;
@@ -97,6 +101,7 @@ class Sales_order_model extends CI_Model {
 			$stub->guid					= $db_item->guid;
 			$stub->invoicing_method		= $db_item->invoicing_method;
 			$stub->note					= $db_item->note;
+			$stub->payment				= $db_item->payment;
 			return $stub;
 		}
 		
@@ -402,6 +407,7 @@ class Sales_order_model extends CI_Model {
 				$this->invoicing_method	= $this->input->post('method');
 				$this->created_by		= $this->session->userdata('user_id');
 				$this->note				= $this->input->post('note');
+				$this->payment			= $this->input->post('sales_order_payment');
 				
 				$db_item 				= $this->get_db_from_stub();
 				$db_result 				= $this->db->insert($this->table_sales_order, $db_item);
@@ -711,25 +717,52 @@ class Sales_order_model extends CI_Model {
 		public function countPendingByCustomerUID($customerUID)
 		{
 			$query		= $this->db->query("
-				SELECT code_sales_order.id AS id
+				SELECT code_sales_order.id, code_sales_order.date, code_sales_order.name, sellerTable.name as seller
 				FROM code_sales_order
 				JOIN customer ON code_sales_order.customer_id = customer.id
+				LEFT JOIN (
+					SELECT id, name FROM users
+				) sellerTable
+				ON sellerTable.id = code_sales_order.seller
+				LEFT JOIN (
+					SELECT COUNT(sales_order.id) AS count, sales_order.code_sales_order_id
+					FROM sales_order
+					WHERE sales_order.status = '1'
+					GROUP BY sales_order.code_sales_order_id
+				) completedSalesOrder
+				ON code_sales_order.id = completedSalesOrder.code_sales_order_id
+				LEFT JOIN (
+					SELECT COUNT(sales_order.id) AS count, sales_order.code_sales_order_id
+					FROM sales_order
+					WHERE sales_order.status = '0'
+					GROUP BY sales_order.code_sales_order_id
+				) incompletedSalesOrder
+				ON code_sales_order.id = incompletedSalesOrder.code_sales_order_id
 				WHERE code_sales_order.id NOT IN (
 					SELECT DISTINCT(code_sales_order_close_request.code_sales_order_id) AS id
 					FROM code_sales_order_close_request
 					WHERE is_approved IS NULL OR is_approved = 1
 				)
-				AND code_sales_order.id NOT IN (
-					SELECT DISTINCT(sales_order.code_sales_order_id) AS id
-					FROM sales_order
-					WHERE sales_order.status = '0'
-				)
 				AND code_sales_order.is_confirm = '1'
 				AND customer.uid = '$customerUID'
+				AND incompletedSalesOrder.count > 0
 			");
 
-			$result			= $query->num_rows();
-			return $result;
+			$result			= $query->result();
+			$response		= array();
+			$this->load->model("Sales_order_detail_model");
+			foreach($result as $item){
+				$salesOrderId		= $item->id;
+
+				$a					= array();
+				$a['date']			= $item->date;
+				$a['name']			= $item->name;
+				$a['seller']		= $item->seller;
+				$a['id']			= $item->id;
+				$a['items']			= $this->Sales_order_detail_model->show_by_code_sales_order_id($salesOrderId);
+				$response[]			= $a;
+			}
+			return $response;
 		}
 
 		public function getByCustomerUIDMonthly($customerUID)

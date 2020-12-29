@@ -106,6 +106,7 @@ class User_model extends CI_Model {
 		
 		public function show_all()
 		{
+			$this->db->order_by('name');
 			$query 		= $this->db->get($this->table_user);
 			$users 		= $query->result();
 			
@@ -254,6 +255,8 @@ class User_model extends CI_Model {
 		public function getActiveUser()
 		{
 			$this->db->where("is_active", 1);
+			$this->db->order_by('name');
+
 			$query		= $this->db->get($this->table_user);
 			$result		= $query->result();
 			return $result;

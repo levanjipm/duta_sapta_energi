@@ -73,6 +73,7 @@ class Asset_type_model extends CI_Model {
 				$this->db->or_like('description', $term, 'both');
 			};
 			
+			$this->db->order_by('name');
 			$query	= $this->db->get($this->table_asset_type, $limit, $offset);
 			$result	= $query->result();
 			

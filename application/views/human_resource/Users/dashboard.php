@@ -142,7 +142,7 @@
 	
 	function refresh_view(page = $('#page').val()){
 		$.ajax({
-			url:'<?= site_url('Users/getItems') ?>',
+			url:'<?= site_url('Users/getAllItems') ?>',
 			data:{
 				page: page,
 				term: $('#search_bar').val()

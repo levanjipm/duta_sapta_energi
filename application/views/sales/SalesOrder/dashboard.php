@@ -59,6 +59,9 @@
 		<p style='font-family:museo' id='sales_order_name'></p>
 		<p style='font-family:museo' id='taxing_p'></p>
 		<p style='font-family:museo' id='invoicing_method_p'></p>
+
+		<label>Payment</label>
+		<p style='font-family:museo;font-weight:bold' id='sales_order_payment'></p>
 		
 		<label>Item</label>
 		<table class='table table-bordered'>
@@ -196,11 +199,13 @@
 				var seller				= sales_order_array.seller;
 				var invoicing_method	= sales_order_array.invoicing_method;
 				var sales_order_name	= sales_order_array.name;
+				var payment				= sales_order_array.payment;
 				var taxing				= sales_order_array.taxing;
 
 				$('#sales_order_name').html(sales_order_name);
 				$('#taxing_name_p').html(taxing_name);
 				$('#sales_order_id').val(n);
+				$('#sales_order_payment').html(numeral(payment).format('0,0') + ((payment == 0 || payment == 1) ? " day" : " days"));
 				
 				if(taxing == 0){
 					var taxing_name		= 'Non taxable sales';

@@ -151,6 +151,14 @@ class Customer extends CI_Controller {
 		echo json_encode($data);
 	}
 
+	public function resetPassword()
+	{
+		$customerId			= $this->input->get('id');
+		$this->load->model("Customer_model");
+		$result		= $this->Customer_model->resetPasswordById($customerId);
+		echo $result;
+	}
+
 	public function viewCustomerDetail($customerId)
 	{
 		$user_id		= $this->session->userdata('user_id');

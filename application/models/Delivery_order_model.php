@@ -200,7 +200,7 @@ class Delivery_order_model extends CI_Model {
 		
 		public function getById($id)
 		{
-			$this->db->select('code_delivery_order.*, code_sales_order.name as sales_order_name, code_sales_order.taxing, users.name as seller, code_sales_order.invoicing_method, code_sales_order.date as sales_order_date, code_sales_order.customer_id');
+			$this->db->select('code_delivery_order.*, code_sales_order.name as sales_order_name, code_sales_order.taxing, users.name as seller, code_sales_order.invoicing_method, code_sales_order.date as sales_order_date, code_sales_order.customer_id, code_sales_order.payment');
 			$this->db->from('code_delivery_order');
 			$this->db->join('delivery_order', 'delivery_order.code_delivery_order_id = code_delivery_order.id', 'inner');
 			$this->db->join('sales_order', 'delivery_order.sales_order_id = sales_order.id', 'inner');

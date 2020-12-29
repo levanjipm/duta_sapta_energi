@@ -508,6 +508,38 @@ class Invoice extends CI_Controller {
 		echo json_encode($data);
 	}
 
+	public function downloadMonthYearReport()
+	{
+		$month			= $this->input->get('month');
+		$year			= $this->input->get('year');
+		$this->load->model("Invoice_model");
+		$data		= $this->Invoice_model->getAllItemsByMonthYear($month, $year);
+
+		$file_name = 'SalesJournal' . $month . $year . '.csv'; 
+		header("Content-Description: File Transfer"); 
+		header("Content-Disposition: attachment; filename=$file_name"); 
+		header("Content-Type: application/csv;");
+   
+		$file = fopen('php://output', 'w');
+		$header = array("Date","Name", "Tax Document", "Opponent", "Value"); 
+		fputcsv($file, $header, ';');
+		foreach ($data as $item)
+		{
+			$valueArray		= array(
+				"date" => $item['date'],
+				"name" => $item['name'],
+				"tax_document" => $item['taxInvoice'],
+				"opponent" => $item['opponent'],
+				"value" => (float)$item['value']
+			);
+
+			fputcsv($file, $valueArray, ';');
+		}
+
+		fclose($file); 
+		exit;
+	}
+
 	public function getRecap()
 	{
 		$month			= $this->input->get('month');

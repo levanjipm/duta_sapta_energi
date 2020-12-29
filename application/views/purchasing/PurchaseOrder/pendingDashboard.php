@@ -239,7 +239,7 @@
 					var created_by	= goodReceipt.created_by;
 					var receivedDate	= goodReceipt.received_date;
 
-					$('#goodReceiptTableContent').append("<tr><td>" + my_date_format(date) + "</td><td>" + name + "</td><td><p>Created by " + created_by + "</p><p>Created on" + my_date_format(receivedDate) + "</p></td></tr>");
+					$('#goodReceiptTableContent').append("<tr><td>" + my_date_format(date) + "</td><td>" + name + "</td><td><p>Created by " + created_by + "</p><p>Created on " + my_date_format(receivedDate) + "</p></td></tr>");
 					goodReceiptCount++;
 				});
 

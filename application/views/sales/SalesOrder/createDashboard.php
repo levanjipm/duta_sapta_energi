@@ -23,6 +23,8 @@
 			</div>
 			<input type='hidden' name='customer_id' id='customer_id' required>
 			<br>
+			<label>Payment</label>
+			<input type='number' class='form-control' min='0' max='100' name='sales_order_payment' id='sales_order_payment'>
 			
 			<label>Seller</label>
 			<button type='button' class='form-control' id='sellerButton' style='text-align:left!important'>None</button>
@@ -519,6 +521,8 @@
 				var plafond			= parseFloat(customer.plafond);
 				var pending_value	= response.pending_value;
 				var termOfPayment	= parseInt(customer.term_of_payment);
+
+				$('#sales_order_payment').val(termOfPayment);
 				
 				var invoice			= response.pending_invoice;	
 

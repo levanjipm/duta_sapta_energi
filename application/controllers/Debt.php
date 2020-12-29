@@ -349,5 +349,36 @@ class Debt extends CI_Controller {
 		header('Content-Type: application/json');
 		echo json_encode($data);
 	}
+
+	public function downloadMonthYearReport()
+	{
+		$month			= $this->input->get('month');
+		$year			= $this->input->get('year');
+		$this->load->model("Debt_model");
+		$data			= $this->Debt_model->getAllItemsByMonthYear($month, $year);
+		$file_name = 'PurchaseJournal' . $month . $year . '.csv'; 
+		header("Content-Description: File Transfer"); 
+		header("Content-Disposition: attachment; filename=$file_name"); 
+		header("Content-Type: application/csv;");
+   
+		$file = fopen('php://output', 'w');
+		$header = array("Date","Name", "Tax Document", "Opponent", "Value"); 
+		fputcsv($file, $header, ';');
+		foreach ($data as $item)
+		{
+			$valueArray		= array(
+				"date" => $item['date'],
+				"name" => $item['invoice_document'],
+				"tax_document" => $item['tax_document'],
+				"opponent" => $item['opponent'],
+				"value" => (float)$item['value']
+			);
+
+			fputcsv($file, $valueArray, ';');
+		}
+
+		fclose($file); 
+		exit;
+	}
 }
 ?>

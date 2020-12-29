@@ -21,6 +21,7 @@
 				<option value='<?= $i ?>'><?= $i ?></option>
 			<?php } ?>
 			</select>
+			<button class='button button_default_dark' onclick='downloadMonthYearReport()'><i class='fa fa-file-text'></i></button>
 		</div>
 		<br>
 		<label>Daily Purchase</label>
@@ -145,6 +146,10 @@
 
 <script>
 	var myLineChart;
+
+	function downloadMonthYearReport(){
+		window.open("<?= site_url('Debt/downloadMonthYearReport') ?>" + "?month=" + $('#month').val() + "&year=" + $('#year').val(), '_blank');
+	}
 
 	$('document').ready(function(){
 		refreshView(1);

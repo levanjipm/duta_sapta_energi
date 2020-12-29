@@ -120,6 +120,9 @@
 				<label>Sales order name</label>
 				<p style='font-family:museo'><?= $general->name ?> <button class='button button_transparent' style='display:inline-block' onclick='copySalesOrderName()'><i class='fa fa-copy'></i></button></p>
 				
+				<label>Payment</label>
+				<p style='font-family:museo'><?= number_format($general->payment, 0) ?></p>
+
 				<label>Sales</label>
 				<p style='font-family:museo'><?= $sales ?></p>
 			</div>
