@@ -119,7 +119,6 @@ class Customer extends CI_Controller {
 		$data['pending_value']	= $this->Sales_order_detail_model->getPendingValueByCustomerId($customerId);
 		
 		$this->load->model('Invoice_model');
-		// $data['pending_invoice']	= $this->Invoice_model->getCustomerStatusById($customerId);
 		$minimumDate = date('Y-m-d');
 		$receivableValue = 0;
 

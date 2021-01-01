@@ -524,14 +524,15 @@ class Invoice_model extends CI_Model {
 		public function getCustomerStatusById($customerId)
 		{
 			$query = $this->db->query("
-				SELECT invoice.value AS value, (invoice.value - invoice.discount + invoice.delivery) as value, COALESCE(a.value, 0) AS paid, invoice.date 
+				SELECT invoice.value AS value, (invoice.value - invoice.discount + invoice.delivery) as value, COALESCE(a.value, 0) AS paid, invoice.date, COALESCE(b.payment, customer.term_of_payment) AS term_of_payment
 				FROM invoice
 				LEFT JOIN (
 					SELECT SUM(value) as value, invoice_id FROM receivable GROUP BY invoice_id
 				) AS a
 				ON invoice.id = a.invoice_id
-				JOIN (
-					SELECT DISTINCT(code_delivery_order.invoice_id) as invoice_id FROM code_delivery_order
+				LEFT JOIN (
+					SELECT DISTINCT(code_delivery_order.invoice_id) as invoice_id, code_sales_order.payment
+					FROM code_delivery_order
 					JOIN invoice ON code_delivery_order.invoice_id = invoice.id
 					LEFT JOIN delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order.id
 					JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
@@ -540,6 +541,7 @@ class Invoice_model extends CI_Model {
 					AND invoice.is_done = '0'
 				) AS b
 				ON invoice.id = b.invoice_id
+				LEFT JOIN customer ON customer.id = invoice.customer_id
 			");
 			$result		= $query->result();
 			
