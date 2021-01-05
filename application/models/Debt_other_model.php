@@ -282,4 +282,18 @@ class Debt_other_model extends CI_Model {
 
 			return $this->db->affected_rows();
 		}
+
+		public function getValueByMonthYear($month, $year)
+		{
+			$this->db->select_sum('value');
+			$this->db->where('YEAR(date)', $year);
+			if($month != 0){
+				$this->db->where('MONTH(date)', $month);
+			}
+			$this->db->where('is_confirm', 1);
+			$query		= $this->db->get($this->table_purchase_invoice);
+			$result		= $query->row();
+
+			return $result->value;
+		}
 }

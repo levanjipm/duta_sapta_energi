@@ -101,11 +101,14 @@ class Director extends CI_Controller {
 			//Purchasing//
 			$this->load->model("Debt_model");
 			$purchase	= (float)$this->Debt_model->getValueByMonthYear($month, $year);
+
+			$this->load->model("Debt_other_model");
+			$otherPurchase	= (float) $this->Debt_other_model->getValueByMonthYear($month, $year);
 			
 			$this->load->model("Purchase_return_sent_model");
 			$purchaseReturn		= (float)$this->Purchase_return_sent_model->getValueByMonthYear($month, $year);
 
-			$data['purchase']	= $purchase;
+			$data['purchase']	= $purchase + $otherPurchase;
 			$data['purchaseReturn']	= $purchaseReturn;
 
 			//Stock Value//
