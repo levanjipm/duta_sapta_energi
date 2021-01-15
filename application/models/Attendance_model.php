@@ -256,5 +256,14 @@ class Attendance_model extends CI_Model {
 				return 0;
 			}
 		}
+
+		public function checkTodayAttendance($userId)
+		{
+			$this->db->where('user_id', $userId);
+			$this->db->where('date', date("Y-m-d"));
+			$query			= $this->db->get($this->table_attendance);
+			$result			= $query->num_rows();
+			return $result;
+		}
 	}
 ?>

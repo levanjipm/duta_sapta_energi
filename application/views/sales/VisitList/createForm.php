@@ -238,7 +238,7 @@
 						complete_address	+= ' no. ' + customer_number;
 					};
 					
-					if(customer_block != null && customer_block != ''){
+					if(customer_block != null && customer_block != '' && customer_block != "000"){
 						complete_address	+= ', blok ' + customer_block;
 					};
 					
@@ -341,7 +341,7 @@
 				complete_address	+= ' no. ' + customer_number;
 			};
 					
-			if(customer_block != null && customer_block != ''){
+			if(customer_block != null && customer_block != '' && customer_block != "000"){
 				complete_address	+= ', blok ' + customer_block;
 			};
 					

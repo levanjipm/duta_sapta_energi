@@ -182,7 +182,7 @@ class User_model extends CI_Model {
 			$this->db->update($this->table_user);
 		}
 
-		public function getSalesItems($offset = 0, $limit = 10)
+		public function getSalesItems($term = "", $offset = 0, $limit = 10)
 		{
 			$query		= $this->db->query("
 				SELECT users.* FROM users
@@ -191,6 +191,7 @@ class User_model extends CI_Model {
 					WHERE department_id = '2'
 				) AS a
 				ON a.user_id = users.id
+				WHERE users.name LIKE '%" . $term . "%'
 				LIMIT $limit OFFSET $offset
 			");
 
@@ -198,7 +199,7 @@ class User_model extends CI_Model {
 			return $result;
 		}
 
-		public function countSalesItems()
+		public function countSalesItems($term = "")
 		{
 			$query		= $this->db->query("
 				SELECT users.* FROM users
@@ -207,6 +208,7 @@ class User_model extends CI_Model {
 					WHERE department_id = '2'
 				) AS a
 				ON a.user_id = users.id
+				WHERE users.name LIKE '%" . $term . "%'
 			");
 
 			$result		= $query->num_rows();
@@ -244,18 +246,26 @@ class User_model extends CI_Model {
 			return $result;
 		}
 
-		public function countActiveUser()
+		public function countActiveUser($term = "")
 		{
 			$this->db->where("is_active", 1);
+			if($term != ""){
+				$this->db->like('name', $term, 'both');
+			}
 			$query		= $this->db->get($this->table_user);
 			$result		= $query->num_rows();
 			return $result;
 		}
 
-		public function getActiveUser()
+		public function getActiveUser($term = "", $offset = 0, $limit = 10)
 		{
 			$this->db->where("is_active", 1);
 			$this->db->order_by('name');
+			if($term != ""){
+				$this->db->like('name', $term, 'both');
+			}
+
+			$this->db->limit($limit, $offset);
 
 			$query		= $this->db->get($this->table_user);
 			$result		= $query->result();

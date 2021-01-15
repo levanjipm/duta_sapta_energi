@@ -40,12 +40,13 @@ class Users extends CI_Controller {
 
 	public function getSalesItems()
 	{
+		$term		= $this->input->get('term');
 		$page		= $this->input->get('page');
 		$offset		= ($page - 1) * 10;
 		$this->load->model("User_model");
 
-		$data['users'] = $this->User_model->getSalesItems($offset);
-		$data['pages'] = max(1, ceil($this->User_model->countSalesItems() / 10));
+		$data['users'] = $this->User_model->getSalesItems($term, $offset);
+		$data['pages'] = max(1, ceil($this->User_model->countSalesItems($term) / 10));
 
 		header('Content-Type: application/json');
 		echo json_encode($data);
@@ -125,7 +126,13 @@ class Users extends CI_Controller {
 	public function getActiveUser()
 	{
 		$this->load->model("User_model");
-		$data		= $this->User_model->getActiveUser();
+		$term		= $this->input->get("term");
+		$page		= $this->input->get('page');
+
+		$offset		= ($page - 1) * 10;
+		$data['users']		= $this->User_model->getActiveUser($term, $offset);
+		$data['pages']		= max(1, ceil($this->User_model->countActiveUser()/10));
+
 		header('Content-Type: application/json');
 		echo json_encode($data);
 	}
@@ -134,5 +141,20 @@ class Users extends CI_Controller {
 	{
 		unset($_SESSION['user_id']);
 		redirect(site_url('Login'));
+	}
+
+	public function checkAttendance()
+	{
+		$userId		= $this->session->userdata('user_id');
+		$this->load->model("Attendance_model");
+		$result = $this->Attendance_model->checkTodayAttendance($userId);
+		echo $result;
+	}
+
+	public function selfCheckIn()
+	{
+		$userId		= $this->session->userdata('user_id');
+		$this->load->model("Attendance_model");
+		$this->Attendance_model->insertItem($userId, 2);
 	}
 }

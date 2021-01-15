@@ -70,7 +70,7 @@
 
 	function refreshView(page = $('#page').val()){
 		$.ajax({
-			url:"<?= site_url('Users/getItems') ?>",
+			url:"<?= site_url('Users/getActiveUser') ?>",
 			data:{
 				page:page,
 				term: $('#searchBar').val()

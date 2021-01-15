@@ -78,6 +78,9 @@
 	</div>
 <?php } ?>
 </div>
+<div class="selfCheckIn" data-toggle="tooltip" title="Self Check In">
+	<i class='fa fa-check'></i>
+</div>
 <script>	
 	function adjust_size(){
 		var min_size	= 150;
@@ -89,10 +92,40 @@
 
 		$('.department_image').height(min_size);
 	}
-	
-	adjust_size();
+
+	$(document).ready(function(){
+		$('[data-toggle="tooltip"]').tooltip();
+
+		adjust_size();
+		checkAttendance();
+	})
 	
 	$(window).resize(function(){
 		adjust_size();
 	});
+
+	function checkAttendance(){
+		$.ajax({
+			url:"<?= site_url('Users/checkAttendance') ?>",
+			success:function(response){
+				if(response == 0){
+					$('.selfCheckIn').addClass("active");
+				} else {
+					$('.selfCheckIn').removeClass("active");
+				}
+			}
+		})
+	}
+
+	$('.selfCheckIn').click(function(){
+		$.ajax({
+			url:"<?= site_url('Users/selfCheckIn') ?>",
+			beforeSend:function(){
+				$('.selfCheckIn').attr('disabled', true);
+			},
+			success:function(){
+				checkAttendance();
+			}
+		})
+	})
 </script>

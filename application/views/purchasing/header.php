@@ -45,7 +45,28 @@
 		<a href='<?= site_url('Purchase_report') ?>'><button><p>Report</p></button></a>
 	</div>
 </div>
+<div class="selfCheckIn" data-toggle="tooltip" title="Self Check In">
+	<i class='fa fa-check'></i>
+</div>
 <script>
+	$(document).ready(function(){
+		$('[data-toggle="tooltip"]').tooltip();
+		checkAttendance();
+	})
+
+	function checkAttendance(){
+		$.ajax({
+			url:"<?= site_url('Users/checkAttendance') ?>",
+			success:function(response){
+				if(response == 0){
+					$('.selfCheckIn').addClass("active");
+				} else {
+					$('.selfCheckIn').removeClass("active");
+				}
+			}
+		})
+	}
+
 	$('.container_button').click(function(){
 		$('.active').removeClass('active');
 		$('.container_bar').hide(400);
@@ -66,4 +87,16 @@
 		$('.sidenav_bar').toggle(300);
 		$('.dashboard').css('margin-left',0);
 	});
+
+	$('.selfCheckIn').click(function(){
+		$.ajax({
+			url:"<?= site_url('Users/selfCheckIn') ?>",
+			beforeSend:function(){
+				$('.selfCheckIn').attr('disabled', true);
+			},
+			success:function(){
+				checkAttendance();
+			}
+		})
+	})
 </script>

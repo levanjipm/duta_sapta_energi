@@ -117,12 +117,31 @@
         </div>
     </div>
 </div>
+<div class="selfCheckIn" data-toggle="tooltip" title="Self Check In">
+	<i class='fa fa-check'></i>
+</div>
 <script>
     var salesData = [];
     var customerData = [];
+    
     $(document).ready(function(){
+		$('[data-toggle="tooltip"]').tooltip();
+		checkAttendance();
         refreshView();
-    });
+	})
+
+	function checkAttendance(){
+		$.ajax({
+			url:"<?= site_url('Users/checkAttendance') ?>",
+			success:function(response){
+				if(response == 0){
+					$('.selfCheckIn').addClass("active");
+				} else {
+					$('.selfCheckIn').removeClass("active");
+				}
+			}
+		})
+	}
 
     function refreshView(){
         $.ajax({
@@ -231,4 +250,16 @@
     function viewUnformedSalesOrders(){
         window.location.href="<?= site_url('Sales_order/confirmDashboard') ?>";
     }
+
+    $('.selfCheckIn').click(function(){
+		$.ajax({
+			url:"<?= site_url('Users/selfCheckIn') ?>",
+			beforeSend:function(){
+				$('.selfCheckIn').attr('disabled', true);
+			},
+			success:function(){
+				checkAttendance();
+			}
+		})
+	})
 </script>

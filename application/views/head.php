@@ -21,6 +21,41 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	<link rel="stylesheet" href='<?= base_url('css/loader_style.css') ?>'>
 	<script src='<?= base_url('js/header.js') ?>'></script>
 	<script src='<?= base_url('third_party/validation/dist/jquery.validate.min.js') ?>'></script>
+	<style>
+		.selfCheckIn{
+			width:50px;
+			height:50px;
+			border-radius:50%;
+			background-color:#ccc;
+			position:fixed;
+			bottom:20px;
+			right:20px;
+			box-shadow:3px 3px 3px 3px rgba(50, 50, 50, 0.8);
+			color:black;
+			font-size:30px;
+			padding:10px;
+			cursor:not-allowed;
+			display:none;
+		}
+		
+		.selfCheckIn.active{
+			background-color:#E19B3C;
+			cursor:pointer;
+			display:block;
+		}
+
+		.selfCheckIn.active:hover{
+			animation-name:bounce;
+			animation-duration:0.5s;
+			animation-fill-mode:forward;
+		}
+
+		@keyframes bounce{
+			0%{bottom:20px;}
+			50% {bottom:50px;}
+			100%{bottom:20px;}
+		}
+	</style>
 </head>
 <div class='loader_wrapper'>
 	<div class='loader_screen_wrapper'>
