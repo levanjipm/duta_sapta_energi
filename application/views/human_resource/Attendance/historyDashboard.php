@@ -180,6 +180,10 @@
 		})
 	}
 
+	$('#attendancePage').change(function(){
+		refreshView();
+	})
+
 	$('#userButton').click(function(){
 		$('#userSearchBar').val("");
 		refreshUsers(1);
