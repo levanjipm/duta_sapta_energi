@@ -44,6 +44,7 @@
 		<a href='<?= site_url('Area') ?>'><button><p>Area</p></button></a>
 		<a href='<?= site_url('Item') ?>'><button><p>Item</p></button></a>
 		<a href='<?= site_url('Item_class') ?>'><button><p>Item class</p></button></a>
+		<a href='<?= site_url('Brand') ?>'><button><p>Brand</p></button></a>
 		<button class='container_button'><p>Sales order</p><i class='fa fa-caret-down'></i></button>
 		<div class='container_bar'>
 			<a href='<?= site_url('Sales_order/createDashboard') ?>'><p>Create</p></a>

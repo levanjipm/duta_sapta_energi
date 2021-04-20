@@ -25,6 +25,10 @@ class Item extends CI_Controller {
 		$this->load->model('Item_class_model');
 		$items = $this->Item_class_model->showAllItems();
 		$data['classes'] = $items;
+
+		$this->load->model("Brand_model");
+		$brands = $this->Brand_model->getItems();
+		$data['brands'] = $brands;
 		
 		$this->load->view('sales/Item/dashboard',$data);
 	}

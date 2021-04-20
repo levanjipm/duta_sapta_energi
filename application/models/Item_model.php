@@ -86,7 +86,7 @@ class Item_model extends CI_Model {
 		{
 			if($filter != ''){
 				$query = $this->db->query("
-					SELECT price_list.id, price_list.price_list, item.id as item_id, item.reference, item.name, COALESCE(stockTable.residue, 0) AS stock
+					SELECT price_list.id, price_list.price_list, item.id as item_id, item.reference, item.name, COALESCE(stockTable.residue, 0) AS stock, brand.id as brand_id, brand.name AS brand
 					FROM price_list
 					JOIN item ON item.id = price_list.item_id
 					LEFT JOIN (
@@ -95,6 +95,7 @@ class Item_model extends CI_Model {
 						GROUP BY stock_in.item_id
 					) stockTable
 					ON stockTable.item_id = item.id
+					JOIN brand ON item.brand = brand.id
 					WHERE price_list.id IN (
 						SELECT MAX(price_list.id)
 						FROM price_list
@@ -104,7 +105,7 @@ class Item_model extends CI_Model {
 					LIMIT $limit OFFSET $offset");
 			} else {
 				$query = $this->db->query("
-					SELECT price_list.id, price_list.price_list, item.id as item_id, item.reference, item.name, COALESCE(stockTable.residue, 0) AS stock
+					SELECT price_list.id, price_list.price_list, item.id as item_id, item.reference, item.name, COALESCE(stockTable.residue, 0) AS stock, brand.id as brand_id, brand.name AS brand
 					FROM price_list
 					JOIN item ON item.id = price_list.item_id
 					LEFT JOIN (
@@ -113,6 +114,7 @@ class Item_model extends CI_Model {
 						GROUP BY stock_in.item_id
 					) stockTable
 					ON stockTable.item_id = item.id
+					JOIN brand ON item.brand = brand.id
 					WHERE price_list.id IN (
 						SELECT MAX(price_list.id)
 						FROM price_list
