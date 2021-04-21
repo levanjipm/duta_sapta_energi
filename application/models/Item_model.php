@@ -11,6 +11,7 @@ class Item_model extends CI_Model {
 		public $type;
 		public $is_notified_stock;
 		public $confidence_level;
+		public $brand;
 		
 		public $price_list;
 
@@ -41,6 +42,7 @@ class Item_model extends CI_Model {
 			$db_item->type				= $this->type;
 			$db_item->is_notified_stock	= $this->is_notified_stock;
 			$db_item->confidence_level	= $this->confidence_level;
+			$db_item->brand				= $this->brand;
 			
 			return $db_item;
 		}
@@ -168,7 +170,8 @@ class Item_model extends CI_Model {
 				$this->type					= $this->input->post('class');
 				$this->is_notified_stock	= $this->input->post('notify');
 				$this->confidence_level		= $this->input->post('confidenceLevel');
-				
+				$this->brand				= $this->input->post('brand');
+
 				$db_item 					= $this->get_db_from_stub();
 				$db_result 					= $this->db->insert($this->table_item, $db_item);
 				
@@ -183,9 +186,10 @@ class Item_model extends CI_Model {
 		public function showById($item_id)
 		{
 			$query 				= $this->db->query("
-				SELECT price_list.price_list, item.*
+				SELECT price_list.price_list, item.*, brand.id as brand_id, brand.name as brand
 					FROM price_list
 					JOIN item ON item.id = price_list.item_id
+					JOIN brand ON item.brand = brand.id
 					WHERE price_list.id IN (
 						SELECT MAX(price_list.id)
 						FROM price_list
@@ -221,6 +225,7 @@ class Item_model extends CI_Model {
 			$type				= $this->input->post('type');
 			$confidenceLevel	= $this->input->post('confidenceLevel');
 			$isNotified			= $this->input->post('isNotified');
+			$brand				= $this->input->post('brand');
 			
 			$query 				= $this->db->query("
 				SELECT price_list.price_list
@@ -246,7 +251,8 @@ class Item_model extends CI_Model {
 				$this->db->set('name', $name);
 				$this->db->set('type', $type);
 				$this->db->set('is_notified_stock', $isNotified);
-				$this->db->set('confidence_level', $confidenceLevel);					
+				$this->db->set('confidence_level', $confidenceLevel);		
+				$this->db->set('brand', $brand);			
 				$this->db->where('id', $id);
 				$this->db->update($this->table_item);
 			}
@@ -272,9 +278,10 @@ class Item_model extends CI_Model {
 
 		public function getByReference($reference)
 		{
-			$this->db->select('item.*, item_class.name as className');
+			$this->db->select('item.*, item_class.name as className, brand.name as brand, brand.id AS brand_id');
 			$this->db->from('item');
 			$this->db->join('item_class', 'item.type = item_class.id');
+			$this->db->join('brand', 'item.brand = brand.id');
 			$this->db->where('item.reference', $reference);
 
 			$query		= $this->db->get();

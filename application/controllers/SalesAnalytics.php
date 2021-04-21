@@ -78,8 +78,10 @@ class SalesAnalytics extends CI_Controller {
 	public function getByCustomerId()
 	{
 		$customerId			= $this->input->get('id');
+		$brandId			= $this->input->get('brand');
+		
 		$this->load->model("Customer_target_model");
-		$data['target'] = $this->Customer_target_model->getByCustomerId($customerId);
+		$data['target'] = $this->Customer_target_model->getByCustomerId($customerId, $brandId);
 
 		header('Content-Type: application/json');
 		echo json_encode($data);

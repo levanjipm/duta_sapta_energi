@@ -16,8 +16,11 @@
 				<label>Name</label>
 				<p><?= $item->name ?></p>
 
-				<label>Class</label>
+				<label>Type</label>
 				<p><?= $item->className ?></p>
+
+				<label>Brand</label>
+				<p><?= $item->brand ?></p>
 
 				<label>Confidence Level</label>
 				<p><?= number_format($item->confidence_level,2) ?>%</p>

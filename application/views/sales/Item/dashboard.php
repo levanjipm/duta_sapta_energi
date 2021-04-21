@@ -55,6 +55,17 @@
 	}
 ?>
 			</select>
+
+			<label>Brand</label>
+			<select class='form-control' id='itemBrand' name='itemBrand'>
+			<?php
+	foreach($brands as $brand){
+?>
+				<option value='<?= $brand->id ?>'><?= $brand->name ?></option>
+<?php
+	}
+?>
+			</select>
 			
 			<label>Pricelist</label>
 			<input type='number' class='form-control' id='priceList' name='priceList' required min='0'>
@@ -114,6 +125,17 @@
 	foreach($classes as $class){
 ?>
 				<option value='<?= $class->id ?>'><?= $class->name ?></option>
+<?php
+	}
+?>
+			</select>
+
+			<label>Brand</label>
+			<select class='form-control' id='itemBrandEdit' name='itemBrandEdit' required>
+<?php
+	foreach($brands as $brand){
+?>
+				<option value='<?= $brand->id ?>'><?= $brand->name ?></option>
 <?php
 	}
 ?>
@@ -224,6 +246,7 @@
 					notify: isNotified,
 					priceList: $('#priceList').val(),
 					confidenceLevel: $('#confidenceLevel').val(),
+					brand: $('#itemBrand').val()
 				},
 				type:'POST',
 				beforeSend:function(){
@@ -269,7 +292,8 @@
 					priceList: $('#priceListEdit').val(),
 					type: $('#typeEdit').val(),
 					isNotified: isNotified,
-					confidenceLevel: $('#confidenceLevelEdit').val()					
+					confidenceLevel: $('#confidenceLevelEdit').val(),
+					brand: $('#itemBrandEdit').val()				
 				},
 				type:'POST',
 				success:function(response){
@@ -299,6 +323,7 @@
 				var type					= response.type;
 				var confidenceLevelEdit 	= response.confidence_level;
 				var isNotifiedEdit_stock 	= response.is_notified_stock;
+				var brand_id				= response.brand_id;
 				
 				if(isNotifiedEdit_stock == 1){
 					$('#isNotifiedEdit').attr("checked", true);
@@ -312,6 +337,7 @@
 				$('#descriptionEdit').val(name);
 				$('#priceListEdit').val(price_list);
 				$('#typeEdit').val(type);
+				$('#itemBrandEdit').val(brand_id);
 				
 				$('#editItemWrapper').fadeIn(300, function(){
 					$('#editItemWrapper .alert_box_slide').show("slide", { direction: "right" }, 250);

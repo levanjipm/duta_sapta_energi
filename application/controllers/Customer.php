@@ -184,6 +184,7 @@ class Customer extends CI_Controller {
 	public function getCurrentTarget()
 	{
 		$customerId = $this->input->get('id');
+
 		$this->load->model("Customer_model");
 		$data['customer'] = $this->Customer_model->getById($customerId);
 

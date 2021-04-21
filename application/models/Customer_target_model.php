@@ -9,6 +9,7 @@ class Customer_target_model extends CI_Model {
 		public $dateCreated;
 		public $created_by;
 		public $value;
+		public $brand;
 
 		public function __construct()
 		{
@@ -22,6 +23,7 @@ class Customer_target_model extends CI_Model {
 			$this->dateCreated			= $db_item->dateCreated;
 			$this->created_by			= $db_item->created_by;
 			$this->value				= $db_item->value;
+			$this->brand				= $db_item->brand;
 			
 			return $this;
 		}
@@ -35,6 +37,7 @@ class Customer_target_model extends CI_Model {
 			$db_item->dateCreated			= $this->dateCreated;
 			$db_item->created_by			= $this->created_by;
 			$db_item->value					= $this->value;
+			$db_item->brand					= $this->brand;
 			
 			return $db_item;
 		}
@@ -48,6 +51,7 @@ class Customer_target_model extends CI_Model {
 			$stub->dateCreated			= $db_item->dateCreated;
 			$stub->created_by			= $db_item->created_by;
 			$stub->value				= $db_item->value;
+			$stub->brand				= $db_item->brand;
 			
 			return $stub;
 		}
@@ -282,7 +286,7 @@ class Customer_target_model extends CI_Model {
 			return $result;
 		}
 
-		public function insertItem($customerId, $value, $date)
+		public function insertItem($customerId, $value, $brand, $date)
 		{
 			$this->db->where('customer_id', $customerId);
 			$this->db->where('dateCreated >=', $date);
@@ -298,7 +302,8 @@ class Customer_target_model extends CI_Model {
 							"customer_id" => $customerId,
 							"created_by" => $this->session->userdata('user_id'),
 							"dateCreated" => $date,
-							"value" => $value
+							"value" => $value,
+							"brand" => $brand
 						);
 						$this->db->insert($this->table_target, $db_item);
 						return $this->db->affected_rows();
@@ -319,12 +324,15 @@ class Customer_target_model extends CI_Model {
 			}
 		}
 
-		public function getByCustomerId($customerId)
+		public function getByCustomerId($customerId, $brandId = NULL)
 		{
-			$this->db->where('customer_id', $customerId);
-			$this->db->order_by('dateCreated', 'DESC');
-			$query			= $this->db->get($this->table_target);
-			$result			= $query->result();
+			if($brandId == NULL){
+				$this->db->where('customer_id', $customerId);
+				$this->db->order_by('dateCreated', 'DESC');
+				$query			= $this->db->get($this->table_target);
+				$result			= $query->result();
+			}
+			
 			return $result;
 		}
 
