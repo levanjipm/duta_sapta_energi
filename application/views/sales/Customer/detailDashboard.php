@@ -138,6 +138,7 @@
 			<div class='col-md-8 col-sm-12 col-xs-12' id='rightDiv'>
 				<button class='button button_mini_tab' id='salesOrderButton'>Pending Sales Orders</button>
 				<button class='button button_mini_tab' id='receivableButton'>Receivable</button>
+				<button class='button button_mini_tab' id='targetButton'>Target</button>
 				<button class='button button_mini_tab' id='analyticButton'>Analytics</button>
 				<br><br>
 				<div id='pendingSalesOrderTableWrapper' class='viewWrapper'>
@@ -174,6 +175,26 @@
 
 					<p id='receivableTableText'>There is no receivable found.</p>
 				</div>
+				<div id='targetWrapper' class='viewWrapper'>
+					<label>Target History</label>
+					<table class='table table-bordered'>
+						<tr>
+							<th>Effective Date</th>
+							<th>Brand</th>
+							<th>Value</th>
+							<th>Action</th>
+						</tr>
+						<tbody id='targetTableContent'></tbody>
+					</table>
+
+					<select class='form-control' id='targetPage' style='width:100px'>
+						<option value='1'>1</option>
+					</select>
+					<hr>
+					<button class='button button_default_dark' id='addTargetButton'>
+						<i class='fa fa-plus'></i> Add Target
+					</button>
+				</div>
 				<div id='analyticsWrapper' class='viewWrapper'>
 					<canvas id='chartWrapper' width="100" height="30"></canvas>
 					<form id='valueForm'>
@@ -190,22 +211,70 @@
 						<label>Information</label>
 						<p>The value mentioned above is the sum of invoices value of the current customer subtracted by sum of returned received in that period.</p>
 					</form>
-					<hr>
-					<label>Target History</label>
-					<table class='table table-bordered'>
-						<tr>
-							<th>Effective Date</th>
-							<th>Value</th>
-						</tr>
-						<tbody id='targetTableContent'></tbody>
-					</table>
-
-					<select class='form-control' id='targetPage' style='width:100px'>
-						<option value='1'>1</option>
-					</select>
 				</div>
 			</div>
 		</div>
+	</div>
+</div>
+
+<div class='alert_wrapper' id='delete_target_wrapper'>
+	<div class='alert_box_confirm_wrapper'>
+		<div class='alert_box_confirm_icon'><i class='fa fa-trash'></i></div>
+		<div class='alert_box_confirm'>
+			<input type='hidden' id='delete_target_id'>
+			<h3>Delete confirmation</h3>
+			
+			<p>You are about to delete this data.</p>
+			<p>Are you sure?</p>
+			<button class='button button_default_dark' onclick="$('#delete_target_wrapper').fadeOut()">Cancel</button>
+			<button class='button button_danger_dark' onclick='deleteTarget()'>Delete</button>
+			
+			<br><br>
+			
+			<p style='font-family:museo;background-color:#f63e21;width:100%;padding:5px;color:white;position:relative;bottom:0;left:0;opacity:0' id='error_delete_customer'>Deletation failed.</p>
+		</div>
+	</div>
+</div>
+
+<div class='alert_wrapper' id='addTargetWrapper'>
+	<button class='slide_alert_close_button'>&times;</button>
+	<div class='alert_box_slide'>
+		<h3 style='font-family:bebasneue'>Customer Target</h3>
+		<hr>
+		<form id='addTargetForm'>
+			<label>Brand</label>
+			<select 
+				class='form-control' 
+				id='brandTarget' 
+				name='brandTarget'
+				required>
+			<?php foreach($brands as $brand){ ?>
+				<option value='<?= $brand->id ?>'><?= $brand->name ?></option>
+			<?php } ?>
+			</select>
+
+			<label>Value</label>
+			<input 
+				type='number' 
+				class='form-control' 
+				id='valueTarget' 
+				name='valueTarget'
+				required
+				min='0' />
+
+			<label>Effective Date</label>
+			<input 
+				type='date' 
+				class='form-control' 
+				id='dateTarget' 
+				name='dateTarget'
+				required />
+			<br>
+			<button type='button' id='submitTargetButton' class='button button_default_dark'><i class='fa fa-long-arrow-right'></i> Add Target</button>
+			<br>
+
+			<p id='failedSubmitTargetText' class='notificationText danger' style='display:block;opacity:0'>Failed to submit target</p>
+		</form>
 	</div>
 </div>
 
@@ -264,10 +333,71 @@
 <script>
 	var target;
 	$("#valueForm").validate();
+	$('#addTargetForm').validate();
 
 	$(document).ready(function(){
 		$('#salesOrderButton').click();
 	});
+
+	$('#addTargetButton').click(function(){
+		$('#addTargetWrapper').fadeIn(300, function(){
+			$('#addTargetWrapper .alert_box_slide').show("slide", { direction: "right" }, 250);
+		});
+	});
+
+	function deleteTarget(){
+		$.ajax({
+			url:"<?= site_url('Customer/deleteTargetByid') ?>",
+			type:"GET",
+			data:{
+				id: $('#delete_target_id').val()
+			},
+			beforeSend:function(){
+				$('button').attr('disabled', true);
+			},
+			success:function(response){
+				$('button').attr('disabled', false);
+
+				if(response == 1){
+					fetchTargets();
+				}
+			}
+		})
+	}
+
+	$('#submitTargetButton').click(function(){
+		if($('#addTargetForm').valid()){
+			$.ajax({
+				url:"<?= site_url('Customer/updateCustomerTarget') ?>",
+				data:{
+					customerId: <?= $customer->id ?>,
+					value: $('#valueTarget').val(),
+					date: $('#dateTarget').val(),
+					brand: $('#brandTarget').val()
+				},
+				type:"POST",
+				beforeSend:function(){
+					$('input').attr('readonly', true);
+					$('button').attr('disabled', true);
+				},
+				success:function(response){
+					$('input').attr('readonly', false);
+					$('button').attr('disabled', false);
+
+					if(response == 1){
+						$('#addTargetForm').trigger('reset');
+						$('#addTargetWrapper .slide_alert_close_button').click();
+						fetchTargets();
+					} else {
+						$('#failedSubmitTargetText').fadeTo(300, 1);
+						setTimeout(() => {
+							$('#failedSubmitTargetText').fadeTo(300, 0)
+						}, 1000);
+					}
+				}
+			})
+		}
+	})
 
 	$('#salesOrderButton').click(function(){
 		$('.button_mini_tab').attr('disabled', false);
@@ -298,6 +428,22 @@
 			}, 300);
 		});
 	});
+
+	$('#targetButton').click(function(){
+		$('.button_mini_tab').attr('disabled', false);
+		$('.button_mini_tab').removeClass('active');
+
+		$(this).attr('disabled', true);
+		$(this).addClass('active');
+
+		$('.viewWrapper').fadeOut(300, function(){
+			setTimeout(function(){
+				$('#targetWrapper').fadeIn(300);
+			}, 300);
+		});
+
+		fetchTargets();
+	})
 
 	$('#analyticButton').click(function(){
 		$('.button_mini_tab').attr('disabled', false);
@@ -395,6 +541,46 @@
 		})
 	}
 
+	function openDeleteTarget(id){
+		$('#delete_target_id').val(id);
+		$('#delete_target_wrapper').fadeIn();
+	}
+
+	function fetchTargets(page = $('#targetPage').val()){
+		$.ajax({
+			url:"<?= site_url('SalesAnalytics/getByCustomerId') ?>",
+			data:{
+				id: <?= $customer->id ?>
+			},
+			success:function(response){
+				target = response.target;
+				var length	= target.length;
+				var pages	= Math.max(1, Math.ceil(length / 5));
+
+				$('#targetTableContent').html("");
+
+				var startArray		= (page - 1) * 5;
+				var endArray		= startArray + 5;
+				var targetArray		= target.slice(startArray, endArray);
+				$.each(targetArray, function(index, item){
+					var name	= item.name;
+					var value = item.value;
+					var dateCreated = item.dateCreated;
+					$('#targetTableContent').append("<tr><td>" + my_date_format(dateCreated) + "</td><td>" + name + "</td><td>Rp. " + numeral(value).format('0,0.00') + "</td><td><button class='button button_danger_dark' onclick='openDeleteTarget(" + item.id + ")'><i class='fa fa-trash'></i></button></td></tr>");
+				});
+
+				$('#targetPage').html("");
+				for(i = 1; i <= pages; i++){
+					if(i == page){
+						$('#targetPage').append("<option value='" + i + "' selected>" + i + "</option>");
+					} else {
+						$('#targetPage').append("<option value='" + i + "'>" + i + "</option>");
+					}
+				}
+			}
+		})
+	}
+
 	$('#targetPage').change(function(){
 		var length	= target.length;
 		var pages	= Math.max(1, Math.ceil(length / 5));
@@ -418,29 +604,7 @@
 				id: <?= $customer->id ?>
 			},
 			success:function(response){
-				target = response.target;
-				var length	= target.length;
-				var pages	= Math.max(1, Math.ceil(length / 5));
-
-				$('#targetTableContent').html("");
-
-				var startArray		= (page - 1) * 5;
-				var endArray		= startArray + 5;
-				var targetArray		= target.slice(startArray, endArray);
-				$.each(targetArray, function(index, item){
-					var value = item.value;
-					var dateCreated = item.dateCreated;
-					$('#targetTableContent').append("<tr><td>" + my_date_format(dateCreated) + "</td><td>Rp. " + numeral(value).format('0,0.00') + "</td></tr>");
-				});
-
-				$('#targetPage').html("");
-				for(i = 1; i <= pages; i++){
-					if(i == page){
-						$('#targetPage').append("<option value='" + i + "' selected>" + i + "</option>");
-					} else {
-						$('#targetPage').append("<option value='" + i + "'>" + i + "</option>");
-					}
-				}
+				
 			}
 		})
 	}

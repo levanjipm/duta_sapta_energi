@@ -289,7 +289,9 @@ class Customer_target_model extends CI_Model {
 		public function insertItem($customerId, $value, $brand, $date)
 		{
 			$this->db->where('customer_id', $customerId);
+			$this->db->where('brand', $brand);
 			$this->db->where('dateCreated >=', $date);
+
 			$query			= $this->db->get($this->table_target);
 			$result			= $query->num_rows();
 			if($result == 0){
@@ -314,7 +316,8 @@ class Customer_target_model extends CI_Model {
 						"customer_id" => $customerId,
 						"created_by" => $this->session->userdata('user_id'),
 						"dateCreated" => $date,
-						"value" => $value
+						"value" => $value,
+						"brand" => $brand
 					);
 					$this->db->insert($this->table_target, $db_item);
 					return $this->db->affected_rows();
@@ -326,20 +329,27 @@ class Customer_target_model extends CI_Model {
 
 		public function getByCustomerId($customerId, $brandId = NULL)
 		{
-			if($brandId == NULL){
+			$this->db->select('customer_target.*, brand.name');
+			$this->db->from('customer_target');
+			$this->db->where('customer_target.customer_id', $customerId);
+
+			$this->db->join('brand', 'customer_target.brand = brand.id');
+
+			if($brandId != NULL) {
 				$this->db->where('customer_id', $customerId);
-				$this->db->order_by('dateCreated', 'DESC');
-				$query			= $this->db->get($this->table_target);
-				$result			= $query->result();
+				$this->db->where('brand', $brandId);
 			}
-			
+
+			$this->db->order_by('customer_target.dateCreated', 'DESC');
+
+			$query			= $this->db->get();
+			$result			= $query->result();			
 			return $result;
 		}
 
 		public function deleteById($id)
 		{
 			$this->db->where('id', $id);
-			$this->db->where('dateCreated >', date("Y-m-d"));
 			$this->db->delete($this->table_target);
 
 			return $this->db->affected_rows();

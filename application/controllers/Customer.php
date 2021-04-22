@@ -178,6 +178,9 @@ class Customer extends CI_Controller {
 		$this->load->model("Area_model");
 		$data['area'] = $this->Area_model->getItemById($customer->area_id);
 
+		$this->load->model("Brand_model");
+		$data['brands'] = $this->Brand_model->getItems();
+
 		$this->load->view('sales/Customer/detailDashboard', $data);
 	}
 
@@ -241,10 +244,11 @@ class Customer extends CI_Controller {
 		$customerId		= $this->input->post('customerId');
 		$value			= $this->input->post('value');
 		$date			= $this->input->post('date');
+		$brand			= $this->input->post('brand');
 
 		if($customerId != null && $value > 0){
 			$this->load->model("Customer_target_model");
-			$result = $this->Customer_target_model->insertItem($customerId, $value, date('Y-m-01', strtotime($date)));
+			$result = $this->Customer_target_model->insertItem($customerId, $value, $brand, date('Y-m-01', strtotime($date)));
 			echo $result;
 		} else {
 			echo 0;
