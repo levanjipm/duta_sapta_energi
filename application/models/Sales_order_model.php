@@ -596,9 +596,12 @@ class Sales_order_model extends CI_Model {
 				) as sellerTable
 				ON code_sales_order.seller = sellerTable.id
 				JOIN (
-					SELECT sales_order.code_sales_order_id, SUM(sales_order.quantity) AS quantity, IF(sales_order.status = 1, SUM(sales_order.quantity), SUM(sales_order.sent)) as sent
-					FROM sales_order
-					GROUP BY sales_order.code_sales_order_id
+					SELECT salesOrderPendingTable.code_sales_order_id, SUM(salesOrderPendingTable.quantity) AS quantity, SUM(salesOrderPendingTable.sent) AS sent
+					FROM (
+						SELECT sales_order.code_sales_order_id, sales_order.quantity, IF(sales_order.status = 1, sales_order.quantity, sales_order.sent) as sent
+						FROM sales_order
+					) AS salesOrderPendingTable
+					GROUP BY salesOrderPendingTable.code_sales_order_id
 				) as salesOrderTable
 				ON salesOrderTable.code_sales_order_id = code_sales_order.id
 				JOIN (

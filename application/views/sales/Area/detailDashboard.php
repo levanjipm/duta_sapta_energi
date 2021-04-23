@@ -35,6 +35,13 @@
 					<div id="map"></div>
 				</div>
 				<div class='col-sm-6'>
+					<label>Brand</label>
+					<select class='form-control' id='brandTargetSelector'>
+					<?php foreach($brands as $brand){ ?>
+						<option value='<?= $brand->id ?>'><?= $brand->name ?></option>
+					<?php } ?>
+					</select>
+
 					<label>Current target</label>
 					<p id='customerTarget'></p>
 
@@ -52,7 +59,6 @@
 				<?php 
 				$page				= 1;
 				$i					= 0;
-				$totalTarget		= 0;
 				foreach($customers as $customer){
 					$customerName		= $customer['name'];
 					$complete_address	= $customer['address'];
@@ -77,14 +83,10 @@
 					if($customer_postal != ''){
 						$complete_address .= ', ' . $customer_postal;
 					}
-
-					$target		= $customer['target'];
-					$totalTarget += $target;
 				?>
 					<tr class='table-<?= $page?>'>
 						<td><?= $customerName ?></td>
 						<td><p><?= $complete_address ?>, <?= $customer_city ?></p></td>
-						<td>Rp. <?= number_format($target, 2) ?></td>
 					</tr>
 				<?php 
 					$i++;
@@ -140,13 +142,13 @@
 </div>
 
 <script>
+	var targets = [];
+
 	$(document).ready(function(){
 		$('tr[class^="table-"]').hide();
 		$('.table-1').show();
 
 		$('#generalButton').click();
-
-		$('#customerTarget').html("Rp. " + numeral(<?= $totalTarget ?>).format('0,0.00'));
 		$.ajax({
 			url:"<?= site_url('Area/getChartItems') ?>",
 			data:{
@@ -236,6 +238,7 @@
 		});
 		var bounds = new google.maps.LatLngBounds();
 		$.each(<?= json_encode($customers) ?>, function(index, customer){
+			console.log(customer);
 			if(customer.latitude != 0 && customer.latitude != null){
 				var place = new google.maps.LatLng(parseFloat(customer.latitude), parseFloat(customer.longitude));
 				var marker = new google.maps.Marker({

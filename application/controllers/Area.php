@@ -113,6 +113,8 @@ class Area extends CI_Controller {
 			$this->Invoice_model->calculatePaymentsByAreaId(4, $id)
 		);
 		
+		$this->load->model("Brand_model");
+		$data['brands']		= $this->Brand_model->getItems();
 		$this->load->view('sales/Area/detailDashboard', $data);
 	}
 

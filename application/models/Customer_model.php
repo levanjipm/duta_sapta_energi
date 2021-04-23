@@ -466,46 +466,74 @@ class Customer_model extends CI_Model {
 		public function getByAreaId($areaId)
 		{
 			$query		= $this->db->query("
-				SELECT customer.*, targetTable.value AS target, targetTable.dateCreated AS targetDate
+				SELECT customer.*, 
+				customer_target.brand, customer_target.dateCreated, customer_target.value
 				FROM customer
-				JOIN (
-					SELECT customer_target.value, customer_target.customer_id, customer_target.dateCreated
-					FROM customer_target
-					ORDER BY customer_target.customer_id ASC, 
-					customer_target.dateCreated DESC
-				) targetTable
-				ON targetTable.customer_id = customer.id
+				JOIN customer_target
+				ON customer_target.id = customer.id
 				WHERE customer.area_id = '$areaId'
 			");
-			$result			= $query->result();
 
+			$customers			= $query->result();
 			$response			= array();
-			foreach($result as $item){
-				$id				= $item->id;
+			$targets			= array();
+			foreach($customers as $customer){
+				$id				= $customer->id;
 				if(!array_key_exists($id, $response)){
-					$response[$id]['name']	= $item->name;
-					$response[$id]['address']	= $item->address;
-					$response[$id]['number']	= $item->number;
-					$response[$id]['block']		= $item->block;
-					$response[$id]['postal_code']	= $item->postal_code;
-					$response[$id]['city']			= $item->city;
-					$response[$id]['rt']			= $item->rt;
-					$response[$id]['rw']			= $item->rw;
-					$response[$id]['latitude']		= $item->latitude;
-					$response[$id]['longitude']		= $item->longitude;
-
-					$response[$id]['target']	= $item->target;
-					$response[$id]['date']		= $item->targetDate;
+					$response[$id]['name']	= $customer->name;
+					$response[$id]['address']	= $customer->address;
+					$response[$id]['number']	= $customer->number;
+					$response[$id]['block']		= $customer->block;
+					$response[$id]['postal_code']	= $customer->postal_code;
+					$response[$id]['city']			= $customer->city;
+					$response[$id]['rt']			= $customer->rt;
+					$response[$id]['rw']			= $customer->rw;
+					$response[$id]['latitude']		= $customer->latitude;
+					$response[$id]['longitude']		= $customer->longitude;
+					
+					$targets[$id]					= array();
+					$targetItem						= array(
+						"dateCreated" => $customer->dateCreated,
+						"brand" => $customer->brand,
+						"value" => $customer->value
+					);
+					array_push($targets[$id], $targetItem);
 				} else {
-					$currentDate		= $response[$id]['date'];
-					$date				= $item->targetDate;
-					if($date > $currentDate){
-						$response[$id]['target']	= $item->target;
-						$response[$id]['date']		= $item->targetDate;
-					}
+					$targetItem						= array(
+						"dateCreated" => $customer->createdDate,
+						"brand" => $customer->brand,
+						"value" => $customer->value
+					);
+					array_push($targets[$id], $targetItem);
 				}
 
-				next($result);
+				next($customer);
+			}
+
+			foreach($targets as $customerId => $target){
+				if(!array_key_exists("target", $response[$customerId])){
+					$response[$customerId]['target'] = array();
+				}
+
+				foreach($target as $targetItem){
+					$brand = $targetItem["brand"];
+					$value = $targetItem["value"];
+					$dateCreated = $targetItem["dateCreated"];
+
+					if(!array_key_exists($brand, $response[$customerId]['target'])){
+						$response[$customerId]['target'][$brand] = array(
+							"value" => $value,
+							"dateCreated" => $dateCreated
+						);
+					} else {
+						if($response[$customerId]['target'][$brand]["dateCreated"] < $dateCreated){
+							$response[$customerId]['target'][$brand] = array(
+								"value" => $value,
+								"dateCreated" => $dateCreated
+							);
+						}
+					}
+				}
 			}
 
 			return $response;

@@ -148,7 +148,7 @@
 			success:function(response){
 				var customer				= response.customer;
 				var complete_address		= '';
-				var customer_name			= customer.customerName;
+				var customer_name			= customer.name;
 				complete_address			+= customer.address;
 				var customer_city			= customer.city;
 				var customer_number			= customer.number;

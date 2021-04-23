@@ -495,8 +495,10 @@ class Delivery_order_model extends CI_Model {
 
 		public function getPendingSentItems($offset = 0, $limit = 10)
 		{
+			$includedDeliveryOrder = array();
+
 			$this->db->select('code_delivery_order.*, customer.name as customerName, customer.address, customer.city, customer.number, customer.block, customer.rt, customer.rw, customer.postal_code, customer.latitude, customer.longitude');
-			$this->db->from('code_delivery_order', 'left');
+			$this->db->from('code_delivery_order');
 			$this->db->join('delivery_order', 'delivery_order.code_delivery_order_id = code_delivery_order.id', 'inner');
 			$this->db->join('sales_order', 'delivery_order.sales_order_id = sales_order.id');
 			$this->db->join('code_sales_order', 'sales_order.code_sales_order_id = code_sales_order.id');
@@ -507,7 +509,17 @@ class Delivery_order_model extends CI_Model {
 
 			$query			= $this->db->get();
 			$result			= $query->result();
-			return $result;
+
+			$response		= array();
+
+			foreach($result as $item){
+				if(!in_array($item->id, $includedDeliveryOrder)){
+					array_push($response, $item);
+					array_push($includedDeliveryOrder, $item->id);
+				}
+			}
+
+			return $response;
 		}
 
 		public function countPendingSentItems($offset = 0, $limit = 10)
