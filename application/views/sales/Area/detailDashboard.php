@@ -36,7 +36,10 @@
 				</div>
 				<div class='col-sm-6'>
 					<label>Brand</label>
-					<select class='form-control' id='brandTargetSelector'>
+					<select 
+					class='form-control' 
+					id='brandTargetSelector'
+					onchange="updateBrandTarget()">
 					<?php foreach($brands as $brand){ ?>
 						<option value='<?= $brand->id ?>'><?= $brand->name ?></option>
 					<?php } ?>
@@ -54,7 +57,7 @@
 					<tr>
 						<th>Customer</th>
 						<th>Information</th>
-						<th>Target</th>
+						<th>Action</th>
 					</tr>
 				<?php 
 				$page				= 1;
@@ -85,8 +88,13 @@
 					}
 				?>
 					<tr class='table-<?= $page?>'>
-						<td><?= $customerName ?></td>
-						<td><p><?= $complete_address ?>, <?= $customer_city ?></p></td>
+					<td><?= $customerName ?></td>
+					<td><p><?= $complete_address ?>, <?= $customer_city ?></p></td>
+					<td>
+						<button class="button button_default_dark" onclick='viewCustomerDetail(<?= $customer["id"] ?>)'>
+							<i class='fa fa-eye'></i>
+						</button>
+					</td>
 					</tr>
 				<?php 
 					$i++;
@@ -142,17 +150,34 @@
 </div>
 
 <script>
-	var targets = [];
+	let targets = [];
 
 	$(document).ready(function(){
-		$('tr[class^="table-"]').hide();
-		$('.table-1').show();
-
 		$('#generalButton').click();
+
+		$.each(<?= json_encode($customers) ?>, function(index, customer){
+			$.each(customer.target, function(brand, target){
+				if(targets[brand] === undefined){
+					targets[brand] = parseFloat(target.value);
+				} else {
+					targets[brand] += parseFloat(target.value);
+				}
+			});
+		});
+
+		updateBrandTarget();
+	});
+
+	function updateBrandTarget(){
+		let brand = $('#brandTargetSelector').val();
+		$('#customerTarget').html(numeral(targets[brand]).format('0,0.00'));
+
+		
 		$.ajax({
 			url:"<?= site_url('Area/getChartItems') ?>",
 			data:{
-				area:<?= $this->input->post('id') ?>
+				area:<?= $this->input->post('id') ?>,
+				brand: brand
 			},
 			success:function(response){
 				var result = JSON.parse(response);
@@ -195,7 +220,13 @@
 				});
 			}
 		});
-	});
+
+		changePage();
+	}
+
+	function viewCustomerDetail(id){
+		window.open("<?= site_url('Customer/viewCustomerDetail/') ?>" + id);
+	}
 
 	function changePage(){
 		var page		= $('#page').val();
@@ -238,7 +269,6 @@
 		});
 		var bounds = new google.maps.LatLngBounds();
 		$.each(<?= json_encode($customers) ?>, function(index, customer){
-			console.log(customer);
 			if(customer.latitude != 0 && customer.latitude != null){
 				var place = new google.maps.LatLng(parseFloat(customer.latitude), parseFloat(customer.longitude));
 				var marker = new google.maps.Marker({

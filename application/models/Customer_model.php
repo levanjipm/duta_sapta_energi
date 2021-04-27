@@ -466,11 +466,11 @@ class Customer_model extends CI_Model {
 		public function getByAreaId($areaId)
 		{
 			$query		= $this->db->query("
-				SELECT customer.*, 
-				customer_target.brand, customer_target.dateCreated, customer_target.value
-				FROM customer
-				JOIN customer_target
-				ON customer_target.id = customer.id
+				SELECT customer_target.brand, customer_target.dateCreated, customer_target.value,
+				customer.*
+				FROM customer_target
+				JOIN customer
+				ON customer_target.customer_id = customer.id
 				WHERE customer.area_id = '$areaId'
 			");
 
@@ -480,6 +480,7 @@ class Customer_model extends CI_Model {
 			foreach($customers as $customer){
 				$id				= $customer->id;
 				if(!array_key_exists($id, $response)){
+					$response[$id]['id'] = $customer->id;
 					$response[$id]['name']	= $customer->name;
 					$response[$id]['address']	= $customer->address;
 					$response[$id]['number']	= $customer->number;
@@ -500,7 +501,7 @@ class Customer_model extends CI_Model {
 					array_push($targets[$id], $targetItem);
 				} else {
 					$targetItem						= array(
-						"dateCreated" => $customer->createdDate,
+						"dateCreated" => $customer->dateCreated,
 						"brand" => $customer->brand,
 						"value" => $customer->value
 					);
@@ -522,12 +523,14 @@ class Customer_model extends CI_Model {
 
 					if(!array_key_exists($brand, $response[$customerId]['target'])){
 						$response[$customerId]['target'][$brand] = array(
+							"brand" => $brand,
 							"value" => $value,
 							"dateCreated" => $dateCreated
 						);
 					} else {
 						if($response[$customerId]['target'][$brand]["dateCreated"] < $dateCreated){
 							$response[$customerId]['target'][$brand] = array(
+								"brand" => $brand,
 								"value" => $value,
 								"dateCreated" => $dateCreated
 							);

@@ -1770,7 +1770,7 @@ class Invoice_model extends CI_Model {
 			return $result;
 		}
 
-		public function getAchivementByAreaId($areaId, $offset, $limit)
+		public function getAchivementByAreaId($areaId, $brand, $offset, $limit)
 		{
 			$offsetMonth		= date("m", strtotime("-" . $offset . "month"));
 			$offsetYear			= date("Y", strtotime("-" . $offset . "month"));
@@ -1780,24 +1780,19 @@ class Invoice_model extends CI_Model {
 			$limitYear		= date("Y", strtotime("-" . $limit . "month"));
 			$limitDate		= date("Y-m-d", mktime(0,0,0,$limitMonth, 1, $limitYear));
 			$query			 = $this->db->query("
-				SELECT invoiceTable.*
-				FROM (
-					SELECT SUM(invoice.value + invoice.delivery - invoice.discount) AS value, YEAR(invoice.date) AS year, MONTH(invoice.date) AS month
-					FROM invoice
-					LEFT JOIN customer ON invoice.customer_id = customer.id
-					WHERE (invoice.id IN (
-						SELECT DISTINCT(code_delivery_order.invoice_id) AS id
-						FROM code_delivery_order
-						JOIN delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order.id
-						JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
-						JOIN code_sales_order ON sales_order.code_sales_order_id
-						JOIN customer ON code_sales_order.customer_id = customer.id
-						WHERE customer.area_id = '$areaId'
-					)
-					AND invoice.date <= '$offsetDate' AND invoice.date >= '$limitDate')
-					OR customer.area_id = '$areaId'					
-					GROUP BY YEAR(invoice.date), MONTH(invoice.date)
-				) invoiceTable
+				SELECT SUM(delivery_order.quantity * price_list.price_list * (100 - sales_order.discount) / 100) AS value, YEAR(code_delivery_order.date) AS year, MONTh(code_delivery_order.date) AS month
+				FROM delivery_order
+				JOIN code_delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order.id
+				WHERE delivery_order.code_delivery_order_id IN (
+					SELECT DISTINCT code_delivery_order.id
+					FROM code_delivery_order
+					JOIN delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order.id
+					JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
+					JOIN code_sales_order ON sales_order.code_sales_order_id
+					JOIN customer ON code_sales_order.customer_id = customer.id
+					WHERE customer.area_id = '$areaId'
+				)
+				AND code_delivery_order.date <= '$offsetDate' AND code_delivery_order.date >= '$limitDate'
 				UNION (
 					SELECT SUM((-1) * sales_return.price * sales_return_received.quantity) AS value, YEAR(code_sales_return_received.date) AS year, MONTH(code_sales_return_received.date) AS month
 					FROM sales_return_received

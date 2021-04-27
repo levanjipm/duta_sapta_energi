@@ -121,12 +121,14 @@ class Area extends CI_Controller {
 	public function getChartItems()
 	{
 		$areaId			= $this->input->get('area');
+		$brand			= $this->input->get('brand');
+
 		$currentYear	= date("Y");
 		$currentMonth	= date('m');
 		$currentDate	= mktime(0,0,0, $currentMonth, 1, $currentYear);
 
 		$this->load->model("Invoice_model");
-		$invoiceObject		= $this->Invoice_model->getAchivementByAreaId($areaId, 0, 6);
+		$invoiceObject		= $this->Invoice_model->getAchivementByAreaId($areaId, $brand, 0, 6);
 		$invoiceValue		= array();
 		foreach($invoiceObject as $invoiceItem){
 			$year		= $invoiceItem->year;
