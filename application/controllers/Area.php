@@ -133,14 +133,16 @@ class Area extends CI_Controller {
 		foreach($invoiceObject as $invoiceItem){
 			$year		= $invoiceItem->year;
 			$month		= $invoiceItem->month;
-			$label		= date("F Y", mktime(0,0,0,$month, 1, $year));
+			$label		= date("F Y", mktime(0, 0, 0, $month, 1, $year));
 			$date		= mktime(0,0,0,$month, 1, $year);
 
 			$difference	= round(($currentDate - $date) / (60 * 60 * 24 * 30));
-			$invoiceValue[$difference]	= array(
-				"value" => (float)$invoiceItem->value,
-				"label" => $label
-			);
+			if($difference >= 0 && $difference <= 6){
+				$invoiceValue[$difference]	= array(
+					"value" => (float)$invoiceItem->value,
+					"label" => $label
+				);
+			}
 		}
 
 		for($i = 0; $i <= 6; $i++){
@@ -156,7 +158,7 @@ class Area extends CI_Controller {
 		$invoiceValue		= array_reverse($invoiceValue);
 
 		$this->load->model("Customer_target_model");
-		$targetObject		= (array)$this->Customer_target_model->getByAreaId($areaId);
+		$targetObject		= (array)$this->Customer_target_model->getByAreaId($areaId, $brand);
 		$customerArray		= array();
 		foreach($targetObject as $target){
 			$dateCreated		= $target->dateCreated;

@@ -2,7 +2,7 @@
 	<title>Customer Area</title>
 	<script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
 	<script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
-	<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBX4UnIiCLVbq-LPeTA__c3NKIEZA1rhAw&callback=initMap&libraries=&v=weekly" defer></script>
+	<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBX4UnIiCLVbq-LPeTA__c3NKIEZA1rhAw&callback=initMap" defer></script>
 	<style>
 		#map {
 			height: 300px;
@@ -151,6 +151,7 @@
 
 <script>
 	let targets = [];
+	let map;
 
 	$(document).ready(function(){
 		$('#generalButton').click();
@@ -171,8 +172,12 @@
 	function updateBrandTarget(){
 		let brand = $('#brandTargetSelector').val();
 		$('#customerTarget').html(numeral(targets[brand]).format('0,0.00'));
+		changePage();
+		fetchBrandTarget();
+	}
 
-		
+	function fetchBrandTarget(){
+		let brand = $('#brandTargetSelector').val();
 		$.ajax({
 			url:"<?= site_url('Area/getChartItems') ?>",
 			data:{
@@ -220,8 +225,6 @@
 				});
 			}
 		});
-
-		changePage();
 	}
 
 	function viewCustomerDetail(id){
@@ -262,10 +265,10 @@
 			$('#paymentView').fadeIn(300);
 		}, 300);
 	})
-	let map;
+	
 	function initMap() {
 		map = new google.maps.Map(document.getElementById("map"), {
-			zoom: 8,
+			zoom: 8
 		});
 		var bounds = new google.maps.LatLngBounds();
 		$.each(<?= json_encode($customers) ?>, function(index, customer){
@@ -324,7 +327,9 @@
 
 				bounds.extend(marker.position);
 			}
-		})	
-		map.fitBounds(bounds);
+		})
+		setTimeout(() => {
+			map.fitBounds(bounds);
+		}, 200)
 	}
 </script>

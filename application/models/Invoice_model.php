@@ -1780,8 +1780,11 @@ class Invoice_model extends CI_Model {
 			$limitYear		= date("Y", strtotime("-" . $limit . "month"));
 			$limitDate		= date("Y-m-d", mktime(0,0,0,$limitMonth, 1, $limitYear));
 			$query			 = $this->db->query("
-				SELECT SUM(delivery_order.quantity * price_list.price_list * (100 - sales_order.discount) / 100) AS value, YEAR(code_delivery_order.date) AS year, MONTh(code_delivery_order.date) AS month
+				SELECT SUM(delivery_order.quantity * price_list.price_list * (100 - sales_order.discount) / 100) AS value, YEAR(code_delivery_order.date) AS year, MONTH(code_delivery_order.date) AS month
 				FROM delivery_order
+				JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
+				JOIN price_list ON sales_order.price_list_id = price_list.id
+				JOIN item ON price_list.item_id = item.id
 				JOIN code_delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order.id
 				WHERE delivery_order.code_delivery_order_id IN (
 					SELECT DISTINCT code_delivery_order.id
@@ -1792,6 +1795,7 @@ class Invoice_model extends CI_Model {
 					JOIN customer ON code_sales_order.customer_id = customer.id
 					WHERE customer.area_id = '$areaId'
 				)
+				AND item.brand = '$brand'
 				AND code_delivery_order.date <= '$offsetDate' AND code_delivery_order.date >= '$limitDate'
 				UNION (
 					SELECT SUM((-1) * sales_return.price * sales_return_received.quantity) AS value, YEAR(code_sales_return_received.date) AS year, MONTH(code_sales_return_received.date) AS month
@@ -1803,13 +1807,14 @@ class Invoice_model extends CI_Model {
 					JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
 					JOIN customer ON code_sales_order.customer_id = customer.id
 					JOIN price_list ON sales_order.price_list_id = price_list.id
+					JOIN item ON price_list.item_id = item.id
 					WHERE code_sales_return_received.date <= '$offsetDate' AND code_sales_return_received.date >= '$limitDate'
 					AND code_sales_return_received.is_confirm = '1'
 					AND customer.area_id = '$areaId'
+					AND item.brand = '$brand'
 					GROUP BY YEAR(code_sales_return_received.date), MONTH(code_sales_return_received.date)
 				)
 			");
-
 			$result			= $query->result();
 			return $result;
 		}

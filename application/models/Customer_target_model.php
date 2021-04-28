@@ -355,15 +355,27 @@ class Customer_target_model extends CI_Model {
 			return $this->db->affected_rows();
 		}
 
-		public function getByAreaId($areaId)
+		public function getByAreaId($areaId, $brand = NULL)
 		{
-			$query			= $this->db->query("
+			if($brand != NULL){
+				$query			= $this->db->query("
+					SELECT customer_target.value, customer_target.customer_id, customer_target.dateCreated
+					FROM customer_target
+					JOIN customer ON customer_target.customer_id = customer.id
+					WHERE customer.area_id = '$areaId'
+					AND customer_target.brand = '$brand'
+					ORDER BY customer_target.customer_id ASC, customer_target.dateCreated ASC
+				");
+			} else {
+				$query			= $this->db->query("
 				SELECT customer_target.value, customer_target.customer_id, customer_target.dateCreated
 				FROM customer_target
 				JOIN customer ON customer_target.customer_id = customer.id
 				WHERE customer.area_id = '$areaId'
 				ORDER BY customer_target.customer_id ASC, customer_target.dateCreated ASC
-			");
+				");
+			}
+			
 
 			$result		= $query->result();
 			return $result;
