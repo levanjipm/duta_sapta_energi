@@ -106,9 +106,10 @@
 			<div class='col-md-2 col-sm-3 col-xs-4' id='valueSidePane'>
 				<br>
 				<label style='padding-left:5px'>Category</label><hr>
-				<button id='sales'><p>Salesman</p></button><br>
-				<button id='area'><p>Area</p></button><br>
-				<button id='type'><p>Type</p></button><br>
+				<button id='sales'><p style='margin-bottom:0'>Salesman</p></button><br>
+				<button id='area'><p style='margin-bottom:0'>Area</p></button><br>
+				<button id='type'><p style='margin-bottom:0'>Type</p></button><br>
+				<button id='brand'><p style='margin-bottom:0'>Brand</p></button><br>
 			</div>
 			<div class='col-md-10 col-sm-9 col-xs-8'>
 				<div class='input_group'>
@@ -453,15 +454,21 @@
 		var id = $(this).attr('id');
 		aspect = id;
 		if(id == "sales"){
-			$('#tableAnalyticHeader').html("<tr><th>Salesman</th><th>Value</th></tr>");
+			$('#tableAnalyticHeader').html("<tr><th>Salesman</th><th>Value</th><th>Action</th></tr>");
 		} else if(id == "area"){
 			$('#tableAnalyticHeader').html("<tr><th>Area</th><th>Value</th></tr>");
 		} else if(id == "type") {
 			$('#tableAnalyticHeader').html("<tr><th>Type</th><th>Value</th></tr>");
+		} else if(id == "brand"){
+			$('#tableAnalyticHeader').html("<tr><th>Brand</th><th>Value</th></tr>");
 		}
 
 		$('#month').focus();
 	});
+
+	function viewSalesmanReport(salesId){
+		window.open("<?= site_url("SalesAnalytics/salesmanDetailReport/") ?>" + $('#month').val() + "/" + $('#year').val() + "/" + salesId);
+	}
 
 	function refreshView(){
 		if($('#month').val() != "" && $('#year').val() != ""){
@@ -494,7 +501,7 @@
 								var imageUrl = "<?= base_url() . '/assets/ProfileImages/' ?>" + item.image_url;
 							}
 
-							$('#tableAnalyticBody').append("<tr><td><img src='" + imageUrl + "' style='width:30px;height:30px;border-radius:50%'> " + salesman + "</td><td>Rp. " + numeral(value - returnValue).format("0,0.00") + "<div class='progressBarWrapper'><p></p><div class='progressBar' data-value='" + (value - returnValue) + "'></div></div></td></tr>");
+							$('#tableAnalyticBody').append("<tr><td><img src='" + imageUrl + "' style='width:30px;height:30px;border-radius:50%'> " + salesman + "</td><td>Rp. " + numeral(value - returnValue).format("0,0.00") + "<div class='progressBarWrapper'><p></p><div class='progressBar' data-value='" + (value - returnValue) + "'></div></div></td><td><button class='button button_default_dark' onclick='viewSalesmanReport(" + id + ")'><i class='fa fa-eye'></i></button></td></tr>");
 							itemCount++;
 							totalValue += value - returnValue;
 						});
@@ -542,6 +549,24 @@
 							var value		= parseFloat(item.value);
 							var returnValue = parseFloat(item.returned);
 							$('#tableAnalyticBody').append("<tr><td>"+ typeName + "</td><td>Rp. " + numeral(value - returnValue).format("0,0.00") + "<div class='progressBarWrapper'><p>" + (value - returnValue) + "</p><div class='progressBar' data-value='" + (value - returnValue) + "'></div></div></td></tr>");
+							itemCount++;
+							totalValue += value - returnValue;
+						});
+
+						$('#tableAnalyticBody .progressBar').each(function(){
+							var value = $(this).attr('data-value');
+							var percentage = value * 100 / totalValue;
+							$(this).siblings("p").html(numeral(percentage).format('0,0.00') + "%");
+							$(this).animate({
+								width: percentage + "%"
+							}, 1000);
+						});
+					} else if(aspect == "brand"){
+						$.each(response, function(index, item){
+							var brandName	= item.name;
+							var value		= parseFloat(item.value);
+							var returnValue = parseFloat(item.returned);
+							$('#tableAnalyticBody').append("<tr><td>"+ brandName + "</td><td>Rp. " + numeral(value - returnValue).format("0,0.00") + "<div class='progressBarWrapper'><p>" + (value - returnValue) + "</p><div class='progressBar' data-value='" + (value - returnValue) + "'></div></div></td></tr>");
 							itemCount++;
 							totalValue += value - returnValue;
 						});

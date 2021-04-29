@@ -832,6 +832,93 @@ class Invoice_model extends CI_Model {
 			return $result;
 		}
 
+		public function getBySalesmanMonthYear($month, $year, $salesId)
+		{
+			$query		= $this->db->query("
+				SELECT sales_order.id, (price_list.price_list * (100 - sales_order.discount) / 100) AS unitPrice, delivery_order.quantity, item.reference, item.type, item.name, item.brand, brand.name AS brand_name, item_class.name AS item_class_name, code_sales_order.customer_id, customer.name AS customer_name
+				FROM delivery_order
+				JOIN code_delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order.id
+				JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
+				JOIN price_list ON sales_order.price_list_id = price_list.id
+				JOIN item ON price_list.item_id = item.id
+				JOIN item_class ON item.type = item_class.id
+				JOIN brand ON item.brand = brand.id
+				JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
+				JOIN customer ON code_sales_order.customer_id = customer.id
+				WHERE MONTH(code_sales_order.date) = '$month' AND YEAR(code_sales_order.date) = '$year'
+				AND code_sales_order.seller = '$salesId'
+			");
+
+			$result		= $query->result();
+			$response	= array();
+			$response['brands']		= array();
+			$response['types']		= array();
+			$response['customers']	= array();
+			$response['value']		= 0;
+
+			foreach($result as $item){
+				$brandId		= $item->brand;
+				$brandName		= $item->brand_name;
+
+				$typeId			= $item->type;
+				$typeName		= $item->item_class_name;
+
+				$customerId		= $item->customer_id;
+				$customerName	= $item->customer_name;
+
+				$unitPrice		= $item->unitPrice;
+				$quantity		= $item->quantity;
+				$totalPrice		= $unitPrice * $quantity;
+				
+				if(!array_key_exists($customerId, $response['customers'])){
+					$response['customers'][$customerId] = array(
+						"name" => $customerName,
+						"value" => $totalPrice
+					);
+				} else {
+					$response['customers'][$customerId]['value'] += $totalPrice;
+				}
+
+				if(!array_key_exists($brandId, $response['brands'])){
+					$response['brands'][$brandId] = array(
+						"name" => $brandName,
+						"value" => $totalPrice
+					);
+				} else {
+					$response['brands'][$brandId]['value'] += $totalPrice;
+				}
+
+				if(!array_key_exists($typeId, $response['types'])){
+					$response['types'][$typeId] = array(
+						"name" => $typeName,
+						"value" => $totalPrice
+					);
+				} else {
+					$response['types'][$typeId]['value'] += $totalPrice;
+				}
+
+				$response['value'] += $totalPrice;
+			}
+
+			array_multisort(array_map(function($element) {
+				return $element['name'];
+			}, $response['brands']), SORT_ASC, $response['brands']);
+
+			array_multisort(array_map(function($element) {
+				return $element['name'];
+			}, $response['types']), SORT_ASC, $response['types']);
+
+			array_multisort(array_map(function($element) {
+				return $element['name'];
+			}, $response['customers']), SORT_ASC, $response['customers']);
+
+			return $response;
+		}
+
+		public function sortByOrder($a, $b) {
+			return $a['name'] - $b['name'];
+		}
+
 		public function getByMonthYear($month, $year, $offset)
 		{
 			$query = $this->db->query("
@@ -1225,6 +1312,39 @@ class Invoice_model extends CI_Model {
 					) returnTable
 					ON returnTable.type = item_class.id
 					ORDER BY item_class.name ASC
+				");
+			} else if($aspect == 5){
+				$query		= $this->db->query("
+					SELECT brand.name, COALESCE(invoiceTable.value,0) as value, COALESCE(returnTable.value,0) as returned
+					FROM brand
+					LEFT JOIN (
+						SELECT item.brand, SUM(price_list.price_list * (100 - sales_order.discount) * delivery_order.quantity / 100) as value
+						FROM delivery_order
+						JOIN sales_order ON sales_order.id = delivery_order.sales_order_id
+						JOIN code_delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order.id
+						JOIN invoice ON code_delivery_order.invoice_id = invoice.id
+						JOIN price_list ON sales_order.price_list_id = price_list.id
+						JOIN item ON price_list.item_id = item.id
+						WHERE MONTH(invoice.date) = '$month' AND YEAR(invoice.date) = '$year'
+						AND invoice.is_confirm = '1'
+						GROUP BY item.brand
+					) invoiceTable
+					ON invoiceTable.brand = brand.id
+					LEFT JOIN (
+						SELECT item.brand, COALESCE(SUM(sales_return.price * sales_return_received.quantity),0) as value
+						FROM sales_return_received
+						JOIN code_sales_return_received ON sales_return_received.code_sales_return_received_id = code_sales_return_received.id
+						JOIN sales_return ON sales_return_received.sales_return_id = sales_return.id
+						JOIN delivery_order ON sales_return.delivery_order_id = delivery_order.id
+						JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
+						JOIN price_list ON sales_order.price_list_id = price_list.id
+						JOIN item ON price_list.item_id = item.id
+						WHERE code_sales_return_received.is_confirm = '1'
+						AND MONTH(code_sales_return_received.date) = '$month' AND YEAR(code_sales_return_received.date) = '$year'
+						GROUP BY item.type
+					) returnTable
+					ON returnTable.brand = brand.id
+					ORDER BY brand.name ASC
 				");
 			}
 

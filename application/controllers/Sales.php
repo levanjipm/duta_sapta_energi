@@ -96,6 +96,10 @@ class Sales extends CI_Controller {
 		{
 			$this->load->model("Invoice_model");
 			$data		= $this->Invoice_model->calculateAspect(3, $month, $year);
+		} else if($aspect == "brand")
+		{
+			$this->load->model("Invoice_model");
+			$data		= $this->Invoice_model->calculateAspect(5, $month, $year);
 		} else if($aspect == "customer")
 		{
 			$this->load->model("Invoice_model");
