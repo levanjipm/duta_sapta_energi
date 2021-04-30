@@ -835,7 +835,7 @@ class Invoice_model extends CI_Model {
 		public function getBySalesmanMonthYear($month, $year, $salesId)
 		{
 			$query		= $this->db->query("
-				SELECT sales_order.id, (price_list.price_list * (100 - sales_order.discount) / 100) AS unitPrice, delivery_order.quantity, item.reference, item.type, item.name, item.brand, brand.name AS brand_name, item_class.name AS item_class_name, code_sales_order.customer_id, customer.name AS customer_name
+				SELECT sales_order.id, (price_list.price_list * (100 - sales_order.discount) / 100) AS unitPrice, delivery_order.quantity, item.reference, item.type, item.name, item.brand, brand.name AS brand_name, item_class.name AS item_class_name, code_sales_order.customer_id, customer.name AS customer_name, customer_area.name AS customer_area_name
 				FROM delivery_order
 				JOIN code_delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order.id
 				JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
@@ -845,6 +845,7 @@ class Invoice_model extends CI_Model {
 				JOIN brand ON item.brand = brand.id
 				JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
 				JOIN customer ON code_sales_order.customer_id = customer.id
+				JOIN customer_area ON customer.area_id = customer_area.id
 				WHERE MONTH(code_sales_order.date) = '$month' AND YEAR(code_sales_order.date) = '$year'
 				AND code_sales_order.seller = '$salesId'
 			");
@@ -865,6 +866,7 @@ class Invoice_model extends CI_Model {
 
 				$customerId		= $item->customer_id;
 				$customerName	= $item->customer_name;
+				$customerArea	= $item->customer_area_name;
 
 				$unitPrice		= $item->unitPrice;
 				$quantity		= $item->quantity;
@@ -873,6 +875,7 @@ class Invoice_model extends CI_Model {
 				if(!array_key_exists($customerId, $response['customers'])){
 					$response['customers'][$customerId] = array(
 						"name" => $customerName,
+						"area" => $customerArea,
 						"value" => $totalPrice
 					);
 				} else {
@@ -909,8 +912,8 @@ class Invoice_model extends CI_Model {
 			}, $response['types']), SORT_ASC, $response['types']);
 
 			array_multisort(array_map(function($element) {
-				return $element['name'];
-			}, $response['customers']), SORT_ASC, $response['customers']);
+				return $element['value'];
+			}, $response['customers']), SORT_DESC, $response['customers']);
 
 			return $response;
 		}

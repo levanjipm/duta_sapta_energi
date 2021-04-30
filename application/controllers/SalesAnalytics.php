@@ -131,6 +131,9 @@ class SalesAnalytics extends CI_Controller {
 		$this->load->model("Invoice_model");
 		$data['sales']	= $this->Invoice_model->getBySalesmanMonthYear($month, $year, $salesId);
 
+		$this->load->model("Sales_order_model");
+		$data['salesOrders']	= $this->Sales_order_model->getBySalesmanMonthYear($month, $year, $salesId);
+
 		$this->load->view('sales/Analytics/salesmanReport', $data);
 	}
 

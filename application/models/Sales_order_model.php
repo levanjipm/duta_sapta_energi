@@ -785,6 +785,23 @@ class Sales_order_model extends CI_Model {
 			return $result;
 		}
 
+		public function getBySalesmanMonthYear($month, $year, $salesId)
+		{
+			$query		= $this->db->query("
+				SELECT SUM(price_list.price_list * (100 - sales_order.discount) * sales_order.quantity / 100) AS value, COUNT(sales_order.id) AS count, sales_order.code_sales_order_id AS id, code_sales_order.customer_id
+				FROM sales_order
+				JOIN price_list On sales_order.price_list_id = price_list.id
+				JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
+				WHERE code_sales_order.seller = '$salesId'
+				AND MONTH(code_sales_order.date) = '$month' 
+				AND YEAR(code_sales_order.date) = '$year'
+				GROUP BY sales_order.code_sales_order_id
+			");
+
+			$result			= $query->result();
+			return $result;
+		}
+
 		public function getRecap($month, $year)
 		{
 			$query			= $this->db->query("
