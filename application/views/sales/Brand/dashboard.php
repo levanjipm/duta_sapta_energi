@@ -114,7 +114,7 @@
                 } else {
                     var brands = responseData.brands;
                     brands.forEach(brand => {
-                        $('#brandTableContent').append("<tr><td>" + brand.name + "</td><td><button class='button button_default_dark'><i class='fa fa-eye'></i></button></button> <button class='button button_success_dark' onclick='editItem(`" + brand.id + "`,`" + brand.name + "`)'><i class='fa fa-pencil'></i></button> <button class='button button_danger_dark' onclick='deleteItem(" + brand.id + ")'><i class='fa fa-trash'></i></button></td></tr>");
+                        $('#brandTableContent').append("<tr><td>" + brand.name + "</td><td><button class='button button_default_dark' onclick='viewItem(" + brand.id + ")'><i class='fa fa-eye'></i></button></button> <button class='button button_success_dark' onclick='editItem(`" + brand.id + "`,`" + brand.name + "`)'><i class='fa fa-pencil'></i></button> <button class='button button_danger_dark' onclick='deleteItem(" + brand.id + ")'><i class='fa fa-trash'></i></button></td></tr>");
                     });
 
                     $('#brandTable').show();
@@ -161,6 +161,10 @@
             })
         }
     })
+
+    function viewItem(id){
+        window.open("<?= site_url('Brand/viewDetail/') ?>" + id);
+    }
 
     function deleteItem(id){
         $('#delete_brand_id').val(id);

@@ -137,4 +137,38 @@ class Brand_model extends CI_Model {
 
 			return $result;
 		}
+
+		public function getById($brandId)
+		{
+			$this->db->where('id', $brandId);
+			$query = $this->db->get($this->table_brand);
+			$result = $query->row();
+			
+			return $result;
+		}
+
+		public function getCustomerBought($brandId, $month, $year)
+		{
+			$query			= $this->db->query("
+				SELECT COUNT(customer.id) AS count, customer_area.name, customer.area_id
+				FROM customer
+				JOIN customer_area ON customer.area_id= customer_area.id
+				WHERE customer.id IN
+				(
+					SELECT code_sales_order.customer_id
+					FROM sales_order
+					JOIN price_list ON sales_order.price_list_id = price_list.id
+					JOIN item ON price_list.item_id = item.id
+					JOIN brand ON item.brand = brand.id
+					JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
+					WHERE MONTH(code_sales_order.date) <= '$month'
+					AND YEAR(code_sales_order.date) <= '$year'
+					AND brand.id = '$brandId'
+				)
+				GROUP BY customer.area_id
+			");
+
+			$result			= $query->result();
+			return $result;
+		}
 }

@@ -63,4 +63,34 @@ class Brand extends CI_Controller {
 		$result		= $this->Brand_model->updateItem($id, $name);
 		echo $result;
 	}
+
+	public function viewDetail($brandId)
+	{
+		$user_id		= $this->session->userdata('user_id');
+		$this->load->model('User_model');
+		$data['user_login'] = $this->User_model->getById($user_id);
+		
+		$this->load->model('Authorization_model');
+		$data['departments']	= $this->Authorization_model->getByUserId($user_id);
+		
+		$this->load->view('head');
+		$this->load->view('sales/header', $data);
+
+		$data	= array();
+		$this->load->model("Brand_model");
+		$data['brand']		= $this->Brand_model->getById($brandId);
+
+		$this->load->view('sales/Brand/detail', $data);
+	}
+
+	public function customerBought()
+	{
+		$brandId			= $this->input->get('id');
+		$month				= $this->input->get('month');
+		$year				= $this->input->get('year');
+		
+		$this->load->model("Brand_model");
+		$result		= $this->Brand_model->getCustomerBought($brandId, $month, $year);
+		echo json_encode($result);
+	}
 }
