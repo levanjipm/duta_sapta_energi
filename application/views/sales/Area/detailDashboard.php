@@ -186,7 +186,7 @@
 			},
 			success:function(response){
 				var result = JSON.parse(response);
-				var valueArrays	= result.value;
+				var valueArrays		= result.value;
 				var targetArrays	= result.target;
 
 				var labelArray		= [];

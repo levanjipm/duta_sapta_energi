@@ -368,14 +368,30 @@ class Customer_target_model extends CI_Model {
 				");
 			} else {
 				$query			= $this->db->query("
-				SELECT customer_target.value, customer_target.customer_id, customer_target.dateCreated
-				FROM customer_target
-				JOIN customer ON customer_target.customer_id = customer.id
-				WHERE customer.area_id = '$areaId'
-				ORDER BY customer_target.customer_id ASC, customer_target.dateCreated ASC
+					SELECT customer_target.value, customer_target.customer_id, customer_target.dateCreated
+					FROM customer_target
+					JOIN customer ON customer_target.customer_id = customer.id
+					WHERE customer.area_id = '$areaId'
+					ORDER BY customer_target.customer_id ASC, customer_target.dateCreated ASC
 				");
 			}
 			
+
+			$result		= $query->result();
+			return $result;
+		}
+
+		public function getByBrandId($brandId)
+		{
+			$query			= $this->db->query("
+				SELECT customer_target.value, customer_target.customer_id, customer_target.dateCreated, customer.area_id, customer_area.name
+				FROM customer_target
+				JOIN customer ON customer_target.customer_id = customer.id
+				JOIN customer_area ON customer.area_id = customer_area.id
+				WHERE customer_target.brand = '$brandId'
+				ORDER BY customer_target.customer_id ASC, 
+				customer_target.dateCreated ASC
+			");
 
 			$result		= $query->result();
 			return $result;

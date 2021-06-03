@@ -2077,5 +2077,26 @@ class Invoice_model extends CI_Model {
 			$result			= $query->result();
 			return $result;
 		}
+
+		public function getByBrandId($brandId, $startDate, $endDate){
+			$query			= $this->db->query("
+				SELECT SUM(delivery_order.quantity * price_list.price_list * (100 - sales_order.discount) / 100) AS value, MONTH(code_delivery_order.date) AS month, YEAR(code_delivery_order.date) AS year, customer_area.name, customer_area.id
+				FROM delivery_order
+				JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
+				JOIN price_list ON sales_order.price_list_id = price_list.id
+				JOIN item ON price_list.item_id = item.id
+				JOIN code_delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order.id
+				JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
+				JOIN customer ON code_sales_order.customer_id = customer.id
+				JOIN customer_area ON customer.area_id = customer_area.id
+				WHERE code_delivery_order.date BETWEEN '$endDate' AND '$startDate'
+				AND item.brand = '$brandId'
+				AND code_delivery_order.is_delete = '0'
+				GROUP BY MONTH(code_delivery_order.date), YEAR(code_delivery_order.date), customer.area_id
+			");
+
+			$result			= $query->result();
+			return $result;
+		}
 	}
 ?>

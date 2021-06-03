@@ -93,4 +93,87 @@ class Brand extends CI_Controller {
 		$result		= $this->Brand_model->getCustomerBought($brandId, $month, $year);
 		echo json_encode($result);
 	}
+
+	public function getChartItems()
+	{
+		$range				= $this->input->get('range');
+		$from				= $this->input->get('from');
+		$brand				= $this->input->get('brand');
+
+		$this->load->model("Customer_target_model");
+		$result		= $this->Customer_target_model->getByBrandId($brand);
+		
+		$areaTargetResponse		= array();
+		$customerTargetResponse = array();
+
+		foreach($result as $item){
+			$dateCreated	= $item->dateCreated;
+			$value			= $item->value;
+			$customerId		= $item->customer_id;
+
+			$area_id		= $item->area_id;
+			$area_name		= $item->name;
+
+			if(!array_key_exists($customerId, $customerTargetResponse)){
+				$customerTargetResponse[$customerId] = array();
+			}
+
+			if(!array_key_exists($area_id, $areaTargetResponse)){
+				$areaTargetResponse[$area_id] = array(
+					"value" => 0,
+					"name" => $area_name
+				);
+			}
+
+			$areaTargetResponse[$area_id]['value'] += (float)$value;
+
+			array_push($customerTargetResponse[$customerId] , array(
+				"value" => $value,
+				"dateCreated" => $dateCreated
+			));
+		}
+
+		$startDate		= date("Y-m-t h:i:s", strtotime("-" . $from . "months", mktime(0, 0, 0, date('m'), 1, date("Y"))));
+		$endDate		= date("Y-m-d h:i:s", strtotime("-" . ($from + $range) . "months", mktime(0, 0, 0, date('m'), 1, date("Y"))));
+
+		$startFormatedDate = date_create(date("Y-m-t", strtotime("-" . $from . "months", mktime(0, 0, 0, date('m'), 1, date("Y")))));
+
+		$areaAchivementArray = array();
+		$this->load->model("Invoice_model");
+		$result		= $this->Invoice_model->getByBrandId($brand, $startDate, $endDate);
+		foreach($result as $item){
+			$area_id	= $item->id;
+			$area_name	= $item->name;
+			$month		= $item->month;
+			$year		= $item->year;
+			$value		= $item->value;
+
+			$date		= date_create(date("Y-m-t", mktime(0, 0, 0, $month, 1, $year)));
+			$difference	= date_diff($date, $startFormatedDate);
+			if($difference->m < 6){
+				if(!array_key_exists($area_id, $areaAchivementArray)){
+					$areaAchivementArray[$area_id] = array(
+						"name" => $area_name,
+						"value" => array_fill(0, 6, array())
+					);
+				}
+				
+				$areaAchivementArray[$area_id]["value"][$difference->m]['label'] = date("M Y", strtotime("-" . $difference->m . "month"));
+				$areaAchivementArray[$area_id]["value"][$difference->m]['value'] = (float)$value;
+			}
+		}
+
+		foreach($areaAchivementArray as $area_id => $areaAchivement){
+			foreach($areaAchivement["value"] as $difference => $areaItem){
+				if($areaItem == array()){
+					$areaAchivementArray[$area_id]["value"][$difference]["label"] = date("M Y", strtotime("-" . $difference . "month"));
+					$areaAchivementArray[$area_id]["value"][$difference]["value"] = 0;
+				}
+			}
+		}
+
+		$finalResult = $areaAchivementArray;
+
+		echo json_encode($finalResult);
+	}
 }
