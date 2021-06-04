@@ -573,6 +573,9 @@ class Sales_order extends CI_Controller {
 			$this->load->model("Customer_model");
 			$data['customers']		= $this->Customer_model->getAllCustomers();
 
+			$this->load->model("Brand_model");
+			$data['brands']			= $this->Brand_model->getItems();
+
 			$this->load->view('sales/SalesOrder/recapDashboard', $data);
 		} else {
 			redirect(site_url('Sales_order'));
@@ -584,10 +587,12 @@ class Sales_order extends CI_Controller {
 		$month			= $this->input->get('month');
 		$year			= $this->input->get('year');	
 		$page			= $this->input->get('page');
+		$brand			= $this->input->get('brand');
+
 		$offset			= ($page - 1) * 10;
 
 		$this->load->model("Sales_order_model");
-		$data			= $this->Sales_order_model->getRecap($month, $year);
+		$data			= $this->Sales_order_model->getRecap($month, $year, $brand);
 
 		header('Content-Type: application/json');
 		echo json_encode($data);

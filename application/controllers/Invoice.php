@@ -544,8 +544,10 @@ class Invoice extends CI_Controller {
 	{
 		$month			= $this->input->get('month');
 		$year			= $this->input->get('year');
+		$brand			= $this->input->get('brand');
+
 		$this->load->model("Invoice_model");
-		$data		= $this->Invoice_model->getRecap($month, $year);
+		$data		= $this->Invoice_model->getRecap($month, $year, $brand);
 
 		header('Content-Type: application/json');
 		echo json_encode($data);

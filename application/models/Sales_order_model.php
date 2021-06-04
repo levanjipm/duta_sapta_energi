@@ -802,23 +802,43 @@ class Sales_order_model extends CI_Model {
 			return $result;
 		}
 
-		public function getRecap($month, $year)
+		public function getRecap($month, $year, $brand = 0)
 		{
-			$query			= $this->db->query("
-				SELECT COUNT(code_sales_order.id) AS count, code_sales_order.customer_id, code_sales_order.date, salesOrderTable.value AS value
-				FROM code_sales_order
-				JOIN (
-					SELECT SUM(price_list.price_list * sales_order.quantity * (100 - sales_order.discount) / 100) AS value, sales_order.code_sales_order_id
-					FROM sales_order
-					JOIN price_list ON sales_order.price_list_id = price_list.id
-					GROUP BY sales_order.code_sales_order_id
-				) salesOrderTable
-				ON code_sales_order.id = salesOrderTable.code_sales_order_id
-				WHERE MONTH(code_sales_order.date) = '$month'
-				AND YEAR(code_sales_order.date) = '$year'
-				AND code_sales_order.is_confirm = '1'
-				GROUP BY code_sales_order.date, code_sales_order.customer_id
-			");
+			if($brand == 0){
+				$query			= $this->db->query("
+					SELECT COUNT(code_sales_order.id) AS count, code_sales_order.customer_id, code_sales_order.date, salesOrderTable.value AS value
+					FROM code_sales_order
+					JOIN (
+						SELECT SUM(price_list.price_list * sales_order.quantity * (100 - sales_order.discount) / 100) AS value, sales_order.code_sales_order_id
+						FROM sales_order
+						JOIN price_list ON sales_order.price_list_id = price_list.id
+						GROUP BY sales_order.code_sales_order_id
+					) salesOrderTable
+					ON code_sales_order.id = salesOrderTable.code_sales_order_id
+					WHERE MONTH(code_sales_order.date) = '$month'
+					AND YEAR(code_sales_order.date) = '$year'
+					AND code_sales_order.is_confirm = '1'
+					GROUP BY code_sales_order.date, code_sales_order.customer_id
+				");
+			} else {
+				$query			= $this->db->query("
+					SELECT COUNT(code_sales_order.id) AS count, code_sales_order.customer_id, code_sales_order.date, salesOrderTable.value AS value
+					FROM code_sales_order
+					JOIN (
+						SELECT SUM(price_list.price_list * sales_order.quantity * (100 - sales_order.discount) / 100) AS value, sales_order.code_sales_order_id
+						FROM sales_order
+						JOIN price_list ON sales_order.price_list_id = price_list.id
+						JOIN item ON price_list.item_id = item.id
+						WHERE item.brand = '$brand'
+						GROUP BY sales_order.code_sales_order_id
+					) salesOrderTable
+					ON code_sales_order.id = salesOrderTable.code_sales_order_id
+					WHERE MONTH(code_sales_order.date) = '$month'
+					AND YEAR(code_sales_order.date) = '$year'
+					AND code_sales_order.is_confirm = '1'
+					GROUP BY code_sales_order.date, code_sales_order.customer_id
+				");
+			}
 
 			$result			= $query->result();
 			$response		= array();

@@ -36,6 +36,12 @@
 				<option value='<?= $i ?>' <?= ($i == date('Y')) ? 'selected': '' ?>><?= $i ?></option>
 			<?php } ?>
 			</select>
+			<select class='form-control' id='brand' onchange='refreshView(1)'>
+				<option value='0'>Select all</option>
+			<?php foreach($brands as $brand){ ?>
+				<option value='<?= $brand->id ?>'><?= $brand->name ?></option>
+			<?php } ?>
+			</select>
 			<div class='input_group_append'>
 				<button class='button button_default_dark' id="hideEmptyButton"><i class='fa fa-eye'></i></button>
 				<button class='button button_danger_dark' id='showEmptyButton' style='display:none'><i class='fa fa-eye'></i></button>
@@ -109,6 +115,34 @@
 	</div>
 </div>
 
+<div class='alert_wrapper' id='salesOrderCustomerDetailWrapper'>
+	<button class='slide_alert_close_button'>&times;</button>
+	<div class='alert_box_slide'>
+		<h3 style='font-family:bebasneue'>Sales Order</h3>
+		<hr>
+		<label>Customer</label>
+		<p id='customerNameP'></p>
+		<p id='customerAddressP'></p>
+		<p id='customerCityP'></p>
+
+		<div id='salesOrdersWrapper'>
+			<label>Sales Orders</label>
+			<div id='salesOrders'></div>
+		</div>
+		<div id='invoicesWrapper'>
+			<label>Invoices</label>
+			<table class='table table-bordered'>
+				<tr>
+					<th>Date</th>
+					<th>Invoice</th>
+					<th>Value</th>
+				</tr>
+				<tbody id='invoices'></tbody>
+			</table>
+		</div>
+	</div>
+</div>
+
 <script>
 	var salesOrderCount = 0;
 	var customerCount	= 0;
@@ -122,13 +156,15 @@
 		var month	= $('#month').val();
 		var year	= $('#year').val();
 		var type	= $('#type').val();
+		var brand	= $('#brand').val();
 
 		if(type == 1){
 			$.ajax({
 				url:"<?= site_url("Sales_order/getRecap") ?>",
 				data:{
 					month: month,
-					year: year
+					year: year,
+					brand: brand
 				},
 				beforeSend:function(){
 					var monthArray		= ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
@@ -181,11 +217,11 @@
 							var count		= parseInt(item.count);
 							var value		= parseFloat(item.value);
 
-							$('#customer-' + customerId + '-' + date).html(count);
+							$('#customer-' + customerId + '-' + parseInt(date)).html(count);
 							$('#tableCustomer-' + customerId).parent().removeClass('emptyCustomer');
-							$('#customer-' + customerId + '-' + date).addClass('actived');
+							$('#customer-' + customerId + '-' + parseInt(date)).addClass('actived');
 
-							$('#customer-' + customerId + '-' + date).click(function(){
+							$('#customer-' + customerId + '-' + parseInt(date)).click(function(){
 								viewSalesOrdersByCustomerIdDate(customerId, date, month, year);
 							})
 
@@ -207,7 +243,8 @@
 				url:"<?= site_url("Invoice/getRecap") ?>",
 				data:{
 					month: month,
-					year: year
+					year: year,
+					brand: brand
 				},
 				beforeSend:function(){
 					var monthArray		= ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
@@ -260,11 +297,11 @@
 							var count		= parseInt(item.count);
 							var value		= parseFloat(item.value);
 
-							$('#customer-' + customerId + '-' + date).html(count);
+							$('#customer-' + customerId + '-' + parseInt(date)).html(count);
 							$('#tableCustomer-' + customerId).parent().removeClass('emptyCustomer');
-							$('#customer-' + customerId + '-' + date).addClass('actived');
+							$('#customer-' + customerId + '-' + parseInt(date)).addClass('actived');
 
-							$('#customer-' + customerId + '-' + date).click(function(){
+							$('#customer-' + customerId + '-' + parseInt(date)).click(function(){
 								viewInvoicesByCustomerIdDate(customerId, date, month, year);
 							})
 

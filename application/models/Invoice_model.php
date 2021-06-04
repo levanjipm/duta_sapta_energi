@@ -2008,30 +2008,58 @@ class Invoice_model extends CI_Model {
 			return $response;
 		}
 
-		public function getRecap($month, $year)
+		public function getRecap($month, $year, $brand = 0)
 		{
-			$query			= $this->db->query("
-				SELECT invoice.date, invoice.value, deliveryOrderTable.customer_id
-				FROM invoice
-				JOIN (
-					SELECT DISTINCT(code_delivery_order.invoice_id) AS id, code_sales_order.customer_id
-					FROM code_delivery_order
-					LEFT JOIN delivery_order ON code_delivery_order.id = delivery_order.code_delivery_order_id
-					JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
-					JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
-				) deliveryOrderTable
-				ON invoice.id = deliveryOrderTable.id
-				WHERE invoice.id IN (
-					SELECT DISTINCT(code_delivery_order.invoice_id) AS id
-					FROM code_delivery_order
-					JOIN delivery_order ON delivery_order.code_delivery_order_id
-					JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
-					JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
-				)
-				AND MONTH(invoice.date) = '$month'
-				AND YEAR(invoice.date) = '$year'
-				AND invoice.is_confirm = '1'
-			");
+			if($brand == 0){
+				$query			= $this->db->query("
+					SELECT invoice.date, invoice.value, deliveryOrderTable.customer_id
+					FROM invoice
+					JOIN (
+						SELECT DISTINCT(code_delivery_order.invoice_id) AS id, code_sales_order.customer_id
+						FROM code_delivery_order
+						LEFT JOIN delivery_order ON code_delivery_order.id = delivery_order.code_delivery_order_id
+						JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
+						JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
+					) deliveryOrderTable
+					ON invoice.id = deliveryOrderTable.id
+					WHERE invoice.id IN (
+						SELECT DISTINCT(code_delivery_order.invoice_id) AS id
+						FROM code_delivery_order
+						JOIN delivery_order ON delivery_order.code_delivery_order_id
+						JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
+						JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
+					)
+					AND MONTH(invoice.date) = '$month'
+					AND YEAR(invoice.date) = '$year'
+					AND invoice.is_confirm = '1'
+				");
+			} else {
+				$query			= $this->db->query("
+					SELECT invoice.date, invoice.value, deliveryOrderTable.customer_id
+					FROM invoice
+					JOIN (
+						SELECT DISTINCT(code_delivery_order.invoice_id) AS id, code_sales_order.customer_id
+						FROM code_delivery_order
+						LEFT JOIN delivery_order ON code_delivery_order.id = delivery_order.code_delivery_order_id
+						JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
+						JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
+					) deliveryOrderTable
+					ON invoice.id = deliveryOrderTable.id
+					WHERE invoice.id IN (
+						SELECT DISTINCT(code_delivery_order.invoice_id) AS id
+						FROM code_delivery_order
+						JOIN delivery_order ON delivery_order.code_delivery_order_id
+						JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
+						JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
+						JOIN price_list ON sales_order.price_list_id = price_list.id
+						JOIN item ON price_list.item_id = item.id
+						WHERE item.brand = '$brand'
+					)
+					AND MONTH(invoice.date) = '$month'
+					AND YEAR(invoice.date) = '$year'
+					AND invoice.is_confirm = '1'
+				");
+			}
 
 			$result			= $query->result();
 			$response		= array();

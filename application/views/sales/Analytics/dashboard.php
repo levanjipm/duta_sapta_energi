@@ -150,6 +150,11 @@
 							<option value='<?= $i ?>'><?= $i ?></option>
 						<?php } ?>
 						</select>
+						<select class='form-control' id='customerBrand' placeholder='Brand'>
+						<?php foreach($brands as $brand){ ?>
+							<option value='<?= $brand->id ?>'><?= $brand->name ?></option>
+						<?php } ?>
+						</select>
 						<div class='input_group_append'>
 							<button type='button' class='button button_default_dark' onclick='getCustomerItems()'><i class='fa fa-search'></i></button>
 						</div>
@@ -603,7 +608,8 @@
 					page: page,
 					term: $('#customerSearchBar').val(),
 					month: parseInt($('#customerMonth').val()),
-					year: $('#customerYear').val()
+					year: $('#customerYear').val(),
+					brand: $('#customerBrand').val()
 				},
 				success:function(response){
 					$('#customerTableContent').html("");

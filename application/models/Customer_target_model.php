@@ -66,7 +66,7 @@ class Customer_target_model extends CI_Model {
 			return $result;
 		}
 
-		public function getItems($offset = 0, $term = "", $month, $year, $limit = 25)
+		public function getItems($offset = 0, $term = "", $month, $year, $brand, $limit = 25)
 		{
 			$currentDate		= mktime(0,0,0,$month, 1, $year);
 
@@ -116,6 +116,7 @@ class Customer_target_model extends CI_Model {
 								SELECT MAX(id) AS id
 								FROM customer_target
 								WHERE MONTH(dateCreated) <= '$month' AND YEAR(dateCreated) <= '$year'
+								AND customer_target.brand = '$brand'
 								GROUP BY customer_id
 							)
 						) AS targetTable
@@ -213,6 +214,7 @@ class Customer_target_model extends CI_Model {
 								SELECT MAX(id) AS id
 								FROM customer_target
 								WHERE MONTH(dateCreated) <= '$month' AND YEAR(dateCreated) <= '$year'
+								AND customer_target.brand = '$brand'
 								GROUP BY customer_id
 							)
 						) AS targetTable

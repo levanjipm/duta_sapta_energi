@@ -21,7 +21,12 @@ class SalesAnalytics extends CI_Controller {
 		
 		$this->load->view('head');
 		$this->load->view('sales/header', $data);
-		$this->load->view('sales/Analytics/dashboard');
+
+		$data					= array();
+		$this->load->model("Brand_model");
+		$data['brands']			= $this->Brand_model->getItems();
+
+		$this->load->view('sales/Analytics/dashboard', $data);
 	}
 
 	public function getCustomers()
@@ -31,9 +36,10 @@ class SalesAnalytics extends CI_Controller {
 		$offset		= ($page - 1) * 25;
 		$month		= $this->input->get('month');
 		$year		= $this->input->get('year');
+		$brand		= $this->input->get('brand');
 
 		$this->load->model("Customer_target_model");
-		$data['items'] = $this->Customer_target_model->getItems($offset, $term, $month, $year);
+		$data['items'] = $this->Customer_target_model->getItems($offset, $term, $month, $year, $brand);
 
 		$this->load->model("Customer_model");
 		$data['pages'] = max(1, ceil($this->Customer_model->countItems($term)/25));
