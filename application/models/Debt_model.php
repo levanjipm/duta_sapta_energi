@@ -79,6 +79,7 @@ class Debt_model extends CI_Model {
 			foreach ($items as $item)
 			{
 				$result[] = $this->get_new_stub_from_db($item);
+				continue;
 			}
 			return $result;
 		}
@@ -921,6 +922,7 @@ class Debt_model extends CI_Model {
 				}
 
 				array_push($response, $responseItem);
+				continue;
 			}
 			
 			return $response;
@@ -1047,6 +1049,7 @@ class Debt_model extends CI_Model {
 			$totalValue		= 0;
 			foreach($result as $item){
 				$totalValue	+= (float) $item->value;
+				continue;
 			}
 			return $totalValue;
 		}
@@ -1091,6 +1094,7 @@ class Debt_model extends CI_Model {
 				$value		= $data->value;
 				$day		= (int)date("d", strtotime($date));
 				$response[$day] += $value;
+				continue;
 			}
 
 			return $response;

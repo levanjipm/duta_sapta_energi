@@ -268,7 +268,7 @@ class Billing extends CI_Controller {
 		$offset		= ($page - 1) * 10;
 
 		$this->load->model("Billing_model");
-		$data['items'] = $this->Billing_model->getArchive($offset, $month, $year);
+		$data['items'] = $this->Billing_model->getArchive($month, $year, $offset);
 		$data['pages'] = max(1, ceil($this->Billing_model->countArchive($month, $year))/10);
 
 		header('Content-Type: application/json');

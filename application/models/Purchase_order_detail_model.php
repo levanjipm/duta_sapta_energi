@@ -370,5 +370,22 @@ class Purchase_order_detail_model extends CI_Model {
 		{
 			$this->db->insert_batch($this->table_purchase_order, $batch);
 		}
+
+		public function getIncompletePurchaseOrderBySupplierId($supplierId){
+			$query		= $this->db->query("
+				SELECT code_purchase_order.name AS purchase_order_name, code_purchase_order.date AS purchase_order_date, purchase_order.quantity, purchase_order.received, item.name, item.reference
+				FROM purchase_order
+				JOIN code_purchase_order ON purchase_order.code_purchase_order_id = code_purchase_order.id
+				JOIN item ON purchase_order.item_id = item.id
+				WHERE code_purchase_order.is_confirm = '1'
+				AND code_purchase_order.is_closed = '0'
+				AND code_purchase_order.supplier_id = '$supplierId'
+				AND purchase_order.status = '0'
+				ORDER BY code_purchase_order.date ASC
+			");
+
+			$result		= $query->result();
+			return $result;
+		}
 	}
 ?>

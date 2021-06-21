@@ -62,6 +62,29 @@ class Debt extends CI_Controller {
 		header('Content-Type: application/json');
 		echo json_encode($supplier);
 	}
+
+	public function getUninvoicedDocumentsBySupplierPDF($supplierId)
+	{
+		$user_id		= $this->session->userdata('user_id');
+		$this->load->model('User_model');
+		$data['user_login'] = $this->User_model->getById($user_id);
+		
+		$this->load->model('Authorization_model');
+		$data['departments']	= $this->Authorization_model->getByUserId($user_id);
+		
+		$this->load->view('head');
+		$this->load->view('accounting/header', $data);
+
+		$data		= array();
+		$this->load->model('Good_receipt_model');
+		$items = $this->Good_receipt_model->getUninvoicedDocumentsBySupplierId($supplierId, 0, "", 0);
+		$data['bills'] = $items;
+
+		$this->load->model("Supplier_model");
+		$data['supplier']	= $this->Supplier_model->getById($supplierId);
+
+		$this->load->view('accounting/debt/pendingDocument', $data);
+	}
 	
 	public function getUninvoicedDocumentsBySupplierId()
 	{
@@ -281,12 +304,32 @@ class Debt extends CI_Controller {
 
 				array_push($result, $itemArray);
 			}
+			continue;
 		};
 
 		$data['items'] = (object) $result;
 		$data['pages'] = max(1, ceil($this->Debt_model->countItems($month, $year) / 10));
 
 		header('Content-Type: application/json');
+		echo json_encode($data);
+	}
+
+	public function pending(){
+		$user_id		= $this->session->userdata('user_id');
+		$this->load->model('User_model');
+		$data['user_login'] = $this->User_model->getById($user_id);
+		
+		$this->load->model('Authorization_model');
+		$data['departments']	= $this->Authorization_model->getByUserId($user_id);
+
+		$this->load->view('head');
+		$this->load->view('accounting/header', $data);
+		$this->load->view('accounting/Debt/pendingDashboard', $data);
+	}
+
+	public function getPendingDocuments(){
+		$this->load->model("Good_receipt_model");
+		$data		= $this->Good_receipt_model->getUninvoicedDocuments();
 		echo json_encode($data);
 	}
 
@@ -375,6 +418,7 @@ class Debt extends CI_Controller {
 			);
 
 			fputcsv($file, $valueArray, ';');
+			continue;
 		}
 
 		fclose($file); 

@@ -147,7 +147,7 @@ class Purchase_return_sent_model extends CI_Model {
 		public function getById($id)
 		{
 			$query		= $this->db->query("
-				SELECT code_purchase_return_sent.*, a.supplier_id, b.value
+				SELECT code_purchase_return_sent.*, a.supplier_id
 				FROM code_purchase_return_sent
 				JOIN (
 					SELECT DISTINCT (purchase_return_sent.code_purchase_return_sent_id) as id, code_purchase_return.supplier_id
@@ -156,18 +156,20 @@ class Purchase_return_sent_model extends CI_Model {
 					JOIN code_purchase_return ON purchase_return.code_purchase_return_id = code_purchase_return.id
 				) AS a
 				ON a.id = code_purchase_return_sent.id
-				JOIN (
-					SELECT SUM(purchase_return_sent.quantity * purchase_return.price) AS value, purchase_return_sent.code_purchase_return_sent_id
-					FROM purchase_return_sent
-					JOIN purchase_return ON purchase_return_sent.purchase_return_id = purchase_return.id
-					GROUP BY purchase_return_sent.code_purchase_return_sent_id
-				) AS b
-				ON b.code_purchase_return_sent_id = code_purchase_return_sent.id
-				JOIN supplier ON a.supplier_id = supplier.id
 				WHERE code_purchase_return_sent.id = '$id'
 			");
 
 			$result			= $query->row();
+			
+			$query			= $this->db->query("
+				SELECT SUM(purchase_return_sent.quantity * purchase_return.price) AS value
+				FROM purchase_return_sent
+				JOIN purchase_return ON purchase_return.id = purchase_return_sent.purchase_return_id
+				WHERE purchase_return_sent.code_purchase_return_sent_id = '$id'
+			");
+
+			$value		= $query->row()->value;
+			$result->value = $value;
 			return $result;
 		}
 

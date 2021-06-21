@@ -93,7 +93,7 @@
         $('#add_item_wrapper').fadeIn();
     })
 	
-	function refresh_view(page = $('#page').val(), method){
+	function refresh_view(page = $('#page').val()){
 		$.ajax({
 			url:'<?= site_url('Item/showItems') ?>',
 			data:{
@@ -105,12 +105,13 @@
 				var item_array	= response.items;
 				var pages		= response.pages;
 				var page		= response.page;
-				
+
 				if(item_array.length > 0){
 					$.each(item_array, function(index, item){
 						var reference		= item.reference;
 						var id				= item.item_id;
                         var name			= item.name;
+                        console.log(method);
                         if(method == 1){
                             $('#itemListTable').append("<tr><td>" + reference + "</td><td>" + name + "</td><td><button type='button' class='demButton button button_default_dark' onclick='pickDemItem(" + id + ")' title='Add " + reference + " to list'><i class='fa fa-cart-plus'></i></button></td></tr>");
                         } else if(method == 2){

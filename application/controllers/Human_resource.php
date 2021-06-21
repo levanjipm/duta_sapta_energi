@@ -46,6 +46,7 @@ class Human_resource extends CI_Controller {
 				"status" => $status,
 				"count" => (int)$count
 			);
+			continue;
 		}
 		for($i = 0; $i <= 6; $i++){
 			if(!array_key_exists($i, $attendanceArray)){

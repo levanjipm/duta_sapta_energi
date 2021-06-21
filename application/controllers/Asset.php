@@ -212,6 +212,8 @@ class Asset extends CI_Controller {
 				$estimatedValue		= max(0, $value - $diff * ($value - $residueValue) / $depreciation);
 				$assetValue += $estimatedValue;
 			}
+
+			continue;
 		}
 
 		$data['asset'] = $assetValue;

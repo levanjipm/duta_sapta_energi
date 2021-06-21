@@ -503,13 +503,16 @@ class Invoice_model extends CI_Model {
 			$query = $this->db->query("
 				SELECT COALESCE(SUM(a.value),0) as value, COALESCE(SUM(b.value),0) as paid 
 				FROM (
-					SELECT invoice.* FROM invoice 
-						JOIN code_delivery_order ON code_delivery_order.invoice_id = invoice.id 
-						LEFT JOIN delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order.id 
-						JOIN sales_order ON delivery_order.sales_order_id = sales_order.id 
-						JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id 
-						WHERE  invoice.is_done = '0' AND code_sales_order.customer_id = '$customer_id'
-					) as a
+					SELECT invoice.* 
+					FROM invoice 
+					JOIN code_delivery_order ON code_delivery_order.invoice_id = invoice.id 
+					LEFT JOIN delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order.id 
+					JOIN sales_order ON delivery_order.sales_order_id = sales_order.id 
+					JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id 
+					WHERE invoice.is_done = '0' 
+					AND code_sales_order.customer_id = '$customer_id'
+					GROUP BY invoice.id
+				) as a
 				LEFT JOIN (
 					SELECT SUM(receivable.value) as value, receivable.invoice_id 
 					FROM receivable 
@@ -605,6 +608,7 @@ class Invoice_model extends CI_Model {
 				) AS a
 				ON a.invoice_id = invoice.id
 				WHERE invoice.is_confirm = '1'
+				AND COALESCE(a.value,0) < invoice.value
 				ORDER BY invoice.date ASC, invoice.name ASC, invoice.id ASC
 			");
 
@@ -1205,9 +1209,8 @@ class Invoice_model extends CI_Model {
 					)
 				");
 			}
-
-			$result = $query->affected_rows();
-			return $result;
+			
+			return $query;
 		}
 
 		public function calculateAspect($aspect, $month, $year)

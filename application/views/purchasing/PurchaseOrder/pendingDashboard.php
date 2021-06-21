@@ -32,6 +32,8 @@
 			<select class='form-control' style='width:100px' id='page'>
 				<option value='1'>1</option>
 			</select>
+			<br>
+			<a href="<?= site_url('Purchase_order/pending/') . $supplier->id ?>" role='button' class='button button_default_dark'>Download pending items</a>
 		</div>
 		<p id='purchaseOrderTableText'>There is no pending purchase order.</p>
 	</div>

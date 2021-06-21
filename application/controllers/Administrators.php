@@ -86,6 +86,7 @@ class Administrators extends CI_Controller {
 				);
 				array_push($stockInBatch, $stockInArray);
 				next($result);
+				continue;
 			}
 
 			$this->Stock_in_model->updateStockByStockOutBatch($stockInBatch);

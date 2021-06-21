@@ -78,6 +78,7 @@ class Billing_model extends CI_Model {
 			foreach ($items as $item)
 			{
 				$result[] = $this->get_new_stub_from_db($item);
+				continue;
 			}
 			return $result;
 		}
@@ -215,7 +216,7 @@ class Billing_model extends CI_Model {
 			
 		}
 
-		public function getArchive($offset = 0, $month, $year, $limit = 10)
+		public function getArchive($month, $year, $offset = 0, $limit = 10)
 		{
 			$this->db->select('code_billing.*, users.name as billed_by');
 			$this->db->from('code_billing');

@@ -57,7 +57,7 @@ class Item_class_model extends CI_Model {
 			return $result;
 		}
 		
-		public function showItems($offset = 0, $term = '', $limit = 25)
+		public function showItems($term = '', $offset = 0, $limit = 25)
 		{
 			$query = $this->db->query("SELECT item_class.*, COALESCE(a.quantity,0) as quantity FROM item_class
 				LEFT JOIN (
@@ -159,7 +159,7 @@ class Item_class_model extends CI_Model {
 			}
 		}
 
-		public function getByClassId($offset = 0, $itemClassId, $limit = 10)
+		public function getByClassId($itemClassId, $offset = 0, $limit = 10)
 		{
 			$query			= $this->db->query("
 				SELECT item.*

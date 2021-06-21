@@ -56,7 +56,7 @@ class Item_class extends CI_Controller {
 		$page			= $this->input->get('page');
 		$offset			= ($page - 1) * 25;
 		$this->load->model('Item_class_model');
-		$data['items']			= $this->Item_class_model->showItems($offset, $term);
+		$data['items']			= $this->Item_class_model->showItems($term, $offset);
 		$data['pages']			= max(0, ceil($this->Item_class_model->countItems($term)/25));
 		
 		header('Content-Type: application/json');
@@ -107,7 +107,7 @@ class Item_class extends CI_Controller {
 		$page				= $this->input->get('page');
 		$offset				= ($page - 1) * 10;
 		$this->load->model("Item_class_model");
-		$data['items']		= $this->Item_class_model->getByClassId($offset, $itemClassId);
+		$data['items']		= $this->Item_class_model->getByClassId($itemClassId, $offset);
 		$data['pages']		= max(1, ceil($this->Item_class_model->countByClassId($itemClassId)/10));
 
 		header('Content-Type: application/json');

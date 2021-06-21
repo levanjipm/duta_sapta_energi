@@ -133,6 +133,7 @@ class Customer extends CI_Controller {
 			};
 
 			$receivableValue += ($value - $paid);
+			continue;
 		};
 
 		$pendingInvoice = array(

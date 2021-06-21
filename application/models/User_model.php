@@ -192,6 +192,8 @@ class User_model extends CI_Model {
 				) AS a
 				ON a.user_id = users.id
 				WHERE users.name LIKE '%" . $term . "%'
+				AND users.is_active = '1'
+				ORDER BY users.name
 				LIMIT $limit OFFSET $offset
 			");
 

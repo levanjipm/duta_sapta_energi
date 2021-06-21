@@ -128,6 +128,7 @@ class Customer_model extends CI_Model {
 			foreach ($customers as $customer)
 			{
 				$result[] = $this->get_new_stub_from_db($customer);
+				continue;
 			}
 			return $result;
 		}
@@ -391,7 +392,7 @@ class Customer_model extends CI_Model {
 			$this->db->update($this->table_customer);
 		}
 
-		public function showCustomerAccountantItems($offset = 0, $term = "", $accountantId, $limit = 10)
+		public function showCustomerAccountantItems($offset = 0, $term = "", $accountantId = NULL, $limit = 10)
 		{
 			if($limit == 0){
 				$query			= $this->db->query("
@@ -536,7 +537,11 @@ class Customer_model extends CI_Model {
 							);
 						}
 					}
+
+					continue;
 				}
+
+				continue;
 			}
 
 			return $response;
@@ -568,7 +573,7 @@ class Customer_model extends CI_Model {
 			return $response;
 		}
 
-		public function getNoo($month, $year)
+		public function getNoo($month, $year, $brand)
 		{
 			$dateParam			= $year . '-' . str_pad($month, 2, 0) . "-01";
 			$query			= $this->db->query("
@@ -579,9 +584,13 @@ class Customer_model extends CI_Model {
 				(
 					SELECT code_sales_order.customer_id
 					FROM code_sales_order
+					JOIN sales_order ON code_sales_order.id = sales_order.code_sales_order_id
+					JOIN price_list ON sales_order.price_list_id = price_list.id
+					JOIN item ON price_list.item_id = item.id
 					WHERE code_sales_order.is_confirm = '1'
 					AND MONTH(code_sales_order.date) = '$month'
 					AND YEAR(code_sales_order.date) = '$year'
+					AND item.brand = '$brand'
 				)
 				AND customer.id NOT IN (
 					SELECT code_sales_order.customer_id

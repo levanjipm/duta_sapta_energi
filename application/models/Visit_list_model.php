@@ -312,7 +312,7 @@ class Visit_list_model extends CI_Model {
 			return $result;
 		}
 
-		public function countCustomerList($sales, $mode, $includedAreas = array(), $term = "", $date)
+		public function countCustomerList($sales, $mode, $includedAreas = array(), $term = "", $date = NULL)
 		{
 			if(count($includedAreas) > 0){
 				$string		= "AND customer.area_id IN (";

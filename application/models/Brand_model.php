@@ -50,6 +50,7 @@ class Brand_model extends CI_Model {
 			foreach ($brands as $brand)
 			{
 				$result[] = $this->get_new_stub_from_db($brand);
+				continue;
 			}
 			return $result;
 		}

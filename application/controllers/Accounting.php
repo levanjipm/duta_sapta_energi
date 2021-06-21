@@ -85,6 +85,7 @@ class Accounting extends CI_Controller {
 		if(count($data) > 0){
 			foreach($data as $item){
 				$notDue	+= (float)$item['value'];
+				continue;
 			}
 		}
 
@@ -93,6 +94,7 @@ class Accounting extends CI_Controller {
 		if(count($data) > 0){
 			foreach($data as $item){
 				$due	+= (float)$item['value'];
+				continue;
 			}
 		}
 
@@ -112,6 +114,7 @@ class Accounting extends CI_Controller {
 		if(count($data) > 0){
 			foreach($data as $item){
 				$notDue	+= ((float)$item->value - (float)$item->paid);
+				continue;
 			}
 		}
 
@@ -120,6 +123,7 @@ class Accounting extends CI_Controller {
 		if(count($data) > 0){
 			foreach($data as $item){
 				$due	+= ((float)$item->value - (float)$item->paid);
+				continue;
 			}
 		}
 

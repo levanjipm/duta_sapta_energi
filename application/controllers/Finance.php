@@ -47,6 +47,7 @@ class Finance extends CI_Controller {
 			$difference		= (strtotime("now") - $date) / (60 * 60 * 24 * 30);
 			$currentValue	= ($value - $residueValue) * ($depreciation - $difference) / $depreciation;
 			$assetValue		+= $currentValue;
+			continue;
 		}
 
 		$this->load->model("Debt_model");

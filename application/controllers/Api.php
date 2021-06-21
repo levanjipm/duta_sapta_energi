@@ -95,6 +95,7 @@ class Api extends CI_Controller {
             $datediff		= floor(($today - $date)/(30 * 60 * 60 * 24));
 
             $batchArray[$datediff]['value'] = (float)$value;
+            continue;
         }
         
         $batch          = (object)$batchArray;
@@ -178,6 +179,7 @@ class Api extends CI_Controller {
                 "value" => $value,
                 "sent" => $sentValue
             );
+            continue;
         }
         echo json_encode($result);
     }

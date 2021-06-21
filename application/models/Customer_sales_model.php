@@ -50,6 +50,7 @@ class Customer_sales_model extends CI_Model {
 			foreach ($items as $item)
 			{
 				$result[] = $this->get_new_stub_from_db($item);
+				continue;
 			}
 			return $result;
 		}
@@ -145,6 +146,7 @@ class Customer_sales_model extends CI_Model {
 				$existCustomerArray = array();
 				foreach($result as $data){
 					array_push($existCustomerArray, $data->customer_id);
+					continue;
 				}
 				
 				$finalCustomerArray		= array_diff($customerArray, $existCustomerArray);
@@ -155,6 +157,7 @@ class Customer_sales_model extends CI_Model {
 						"customer_id" => $finalCustomer,
 						"sales_id" => $salesId
 					);
+					continue;
 				}
 				if(count($itemArray) > 0){
 					$this->db->insert_batch($this->table_customer_sales, $itemArray);

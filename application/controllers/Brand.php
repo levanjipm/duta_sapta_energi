@@ -131,6 +131,7 @@ class Brand extends CI_Controller {
 				"value" => $value,
 				"dateCreated" => $dateCreated
 			));
+			continue;
 		}
 
 		$startDate		= date("Y-m-t h:i:s", strtotime("-" . $from . "months", mktime(0, 0, 0, date('m'), 1, date("Y"))));
@@ -169,7 +170,9 @@ class Brand extends CI_Controller {
 					$areaAchivementArray[$area_id]["value"][$difference]["label"] = date("M Y", strtotime("-" . $difference . "month"));
 					$areaAchivementArray[$area_id]["value"][$difference]["value"] = 0;
 				}
+				continue;
 			}
+			continue;
 		}
 
 		$finalResult = $areaAchivementArray;

@@ -25,7 +25,7 @@
 			</div>
 
 			<label>Payment</label>
-			<input type='number' class='form-control' id='payment' name='payment' required>
+			<input type='number' class='form-control' id='payment' name='payment' min='0' required>
 			
 			<label>Supplier</label>
 			<button type='button' class='form-control' id='supplierButton' onclick='openSupplierView()' style='text-align:left!important'></button>

@@ -143,6 +143,8 @@ class Area extends CI_Controller {
 					"label" => $label
 				);
 			}
+
+			continue;
 		}
 
 		for($i = 0; $i <= 6; $i++){
@@ -183,7 +185,9 @@ class Area extends CI_Controller {
 				} else if($difference < 0) {
 					$customerArray[$customerId][$i] = 0;
 				}
-			}			
+			}	
+			
+			continue;
 		}
 
 		$targetArray		= array_fill(0, 7, 0);
@@ -198,7 +202,9 @@ class Area extends CI_Controller {
 					"value" => $nextValue,
 					"label" => $label
 				);
-			}			
+			}
+			
+			continue;
 		}
 
 		$targetValue		= array_reverse($targetArray);

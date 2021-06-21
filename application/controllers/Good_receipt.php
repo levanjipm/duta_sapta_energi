@@ -232,6 +232,7 @@ class Good_receipt extends CI_Controller {
 				$detailArray[$codeGoodReceiptId] = array();
 			}
 			array_push($detailArray[$codeGoodReceiptId], $detailResultArray);
+			continue;
 		}
 
 		$dataArray = array();
@@ -246,6 +247,7 @@ class Good_receipt extends CI_Controller {
 
 			$dataArray[$item->id] = $itemArray;
 			$dataArray[$item->id]['detail'] = $detailArray[$item->id];
+			continue;
 		}
 
 		if($supplierStatus == false){

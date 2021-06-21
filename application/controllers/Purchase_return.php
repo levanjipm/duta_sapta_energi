@@ -226,28 +226,50 @@ class Purchase_return extends CI_Controller {
 	{
 		$id			= $this->input->post('id');
 		$this->load->model("Purchase_return_sent_model");
-		$result = $this->Purchase_return_sent_model->updateById(1, $id);
-		if($result == 1){
-			$data			= $this->Purchase_return_sent_model->getById($id);
-			$supplierId		= $data->supplier_id;
 
-			$this->load->model("Purchase_return_sent_detail_model");
-			$dataArray = $this->Purchase_return_sent_detail_model->getByCodeId($id);
-			$stockItemArray = array();
-			foreach($dataArray as $data){
-				$stockItemArray[] = array(
-					"item_id" => $data->item_id,
-					"quantity" => $data->quantity,
-					"id" => $data->id
-				);
+		$this->load->model("Purchase_return_sent_detail_model");
+		$dataArray = $this->Purchase_return_sent_detail_model->getByCodeId($id);
 
-				next($dataArray);
-			}
+		$this->load->model("Stock_out_model");
+		$this->load->model("Stock_in_model");
 
-			$this->load->model("Stock_out_model");
-			$this->Stock_out_model->insertFromPurchaseReturn($stockItemArray, $supplierId);
+		$checkStockItemArray = array();
+		foreach($dataArray as $data){
+			$checkStockItemArray[] = array(
+				"item_id" => $data->item_id,
+				"quantity" => $data->quantity
+			);
+
+			next($dataArray);
+			continue;
 		}
-		echo $result;
+
+		$checkStockResult = $this->Stock_in_model->checkStock($checkStockItemArray);
+		if($checkStockResult){
+			$result = $this->Purchase_return_sent_model->updateById(1, $id);
+			if($result == 1){
+				$data			= $this->Purchase_return_sent_model->getById($id);
+				$supplierId		= $data->supplier_id;
+				$stockItemArray = array();
+				foreach($dataArray as $data){
+					$stockItemArray[] = array(
+						"item_id" => $data->item_id,
+						"quantity" => $data->quantity,
+						"id" => $data->id
+					);
+
+					next($dataArray);
+					continue;
+				}
+
+				$this->Stock_out_model->insertFromPurchaseReturn($stockItemArray, $supplierId);
+			}
+			echo $result;
+		} else {
+			echo 0;
+		}
+
+		
 	}
 
 	public function cancelSentById()

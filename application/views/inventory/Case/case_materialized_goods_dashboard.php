@@ -105,6 +105,7 @@
 				page: page,
 			},
 			success:function(response){
+                console.log(response);
                 var itemCount = 0;
 				$('#itemListTableContent').html('');
 				var item_array	= response.items;

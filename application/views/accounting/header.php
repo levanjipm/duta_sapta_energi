@@ -42,6 +42,7 @@
 			<a href='<?= site_url('Debt/confirmDashboard') ?>'><button><p style='font-family:museo'>Confirm</p></button></a>
 			<a href='<?= site_url('Debt_type') ?>'><button><p style='font-family:museo'>Types</p></button></a>
 			<a href='<?= site_url('Debt/archiveDashboard') ?>'><button><p style='font-family:museo'>Archive</p></button></a>
+			<a href='<?= site_url('Debt/pending') ?>'><button><p style='font-family:museo'>Pending</p></button></a>
 		</div>
 		<button class='container_button'><p>Journal</p><i class='fa fa-caret-down'></i></button>
 		<div class='container_bar'>

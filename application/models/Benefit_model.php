@@ -50,6 +50,7 @@ class Benefit_model extends CI_Model {
 			foreach ($users as $user)
 			{
 				$result[] = $this->get_new_stub_from_db($user);
+				continue;
 			}
 			return $result;
 		}

@@ -42,10 +42,15 @@
 				<label>Period</label>
 				<p><?= date('F Y', mktime(0,0,0,$month, 1, $year)) ?></p>
 
+				<label>Brand</label>
+				<p><?= $brand->name ?></p>
+
 				<label>Action</label>
 				<form action='<?= site_url('SalesAnalytics/exportSalesReportCSV') ?>' method="POST">
 					<input type='hidden' name='month' value='<?= $month ?>'>
 					<input type='hidden' name='year' value='<?= $year ?>'>
+					<input type='hidden' name='brand' value='<?= $brand->id ?>'>
+
 					<button type='button' class='button button_mini_tab' onclick='window.print()'><i class='fa fa-print'></i> Print</button>
 					<button class='button button_mini_tab'><i class='fa fa-file-excel-o'></i> Save as CSV</button>
 				</form>

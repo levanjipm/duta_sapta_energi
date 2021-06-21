@@ -191,7 +191,7 @@ class Sales_order_model extends CI_Model {
 			return $result;
 		}
 
-		public function getIncompleteSalesOrderDelivery($offset, $term = "", $areaArray)
+		public function getIncompleteSalesOrderDelivery($offset, $term = "", $areaArray = [])
 		{
 			$inString = "(";
 			foreach($areaArray as $area){
@@ -234,7 +234,7 @@ class Sales_order_model extends CI_Model {
 			return $result;
 		}
 
-		public function countIncompleteSalesOrderDelivery($term = "", $areaArray)
+		public function countIncompleteSalesOrderDelivery($term = "", $areaArray = [])
 		{
 			$inString = "(";
 			foreach($areaArray as $area){

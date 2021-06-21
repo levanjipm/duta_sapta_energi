@@ -285,6 +285,7 @@ class Invoice extends CI_Controller {
 			$arrayResult['deliveryOrder'] = $deliveryOrder;
 
 			array_push($finalArray, $arrayResult);
+			continue;
 		}
 
 		header('Content-Type: application/json');
@@ -422,6 +423,7 @@ class Invoice extends CI_Controller {
 			}
 
 			array_push($result, $itemArray);
+			continue;
 		};
 
 		$data['items'] = (object) $result;
@@ -534,6 +536,7 @@ class Invoice extends CI_Controller {
 			);
 
 			fputcsv($file, $valueArray, ';');
+			continue;
 		}
 
 		fclose($file); 

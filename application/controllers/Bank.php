@@ -182,7 +182,7 @@ class Bank extends CI_Controller {
 		$offset		= ($page - 1) * 10;
 
 		$this->load->model('Bank_model');
-		$data['banks'] = $this->Bank_model->getAssignedTransactions($account, $type, $offset, $dateStart, $dateEnd);
+		$data['banks'] = $this->Bank_model->getAssignedTransactions($account, $type, $dateStart, $dateEnd, $offset);
 		$data['pages'] = max(1, ceil($this->Bank_model->countAssignedTransactions($account, $type, $dateStart, $dateEnd)/10));
 
 		header('Content-Type: application/json');

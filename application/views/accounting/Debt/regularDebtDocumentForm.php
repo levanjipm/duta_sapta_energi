@@ -190,7 +190,8 @@
 			documentCount++;
 			$('#documentCount').val(documentCount);
 		};
-	}	
+	}
+
 	function removeGoodReceipt(code_good_receipt_id){
 		$('#document-' + code_good_receipt_id).remove();
 		$('#plus_button-' + code_good_receipt_id).show();
@@ -217,6 +218,9 @@
 					goodReceiptArray: JSON.stringify(documentArray)
 				},
 				type:'GET',
+				beforeSend:function(){
+					$('#goodReceiptsTable').html("");
+				},
 				success:function(response){
 					var goodReceipts 		= response.goodReceipts;
 					var quantityArray		= new Array();

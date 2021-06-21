@@ -259,13 +259,15 @@ class Sales_order_detail_model extends CI_Model {
 		
 		public function getPendingValueByCustomerId($customer_id)
 		{
-			$this->db->select('SUM((sales_order.quantity - sales_order.sent) * price_list.price_list * (100 - sales_order.discount) / 100) as value');
-			$this->db->from('sales_order');
-			$this->db->join('code_sales_order', 'sales_order.code_sales_order_id = code_sales_order.id', 'left');
-			$this->db->join('price_list', 'sales_order.price_list_id = price_list.id');
-			$this->db->where('code_sales_order.customer_id', $customer_id);
-			$query		= $this->db->get();
-			
+			$query			= $this->db->query("
+				SELECT COALESCE(SUM((sales_order.quantity - sales_order.sent) * price_list.price_list * (100 - sales_order.discount) / 100), 0) as value
+				FROM sales_order
+				LEFT JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
+				JOIN code_sales_order_close_request ON code_sales_order.id = code_sales_order_close_request.code_sales_order_id = code_sales_order.id
+				JOIN price_list ON sales_order.price_list_id = price_list.id
+				WHERE code_sales_order.customer_id = '$customer_id'
+				AND COALESCE(code_sales_order_close_request.is_approved, 0) = '0'
+			");			
 			$result		= $query->row();
 			
 			return $result->value;

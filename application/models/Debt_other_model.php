@@ -102,6 +102,7 @@ class Debt_other_model extends CI_Model {
 			foreach ($items as $item)
 			{
 				$result[] = $this->get_new_stub_from_db($item);
+				continue;
 			}
 			return $result;
 		}

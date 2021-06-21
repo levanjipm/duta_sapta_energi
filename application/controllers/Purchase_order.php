@@ -152,9 +152,8 @@ class Purchase_order extends CI_Controller {
 		header('Content-Type: application/json');
 		echo json_encode($data);
 	}
-	
-	public function pending()
-	{		
+
+	public function pending($supplierId = NULL){
 		$user_id		= $this->session->userdata('user_id');
 		$this->load->model('User_model');
 		$data['user_login'] = $this->User_model->getById($user_id);
@@ -164,11 +163,21 @@ class Purchase_order extends CI_Controller {
 		
 		$this->load->view('head');
 		$this->load->view('purchasing/header', $data);
+
+		if($supplierId == NULL){
+			$this->load->model('Purchase_order_detail_model');
+			$data['suppliers']	= $this->Purchase_order_detail_model->show_supplier_for_incomplete_purchase_orders();
+			
+			$this->load->view('purchasing/PurchaseOrder/pendingDashboard', $data);
+		} else {
+			$this->load->model("Supplier_model");
+			$data['supplier']	= $this->Supplier_model->getById($supplierId);
+
+			$this->load->model('Purchase_order_detail_model');
+			$data['items']	= $this->Purchase_order_detail_model->getIncompletePurchaseOrderBySupplierId($supplierId);
 		
-		$this->load->model('Purchase_order_detail_model');
-		$data['suppliers']	= $this->Purchase_order_detail_model->show_supplier_for_incomplete_purchase_orders();
-		
-		$this->load->view('purchasing/PurchaseOrder/pendingDashboard', $data);
+			$this->load->view('purchasing/PurchaseOrder/pendingBySupplier', $data);
+		}		
 	}
 
 	public function getPendingPurchaseOrder()
@@ -484,14 +493,14 @@ class Purchase_order extends CI_Controller {
 			$this->Purchase_order_detail_model->insertItemBatch($extraBatch);
 		}
 
-		if(!empty($this->input->post('extraBonusPriceList'))){
+		print_r($_POST);
+
+		if(!empty($this->input->post('extraBonusQuantity'))){
 			$extraBatch				= array();
 			$quantityArray			= $this->input->post('extraBonusQuantity');
 
 			foreach($quantityArray as $itemId => $quantity)
 			{
-				$discount			= $discountArray[$itemId];
-				$netprice			= (100 - $discount) * $pricelist / 100;
 				$extraArray			= array(
 					"id" => "",
 					"price_list" => 1,
@@ -505,7 +514,10 @@ class Purchase_order extends CI_Controller {
 
 				array_push($extraBatch, $extraArray);
 				next($quantityArray);
+				continue;
 			}
+
+			print_r($extraBatch);
 
 			$this->Purchase_order_detail_model->insertItemBatch($extraBatch);
 		}

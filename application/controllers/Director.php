@@ -48,6 +48,7 @@ class Director extends CI_Controller {
 				$difference		= (strtotime("now") - $date) / (60 * 60 * 24 * 30);
 				$currentValue	= ($value - $residueValue) * ($depreciation - $difference) / $depreciation;
 				$assetValue		+= $currentValue;
+				continue;
 			}
 
 			$this->load->model("Debt_model");
@@ -117,7 +118,7 @@ class Director extends CI_Controller {
 				$initialDate		= $year . "-01-01";
 				$endDate			= $year . "-12-31";
 			} else {
-				$initialDate		= date("Y-m-t", mktime(0,0,0,$month - 1, 1, $year));
+				$initialDate		= date("Y-m-t", strtotime("-1 month", mktime(0,0,0,$month, 1, $year)));
 				$endDate			= date("Y-m-t", mktime(0,0,0,$month, 1, $year));
 			}
 
@@ -196,6 +197,7 @@ class Director extends CI_Controller {
 				$assetValue 		+= $estimatedValue;
 				$depreciationValue	+= $depreciation;
 			}
+			continue;
 		}
 
 		$data['assetValue'] 	= $assetValue;

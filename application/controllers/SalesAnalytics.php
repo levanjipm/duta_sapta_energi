@@ -39,7 +39,7 @@ class SalesAnalytics extends CI_Controller {
 		$brand		= $this->input->get('brand');
 
 		$this->load->model("Customer_target_model");
-		$data['items'] = $this->Customer_target_model->getItems($offset, $term, $month, $year, $brand);
+		$data['items'] = $this->Customer_target_model->getItems($month, $year, $brand, $offset, $term);
 
 		$this->load->model("Customer_model");
 		$data['pages'] = max(1, ceil($this->Customer_model->countItems($term)/25));
@@ -143,7 +143,7 @@ class SalesAnalytics extends CI_Controller {
 		$this->load->view('sales/Analytics/salesmanReport', $data);
 	}
 
-	public function salesReport($month, $year)
+	public function salesReport($month, $year, $brand)
 	{
 		$user_id		= $this->session->userdata('user_id');
 		$this->load->model('User_model');
@@ -156,10 +156,13 @@ class SalesAnalytics extends CI_Controller {
 		$this->load->view('sales/header', $data);
 
 		$data			= array();
+		$this->load->model("Brand_model");
+		$data['brand']	= $this->Brand_model->getById($brand);
+
 		$this->load->model("Customer_target_model");
 		$data['month']	= $month;
 		$data['year']	= $year;
-		$data['customers'] = $this->Customer_target_model->getItems(0, "", $month, $year, 0);
+		$data['customers'] = $this->Customer_target_model->getItems($month, $year, $brand, 0, "", 0);
 
 		$this->load->view('sales/Analytics/salesReport', $data);
 	}
@@ -168,6 +171,7 @@ class SalesAnalytics extends CI_Controller {
 	{
 		$month			= $this->input->post('month');
 		$year			= $this->input->post('year');
+		$brand			= $this->input->post('brand');
 		$areaArray		= array();
 
 		$file_name = 'customerSalesReport' . $month . $year . '.csv'; 
@@ -176,10 +180,10 @@ class SalesAnalytics extends CI_Controller {
 		header("Content-Type: application/csv;");
    
 		$this->load->model("Customer_target_model");
-		$customers		= $this->Customer_target_model->getItems(0, "", $month, $year, 0);
- 
+		$customers		= $this->Customer_target_model->getItems($month, $year, $brand, 0, "", 0);
+
 		$file = fopen('php://output', 'w');
-		$headerInformation = array("Period", date("m", mktime(0, 0, 0, $month, 1,$year)), date("Y", mktime(0,0,$month, 1, $year)));
+		$headerInformation = array("Period", date("m", mktime(0, 0, 0, $month, 1,$year)), date("Y", mktime(0,0, 0,$month, 1, $year)));
 		fputcsv($file, $headerInformation, ';');
 
 		$header = array("Name","Address", "City", "Area", "PreviousTarget", "CurrentTarget", "PreviousAchivement", "CurrentAchivement"); 
@@ -259,7 +263,6 @@ class SalesAnalytics extends CI_Controller {
 		}
 
 		fclose($file); 
-
 		exit;
 	}
 
@@ -267,8 +270,10 @@ class SalesAnalytics extends CI_Controller {
 	{
 		$month			= $this->input->get('month');
 		$year			= $this->input->get('year');
+		$brand			= $this->input->get('brand');
+
 		$this->load->model("Customer_model");
-		$data		= $this->Customer_model->getNoo($month, $year);
+		$data		= $this->Customer_model->getNoo($month, $year, $brand);
 
 		header('Content-Type: application/json');
 		echo json_encode($data);
@@ -278,24 +283,25 @@ class SalesAnalytics extends CI_Controller {
 	{
 		$month			= $this->input->get('month');
 		$year			= $this->input->get('year');
+		$brand			= $this->input->get('brand');
 
-		$file_name = 'nooReport' . $month . $year . '.csv'; 
+		$file_name = 'nooReport' . $month . $year . '-' . $brand . '.csv'; 
 		header("Content-Description: File Transfer"); 
 		header("Content-Disposition: attachment; filename=$file_name"); 
 		header("Content-Type: application/csv;");
    
 		$this->load->model("Customer_target_model");
-		$customers		= $this->Customer_target_model->getItems(0, "", $month, $year, 0);
+		$customers		= $this->Customer_target_model->getItems($month, $year,$brand, 0, "");
  
 		$file = fopen('php://output', 'w');
-		$headerInformation = array("Period", date("m", mktime(0, 0, 0, $month, 1, $year)), date("Y", mktime(0,0,$month, 1, $year)));
+		$headerInformation = array("Period", date("m", mktime(0, 0, 0, $month, 1, $year)), date("Y", mktime(0,0, 0,$month, 1, $year)));
 		fputcsv($file, $headerInformation, ';');
 
 		$header = array("Name","Address", "City", "Area"); 
 		fputcsv($file, $header, ';');
 
 		$this->load->model("Customer_model");
-		$customers		= $this->Customer_model->getNoo($month, $year);
+		$customers		= $this->Customer_model->getNoo($month, $year, $brand);
 
 		foreach ($customers as $customer)
 		{
@@ -334,10 +340,10 @@ class SalesAnalytics extends CI_Controller {
 			);
 
 			fputcsv($file, $valueArray, ';');
+			continue;
 		}
 
 		fclose($file); 
 		exit;
-		
 	}
 }

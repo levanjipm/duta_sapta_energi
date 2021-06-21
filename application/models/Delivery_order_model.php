@@ -457,13 +457,14 @@ class Delivery_order_model extends CI_Model {
 		{
 			$this->db->select('code_delivery_order.*, code_sales_order.customer_id');
 			$this->db->from('code_delivery_order');
-			$this->db->join('delivery_order', 'code_delivery_order.id = delivery_order.code_delivery_order_id');
+			$this->db->join('delivery_order', 'code_delivery_order.id = delivery_order.code_delivery_order_id', 'left');
 			$this->db->join('sales_order', 'delivery_order.sales_order_id = sales_order.id');
 			$this->db->join('code_sales_order', 'sales_order.code_sales_order_id = code_sales_order.id');
 
 			$this->db->where('code_delivery_order.invoice_id', NULL);
 			$this->db->where('code_delivery_order.is_confirm', 1);
 			$this->db->where('code_delivery_order.is_sent', 1);
+			$this->db->group_by('code_delivery_order.id');
 			$this->db->limit($limit, $offset);
 
 			$query			= $this->db->get();

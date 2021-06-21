@@ -264,7 +264,7 @@ class Bank_model extends CI_Model {
 			return $result;
 		}
 
-		public function getAssignedTransactions($account, $type, $offset = 0, $dateStart, $dateEnd, $limit = 10)
+		public function getAssignedTransactions($account, $type, $dateStart, $dateEnd, $offset = 0, $limit = 10)
 		{
 			$this->db->select('bank_transaction.*, COALESCE(`customer`.`name`, `supplier`.`name`, `other_opponent`.`name`, `internal_bank_account`.`name`) as name');
 			
@@ -865,6 +865,7 @@ class Bank_model extends CI_Model {
 					$inString = "(";
 					foreach($idArray as $id){
 						$inString .= "'" . $id . "',";
+						continue;
 					};
 					$inString		= substr($inString, 0, -1);
 					$inString .= ")";
@@ -916,9 +917,12 @@ class Bank_model extends CI_Model {
 							$id		= $idItem->id;
 							array_push($idArray, $id);
 							array_push($data, $idItem);
+							continue;
 						}
 						$level++;
 					}
+
+					continue;
 				}
 			}
 

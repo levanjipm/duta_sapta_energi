@@ -179,7 +179,6 @@ class Stock_out_model extends CI_Model {
 				$item_id				= $stockOut['item_id'];
 				$quantity				= $stockOut['quantity'];
 				$purchase_return_id		= $stockOut['id'];
-
 				while($quantity > 0){
 					$stock_in				= $this->Stock_in_model->getResidueByItemId($item_id);
 					$residue				= $stock_in->residue;

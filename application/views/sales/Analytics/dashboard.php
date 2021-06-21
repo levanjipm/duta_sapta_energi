@@ -202,6 +202,11 @@
 							<option value='<?= $i ?>'><?= $i ?></option>
 						<?php } ?>
 						</select>
+						<select class='form-control' id='nooBrand' placeholder='Brand'>
+						<?php foreach($brands as $brand){ ?>
+							<option value='<?= $brand->id ?>'><?= $brand->name ?></option>
+						<?php } ?>
+						</select>
 						<div class='input_group_append'>
 							<button type='button' class='button button_default_dark' onclick='getNooItems()'><i class='fa fa-search'></i></button>
 						</div>
@@ -278,6 +283,13 @@
 
 			<label>Effective Date</label>
 			<input type='month' class='form-control' id='effectiveDate' required value='<?= date('Y-m') ?>'>
+
+			<label>Brand</label>
+			<select class='form-control' id='targetBrand' required>
+			<?php foreach($brands as $brand){ ?>
+				<option value="<?= $brand->id ?>"><?= $brand->name ?></option>
+			<?php } ?>
+			</select>
 			<p style='font-famliy:museo;color:#555;font-size:0.8em;' id='updateTargetDate'></p>
 			<br>
 			<button type='button' class='button button_default_dark' id='submitCustomerTargetButton'><i class='fa fa-long-arrow-right'></i></button>
@@ -289,6 +301,7 @@
 					<tr>
 						<th>Date</th>
 						<th>Value</th>
+						<th>Brand</th>
 					</tr>
 					<tbody id='targetTableContent'></tbody>
 				</table>
@@ -567,17 +580,20 @@
 							}, 1000);
 						});
 					} else if(aspect == "brand"){
+						var totalValue = 0;
 						$.each(response, function(index, item){
 							var brandName	= item.name;
 							var value		= parseFloat(item.value);
 							var returnValue = parseFloat(item.returned);
 							$('#tableAnalyticBody').append("<tr><td>"+ brandName + "</td><td>Rp. " + numeral(value - returnValue).format("0,0.00") + "<div class='progressBarWrapper'><p>" + (value - returnValue) + "</p><div class='progressBar' data-value='" + (value - returnValue) + "'></div></div></td></tr>");
 							itemCount++;
-							totalValue += value - returnValue;
+							totalValue += (value - returnValue);
 						});
 
 						$('#tableAnalyticBody .progressBar').each(function(){
-							var value = $(this).attr('data-value');
+							var value = parseFloat($(this).attr('data-value'));
+							console.log(value);
+							console.log(totalValue);
 							var percentage = value * 100 / totalValue;
 							$(this).siblings("p").html(numeral(percentage).format('0,0.00') + "%");
 							$(this).animate({
@@ -722,7 +738,8 @@
 				url:"<?= site_url('SalesAnalytics/getNoo') ?>",
 				data:{
 					month: parseInt($('#nooMonth').val()),
-					year: $('#nooYear').val()
+					year: $('#nooYear').val(),
+					brand: $('#nooBrand').val()
 				},
 				success:function(response){
 					$('#nooTableContent').html("");
@@ -781,7 +798,9 @@
 		if($('#customerAnalyticForm').valid()){
 			var month		= $('#customerMonth').val();
 			var year		= $('#customerYear').val();
-			window.location.href='<?= site_url('SalesAnalytics/salesReport/') ?>' + month + "/" + year;
+			var brand		= $('#customerBrand').val();
+
+			window.location.href='<?= site_url('SalesAnalytics/salesReport/') ?>' + month + "/" + year + "/" + brand;
 		}
 	})
 
@@ -858,11 +877,13 @@
 					var date		= item.dateCreated;
 					var targetDate	= new Date(date);
 					var todayDate	= new Date();
+					var brand		= item.name;
+
 					if(targetDate > todayDate){
-						$('#targetTableContent').append("<tr><td id='targetItem-" + id + "'>" + my_date_format(date) + "</td><td>Rp. " + numeral(target).format('0,0.00') + "<button class='button button_danger_dark' style='float:right' onclick='deleteTarget(" + id + ")'><i class='fa fa-trash'></i></button></td></tr>");
+						$('#targetTableContent').append("<tr><td id='targetItem-" + id + "'>" + my_date_format(date) + "</td><td>Rp. " + numeral(target).format('0,0.00') + "</td><td>" + brand + "</td><button class='button button_danger_dark' style='float:right' onclick='deleteTarget(" + id + ")'><i class='fa fa-trash'></i></button></td></tr>");
 						targetCount++;
 					} else {
-						$('#targetTableContent').append("<tr><td>" + my_date_format(date) + "</td><td>Rp. " + numeral(target).format('0,0.00') + "</td></tr>");
+						$('#targetTableContent').append("<tr><td>" + my_date_format(date) + "</td><td>Rp. " + numeral(target).format('0,0.00') + "</td><td>" + brand + "</td></tr>");
 						targetCount++;
 					}
 					
@@ -949,7 +970,8 @@
 			data:{
 				customerId: customerTargetId,
 				value: $('#target').val(),
-				date: $('#effectiveDate').val()
+				date: $('#effectiveDate').val(),
+				brand: $('#targetBrand').val()
 			},
 			type:"POST",
 			beforeSend:function(){
@@ -1019,6 +1041,6 @@
 	}
 
 	$('#saveNooTableButton').click(function(){
-		window.open("<?= site_url('SalesAnalytics/GetNooCsv') ?>" + "?month=" + $('#nooMonth').val() + "&year=" + $('#nooYear').val(), '_blank');
+		window.open("<?= site_url('SalesAnalytics/GetNooCsv') ?>" + "?month=" + $('#nooMonth').val() + "&year=" + $('#nooYear').val() + "&brand=" + $('#nooBrand').val(), '_blank');
 	})
 </script>

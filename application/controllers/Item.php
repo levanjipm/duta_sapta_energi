@@ -137,6 +137,7 @@ class Item extends CI_Controller {
 			$difference	= round(($currentDate - $date) / (60 * 60 * 24 * 30));
 
 			$stockArray[$difference] = $quantity;
+			continue;
 		}
 
 		for($i = 0; $i < 12; $i++){

@@ -28,6 +28,7 @@ class Delivery_order extends CI_Controller {
 			$customer_ids = array();
 			foreach($data['sales_orders'] as $sales_order){
 				array_push($customer_ids, $sales_order->customer_id);
+				continue;
 			}
 			
 			$this->load->model('Customer_model');
@@ -363,6 +364,7 @@ class Delivery_order extends CI_Controller {
 			);
 
 			array_push($stockArray, $stock);
+			continue;
 		}
 
 		$this->load->model('Stock_in_model');
@@ -463,6 +465,7 @@ class Delivery_order extends CI_Controller {
 			
 			$itemArray['customer'] = $customer;
 			array_push($itemsArray, $itemArray);
+			continue;
 		}
 
 		$data['items'] = (object) $itemsArray;
@@ -501,6 +504,7 @@ class Delivery_order extends CI_Controller {
 			
 			$itemArray['customer'] = $customer;
 			array_push($itemsArray, $itemArray);
+			continue;
 		}
 
 		$data['items'] = (object) $itemsArray;
@@ -547,6 +551,7 @@ class Delivery_order extends CI_Controller {
 				$item				= (array) $deliveryOrder;
 				$item['customer']	= (array) $this->Customer_model->getById($customerId);
 				$itemBatch[]		= $item;
+				continue;
 			}
 
 			$data['items'] = (object)$itemBatch;
