@@ -285,9 +285,14 @@
 		var history		= <?= $attendanceDataFinal ?>;
 		var datasets	= [];
 		$.each(history, function(index, item){
+			let dataObject = [];
+			$.each(item.data, function(index, data){
+				dataObject.push(data);
+			})
+
 			var dataset = {
 				label: item.label,
-				data: item.data.reverse(),
+				data: dataObject,
 				backgroundColor: item.background
 			}
 

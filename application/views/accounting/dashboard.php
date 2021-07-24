@@ -107,7 +107,7 @@
                 </div>
             </div>
             <div class='col-md-4 col-sm-12 col-xs-12'>
-                <div class='dashboardBox'>
+                <div class='dashboardBox clickable' onclick='window.location.href="<?= site_url('Debt/Pending') ?>"'>
                     <div class='leftSide'>
                         <h4><b>Pending</b></h4>
                         <p>Debt</p>

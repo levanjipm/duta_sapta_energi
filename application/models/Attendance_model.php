@@ -209,10 +209,11 @@ class Attendance_model extends CI_Model {
 		{
 			$paramDate		= date("Y-m-d", strtotime("-6days"));
 			$query		= $this->db->query("
-				SELECT COUNT(attendance_list.id) AS count, attendance_status.name AS name, DATEDIFF(CURDATE(), attendance_list.date) AS difference, attendance_status.id AS id
+				SELECT COUNT(attendance_list.id) AS count, attendance_status.name AS name, DATEDIFF(CURDATE(), attendance_list.date) AS difference, attendance_status.id AS id, attendance_list.date
 				FROM attendance_list
 				JOIN attendance_status ON attendance_list.status = attendance_status.id
 				WHERE attendance_list.date >= '$paramDate'
+				AND DATEDIFF(CURDATE(), attendance_list.date) >= 0
 				GROUP BY attendance_list.status, attendance_list.date
 				ORDER BY attendance_list.date DESC
 			");

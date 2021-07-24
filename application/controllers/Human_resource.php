@@ -48,6 +48,7 @@ class Human_resource extends CI_Controller {
 			);
 			continue;
 		}
+
 		for($i = 0; $i <= 6; $i++){
 			if(!array_key_exists($i, $attendanceArray)){
 				$attendanceArray[$i]	= array();
