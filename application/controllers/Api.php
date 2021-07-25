@@ -4,6 +4,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 class Api extends CI_Controller {
 	function __construct(){
 		parent::__construct();
+
+        $this->load->helper('url');
+        require "third_party/JWT/CreatorJWT.php";
+
+        $this->JWT = new CreatorJwt();
     }
 
     public function login()
@@ -13,7 +18,7 @@ class Api extends CI_Controller {
         header("Content-Type:application/json");
 
         $postdata = file_get_contents("php://input");
-        $request    = json_decode($postdata);
+        $request        = json_decode($postdata);
         $username       = $request->username;
         $password       = $request->password;
 
@@ -25,6 +30,8 @@ class Api extends CI_Controller {
                 "message" => "Failed to log in.",
                 "user" => array()
             );
+
+            echo 0;
         } else {
             $response        = array(
                 "status" => "success",
@@ -39,13 +46,14 @@ class Api extends CI_Controller {
                     "pic" => $result->pic_name,
                     "city" => $result->city,
                     "postal_code" => $result->postal_code,
-                    "phone_number" => $result->phone_number,
-                    "term_of_payment" => $result->term_of_payment
+                    "phone_number" => $result->phone_number
                 )
             );
-        }
 
-        echo json_encode($response);
+            $tokenData = $response["user"];
+            $token = $this->JWT->GenerateToken($tokenData);
+            echo json_encode(array('Token'=>$token));
+        }
     }
 
     public function getCustomerData()

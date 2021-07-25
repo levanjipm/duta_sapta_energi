@@ -170,8 +170,6 @@ class Customer extends CI_Controller {
 		
 		$this->load->view('head');
 		$this->load->view('sales/header', $data);
-
-		$data = array();
 		$this->load->model("Customer_model");
 		$customer = $this->Customer_model->getById($customerId);
 		$data['customer'] = $customer;
@@ -181,8 +179,7 @@ class Customer extends CI_Controller {
 
 		$this->load->model("Brand_model");
 		$data['brands'] = $this->Brand_model->getItems();
-
-		$this->load->view('sales/Customer/detailDashboard', $data);
+		$this->load->view('sales/Customer/detailDashboard', $data);		
 	}
 
 	public function getCurrentTarget()

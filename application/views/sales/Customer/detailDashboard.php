@@ -134,6 +134,9 @@
 
 				<label>Unique ID</label>
 				<p><?= $customer->uid ?></p>
+
+				<label>Password Set</label>
+				<p><?= ($customer->password == "") ? "Not Set" : "Set" ?></p>
 			</div>
 			<div class='col-md-8 col-sm-12 col-xs-12' id='rightDiv'>
 				<button class='button button_mini_tab' id='salesOrderButton'>Pending Sales Orders</button>
@@ -226,9 +229,14 @@
 			
 			<p>You are about to delete this data.</p>
 			<p>Are you sure?</p>
-			<button class='button button_default_dark' onclick="$('#delete_target_wrapper').fadeOut()">Cancel</button>
-			<button class='button button_danger_dark' onclick='deleteTarget()'>Delete</button>
-			
+			<button 
+				class='button button_default_dark' 
+				onclick="$('#delete_target_wrapper').fadeOut()">
+				Cancel</button>
+			<button 
+				class='button button_danger_dark' 
+				onclick='deleteTarget()'>
+				Delete</button>
 			<br><br>
 			
 			<p style='font-family:museo;background-color:#f63e21;width:100%;padding:5px;color:white;position:relative;bottom:0;left:0;opacity:0' id='error_delete_customer'>Deletation failed.</p>
