@@ -323,7 +323,8 @@ class Purchase_order_model extends CI_Model {
 					WHERE purchase_order.status= '0'
 				) as a
 				ON a.id = code_purchase_order.id
-				WHERE code_purchase_order.supplier_id = '$supplier_id' AND code_purchase_order.is_confirm = '1'
+				WHERE code_purchase_order.supplier_id = '$supplier_id' 
+				AND code_purchase_order.is_confirm = '1'
 			");
 			$result	 	= $query->result();
 			
@@ -342,6 +343,7 @@ class Purchase_order_model extends CI_Model {
 					) as a
 					ON code_purchase_order.id = a.id
 					WHERE code_purchase_order.is_confirm = '1'
+					GROUP BY code_purchase_order.supplier_id
 				) as c
 				JOIN supplier ON c.id = supplier.id
 			");
@@ -422,10 +424,9 @@ class Purchase_order_model extends CI_Model {
 				$this->db->or_like('supplier.address', $term, 'both');
 				$this->db->or_like('code_purchase_order.name', $term, 'both');
 			}
-			
-			$this->db->order_by('code_purchase_order.date', 'asc');
-			$this->db->order_by('code_purchase_order.id', 'asc');
-			
+
+			$this->db->where('MONTH(date)', $month);
+			$this->db->where('YEAR(date)', $year);
 			$query		= $this->db->get();
 			$result		= $query->num_rows();
 			

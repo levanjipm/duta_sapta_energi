@@ -152,7 +152,7 @@ class Sales_order_detail_model extends CI_Model {
 					SELECT SUM(residue) as stock, item_id 
 					FROM stock_in 
 					GROUP BY item_id
-				) as stock_table
+				) stock_table
 				ON item.id = stock_table.item_id
 				LEFT JOIN (
 					SELECT SUM(delivery_order.quantity) AS sending, price_list.item_id
@@ -160,8 +160,9 @@ class Sales_order_detail_model extends CI_Model {
 					JOIN code_delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order.id
 					JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
 					JOIN price_list ON sales_order.price_list_id = price_list.id
-					WHERE code_delivery_order.is_confirm = '0' 
-					AND code_delivery_order.is_delete = '0'
+					WHERE code_delivery_order.is_confirm = 1
+					AND code_delivery_order.is_sent = 0
+					AND code_delivery_order.is_delete = 0
 					GROUP BY price_list.item_id
 				) sendingTable
 				ON item.id = sendingTable.item_id
@@ -263,10 +264,10 @@ class Sales_order_detail_model extends CI_Model {
 				SELECT COALESCE(SUM((sales_order.quantity - sales_order.sent) * price_list.price_list * (100 - sales_order.discount) / 100), 0) as value
 				FROM sales_order
 				LEFT JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
-				JOIN code_sales_order_close_request ON code_sales_order.id = code_sales_order_close_request.code_sales_order_id = code_sales_order.id
+				LEFT JOIN code_sales_order_close_request ON code_sales_order.id = code_sales_order_close_request.code_sales_order_id = code_sales_order.id
 				JOIN price_list ON sales_order.price_list_id = price_list.id
 				WHERE code_sales_order.customer_id = '$customer_id'
-				AND COALESCE(code_sales_order_close_request.is_approved, 0) = '0'
+				AND COALESCE(code_sales_order_close_request.is_approved, 0) = 0
 			");			
 			$result		= $query->row();
 			

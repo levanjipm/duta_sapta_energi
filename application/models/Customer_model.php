@@ -237,7 +237,7 @@ class Customer_model extends CI_Model {
 				$this->created_by			= $this->session->userdata('user_id');
 				$this->is_black_list		= 0;
 				$this->term_of_payment		= 30;
-				$this->plafond				= '0';
+				$this->plafond				= 3000000;
 				$this->uid					= $this->Customer_model->generateUid();
 				$this->password				= NULL;
 				$this->visiting_frequency	= $this->input->post('visit');

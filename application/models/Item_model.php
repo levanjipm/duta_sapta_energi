@@ -259,7 +259,7 @@ class Item_model extends CI_Model {
 			
 			if($priceList != '' && $priceList > 0 && $priceList != $prevPriceList){
 				$this->load->model('Price_list_model');
-				$this->Price_list_model->insert_from_post($item_id, $updated_price_list);
+				$this->Price_list_model->insertItem($id, $priceList);
 			}
 		}
 		

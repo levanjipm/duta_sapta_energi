@@ -50,7 +50,6 @@
 			},
 			success:function(response){
 				var pages	= response.pages;
-				var page	= page;
 				$('#page').html('');
 				for(i = 1; i <= pages; i++){
 					if(i == page){

@@ -167,28 +167,15 @@ class Good_receipt_model extends CI_Model {
 		public function getUninvoicedDocuments()
 		{
 			$query		= $this->db->query("
-				SELECT goodReceipt.supplier_id, goodReceiptValue.value, supplier.name AS supplier_name
+				SELECT code_good_receipt.id
 				FROM code_good_receipt
-				JOIN (
-					SELECT DISTINCT(code_good_receipt.id) AS id, code_purchase_order.supplier_id
-					FROM code_good_receipt
-					JOIN good_receipt ON code_good_receipt.id = good_receipt.code_good_receipt_id
-					JOIN purchase_order ON good_receipt.purchase_order_id = purchase_order.id
-					JOIN code_purchase_order ON purchase_order.code_purchase_order_id = code_purchase_order_id
-					WHERE code_good_Receipt.is_delete = '0'
-					AND code_good_receipt.is_confirm = '1'
-					AND code_good_receipt.invoice_id IS NULL
-				) AS goodReceipt
-				ON goodReceipt.id = code_good_receipt.id
-				JOIN (
-					SELECT SUM(good_receipt.quantity * purchase_order.net_price) AS value, good_receipt.code_good_receipt_id
+				LEFT JOIN (
+					SELECT good_receipt.code_good_receipt_id
 					FROM good_receipt
 					JOIN purchase_order ON good_receipt.purchase_order_id = purchase_order.id
-					GROUP BY good_receipt.code_good_receipt_id
-				) AS goodReceiptValue
-				ON code_good_receipt.id = goodReceiptValue.code_good_receipt_id
-				JOIN supplier ON goodReceipt.supplier_id = supplier.id
-				WHERE code_good_receipt.id IS NOT NULL
+					JOIN 
+				)
+				WHERE code_good_receipt.invoice_id IS NULL
 			");
 
 			$result		= $query->result();

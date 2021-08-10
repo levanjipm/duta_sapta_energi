@@ -35,9 +35,6 @@ class Customer extends CI_Controller {
 		$this->load->model('Customer_model');
 		$result = $this->Customer_model->insertItem();
 		if($result != NULL){
-			$this->load->model("Customer_target_model");
-			$date		= date("Y-m-d", mktime(0, 0, 0, date('m'), 1, date('Y')));
-			$this->Customer_target_model->insertItem($result, 3000000, $date);
 			echo 1;
 		} else {
 			echo 0;

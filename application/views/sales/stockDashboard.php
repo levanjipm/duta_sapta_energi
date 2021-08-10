@@ -42,7 +42,6 @@
 			},
 			success:function(response){
 				var pages	= response.pages;
-				var page	= page;
 				$('#page').html('');
 				for(i = 1; i <= pages; i++){
 					if(i == page){
@@ -59,8 +58,14 @@
 					var name			= stock.name;
 					var reference		= stock.reference;
 					var current_stock	= stock.stock;
-					
-					$('#stock_table').append("<tr><td>" + reference + "</td><td>" + name + "</td><td>" + numeral(current_stock).format('0,0') + "</td></tr>");
+					var statusIn		= stock.processIn;
+					var statusOut		= stock.processOut;
+
+					if(statusIn == null && statusOut == null){
+						$('#stock_table').append("<tr><td>" + reference + "</td><td>" + name + "</td><td>" + numeral(current_stock).format('0,0') + "</td></tr>");
+					} else {
+						$('#stock_table').append("<tr><td>" + reference + "</td><td>" + name + "</td><td>" + numeral(current_stock).format('0,0') + "</td><td></td></tr>");
+					}				
 				});
 				
 				if($('#stock_table tr').length > 0){

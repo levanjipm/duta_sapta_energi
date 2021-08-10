@@ -517,8 +517,6 @@ class Purchase_order extends CI_Controller {
 				continue;
 			}
 
-			print_r($extraBatch);
-
 			$this->Purchase_order_detail_model->insertItemBatch($extraBatch);
 		}
 	}

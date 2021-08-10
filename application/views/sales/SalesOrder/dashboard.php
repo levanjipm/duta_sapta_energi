@@ -130,10 +130,6 @@
 					var sales_order_id		= sales_order.id;
 					var seller				= sales_order.seller;
 					var note				= sales_order.note;
-					$('#salesOrderNote_p').html((note == "" || note == null) ? "<i>Not available</i>" : note);
-					if(seller == null){
-						seller		= "<i>Not available</i>";
-					}
 					
 					var complete_address		= '';
 					complete_address			+= sales_order.customer_address;
@@ -201,6 +197,7 @@
 				var sales_order_name	= sales_order_array.name;
 				var payment				= sales_order_array.payment;
 				var taxing				= sales_order_array.taxing;
+				var note				= sales_order_array.note;
 
 				$('#sales_order_name').html(sales_order_name);
 				$('#taxing_name_p').html(taxing_name);
@@ -316,6 +313,8 @@
 				$('#sales_order_wrapper').fadeIn(300, function(){
 					$('#sales_order_wrapper .alert_box_slide').show("slide", { direction: "right" }, 250);
 				});
+
+				$('#salesOrderNote_p').html((note == "" || note == null) ? "<i>Not available</i>" : note);
 			}
 		});
 	}

@@ -41,7 +41,8 @@
 		<input type='hidden' id='customer_plafond'>
 		<input type='hidden' id='invoice_status' value='1'>
 	
-		<form action='<?= site_url('Delivery_order/insertItem') ?>' method='POST' id='delivery_order_form'>
+		<form 
+			method='POST' id='delivery_order_form'>
 			<label>Date</label>
 			<input type='date' class='form-control' name='date' required min='2020-01-01'>
 			<input type='hidden' value='<?= $guid ?>' name='guid' id='guid' required minlength='36' maxlength='36'><br>
@@ -395,4 +396,25 @@
 			}
 		})
 	}
+
+	$('#delivery_order_form').on('submit', function(){
+		if($('#delivery_order_form').valid()){
+			$.ajax({
+				url:'<?= site_url('Delivery_order/insertItem') ?>',
+				data:$('#delivery_order_form').serialize(),
+				type:"POST",
+				beforeSend:function(){
+					$('button').attr('disabled', true);
+					$('input').attr('readonly', true);
+				}, success:function(){
+					$('button').attr('disabled', false);
+					$('input').attr('readonly', false);
+					refresh_view();
+
+					$('#view_sales_order_wrapper .slide_alert_close_button').click();
+				}
+			});
+		}
+		event.preventDefault();
+	})
 </script>

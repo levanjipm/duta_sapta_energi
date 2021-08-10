@@ -172,7 +172,7 @@
 					var sent = parseInt(sales_order.sent);
 					var progress = sent * 100 / quantity;
 
-					$('#salesOrderTableContent').append("<tr><td>" + my_date_format(date) + "</td><td><p>" + name + "</p><div class='progressBarWrapper'><p>" + numeral(progress).format('0,0.0') + "%</p><div class='progressBar' id='progressBar-" + id + "'></div></div></td><td><p>" + customer_name + "</p><p>" + complete_address + "</p></td><td><button class='button button_default_dark' onclick='track(" + id + ")'><i class='fa fa-eye'></i></button></td></tr>");
+					$('#salesOrderTableContent').append("<tr><td>" + my_date_format(date) + "</td><td><p>" + name + "</p><div class='progressBarWrapper'><p>" + numeral(progress).format('0,0.0') + "%</p><div class='progressBar' id='progressBar-" + id + "'></div></div></td><td><p><strong>" + customer_name + "</strong></p><p>" + complete_address + "</p></td><td><button class='button button_default_dark' onclick='track(" + id + ")'><i class='fa fa-eye'></i></button></td></tr>");
 					$('#progressBar-' + id).animate({
 						width: progress + "%"
 					}, "slow");

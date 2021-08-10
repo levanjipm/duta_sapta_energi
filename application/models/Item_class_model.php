@@ -87,6 +87,7 @@ class Item_class_model extends CI_Model {
 		
 		public function showAllItems()
 		{
+			$this->db->order_by('name');
 			$query 		= $this->db->get($this->table_item_class);
 			$items	 	= $query->result();
 			

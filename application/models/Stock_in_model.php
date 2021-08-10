@@ -172,11 +172,38 @@ class Stock_in_model extends CI_Model {
 		public function showItems($offset = 0, $term = "", $limit = 10)
 		{
 			$query		= $this->db->query("
-				SELECT item.reference, item.name, item.id, SUM(stock_in.residue) as stock
-				FROM stock_in
-				JOIN item ON stock_in.item_id = item.id
+				SELECT item.reference, item.name, item.id, (COALESCE(current.quantity, 0) - COALESCE(processOut.quantity, 0) + COALESCE(processIn.quantity, 0)) AS stock, processOut.quantity AS processOut, processIn.quantity AS processIn
+				FROM item
+				LEFT JOIN (
+					SELECT SUM(residue) AS quantity, item_id
+					FROM stock_in
+					GROUP BY item_id
+				) current
+				ON current.item_id = item.id
+				LEFT JOIN (
+					SELECT SUM(delivery_order.quantity) AS quantity, price_list.item_id
+					FROM delivery_order
+					JOIN code_delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order.id
+					JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
+					JOIN price_list ON sales_order.price_list_id = price_list.id
+					WHERE code_delivery_order.is_confirm = 1
+					AND code_delivery_order.is_sent = 0
+					AND code_delivery_order.is_delete = 0
+					GROUP BY price_list.item_id
+				) processOut
+				ON processOut.item_id = item.id
+				LEFT JOIN (
+					SELECT SUM(good_receipt.quantity) AS quantity, purchase_order.item_id
+					FROM good_receipt
+					JOIN code_good_receipt ON good_receipt.code_good_receipt_id = code_good_receipt.id
+					JOIN purchase_order ON good_receipt.purchase_order_id = purchase_order.id
+					WHERE code_good_receipt.is_confirm = 1
+					AND code_good_receipt.is_confirm = 0
+					AND code_good_receipt.is_delete = 0
+					GROUP BY purchase_order.item_id
+				) processIn
+				ON processIn.item_id = item.id
 				WHERE item.reference LIKE '%$term%' OR item.name LIKE '%$term%'
-				GROUP BY stock_in.item_id
 				ORDER BY item.reference ASC
 				LIMIT $limit OFFSET $offset
 			");

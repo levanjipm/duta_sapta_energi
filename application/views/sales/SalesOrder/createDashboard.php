@@ -199,6 +199,11 @@
 	</div>
 </div>
 <script>
+	var plafond = 0;
+	var pendingValue = 0;
+	var pendingBank = 0;
+	var pendingOrder = 0;
+
 	$('#sellerButton').click(function(){
 		$('#sellerSearch').val("");
 		refreshSeller(1);
@@ -407,6 +412,12 @@
 					"<td>Rp. " + numeral(sales_order_value).format('0,0.00') + "</td>"+
 				"</tr>"
 			);
+
+			if(sales_order_value - pendingBank > plafond){
+				$('#warningDebtText').show();
+			} else {
+				$('#warningDebtText').hide();
+			}
 			$('#validate_sales_order_wrapper').fadeIn(300, function(){
 				$('#validate_sales_order_wrapper .alert_box_slide').show("slide", { direction: "right" }, 250);
 			});
@@ -518,8 +529,8 @@
 			},
 			success:function(response){
 				var customer		= response.customer;
-				var plafond			= parseFloat(customer.plafond);
-				var pending_value	= response.pending_value;
+				plafond				= parseFloat(customer.plafond);
+				pending_value		= response.pending_value;
 				var termOfPayment	= parseInt(customer.term_of_payment);
 
 				$('#sales_order_payment').val(termOfPayment);
@@ -531,7 +542,7 @@
 				var todayDate		= new Date();
 
 				var difference		= Math.floor(Math.abs((todayDate - minimumDate) / (60 * 60 * 24 * 1000)));
-				var pendingBank 	= response.pendingBank;
+				pendingBank 	= response.pendingBank;
 				
 				var customer_name		= $('#customer_name-' + n).html();
 				var customer_address	= $('#customer_address-' + n).html();
@@ -539,8 +550,14 @@
 
 				if(invoiceValue - pendingBank > plafond || (invoice.date != null && difference > termOfPayment)){
 					$('#warningDebtText').show();
+					<?php if($user_login->access_level < 2){ ?>
+						$('#submitFormButton').attr('disabled', true);
+					<?php } ?>
 				} else {
 					$('#warningDebtText').hide();
+					<?php if($user_login->access_level < 2){ ?>
+						$('#submitFormButton').attr('disabled', false);
+					<?php } ?>
 				}
 				
 				$('#customer_address_select').html('<p>' + customer_address + '</p><label>Plafond</label><p>Rp. ' + numeral(plafond).format('0,0.00') + '</p><label>Pending sales order value</label><p>Rp. ' + numeral(pending_value).format('0,0.00') + '</p><label>Receivable</label><p>Rp. ' + numeral(invoiceValue).format('0,0.00') + '</p>');

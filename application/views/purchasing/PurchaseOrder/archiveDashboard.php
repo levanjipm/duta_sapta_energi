@@ -28,7 +28,7 @@
 			<div class='col-md-2 col-sm-3 col-xs-4'>
 				<select class='form-control' id='year'>
 				<?php for($i = 2020; $i <= date("Y"); $i++){ ?>
-					<option value='<?= $i ?>'><?= $i ?></option>
+					<option value='<?= $i ?>' <?= ($i == date("Y"))?"selected": ""?>><?= $i ?></option>
 				<?php } ?>
 				</select>
 			</div>
@@ -87,7 +87,9 @@
 			<tbody id='good_receipt_table'></tbody>
 		</table>
 
-		
+		<button 
+		id='printPurchaseOrderButton'
+		class='button button_default_dark'><i class='fa fa-print'></i></button>
 	</div>
 </div>
 
@@ -270,6 +272,10 @@
 				$('#view_good_receipt_wrapper').fadeIn(300, function(){
 					$('#view_good_receipt_wrapper .alert_box_slide').show("slide", { direction: "right" }, 250);
 				});
+
+				$('#printPurchaseOrderButton').click(function(){
+					window.location.href="<?= site_url('Purchase_order/Print/') ?>" + n;
+				})
 			}
 		});
 	}

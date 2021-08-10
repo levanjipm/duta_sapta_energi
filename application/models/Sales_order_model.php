@@ -155,15 +155,17 @@ class Sales_order_model extends CI_Model {
 				) as salesOrderTable
 				ON salesOrderTable.code_sales_order_id = code_sales_order.id
 				JOIN (
-					SELECT DISTINCT(sales_order.code_sales_order_id) as id FROM sales_order WHERE status = '0'
+					SELECT DISTINCT(sales_order.code_sales_order_id) as id 
+					FROM sales_order WHERE status = 0
 				) as incompletedSalesOrderTable
 				ON code_sales_order.id = incompletedSalesOrderTable.id
 				JOIN customer ON code_sales_order.customer_id = customer.id
-				WHERE code_sales_order.is_confirm = '1'
+				WHERE code_sales_order.is_confirm = 1
+				AND code_sales_order.is_delete = 0
 				AND code_sales_order.id NOT IN (
-					SELECT code_sales_order_close_request.id
+					SELECT code_sales_order_close_request.code_sales_order_id
 					FROM code_sales_order_close_request
-					WHERE is_confirm = '1'	
+					WHERE is_confirm = 1	
 				)
 				AND (code_sales_order.name LIKE '%$term%' OR customer.name LIKE '%$term%' OR customer.city LIKE '%$term%')
 				ORDER BY code_sales_order.date ASC, customer.name ASC
@@ -177,14 +179,22 @@ class Sales_order_model extends CI_Model {
 		public function countIncompleteSalesOrder($term)
 		{
 			$query = $this->db->query("
-				SELECT code_sales_order.* FROM code_sales_order 
+				SELECT code_sales_order.* 
+				FROM code_sales_order 
 				JOIN (
 					SELECT DISTINCT(sales_order.code_sales_order_id) as id FROM sales_order
 					WHERE status = '0' 	
 				) as a
 				ON a.id = code_sales_order.id
-				WHERE code_sales_order.is_confirm = '1'
-				AND code_sales_order.name LIKE '%$term%'
+				JOIN customer ON code_sales_order.customer_id = customer.id
+				WHERE code_sales_order.is_confirm = 1
+				AND code_sales_order.is_delete = 0
+				AND (code_sales_order.name LIKE '%$term%' OR customer.name LIKE '%$term%' OR customer.city LIKE '%$term%')
+				AND code_sales_order.id NOT IN (
+					SELECT code_sales_order_close_request.code_sales_order_id
+					FROM code_sales_order_close_request
+					WHERE is_confirm = 1
+				)
 			");
 
 			$result = $query->num_rows();
@@ -289,13 +299,15 @@ class Sales_order_model extends CI_Model {
 				) as incompletedSalesOrderTable
 				ON code_sales_order.id = incompletedSalesOrderTable.id
 				JOIN customer ON code_sales_order.customer_id = customer.id
-				WHERE code_sales_order.is_confirm = '1'
+				WHERE code_sales_order.is_confirm = 1
+				AND code_sales_order.is_delete = 0
 				AND (code_sales_order.name LIKE '%$term%' OR customer.name LIKE '%$term%' OR customer.city LIKE '%$term%')
 				AND code_sales_order.id NOT IN (
 					SELECT DISTINCT(code_sales_order_close_request.code_sales_order_id) AS id
 					FROM code_sales_order_close_request
 					WHERE is_approved IS NULL
-				);
+				)
+				LIMIT 10 OFFSET $offset;
 			");
 
 			$result = $query->result();
@@ -312,7 +324,8 @@ class Sales_order_model extends CI_Model {
 				) as incompletedSalesOrderTable
 				ON code_sales_order.id = incompletedSalesOrderTable.id
 				JOIN customer ON code_sales_order.customer_id = customer.id
-				WHERE code_sales_order.is_confirm = '1'
+				WHERE code_sales_order.is_confirm = 1
+				AND code_sales_order.is_delete = 0
 				AND (code_sales_order.name LIKE '%$term%' OR customer.name LIKE '%$term%' OR customer.city LIKE '%$term%')
 				AND code_sales_order.id NOT IN (
 					SELECT DISTINCT(code_sales_order_close_request.code_sales_order_id) AS id
@@ -452,22 +465,42 @@ class Sales_order_model extends CI_Model {
 		
 		public function countIncompletedSalesOrder($filter = '')
 		{
-			$this->db->select('DISTINCT(sales_order.code_sales_order_id) as id');
-			$this->db->from('sales_order');
-			$this->db->join('code_sales_order', 'code_sales_order.id = sales_order.code_sales_order_id');
-			$this->db->join('customer', 'code_sales_order.customer_id = customer.id');
-			
-			if($filter != ''){
-				$this->db->like('customer.name', $filter,'both');
-				$this->db->or_like('customer.address', $filter,'both');
-				$this->db->or_like('code_sales_order.name', $filter, 'both');
+			if($filter != ""){
+				$query		= $this->db->query("
+					SELECT DISTINCT(sales_order.code_sales_order_id) AS id
+					FROM sales_order
+					JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
+					JOIN customer ON code_sales_order.customer_id = customer.id
+					WHERE 
+					sales_order.status = 0
+					AND code_sales_order.is_confirm = 1
+					AND code_sales_order.is_delete = 0
+					AND code_sales_order.id NOT IN (
+						SELECT code_sales_order_id
+						FROM code_sales_order_close_request
+						WHERE is_approved = 1	
+					)
+					AND (customer.name LIKE '%$filter%'
+					OR customer.address LIKE '%$filter%'
+					OR code_sales_order.name LIKE '%$filter%')
+				");
+			} else {
+				$query		= $this->db->query("
+					SELECT DISTINCT(sales_order.code_sales_order_id) AS id
+					FROM sales_order
+					JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
+					JOIN customer ON code_sales_order.customer_id = customer.id
+					WHERE 
+					sales_order.status = 0
+					AND code_sales_order.is_confirm = 1
+					AND code_sales_order.is_delete = 0
+					AND code_sales_order.id NOT IN (
+						SELECT code_sales_order_id
+						FROM code_sales_order_close_request
+						WHERE is_approved = 1
+					)
+				");
 			}
-			
-			$this->db->where('sales_order.status', 0);
-			$this->db->where('code_sales_order.is_confirm', 1);
-			$this->db->where('code_sales_order.is_delete', 0);
-			
-			$query 		= $this->db->get();
 			
 			$items 		= $query->num_rows();
 			return $items;

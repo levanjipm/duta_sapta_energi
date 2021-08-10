@@ -328,7 +328,6 @@ class Delivery_order_model extends CI_Model {
 				JOIN customer ON a.customer_id = customer.id
 				WHERE MONTH(code_delivery_order.date) = '$month'
 				AND YEAR(code_delivery_order.date) = '$year'
-				AND code_delivery_order.is_delete = '0'
 				AND (code_delivery_order.name LIKE '%$term%'
 				OR customer.name LIKE '%$term%'
 				OR customer.address LIKE '%$term%'
@@ -344,24 +343,26 @@ class Delivery_order_model extends CI_Model {
 		
 		public function countArchive($year, $month, $term)
 		{
-			$this->db->select('code_delivery_order.id');
-			$this->db->from('code_delivery_order');
-			$this->db->join('delivery_order', 'delivery_order.code_delivery_order_id = code_delivery_order.id', 'inner');
-			$this->db->join('sales_order', 'delivery_order.sales_order_id = sales_order.id', 'inner');
-			$this->db->join('code_sales_order', 'sales_order.code_sales_order_id = code_sales_order.id');
-			$this->db->join('customer', 'code_sales_order.customer_id = customer.id');
-			$this->db->where('MONTH(code_delivery_order.date)',$month);
-			$this->db->where('YEAR(code_delivery_order.date)',$year);
-			$this->db->where('code_delivery_order.is_delete', 0);
-			if($term != ''){
-				$this->db->like('code_delivery_order.name', $term, 'both');
-				$this->db->or_like('customer.name', $term, 'both');
-				$this->db->or_like('customer.address', $term, 'both');
-				$this->db->or_like('customer.city', $term, 'both');
-				$this->db->or_like('code_sales_order.name', $term, 'both');
-			}
-			
-			$query		= $this->db->get();
+			$query	= $this->db->query("
+				SELECT DISTINCT(code_delivery_order.id)
+				FROM code_delivery_order
+				JOIN (
+					SELECT DISTINCT(delivery_order.code_delivery_order_id) as id, code_sales_order.customer_id, code_sales_order.name as salesOrderName
+					FROM delivery_order
+					JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
+					JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
+				) AS a
+				ON a.id = code_delivery_order.id
+				JOIN customer ON a.customer_id = customer.id
+				WHERE MONTH(code_delivery_order.date) = '$month'
+				AND YEAR(code_delivery_order.date) = '$year'
+				AND (code_delivery_order.name LIKE '%$term%'
+				OR customer.name LIKE '%$term%'
+				OR customer.address LIKE '%$term%'
+				OR customer.city LIKE '%$term%'
+				OR a.salesOrderName	LIKE '%$term%')
+			");
+
 			$result		= $query->num_rows();
 			
 			return $result;
@@ -430,7 +431,7 @@ class Delivery_order_model extends CI_Model {
 					WHERE code_sales_order.id = '$salesOrderId'
 				) as deliveryOrderTable
 				ON deliveryOrderTable.id = code_delivery_order.id
-				WHERE code_delivery_order.is_delete = '0';
+				WHERE code_delivery_order.is_delete = 0;
 			");
 
 			$result = $query->result();
@@ -498,17 +499,33 @@ class Delivery_order_model extends CI_Model {
 		{
 			$includedDeliveryOrder = array();
 
-			$this->db->select('code_delivery_order.*, customer.name as customerName, customer.address, customer.city, customer.number, customer.block, customer.rt, customer.rw, customer.postal_code, customer.latitude, customer.longitude');
-			$this->db->from('code_delivery_order');
-			$this->db->join('delivery_order', 'delivery_order.code_delivery_order_id = code_delivery_order.id', 'inner');
-			$this->db->join('sales_order', 'delivery_order.sales_order_id = sales_order.id');
-			$this->db->join('code_sales_order', 'sales_order.code_sales_order_id = code_sales_order.id');
-			$this->db->join('customer', 'code_sales_order.customer_id = customer.id');
-			$this->db->where('code_delivery_order.is_confirm', 1);
-			$this->db->where('code_delivery_order.is_sent', 0);
-			$this->db->limit($limit, $offset);
+			$query		= $this->db->query("
+				SELECT code_delivery_order.*, a.name as customerName, a.address, a.city, a.number, a.block, a.rt, a.rw, a.postal_code, a.latitude, a.longitude
+				FROM code_delivery_order
+				JOIN (
+					SELECT DISTINCT(delivery_order.code_delivery_order_id) AS id, customer.name, customer.address, customer.city, customer.number, customer.block, customer.rt, customer.rw, customer.postal_code, customer.latitude, customer.longitude
+					FROM delivery_order
+					JOIN sales_order ON sales_order.id = delivery_order.sales_order_id
+					JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
+					JOIN customer ON code_sales_order.customer_id = customer.id
+				) AS a
+				WHERE code_delivery_order.is_confirm = 1
+				AND code_delivery_order.is_delete = 0
+				AND code_delivery_order.is_sent = 0
+				LIMIT $limit OFFSET $offset
+			");
+			// $this->db->select('code_delivery_order.*, customer.name as customerName, customer.address, customer.city, customer.number, customer.block, customer.rt, customer.rw, customer.postal_code, customer.latitude, customer.longitude');
+			// $this->db->from('code_delivery_order');
+			// $this->db->join('delivery_order', 'delivery_order.code_delivery_order_id = code_delivery_order.id', 'inner');
+			// $this->db->join('sales_order', 'delivery_order.sales_order_id = sales_order.id');
+			// $this->db->join('code_sales_order', 'sales_order.code_sales_order_id = code_sales_order.id');
+			// $this->db->join('customer', 'code_sales_order.customer_id = customer.id');
+			// $this->db->where('code_delivery_order.is_confirm', 1);
+			// $this->db->where('code_delivery_order.is_delete', 0);
+			// $this->db->where('code_delivery_order.is_sent', 0);
+			// $this->db->limit($limit, $offset);
 
-			$query			= $this->db->get();
+			// $query			= $this->db->get();
 			$result			= $query->result();
 
 			$response		= array();
@@ -527,6 +544,7 @@ class Delivery_order_model extends CI_Model {
 		{
 			$this->db->where('is_confirm', 1);
 			$this->db->where('is_sent', 0);
+			$this->db->where('is_delete', 0);
 
 			$query			= $this->db->get($this->table_delivery_order);
 			$result			= $query->num_rows();

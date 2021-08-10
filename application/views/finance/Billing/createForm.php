@@ -382,7 +382,7 @@
 		})
 	}
 
-	function fetchItemList(page = $('#recommendedPage').val()){
+	function fetchItemList(page = $('#searchPage').val()){
 		$.ajax({
 			url:"<?= site_url('Billing/getBillingData') ?>",
 			data:{

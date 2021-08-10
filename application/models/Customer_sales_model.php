@@ -68,9 +68,10 @@ class Customer_sales_model extends CI_Model {
 				$areaFilter = substr($areaFilter, 0, -1);
 				$areaFilter .= ") AND";
 			}
+
 			if($limit == 0){
 				$query			= $this->db->query("
-					SELECT customer.*
+					SELECT customer.*, IF(a.id IS NULL, 0, 1) AS status
 					FROM customer
 					JOIN (
 						SELECT DISTINCT(customer_sales.customer_id) AS customer_id, customer_sales.id
