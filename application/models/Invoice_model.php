@@ -466,6 +466,7 @@ class Invoice_model extends CI_Model {
 					break;
 			}
 
+			$chart_array = array();
 			$result	= $query->result();
 			if($result != null){
 				foreach($result as $receivable){
@@ -483,7 +484,6 @@ class Invoice_model extends CI_Model {
 							'value' => $invoice_value
 						);
 					}
-					
 				}
 	
 				usort($chart_array, function($a, $b) {

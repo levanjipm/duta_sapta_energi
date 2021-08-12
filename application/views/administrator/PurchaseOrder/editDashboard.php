@@ -133,7 +133,7 @@
 					}
 
 					if(is_confirm == 1 && is_delete == 0){
-						$('#purchaseOrderTableContent').append("<tr><td><label>" + name + "</label><p>" + my_date_format(date) + "</p></td><td><label>" + supplierName + "</label><p>" + complete_address + "</p><p>" + supplierCity + "</p></td><td><button class='button button_success_dark' onclick='viewPurchaseOrder(" + id + ")' title='Close " + name + "'><i class='fa fa-pencil'></i></button>")
+						$('#purchaseOrderTableContent').append("<tr><td><label>" + name + "</label><p>" + my_date_format(date) + "</p></td><td><label>" + supplierName + "</label><p>" + complete_address + "</p><p>" + supplierCity + "</p></td><td><button type='button' class='button button_success_dark' onclick='viewPurchaseOrder(" + id + ")' title='Close " + name + "'><i class='fa fa-pencil'></i></button>")
 						countPurchaseOrder++;
 					}
 				})

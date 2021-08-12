@@ -31,7 +31,7 @@
 <?php
 	for($i = 2020; $i <= date("Y"); $i++){
 ?>
-					<option value='<?= $i ?>'><?= $i ?></option>
+					<option value='<?= $i ?>' <?php if($i == date("Y")) echo("selected") ?>><?= $i ?></option>
 <?php
 	}
 ?>

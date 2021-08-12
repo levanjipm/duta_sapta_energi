@@ -503,15 +503,18 @@ class Delivery_order_model extends CI_Model {
 				SELECT code_delivery_order.*, a.name as customerName, a.address, a.city, a.number, a.block, a.rt, a.rw, a.postal_code, a.latitude, a.longitude
 				FROM code_delivery_order
 				JOIN (
-					SELECT DISTINCT(delivery_order.code_delivery_order_id) AS id, customer.name, customer.address, customer.city, customer.number, customer.block, customer.rt, customer.rw, customer.postal_code, customer.latitude, customer.longitude
+					SELECT delivery_order.code_delivery_order_id AS id, customer.name, customer.address, customer.city, customer.number, customer.block, customer.rt, customer.rw, customer.postal_code, customer.latitude, customer.longitude
 					FROM delivery_order
 					JOIN sales_order ON sales_order.id = delivery_order.sales_order_id
 					JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
 					JOIN customer ON code_sales_order.customer_id = customer.id
+					GROUP BY delivery_order.code_delivery_order_id
 				) AS a
+				ON code_delivery_order.id = a.id
 				WHERE code_delivery_order.is_confirm = 1
 				AND code_delivery_order.is_delete = 0
 				AND code_delivery_order.is_sent = 0
+				ORDER BY code_delivery_order.date ASC
 				LIMIT $limit OFFSET $offset
 			");
 			// $this->db->select('code_delivery_order.*, customer.name as customerName, customer.address, customer.city, customer.number, customer.block, customer.rt, customer.rw, customer.postal_code, customer.latitude, customer.longitude');
@@ -528,16 +531,7 @@ class Delivery_order_model extends CI_Model {
 			// $query			= $this->db->get();
 			$result			= $query->result();
 
-			$response		= array();
-
-			foreach($result as $item){
-				if(!in_array($item->id, $includedDeliveryOrder)){
-					array_push($response, $item);
-					array_push($includedDeliveryOrder, $item->id);
-				}
-			}
-
-			return $response;
+			return $result;
 		}
 
 		public function countPendingSentItems($offset = 0, $limit = 10)

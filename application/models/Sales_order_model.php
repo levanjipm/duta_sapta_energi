@@ -573,26 +573,35 @@ class Sales_order_model extends CI_Model {
 		
 		public function showItems($year, $month, $offset = 0, $term = '', $limit = 25)
 		{
-			$this->db->select('code_sales_order.*, customer.name as customer_name, customer.address, customer.city, customer.number, customer.rt, customer.rw, customer.block, customer.pic_name, users.name as seller, COALESCE(code_sales_order_close_request.is_approved, 0) as is_approved, code_sales_order_close_request.approved_date');
-			$this->db->from('code_sales_order');
-			$this->db->join('customer', 'code_sales_order.customer_id = customer.id');
-			$this->db->join('users', 'code_sales_order.seller = users.id', 'left');
-			$this->db->join('code_sales_order_close_request', 'code_sales_order_close_request.code_sales_order_id = code_sales_order.id', 'left');
-			$this->db->where('MONTH(code_sales_order.date)',$month);
-			$this->db->where('YEAR(code_sales_order.date)',$year);
-			$this->db->where('code_sales_order.is_delete', 0);
-			if($term != ''){
-				$this->db->like('code_sales_order.name', $term, 'both');
-				$this->db->or_like('customer.name', $term, 'both');
-				$this->db->or_like('customer.address', $term, 'both');
-				$this->db->or_like('customer.city', $term, 'both');
+			if($term == ""){
+				$query		= $this->db->query("
+					SELECT code_sales_order.*, customer.name as customer_name, customer.address, customer.city, customer.number, customer.rt, customer.rw, customer.block, customer.pic_name, users.name as seller, COALESCE(code_sales_order_close_request.is_approved, 0) AS is_approved, code_sales_order_close_request.approved_date
+					FROM code_sales_order
+					JOIN customer ON code_sales_order.customer_id = customer.id
+					LEFT JOIN users ON code_sales_order.seller = users.id
+					LEFT JOIN code_sales_order_close_request ON code_sales_order_close_request.code_sales_order_id = code_sales_order.id
+					WHERE MONTH(code_sales_order.date) = '$month' AND YEAR(code_sales_order.date) = '$year' AND code_sales_order.is_delete = 0
+					ORDER BY code_sales_order.date ASC, code_sales_order.id ASC
+					LIMIT $limit OFFSET $offset
+				");
+			} else {
+				$query		= $this->db->query("
+					SELECT code_sales_order.*, customer.name as customer_name, customer.address, customer.city, customer.number, customer.rt, customer.rw, customer.block, customer.pic_name, users.name as seller, COALESCE(code_sales_order_close_request.is_approved, 0) AS is_approved, code_sales_order_close_request.approved_date
+					FROM code_sales_order
+					JOIN customer ON code_sales_order.customer_id = customer.id
+					LEFT JOIN users ON code_sales_order.seller = users.id
+					LEFT JOIN code_sales_order_close_request ON code_sales_order_close_request.code_sales_order_id = code_sales_order.id
+					WHERE MONTH(code_sales_order.date) = '$month' AND YEAR(code_sales_order.date) = '$year' AND code_sales_order.is_delete = 0
+					AND (
+						code_sales_order.name LIKE '%$term%'
+						OR customer.name LIKE '%$term%'
+						OR customer.address LIKE '%$term%'
+						OR customer.city LIKE '%$term%'
+					)
+					ORDER BY code_sales_order.date ASC, code_sales_order.id ASC
+					LIMIT $limit OFFSET $offset
+				");
 			}
-			
-			$this->db->order_by('code_sales_order.date', 'asc');
-			$this->db->order_by('code_sales_order.id', 'asc');
-			$this->db->limit($limit, $offset);
-			
-			$query		= $this->db->get();
 			$result		= $query->result();
 			
 			return $result;
@@ -600,20 +609,32 @@ class Sales_order_model extends CI_Model {
 		
 		public function countItems($year, $month, $term = '')
 		{
-			$this->db->select('code_sales_order.id');
-			$this->db->from('code_sales_order');
-			$this->db->join('customer', 'code_sales_order.customer_id = customer.id');
-			$this->db->where('MONTH(code_sales_order.date)',$month);
-			$this->db->where('YEAR(code_sales_order.date)',$year);
-			$this->db->where('code_sales_order.is_delete', 0);
-			if($term != ''){
-				$this->db->like('code_sales_order.name', $term, 'both');
-				$this->db->or_like('customer.name', $term, 'both');
-				$this->db->or_like('customer.address', $term, 'both');
-				$this->db->or_like('customer.city', $term, 'both');
+			if($term == ""){
+				$query		= $this->db->query("
+					SELECT code_sales_order.*, customer.name as customer_name, customer.address, customer.city, customer.number, customer.rt, customer.rw, customer.block, customer.pic_name, users.name as seller, COALESCE(code_sales_order_close_request.is_approved, 0) AS is_approved, code_sales_order_close_request.approved_date
+					FROM code_sales_order
+					JOIN customer ON code_sales_order.customer_id = customer.id
+					LEFT JOIN users ON code_sales_order.seller = users.id
+					LEFT JOIN code_sales_order_close_request ON code_sales_order_close_request.code_sales_order_id = code_sales_order.id
+					WHERE MONTH(code_sales_order.date) = '$month' AND YEAR(code_sales_order.date) = '$year' AND code_sales_order.is_delete = 0
+				");
+			} else {
+				$query		= $this->db->query("
+					SELECT code_sales_order.*, customer.name as customer_name, customer.address, customer.city, customer.number, customer.rt, customer.rw, customer.block, customer.pic_name, users.name as seller, COALESCE(code_sales_order_close_request.is_approved, 0) AS is_approved, code_sales_order_close_request.approved_date
+					FROM code_sales_order
+					JOIN customer ON code_sales_order.customer_id = customer.id
+					LEFT JOIN users ON code_sales_order.seller = users.id
+					LEFT JOIN code_sales_order_close_request ON code_sales_order_close_request.code_sales_order_id = code_sales_order.id
+					WHERE MONTH(code_sales_order.date) = '$month' AND YEAR(code_sales_order.date) = '$year' AND code_sales_order.is_delete = 0
+					AND (
+						code_sales_order.name LIKE '%$term%'
+						OR customer.name LIKE '%$term%'
+						OR customer.address LIKE '%$term%'
+						OR customer.city LIKE '%$term%'
+					)
+				");
 			}
 			
-			$query		= $this->db->get();
 			$result		= $query->num_rows();
 			
 			return $result;

@@ -185,13 +185,13 @@ class Good_receipt extends CI_Controller {
 	{
 		$page			= $this->input->get('page');
 		$term			= $this->input->get('term');
-		$offset			= ($page - 1) * 25;
+		$offset			= ($page - 1) * 10;
 		$year			= $this->input->get('year');
 		$month			= $this->input->get('month');
 		
 		$this->load->model('Good_receipt_model');
 		$data['good_receipts'] 	= $this->Good_receipt_model->show_items($year, $month, $offset, $term);
-		$data['pages']				= max(1, ceil($this->Good_receipt_model->count_items($year, $month, $term)/25));
+		$data['pages']				= max(1, ceil($this->Good_receipt_model->count_items($year, $month, $term)/10));
 		
 		header('Content-Type: application/json');
 		echo json_encode($data);

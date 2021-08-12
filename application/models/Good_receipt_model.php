@@ -167,15 +167,27 @@ class Good_receipt_model extends CI_Model {
 		public function getUninvoicedDocuments()
 		{
 			$query		= $this->db->query("
-				SELECT code_good_receipt.id
+				SELECT code_good_receipt.id as id, code_good_receipt.name, code_good_receipt.date, code_good_receipt.is_confirm, code_good_receipt.is_delete, code_good_receipt.invoice_id, code_good_receipt.received_date, code_good_receipt.created_by, code_good_receipt.confirmed_by, supplier.id as supplier_id, supplier.name as supplier_name, supplier.address, supplier.city, a.purchaseOrderName as purchase_order_name, supplier.number, supplier.rt, supplier.rw, supplier.block, SUM(b.value) AS value
 				FROM code_good_receipt
+				INNER JOIN (
+					SELECT DISTINCT(code_good_receipt.id) AS id, code_good_receipt.name, code_purchase_order.name as purchaseOrderName, code_purchase_order.supplier_id
+					FROM code_purchase_order
+					LEFT JOIN purchase_order ON purchase_order.code_purchase_order_id = code_purchase_order.id
+					INNER JOIN good_receipt ON good_receipt.purchase_order_id = purchase_order.id
+					JOIN code_good_receipt ON good_receipt.code_good_receipt_id = code_good_receipt.id
+				) AS a
+				ON code_good_receipt.id = a.id
 				LEFT JOIN (
-					SELECT good_receipt.code_good_receipt_id
+					SELECT SUM(good_receipt.quantity * purchase_order.net_price) AS value, good_receipt.code_good_receipt_id
 					FROM good_receipt
 					JOIN purchase_order ON good_receipt.purchase_order_id = purchase_order.id
-					JOIN 
-				)
-				WHERE code_good_receipt.invoice_id IS NULL
+					GROUP BY good_receipt.code_good_receipt_id
+				) AS b
+				ON b.code_good_receipt_id = code_good_receipt.id
+				JOIN supplier ON a.supplier_id = supplier.id
+				AND code_good_receipt.is_delete = 0
+				AND code_good_receipt.invoice_id IS NULL
+				GROUP BY supplier.id
 			");
 
 			$result		= $query->result();
@@ -245,49 +257,49 @@ class Good_receipt_model extends CI_Model {
 		{
 			if($limit == 0){
 				$query		= $this->db->query("
-				SELECT DISTINCT(code_good_receipt.id) AS id, code_good_receipt.name, code_good_receipt.date, code_good_receipt.received_date, supplier.name as supplier_name, supplier.address, supplier.city, code_purchase_order.name AS purchase_order_name, code_purchase_order.date AS purchase_order_date, goodReceiptValue.value
-				FROM code_good_receipt
-				INNER JOIN good_receipt ON good_receipt.code_good_receipt_id = code_good_receipt.id
-				JOIN purchase_order ON good_receipt.purchase_order_id = purchase_order.id
-				INNER JOIN code_purchase_order ON purchase_order.code_purchase_order_id = code_purchase_order.id
-				JOIN supplier ON code_purchase_order.supplier_id = supplier.id
-				LEFT JOIN (
-					SELECT SUM(good_receipt.quantity * purchase_order.net_price) AS value, good_receipt.code_good_receipt_id
-					FROM good_receipt
+					SELECT DISTINCT(code_good_receipt.id) AS id, code_good_receipt.name, code_good_receipt.date, code_good_receipt.received_date, supplier.name as supplier_name, supplier.address, supplier.city, code_purchase_order.name AS purchase_order_name, code_purchase_order.date AS purchase_order_date, goodReceiptValue.value, supplier.id
+					FROM code_good_receipt
+					INNER JOIN good_receipt ON good_receipt.code_good_receipt_id = code_good_receipt.id
 					JOIN purchase_order ON good_receipt.purchase_order_id = purchase_order.id
-					GROUP BY good_receipt.code_good_receipt_id
-				) AS goodReceiptValue
-				ON goodReceiptValue.code_good_receipt_id = code_good_receipt.id
-				WHERE code_good_receipt.invoice_id IS NULL
-				AND code_good_receipt.is_confirm = '1'
-				AND code_good_receipt.is_delete = '0'
-				AND code_purchase_order.supplier_id = '$supplier_id'
-				AND code_good_receipt.name LIKE '%$term%'
-				ORDER BY code_good_receipt.date ASC
-			");	
+					INNER JOIN code_purchase_order ON purchase_order.code_purchase_order_id = code_purchase_order.id
+					JOIN supplier ON code_purchase_order.supplier_id = supplier.id
+					LEFT JOIN (
+						SELECT SUM(good_receipt.quantity * purchase_order.net_price) AS value, good_receipt.code_good_receipt_id
+						FROM good_receipt
+						JOIN purchase_order ON good_receipt.purchase_order_id = purchase_order.id
+						GROUP BY good_receipt.code_good_receipt_id
+					) AS goodReceiptValue
+					ON goodReceiptValue.code_good_receipt_id = code_good_receipt.id
+					WHERE code_good_receipt.invoice_id IS NULL
+					AND code_good_receipt.is_confirm = 1
+					AND code_good_receipt.is_delete = 0
+					AND supplier.id = '$supplier_id'
+					AND code_good_receipt.name LIKE '%$term%'
+					ORDER BY code_good_receipt.date ASC
+				");	
 			} else {
 				$query		= $this->db->query("
-				SELECT DISTINCT(code_good_receipt.id) AS id, code_good_receipt.name, code_good_receipt.date, code_good_receipt.received_date, supplier.name as supplier_name, supplier.address, supplier.city, code_purchase_order.name AS purchase_order_name, code_purchase_order.date AS purchase_order_date, goodReceiptValue.value
-				FROM code_good_receipt
-				INNER JOIN good_receipt ON good_receipt.code_good_receipt_id = code_good_receipt.id
-				JOIN purchase_order ON good_receipt.purchase_order_id = purchase_order.id
-				INNER JOIN code_purchase_order ON purchase_order.code_purchase_order_id = code_purchase_order.id
-				JOIN supplier ON code_purchase_order.supplier_id = supplier.id
-				LEFT JOIN (
-					SELECT SUM(good_receipt.quantity * purchase_order.net_price) AS value, good_receipt.code_good_receipt_id
-					FROM good_receipt
+					SELECT DISTINCT(code_good_receipt.id) AS id, code_good_receipt.name, code_good_receipt.date, code_good_receipt.received_date, supplier.name as supplier_name, supplier.address, supplier.city, code_purchase_order.name AS purchase_order_name, code_purchase_order.date AS purchase_order_date, goodReceiptValue.value
+					FROM code_good_receipt
+					INNER JOIN good_receipt ON good_receipt.code_good_receipt_id = code_good_receipt.id
 					JOIN purchase_order ON good_receipt.purchase_order_id = purchase_order.id
-					GROUP BY good_receipt.code_good_receipt_id
-				) AS goodReceiptValue
-				ON goodReceiptValue.code_good_receipt_id = code_good_receipt.id
-				WHERE code_good_receipt.invoice_id IS NULL
-				AND code_good_receipt.is_confirm = '1'
-				AND code_good_receipt.is_delete = '0'
-				AND code_purchase_order.supplier_id = '$supplier_id'
-				AND code_good_receipt.name LIKE '%$term%'
-				ORDER BY code_good_receipt.date ASC
-				LIMIT $limit OFFSET $offset
-			");	
+					INNER JOIN code_purchase_order ON purchase_order.code_purchase_order_id = code_purchase_order.id
+					JOIN supplier ON code_purchase_order.supplier_id = supplier.id
+					LEFT JOIN (
+						SELECT SUM(good_receipt.quantity * purchase_order.net_price) AS value, good_receipt.code_good_receipt_id
+						FROM good_receipt
+						JOIN purchase_order ON good_receipt.purchase_order_id = purchase_order.id
+						GROUP BY good_receipt.code_good_receipt_id
+					) AS goodReceiptValue
+					ON goodReceiptValue.code_good_receipt_id = code_good_receipt.id
+					WHERE code_good_receipt.invoice_id IS NULL
+					AND code_good_receipt.is_confirm = '1'
+					AND code_good_receipt.is_delete = '0'
+					AND code_purchase_order.supplier_id = '$supplier_id'
+					AND code_good_receipt.name LIKE '%$term%'
+					ORDER BY code_good_receipt.date ASC
+					LIMIT $limit OFFSET $offset
+				");	
 			}					
 
 			$item		= $query->result();
@@ -380,30 +392,55 @@ class Good_receipt_model extends CI_Model {
 			return $result;
 		}
 		
-		public function show_items($year, $month, $offset = 0, $term = '', $limit = 25)
+		public function show_items($year, $month, $offset = 0, $term = '', $limit = 10)
 		{
-			$this->db->select('DISTINCT(code_good_receipt.id) as id, code_good_receipt.name, code_good_receipt.date, code_good_receipt.is_confirm, code_good_receipt.is_delete, code_good_receipt.invoice_id, code_good_receipt.received_date, code_good_receipt.created_by, code_good_receipt.confirmed_by, supplier.name as supplier_name, supplier.address, supplier.city, code_purchase_order.name as purchase_order_name, supplier.number, supplier.rt, supplier.rw, supplier.block');
-			$this->db->from('code_good_receipt');
-			$this->db->join('good_receipt', 'good_receipt.code_good_receipt_id = code_good_receipt.id', 'inner');
-			$this->db->join('purchase_order', 'good_receipt.purchase_order_id = purchase_order.id', 'inner');
-			$this->db->join('code_purchase_order', 'purchase_order.code_purchase_order_id = code_purchase_order.id');
-			$this->db->join('supplier', 'code_purchase_order.supplier_id = supplier.id');
-			$this->db->where('MONTH(code_good_receipt.date)',$month);
-			$this->db->where('YEAR(code_good_receipt.date)',$year);
-			$this->db->where('code_good_receipt.is_delete', 0);
-			if($term != ''){
-				$this->db->like('code_good_receipt.name', $term, 'both');
-				$this->db->or_like('supplier.name', $term, 'both');
-				$this->db->or_like('supplier.address', $term, 'both');
-				$this->db->or_like('supplier.city', $term, 'both');
-				$this->db->or_like('code_purchase_order.name', $term, 'both');
+			if($term != ""){
+				$query		= $this->db->query("
+					SELECT code_good_receipt.id as id, code_good_receipt.name, code_good_receipt.date, code_good_receipt.is_confirm, code_good_receipt.is_delete, code_good_receipt.invoice_id, code_good_receipt.received_date, code_good_receipt.created_by, code_good_receipt.confirmed_by, supplier.name as supplier_name, supplier.address, supplier.city, a.purchaseOrderName as purchase_order_name, supplier.number, supplier.rt, supplier.rw, supplier.block
+					FROM code_good_receipt
+					INNER JOIN (
+						SELECT DISTINCT(code_good_receipt.id) AS id, code_good_receipt.name, code_purchase_order.name as purchaseOrderName, code_purchase_order.supplier_id
+						FROM code_purchase_order
+						LEFT JOIN purchase_order ON purchase_order.code_purchase_order_id = code_purchase_order.id
+						INNER JOIN good_receipt ON good_receipt.purchase_order_id = purchase_order.id
+						JOIN code_good_receipt ON good_receipt.code_good_receipt_id = code_good_receipt.id
+					) AS a
+					ON code_good_receipt.id = a.id
+					JOIN supplier ON a.supplier_id = supplier.id
+					WHERE MONTH(code_good_receipt.date) = $month
+					AND YEAR(code_good_receipt.date) = $year
+					AND code_good_receipt.is_delete = 0
+					ORDER BY code_good_receipt.date ASC, code_good_receipt.id ASC
+					LIMIT $limit OFFSET $offset
+				");
+			} else {
+				$query		= $this->db->query("
+					SELECT code_good_receipt.id as id, code_good_receipt.name, code_good_receipt.date, code_good_receipt.is_confirm, code_good_receipt.is_delete, code_good_receipt.invoice_id, code_good_receipt.received_date, code_good_receipt.created_by, code_good_receipt.confirmed_by, supplier.name as supplier_name, supplier.address, supplier.city, a.purchaseOrderName as purchase_order_name, supplier.number, supplier.rt, supplier.rw, supplier.block
+					FROM code_good_receipt
+					INNER JOIN (
+						SELECT DISTINCT(code_good_receipt.id) AS id, code_good_receipt.name, code_purchase_order.name as purchaseOrderName, code_purchase_order.supplier_id
+						FROM code_purchase_order
+						LEFT JOIN purchase_order ON purchase_order.code_purchase_order_id = code_purchase_order.id
+						INNER JOIN good_receipt ON good_receipt.purchase_order_id = purchase_order.id
+						JOIN code_good_receipt ON good_receipt.code_good_receipt_id = code_good_receipt.id
+					) AS a
+					ON code_good_receipt.id = a.id
+					JOIN supplier ON a.supplier_id = supplier.id
+					WHERE MONTH(code_good_receipt.date) = $month
+					AND YEAR(code_good_receipt.date) = $year
+					AND code_good_receipt.is_delete = 0
+					AND (
+						code_good_receipt.name LIKE '%$term%'
+						OR supplier.name LIKE '%$term%'
+						OR supplier.address LIKE '%$term%'
+						OR supplier.city LIKE '%$term%'
+						OR a.purchaseOrderName LIKE '%$term%'
+					)
+					ORDER BY code_good_receipt.date ASC, code_good_receipt.id ASC
+					LIMIT $limit OFFSET $offset
+				");
 			}
-			
-			$this->db->order_by('code_good_receipt.date', 'asc');
-			$this->db->order_by('code_good_receipt.id', 'asc');
-			$this->db->limit($limit, $offset);
-			
-			$query		= $this->db->get();
+
 			$result		= $query->result();
 			
 			return $result;
@@ -411,24 +448,51 @@ class Good_receipt_model extends CI_Model {
 		
 		public function count_items($year, $month, $term)
 		{
-			$this->db->select('DISTINCT(code_good_receipt.id)');
-			$this->db->from('code_good_receipt');
-			$this->db->join('good_receipt', 'good_receipt.code_good_receipt_id = code_good_receipt.id', 'inner');
-			$this->db->join('purchase_order', 'good_receipt.purchase_order_id = purchase_order.id', 'inner');
-			$this->db->join('code_purchase_order', 'purchase_order.code_purchase_order_id = code_purchase_order.id');
-			$this->db->join('supplier', 'code_purchase_order.supplier_id = supplier.id');
-			$this->db->where('MONTH(code_good_receipt.date)',$month);
-			$this->db->where('YEAR(code_good_receipt.date)',$year);
-			$this->db->where('code_good_receipt.is_delete', 0);
-			if($term != ''){
-				$this->db->like('code_good_receipt.name', $term, 'both');
-				$this->db->or_like('supplier.name', $term, 'both');
-				$this->db->or_like('supplier.address', $term, 'both');
-				$this->db->or_like('supplier.city', $term, 'both');
-				$this->db->or_like('code_purchase_order.name', $term, 'both');
+			if($term != ""){
+				$query		= $this->db->query("
+					SELECT code_good_receipt.id as id, code_good_receipt.name, code_good_receipt.date, code_good_receipt.is_confirm, code_good_receipt.is_delete, code_good_receipt.invoice_id, code_good_receipt.received_date, code_good_receipt.created_by, code_good_receipt.confirmed_by, supplier.name as supplier_name, supplier.address, supplier.city, a.purchaseOrderName as purchase_order_name, supplier.number, supplier.rt, supplier.rw, supplier.block
+					FROM code_good_receipt
+					INNER JOIN (
+						SELECT DISTINCT(code_good_receipt.id) AS id, code_good_receipt.name, code_purchase_order.name as purchaseOrderName, code_purchase_order.supplier_id
+						FROM code_purchase_order
+						LEFT JOIN purchase_order ON purchase_order.code_purchase_order_id = code_purchase_order.id
+						INNER JOIN good_receipt ON good_receipt.purchase_order_id = purchase_order.id
+						JOIN code_good_receipt ON good_receipt.code_good_receipt_id = code_good_receipt.id
+					) AS a
+					ON code_good_receipt.id = a.id
+					JOIN supplier ON a.supplier_id = supplier.id
+					WHERE MONTH(code_good_receipt.date) = $month
+					AND YEAR(code_good_receipt.date) = $year
+					AND code_good_receipt.is_delete = 0
+					ORDER BY code_good_receipt.date ASC, code_good_receipt.id ASC
+				");
+			} else {
+				$query		= $this->db->query("
+					SELECT code_good_receipt.id as id, code_good_receipt.name, code_good_receipt.date, code_good_receipt.is_confirm, code_good_receipt.is_delete, code_good_receipt.invoice_id, code_good_receipt.received_date, code_good_receipt.created_by, code_good_receipt.confirmed_by, supplier.name as supplier_name, supplier.address, supplier.city, a.purchaseOrderName as purchase_order_name, supplier.number, supplier.rt, supplier.rw, supplier.block
+					FROM code_good_receipt
+					INNER JOIN (
+						SELECT DISTINCT(code_good_receipt.id) AS id, code_good_receipt.name, code_purchase_order.name as purchaseOrderName, code_purchase_order.supplier_id
+						FROM code_purchase_order
+						LEFT JOIN purchase_order ON purchase_order.code_purchase_order_id = code_purchase_order.id
+						INNER JOIN good_receipt ON good_receipt.purchase_order_id = purchase_order.id
+						JOIN code_good_receipt ON good_receipt.code_good_receipt_id = code_good_receipt.id
+					) AS a
+					ON code_good_receipt.id = a.id
+					JOIN supplier ON a.supplier_id = supplier.id
+					WHERE MONTH(code_good_receipt.date) = $month
+					AND YEAR(code_good_receipt.date) = $year
+					AND code_good_receipt.is_delete = 0
+					AND (
+						code_good_receipt.name LIKE '%$term%'
+						OR supplier.name LIKE '%$term%'
+						OR supplier.address LIKE '%$term%'
+						OR supplier.city LIKE '%$term%'
+						OR a.purchaseOrderName LIKE '%$term%'
+					)
+					ORDER BY code_good_receipt.date ASC, code_good_receipt.id ASC
+				");
 			}
-			
-			$query		= $this->db->get();
+
 			$result		= $query->num_rows();
 			
 			return $result;
