@@ -84,7 +84,6 @@ class User_model extends CI_Model {
 		
 		public function count_member()
 		{
-			$this->load->model('User_model');
 			$this->db->select('*');
 			$this->db->from($this->table_user);
 			$this->db->where('email =', $this->input->post('email'));
@@ -102,6 +101,23 @@ class User_model extends CI_Model {
 			}
 			
 			return $login_status;
+		}
+
+		public function login($email, $password){
+			$this->db->select('*');
+			$this->db->from($this->table_user);
+			$this->db->where('email =', $email);
+			$this->db->where('password =', md5($password));
+			$this->db->where('is_active', 1);
+			$items = $this->db->get();
+			$count = $items->num_rows();
+			
+			$row = $items->row();
+			if(!empty($row)){
+				return $row;
+			} else {
+				return NULL;
+			}
 		}
 		
 		public function show_all()

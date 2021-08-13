@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Api extends CI_Controller {
+class SalesApi extends CI_Controller {
 	function __construct(){
 		parent::__construct();
 
@@ -11,19 +11,22 @@ class Api extends CI_Controller {
         $this->JWT = new CreatorJwt();
     }
 
+    public function index(){
+
+    }
+
     public function login()
     {
         header('Access-Control-Allow-Origin: *');
         header("Access-Control-Allow-Methods: *");
         header("Content-Type:application/json");
-
+        $this->load->model("User_model");
         $postdata = file_get_contents("php://input");
         $request        = json_decode($postdata);
-        $username       = $request->username;
+        $email          = $request->email;
         $password       = $request->password;
 
-        $this->load->model("Customer_model");
-        $result     = $this->Customer_model->customerLogin($username, $password);
+        $result = $this->User_model->login($email, $password);
         if($result == null){
             $response       = array(
                 "status" => "error",
@@ -31,23 +34,12 @@ class Api extends CI_Controller {
                 "user" => array()
             );
 
-            echo 0;
+            echo "0";
         } else {
             $response        = array(
                 "status" => "success",
                 "message" => "Successfully logged in.",
-                "user" => array(
-                    "name" => $result->name,
-                    "address" => $result->address,
-                    "number" => $result->number,
-                    "block" => $result->block,
-                    "rt" => $result->rt,
-                    "rw" => $result->rw,
-                    "pic" => $result->pic_name,
-                    "city" => $result->city,
-                    "postal_code" => $result->postal_code,
-                    "phone_number" => $result->phone_number
-                )
+                "user" => $result
             );
 
             $tokenData = $response["user"];
