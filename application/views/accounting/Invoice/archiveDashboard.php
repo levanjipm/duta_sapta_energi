@@ -106,6 +106,10 @@
 		refreshView(1);
 	})
 
+	$('#page').change(function(){
+		refreshView();
+	})
+
 	function refreshView(page = $('#page').val()){
 		$.ajax({
 			url:'<?= site_url('Invoice/getItems') ?>',

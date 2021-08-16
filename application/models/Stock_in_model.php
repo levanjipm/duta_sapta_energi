@@ -233,7 +233,7 @@ class Stock_in_model extends CI_Model {
 					SELECT COALESCE(customer.name, supplier.name, 'Internal Transaction') as name, COALESCE(deliveryOrderTable.date, eventTable.date,purchaseReturnTable.date) as date, COALESCE(deliveryOrderTable.quantity, eventTable.quantity, purchaseReturnTable.quantity) * (-1) as quantity, COALESCE(deliveryOrderTable.name, eventTable.name, purchaseReturnTable.name) as documentName, COALESCE(deliveryOrderTable.deliveryOrderId, eventTable.eventId, purchaseReturnTable.returnId) AS documentId, COALESCE(deliveryOrderTable.type, eventTable.type, purchaseReturnTable.type) AS documentType
 					FROM stock_out
 					LEFT JOIN (
-						SELECT stock_out.id, code_delivery_order.name, code_delivery_order.date, SUM(delivery_order.quantity) AS quantity, code_delivery_order.id AS deliveryOrderId, 'deliveryOrder' AS type
+						SELECT stock_out.id, code_delivery_order.name, code_delivery_order.date, delivery_order.quantity AS quantity, code_delivery_order.id AS deliveryOrderId, 'deliveryOrder' AS type
 						FROM delivery_order
 						JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
 						JOIN price_list ON sales_order.price_list_id = price_list.id
@@ -417,7 +417,6 @@ class Stock_in_model extends CI_Model {
 
 				$currentResidue = $result->residue;
 				$finalResidue = $currentResidue + $quantity;
-				echo("Final residue is:" . $finalResidue);
 				
 				$this->db->set('residue', $finalResidue);
 				$this->db->where('id', $id);

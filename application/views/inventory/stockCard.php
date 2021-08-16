@@ -82,6 +82,7 @@
                 id:<?= $item->id ?>,
             },
             success:function(responseData){
+                console.log(responseData);
                 var response        = responseData.items;
                 var i           = 0;
                 var finalStock = 0;

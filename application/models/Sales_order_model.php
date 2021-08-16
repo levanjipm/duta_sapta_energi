@@ -754,13 +754,18 @@ class Sales_order_model extends CI_Model {
 		public function countIncompletedSalesOrdersByCustomer()
 		{
 			$query			= $this->db->query("
-				SELECT customer.id, a.count FROM (
+				SELECT customer.id FROM (
 					SELECT COUNT(code_sales_order.id) AS count, code_sales_order.customer_id
 					FROM code_sales_order
 					WHERE code_sales_order.id NOT IN (
 						SELECT DISTINCT(code_sales_order_close_request.code_sales_order_id) AS id
 						FROM code_sales_order_close_request
 						WHERE is_approved IS NULL OR is_approved = 1
+					)
+					AND code_sales_order.id IN (
+						SELECT DISTINCT(sales_order.code_sales_order_id) AS id
+						FROM sales_order
+						WHERE status = '0'
 					)
 					GROUP BY code_sales_order.customer_id
 				) AS a

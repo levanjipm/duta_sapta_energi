@@ -74,32 +74,40 @@ class Administrators extends CI_Controller {
 	public function deleteDeliveryOrderById()
 	{
 		$deliveryOrderId			= $this->input->post('id');
-		$this->load->model("Stock_out_model");
-		$result = $this->Stock_out_model->deleteByCodeDeliveryOrderId($deliveryOrderId);
-		if($result != NULL){
-			$stockInBatch = array();
-			$this->load->model("Stock_in_model");
-			foreach($result as $item){
-				$stockInArray = array(
-					"id"		=> $item->in_id,
-					"quantity"	=> $item->quantity
-				);
-				array_push($stockInBatch, $stockInArray);
-				next($result);
-				continue;
+
+		$this->load->model("Delivery_order_model");
+		$deliveryOrder				= $this->Delivery_order_model->getById($deliveryOrderId);
+
+		if($deliveryOrder != null && $deliveryOrder->is_confirm == 1){
+			$this->load->model("Stock_out_model");
+			$result = $this->Stock_out_model->deleteByCodeDeliveryOrderId($deliveryOrderId);
+			if($result != NULL){
+				$stockInBatch = array();
+				$this->load->model("Stock_in_model");
+				foreach($result as $item){
+					$stockInArray = array(
+						"id"		=> $item->in_id,
+						"quantity"	=> $item->quantity
+					);
+					array_push($stockInBatch, $stockInArray);
+					next($result);
+					continue;
+				}
+	
+				$this->Stock_in_model->updateStockByStockOutBatch($stockInBatch);
+	
+				$this->load->model("Sales_order_detail_model");
+				$this->Sales_order_detail_model->updateByCodeDeliveryOrderIdCancel($deliveryOrderId);
+	
+				$this->load->model("Delivery_order_model");
+				$deleteResult = $this->Delivery_order_model->deleteById($deliveryOrderId);
+				echo 1;
+			} else {
+				echo 0;
 			}
-
-			$this->Stock_in_model->updateStockByStockOutBatch($stockInBatch);
-
-			$this->load->model("Sales_order_detail_model");
-			$this->Sales_order_detail_model->updateByCodeDeliveryOrderIdCancel($deliveryOrderId);
-
-			$this->load->model("Delivery_order_model");
-			$deleteResult = $this->Delivery_order_model->deleteById($deliveryOrderId);
-			echo $deleteResult;
 		} else {
 			echo 0;
-		}
+		}		
 	}
 
 	public function deleteDebtById()

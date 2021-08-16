@@ -113,9 +113,10 @@ class Customer_target_model extends CI_Model {
 						JOIN item ON price_list.item_id = item.id
 						WHERE MONTH(code_delivery_order.date) = '$month'
 						AND YEAR(code_delivery_order.date) = '$year'
-						AND code_delivery_order.is_sent = '1'
-						AND code_delivery_order.is_confirm = '1'
+						AND code_delivery_order.is_sent = 1
+						AND code_delivery_order.is_confirm = 1
 						AND item.brand = '$brand'
+						GROUP BY code_sales_order.customer_id
 					) AS a
 					ON a.customer_id = customer.id
 					LEFT JOIN (
@@ -128,9 +129,10 @@ class Customer_target_model extends CI_Model {
 						JOIN item ON price_list.item_id = item.id
 						WHERE MONTH(code_delivery_order.date) = '$previousMonth'
 						AND YEAR(code_delivery_order.date) = '$previousYear'
-						AND code_delivery_order.is_sent = '1'
-						AND code_delivery_order.is_confirm = '1'
+						AND code_delivery_order.is_sent = 1
+						AND code_delivery_order.is_confirm = 1
 						AND item.brand = '$brand'
+						GROUP BY code_sales_order.customer_id
 					) AS c
 					ON customer.id = a.customer_id
 					LEFT JOIN (

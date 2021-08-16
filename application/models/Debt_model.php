@@ -708,21 +708,25 @@ class Debt_model extends CI_Model {
 						JOIN code_good_receipt ON good_receipt.code_good_receipt_id = code_good_receipt.id
 						JOIN purchase_order ON good_receipt.purchase_order_id = purchase_order.id
 						JOIN item ON purchase_order.item_id = item.id
+						JOIN code_purchase_order ON purchase_order.code_purchase_order_id = code_purchase_order.id
 						JOIN item_class ON item.type = item_class.id
 						JOIN purchase_invoice ON code_good_receipt.invoice_id = purchase_invoice.id
 						WHERE code_good_receipt.is_confirm = '1'
 						AND purchase_invoice.is_confirm = '1'
 						AND YEAR(purchase_invoice.date) = '$year'
+						AND code_purchase_order.supplier_id = '$supplierId'
 						GROUP BY item_class.id
 						UNION (
 							SELECT SUM((-1) * purchase_return_sent.quantity * purchase_return.price) AS value, item_class.name, item_class.id, item_class.description
 							FROM purchase_return_sent
 							JOIN purchase_return ON purchase_return_sent.purchase_return_id = purchase_return.id
+							JOIN code_purchase_return ON purchase_return.code_purchase_return_id = code_purchase_return.id
 							JOIN code_purchase_return_sent ON purchase_return_sent.code_purchase_return_sent_id = code_purchase_return_sent.id
 							JOIN item ON purchase_return.item_id = item.id
 							JOIN item_class ON item.type = item_class.id
 							WHERE YEAR(code_purchase_return_sent.date) = '$year'
 							AND code_purchase_return_sent.is_confirm = '1'
+							AND code_purchase_return.supplier_id = '$supplierId'
 							GROUP BY item_class.id
 						)
 					) AS a
@@ -735,6 +739,7 @@ class Debt_model extends CI_Model {
 						FROM good_receipt
 						JOIN code_good_receipt ON good_receipt.code_good_receipt_id = code_good_receipt.id
 						JOIN purchase_order ON good_receipt.purchase_order_id = purchase_order.id
+						JOIN code_purchase_order ON purchase_order.code_purchase_order_id = code_purchase_order.id
 						JOIN item ON purchase_order.item_id = item.id
 						JOIN item_class ON item.type = item_class.id
 						JOIN purchase_invoice ON code_good_receipt.invoice_id = purchase_invoice.id
@@ -742,16 +747,19 @@ class Debt_model extends CI_Model {
 						AND purchase_invoice.is_confirm = '1'
 						AND YEAR(purchase_invoice.date) = '$year'
 						AND MONTH(purchase_invoice.date) = '$month'
+						AND code_purchase_order.supplier_id = '$supplierId'
 						GROUP BY item_class.id
 						UNION (
 							SELECT SUM((-1) * purchase_return_sent.quantity * purchase_return.price) AS value, item_class.name, item_class.id, item_class.description
 							FROM purchase_return_sent
 							JOIN purchase_return ON purchase_return_sent.purchase_return_id = purchase_return.id
+							JOIN code_purchase_return ON purchase_return.code_purchase_return_id = code_purchase_return.id
 							JOIN code_purchase_return_sent ON purchase_return_sent.code_purchase_return_sent_id = code_purchase_return_sent.id
 							JOIN item ON purchase_return.item_id = item.id
 							JOIN item_class ON item.type = item_class.id
 							WHERE YEAR(code_purchase_return_sent.date) = '$year'
 							AND MONTH(code_purchase_return_sent.date) = '$month'
+							AND code_purchase_return.supplier_id = '$supplierId'
 							AND code_purchase_return_sent.is_confirm = '1'
 							GROUP BY item_class.id
 						)

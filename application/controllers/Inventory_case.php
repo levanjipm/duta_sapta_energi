@@ -301,7 +301,7 @@ class Inventory_case extends CI_Controller {
 			$this->load->model('Inventory_case_model');
 			$result = $this->Inventory_case_model->updateById(1, $id);
 			if($result == 1){
-				if(count($stockArray > 0)){
+				if(count($stock_array > 0)){
 					$this->load->model('Stock_out_model');
 					$this->Stock_out_model->insertByEvent($stock_array);
 				}

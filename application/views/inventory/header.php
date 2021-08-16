@@ -58,6 +58,7 @@
 			<a href='<?= site_url('Inventory/pendingSalesOrderDashboard') ?>'><p>Sales Orders</p></a>
 			<a href='<?= site_url('Inventory/pendingPurchaseOrderDashboard') ?>'><p>Purchase Orders</p></a>
 		</div>
+		<a href='<?= site_url('Route') ?>'><button><p>Routes</p></button></a>
 	</div>
 </div>
 <div class="selfCheckIn" data-toggle="tooltip" title="Self Check In">

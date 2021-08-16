@@ -267,14 +267,11 @@ class Stock_out_model extends CI_Model {
 			$result			= $query->result();
 
 			$query			= $this->db->query("
-				DELETE FROM stock_out 
-				WHERE id IN (
-					SELECT stock_out.id 
-					FROM stock_out
-					JOIN delivery_order ON stock_out.delivery_order_id = delivery_order.id
-					JOIN code_delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order.id
-					WHERE code_delivery_order.id = '$deliveryOrderId'
-				)
+				DELETE stock_out
+				FROM stock_out
+				JOIN delivery_order ON stock_out.delivery_order_id = delivery_order.id
+				JOIN code_delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order.id
+				WHERE code_delivery_order.id = '$deliveryOrderId'
 			");
 
 			$deleteResult			= $this->db->affected_rows();

@@ -270,7 +270,7 @@ class Delivery_order extends CI_Controller {
 		$data =  json_encode($resultArray);
 
 		header('Content-Type: application/json');
-		echo json_encode($data);
+		echo $data;
 	}
 	
 	public function sendById()
