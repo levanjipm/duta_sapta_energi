@@ -61,7 +61,7 @@
 	}
 	
 	@page {
-	  size: 9.5in 5.5in;
+	  size: 9.5in 11in portrait;
 	}
 }
 
@@ -164,15 +164,15 @@
 					<tr>
 						<td style='width:20%'><p>Penerima</p><br><br><br><br></td>
 						<td style='width:10%'><p>Pengirim</p><br><br><br><br></td>
-						<td style='width:45%'>
+						<td style='width:35%'>
 							<p style="margin-bottom:0;text-align:left">Barang yang sudah dibeli tidak dapat dikembalikan. Harap periksa barang pada saat penerimaan.</p>
 							<p style="margin-bottom:0;text-align:left"><strong>Terbilang</strong> <span id='value_say'></span></p>
 						</td>
 						<td colspan='2'>
 							<p style="margin-bottom:0;text-align:left">Total</p>
-							<p style="margin-bottom:0;text-align:left">Potongan Harga</p>
-							<p style="margin-bottom:0;text-align:left">Ongkos Pengiriman</p>
-							<p style="margin-bottom:0;text-align:left"><strong>Grand total</strong></p>
+							<p style="margin-bottom:0;text-align:left">Potongan&nbsp;Harga</p>
+							<p style="margin-bottom:0;text-align:left">Ongkos&nbsp;Pengiriman</p>
+							<p style="margin-bottom:0;text-align:left"><strong>Grand&nbsp;total</strong></p>
 						</td>
 						<td>
 							<p style="margin-bottom:0;text-align:left">Rp.&nbsp;<?= number_format($invoice_value,2) ?></p>

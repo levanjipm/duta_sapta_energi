@@ -214,8 +214,10 @@
 					
 					var net_price	= price_list * (100 - discount) / 100;
 					
+					if(sent < quantity){
+						$('#sales_order_table').append("<tr><td>" + reference + "</td><td>" + name + "</td><td>" + numeral(quantity).format('0,0') + "</td><td>" + numeral(sent).format('0,0') + "</td><td>" + numeral(stock).format('0,0') + "</td><td><input type='number' class='form-control' name='quantity[" + id + "]' min='0' max='" + maximum + "' onchange='changeTotalValue()' value='0' id='quantity-" + id + "'><input type='hidden' id='net_price-" + id + "' value='" + net_price + "'></tr>")
+					};
 					
-					$('#sales_order_table').append("<tr><td>" + reference + "</td><td>" + name + "</td><td>" + numeral(quantity).format('0,0') + "</td><td>" + numeral(sent).format('0,0') + "</td><td>" + numeral(stock).format('0,0') + "</td><td><input type='number' class='form-control' name='quantity[" + id + "]' min='0' max='" + maximum + "' onchange='changeTotalValue()' value='0' id='quantity-" + id + "'><input type='hidden' id='net_price-" + id + "' value='" + net_price + "'></tr>")
 				});
 				
 				var receivable_status		= 0;

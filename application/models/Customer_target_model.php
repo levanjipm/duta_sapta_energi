@@ -215,6 +215,7 @@ class Customer_target_model extends CI_Model {
 						AND code_delivery_order.is_sent = '1'
 						AND code_delivery_order.is_confirm = '1'
 						AND item.brand = '$brand'
+						GROUP BY code_sales_order.customer_id
 					) AS a
 					ON a.customer_id = customer.id
 					LEFT JOIN (

@@ -331,6 +331,7 @@ class Bank_model extends CI_Model {
 			$total_remaining		= array_sum($remaining_array);
 			$total_invoice			= array_sum($original_array);
 			$assigned				= $total_invoice - $total_remaining;
+
 			if($assigned < $bank_value){
 				$not_assigned 	= $bank_value - $assigned;
 				$this->db->set('is_delete', 1);
@@ -389,6 +390,8 @@ class Bank_model extends CI_Model {
 								$this->db->update('invoice');
 							};
 						};
+
+						next($check_box_array);
 					};
 				};
 			} else if($assigned == $bank_value){
@@ -621,6 +624,7 @@ class Bank_model extends CI_Model {
 			$this->db->where('bank_transaction.date <=', $end_date);
 			$this->db->where('bank_transaction_major', null);
 			$this->db->limit($limit, $offset);
+			$this->db->order_by('date', 'ASC');
 			$query		= $this->db->get();
 			$result		= $query->result();
 			

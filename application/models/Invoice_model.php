@@ -756,6 +756,8 @@ class Invoice_model extends CI_Model {
 					JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
 					JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
 					WHERE MONTH(invoice.date) = '$month' AND YEAR(invoice.date) = '$year'
+					AND invoice.is_confirm = 1
+					AND code_delivery_order.is_sent = 1
 				) a
 				ON a.id = invoice.id
 				UNION (
@@ -763,6 +765,7 @@ class Invoice_model extends CI_Model {
 					FROM invoice
 					WHERE MONTH(invoice.date) = '$month' AND YEAR(invoice.date) = '$year'
 					AND (invoice.customer_id IS NOT NULL || invoice.opponent_id IS NOT NULL)
+					AND invoice.is_confirm = 1
 				)
 			");
 
@@ -796,7 +799,9 @@ class Invoice_model extends CI_Model {
 					JOIN delivery_order ON code_delivery_order.id = delivery_order.code_delivery_order_id
 					JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
 					JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
-					WHERE MONTH(invoice.date) = '$month' AND YEAR(invoice.date) = '$year'
+					WHERE MONTH(invoice.date) = '$month' 
+					AND YEAR(invoice.date) = '$year'
+					AND invoice.is_confirm = 1
 				) a
 				ON a.id = invoice.id
 				UNION (
@@ -804,6 +809,7 @@ class Invoice_model extends CI_Model {
 					FROM invoice
 					WHERE MONTH(invoice.date) = '$month' AND YEAR(invoice.date) = '$year'
 					AND (invoice.customer_id IS NOT NULL || invoice.opponent_id IS NOT NULL)
+					AND invoice.is_confirm = 1
 				)
 				LIMIT 10 OFFSET $offset
 			");
@@ -820,6 +826,7 @@ class Invoice_model extends CI_Model {
 			$this->db->join('code_delivery_order', 'code_delivery_order.invoice_id = invoice.id');
 			$this->db->where('MONTH(invoice.date)', $month);
 			$this->db->where('YEAR(invoice.date)', $year);
+			$this->db->where('invoice.is_confirm', 1);
 			$this->db->order_by('invoice.name');
 
 			$query = $this->db->get();

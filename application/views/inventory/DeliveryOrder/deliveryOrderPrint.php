@@ -24,11 +24,11 @@
 			position: absolute;
 			left: 0;
 			top: 0;
-			font-size:10pt;
+			font-size:9pt;
 		}
 		
 		@page {
-		size: 21.59cm 13.97cm;
+			size: 21.59cm 13.97cm portrait;
 		}
 	}
 	</style>

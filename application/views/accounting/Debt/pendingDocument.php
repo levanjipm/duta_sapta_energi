@@ -7,15 +7,28 @@
 	</div>
 	<br>
 	<div class='dashboard_in'>
-		<table class='table table-bordered' id='pendingDebtTable'>
-			<tr>
-				<th>Supplier</th>
-				<th>Value</th>
-				<th>Action</th>
-			</tr>
-			<tbody id='pendingDebtContent'></tbody>
+		<label>Supplier</label>
+		<p><?= $supplier->name ?></p>
+		<br>
+		
+		<table class='table table-bordered'>
+			<thead>
+				<tr>
+					<th>Date</th>
+					<th>Document</th>
+					<th>Value</th>
+				</tr>
+			</thead>
+			<tbody>
+				<?php foreach($bills as $bill){ ?>
+					<tr>
+						<td><?= date_format(date_create($bill->date), "d M Y") ?></td>
+						<td><?= $bill->name ?></td>
+						<td>Rp. <?= number_format($bill->value, 2) ?></td>
+					</tr>
+				<?php } ?>
+			</tbody>
 		</table>
-		<p id='pendingDebtText'>There is no pending debt document found.</p>
 	</div>
 </div>
 
