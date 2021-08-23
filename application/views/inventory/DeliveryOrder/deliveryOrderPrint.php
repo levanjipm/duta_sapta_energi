@@ -24,11 +24,11 @@
 			position: absolute;
 			left: 0;
 			top: 0;
-			font-size:9pt;
+			font-size:12pt;
 		}
 		
 		@page {
-			size: 21.59cm 13.97cm portrait;
+			size: 9.5in 5.5in;
 		}
 	}
 	</style>
@@ -49,8 +49,8 @@
 		$complete_address	.= ' RW ' . $customer->rw;
 	}
 ?>
-<div class='row' style='margin:0'>	
-	<div class='col-sm-10 col-sm-offset-1' style='background-color:white;padding:20px' id='printable'>
+<div class='row' style='margin:0' id='printable'>	
+	<div class='col-12' style='background-color:white;padding:20px'>
 		<div class='row'>
 			<div class='col-xs-3'>
 				<img src='<?= base_url('assets/Logo.png') ?>' style='width:20%'></img>

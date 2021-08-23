@@ -114,6 +114,9 @@
 				sales_order_id:n
 			},
 			type:'GET',
+			beforeSend:function(){
+				$('#warning_text_invoice').hide();
+			},
 			success:function(response){
 				$('#salesOrderId').val(n);
 				var user					= response.user;

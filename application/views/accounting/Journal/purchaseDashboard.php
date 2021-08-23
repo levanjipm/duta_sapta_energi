@@ -18,7 +18,7 @@
 			</select>
 			<select class='form-control' id='year'>
 			<?php for($i = 2020; $i <= date("Y"); $i++){ ?>
-				<option value='<?= $i ?>'><?= $i ?></option>
+				<option value='<?= $i ?>' <?= ($i == date("Y")) ? "selected" : "" ?>><?= $i ?></option>
 			<?php } ?>
 			</select>
 			<button class='button button_default_dark' onclick='downloadMonthYearReport()'><i class='fa fa-file-text'></i></button>
@@ -212,9 +212,9 @@
 				$('#page').html("");
 				for(i = 1; i <= pages; i++){
 					if(i == page){
-						$('#page').append("<option value='i' selected>" + i + "</option>")
+						$('#page').append("<option value='" + i + "' selected>" + i + "</option>")
 					} else {
-						$('#page').append("<option value='i'>" + i + "</option>")
+						$('#page').append("<option value='" + i + "'>" + i + "</option>")
 					}
 				}
 

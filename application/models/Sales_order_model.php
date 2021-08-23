@@ -224,14 +224,15 @@ class Sales_order_model extends CI_Model {
 					GROUP BY sales_order.code_sales_order_id
 				) as salesOrderTable
 				ON salesOrderTable.code_sales_order_id = code_sales_order.id
-				JOIN (
-					SELECT DISTINCT(sales_order.code_sales_order_id) as id FROM sales_order WHERE status = '0'
-				) as incompletedSalesOrderTable
-				ON code_sales_order.id = incompletedSalesOrderTable.id
 				JOIN customer ON code_sales_order.customer_id = customer.id
-				WHERE code_sales_order.is_confirm = '1'
+				WHERE code_sales_order.is_confirm = 1
+				AND code_sales_order.id IN (
+					SELECT DISTINCT(sales_order.code_sales_order_id) as id 
+					FROM sales_order
+					WHERE status = 0
+				)
 				AND code_sales_order.id NOT IN (
-					SELECT code_sales_order_close_request.id
+					SELECT code_sales_order_close_request.code_sales_order_id
 					FROM code_sales_order_close_request
 					WHERE is_confirm = '1'	
 				)
@@ -257,17 +258,17 @@ class Sales_order_model extends CI_Model {
 			$query = $this->db->query("
 				SELECT code_sales_order.* 
 				FROM code_sales_order 
-				JOIN (
-					SELECT DISTINCT(sales_order.code_sales_order_id) as id FROM sales_order
-					WHERE status = '0' 	
-				) as a
-				ON a.id = code_sales_order.id
 				JOIN customer ON code_sales_order.customer_id = customer.id
-				WHERE code_sales_order.is_confirm = '1'
+				WHERE code_sales_order.is_confirm = 1
+				AND code_sales_order.id IN (
+					SELECT DISTINCT(sales_order.code_sales_order_id) as id 
+					FROM sales_order
+					WHERE status = 0
+				)
 				AND code_sales_order.name LIKE '%$term%'
 				AND (code_sales_order.name LIKE '%$term%' OR customer.name LIKE '%$term%' OR customer.city LIKE '%$term%')
 				AND code_sales_order.id NOT IN (
-					SELECT code_sales_order_close_request.id
+					SELECT code_sales_order_close_request.code_sales_order_id
 					FROM code_sales_order_close_request
 					WHERE is_confirm = '1'	
 				)
