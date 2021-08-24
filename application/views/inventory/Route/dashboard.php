@@ -9,7 +9,16 @@
 	<div class='dashboard_in'>
         <div class="input_group">
             <input class="form-control" />
-            <button class="button default-button">Add Route</button>
+            <button class="button button_default_dark">Add Route</button>
         </div>
+        <br>
+
+        <table class='table table-bordered'>
+            <tr>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Action</th>
+            </tr>
+        </table>
     </div>
 </div>
