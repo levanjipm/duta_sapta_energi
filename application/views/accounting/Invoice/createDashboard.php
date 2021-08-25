@@ -61,6 +61,10 @@
 		$(this).attr('disabled', true);
 		refreshView(2, 1);
 	});
+
+	$('#page').change(function(){
+		refreshView();
+	})
 	
 	function refreshView(type = 1, page = $('#page').val()){
 		$.ajax({
@@ -69,6 +73,9 @@
 				type:type,
 				page:page,
 				term:$('#search_bar').val()
+			},
+			beforeSend:function(){
+				$('#page').html("");
 			},
 			success:function(response){
 				$('#deliveryOrderTableContent').html('');

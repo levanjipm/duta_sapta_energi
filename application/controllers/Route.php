@@ -23,4 +23,29 @@ class Route extends CI_Controller {
 		$this->load->view('inventory/header', $data);
 		$this->load->view('inventory/Route/dashboard');
 	}
+
+	public function getItems(){
+		$page			= $this->input->get('page');
+		$term			= $this->input->get('term');
+
+		$this->load->model("Route_model");
+		$data['items']		= $this->Route_model->getItems(($page - 1) * 10, $term);
+		$data['pages']		= max(1, ceil($this->Route_model->countItems($term)/10));
+
+		header('Content-Type: application/json');
+		echo json_encode($data);
+	}
+
+	public function insertItem(){
+		$route			= $this->input->post('route');
+		$this->load->model("Route_model");
+		$data			= $this->Route_model->insertItem($route);
+		echo $data;
+	}
+
+	public function deleteById(){
+		$id				= $this->input->post('id');
+		$this->load->model("Customer_route_model");
+		
+	}
 }
