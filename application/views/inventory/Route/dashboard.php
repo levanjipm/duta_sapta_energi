@@ -64,9 +64,33 @@
 	</div>
 </div>
 
+<div class='alert_wrapper' id='edit_route_wrapper'>
+	<button class='slide_alert_close_button'>&times;</button>
+	<div class='alert_box_slide'>
+		<h3 style='font-family:bebasneue'>Edit route</h3>
+		<hr>
+		<form id='edit_route_form'>
+			<label>Route name</label>
+            <input type='hidden' id='editRouteId'>
+			<input type='text' class='form-control' id='editRouteName' required>
+			<div style='padding:2px 10px;background-color:#ffc107;width:100%;display:none;' id='error_edit_route'><p style='font-family:museo'><i class='fa fa-exclamation-triangle'></i> Edit data failed.</p></div><br>
+			
+			<button class='button button_default_dark' type='button' id='editRouteButton'><i class='fa fa-long-arrow-right'></i></button>
+		</form>
+	</div>
+</div>
+
 <script>
     $(document).ready(function(){
         refreshView();
+    })
+
+    $('#page').change(function(){
+        refreshView();
+    })
+
+    $('#search').change(function(){
+        refreshView(1);
     })
 
     $('#addRouteButton').click(function(){
@@ -76,10 +100,15 @@
     })
 
     $('#insert_route_form').validate();
+    $('#edit_route_form').validate();
 
     $("#insert_route_form").submit(function(e){
 		return false;
 	});
+
+    $('#edit_route_form').submit(function(e){
+        return false;
+    })
 
     $('#search').change(function(){
         refreshView(1);
@@ -113,6 +142,38 @@
         }
     })
 
+    $('#editRouteButton').click(function(){
+        $.ajax({
+            url:"<?= site_url('Route/EditById') ?>",
+            data:{
+                id: $('#editRouteId').val(),
+                name: $('#editRouteName').val()
+            },
+            type:"POST",
+            beforeSend:function(){
+                $('button').attr('disabled', true);
+                $('input').attr('disabled', true);
+            },
+            success:function(response){
+                $('button').attr('disabled', false);
+                $('input').attr('disabled', false);
+
+                if(response == 1){
+                    $('#editRouteId').val("");
+                    $('#editRouteName').val("");
+
+                    refreshView();
+                    $('#edit_route_wrapper .slide_alert_close_button').click();
+                } else {
+                    $('#error_edit_route').fadeTo(500, 1);
+                    setTimeout(function(){
+                        $('#error_edit_route').fadeTo(500, 0);
+                    }, 1000)
+                }
+            }
+        })
+    })
+
     function refreshView(page = $('#page').val()){
         $.ajax({
             url:"<?= site_url('Route/getItems') ?>",
@@ -135,7 +196,7 @@
                     $('#routeTableText').hide();
                 }
                 $.each(response.items, function(i, item){
-                    $('#routeTableContent').append("<tr><td>" + item.name + "</td><td>" + numeral(item.count).format('0,0') + "</td><td><button class='button default_button_dark'><i class='fa fa-map-marker'></i></button><button class='button button_success_dark'><i class='fa fa-pencil'></i></button> <button class='button button_danger_dark' onclick='openDeleteRoute(" + item.id + ")'><i class='fa fa-trash'></i></button></td></tr>");
+                    $('#routeTableContent').append("<tr><td>" + item.name + "</td><td>" + numeral(item.count).format('0,0') + "</td><td><button class='button default_button_dark'><i class='fa fa-map-marker'></i></button><button class='button button_success_dark' onclick='openEditRoute(" + item.id + ", `" + item.name + "`)'><i class='fa fa-pencil'></i></button> <button class='button button_danger_dark' onclick='openDeleteRoute(" + item.id + ")'><i class='fa fa-trash'></i></button> <button class='button button_default_dark' onclick='assignCustomers(" + item.id + ")'><i class='fa fa-keyboard-o'></i></button></td></tr>");
                 })
                 
                 $('#page').html("");
@@ -150,9 +211,21 @@
         })
     }
 
+    function assignCustomers(id){
+        window.location.href="<?= site_url('Route/AssignCustomer/') ?>" + id;
+    }
+
     function openDeleteRoute(id){
         $('#delete_route_wrapper').fadeIn();
         $('#delete_route_id').val(id);
+    }
+
+    function openEditRoute(id, name){
+        $('#editRouteId').val(id);
+        $('#editRouteName').val(name);
+        $('#edit_route_wrapper').fadeIn(300, function(){
+			$('#edit_route_wrapper .alert_box_slide').show("slide", { direction: "right" }, 250);
+		});
     }
 
     function delete_route(){
@@ -170,6 +243,7 @@
                 if(res == 1){
                     $('#delete_route_wrapper').fadeOut();
                     $('#delete_route_id').val("");
+                    refreshView();
                 } else {
                     $('#error_delete_route').fadeIn();
                     setTimeout(function(){

@@ -57,6 +57,6 @@ class Customer_route_model extends CI_Model {
 		
 		public function deleteByRouteId($routeId){
 			$this->db->where('route_id', $routeId);
-			$query		= $this->db->delete("")
+			$query		= $this->db->delete($this->table_route);
 		}
 }

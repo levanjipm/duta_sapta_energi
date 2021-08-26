@@ -985,7 +985,6 @@ class Bank_model extends CI_Model {
 			$this->db->select_sum('value');
 			$this->db->where('is_delete', 0);
 			$this->db->where('transaction', 2);
-			$this->db->where('bank_transaction_major', null);
 			$query		= $this->db->get($this->table_bank);
 			$result		= $query->row();
 			$debit		= $result->value;
@@ -993,7 +992,6 @@ class Bank_model extends CI_Model {
 			$this->db->select_sum('value');
 			$this->db->where('is_delete', 0);
 			$this->db->where('transaction', 1);
-			$this->db->where('bank_transaction_major', null);
 			$query		= $this->db->get($this->table_bank);
 			$result		= $query->row();
 			$credit		= $result->value;

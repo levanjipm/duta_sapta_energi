@@ -24,6 +24,22 @@ class Route extends CI_Controller {
 		$this->load->view('inventory/Route/dashboard');
 	}
 
+	public function assignCustomer($routeId){
+		$user_id		= $this->session->userdata('user_id');
+		$this->load->model('User_model');
+		$data['user_login'] = $this->User_model->getById($user_id);
+		
+		$this->load->model('Authorization_model');
+		$data['departments']	= $this->Authorization_model->getByUserId($user_id);
+
+		$this->load->Model("Customer_route_model");
+		$data['customers']		= $this->Customer_model->
+		
+		$this->load->view('head');
+		$this->load->view('inventory/header', $data);
+		$this->load->view('inventory/Route/assignCustomer');
+	}
+
 	public function getItems(){
 		$page			= $this->input->get('page');
 		$term			= $this->input->get('term');
@@ -43,9 +59,25 @@ class Route extends CI_Controller {
 		echo $data;
 	}
 
+	public function EditById(){
+		$routeId = $this->input->post('id');
+		$routeName = $this->input->post('name');
+		$this->load->model("Route_model");
+		$result = $this->Route_model->EditById($routeId, $routeName);
+		echo $result;
+	}
+
 	public function deleteById(){
-		$id				= $this->input->post('id');
+		$routeId		= $this->input->post('id');
 		$this->load->model("Customer_route_model");
-		
+		$this->Customer_route_model->deleteByRouteId(($routeId));
+
+		$this->load->model("Route_model");
+		$result = $this->Route_model->deleteById($routeId);
+		if($result == 1){
+			echo 1;
+		} else {
+			echo 0;
+		}
 	}
 }

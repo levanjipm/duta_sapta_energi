@@ -117,4 +117,35 @@ class Route_model extends CI_Model {
 				return 0;
 			}
 		}
+
+		public function EditById($routeId, $routeName){
+			$this->db->select("*");
+			$this->db->from($this->table_route);
+			$this->db->where('name =', $routeName);
+			$items = $this->db->get();
+			$count = $items->num_rows();
+
+			if($count == 0){
+				$this->db->where('id', $routeId);
+				$this->db->set('name', $routeName);
+				$this->db->update($this->table_route);
+				if($this->db->affected_rows() == 1){
+					return 1;
+				} else {
+					return 0;
+				}
+			} else {
+				return 0;
+			}
+		}
+
+		public function deleteById($id){
+			$this->db->where('id', $id);
+			$this->db->delete($this->table_route);
+			if($this->db->affected_rows() == 1){
+				return 1;
+			} else {
+				return 0;
+			}
+		}
 }
