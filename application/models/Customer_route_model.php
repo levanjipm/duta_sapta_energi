@@ -59,4 +59,47 @@ class Customer_route_model extends CI_Model {
 			$this->db->where('route_id', $routeId);
 			$query		= $this->db->delete($this->table_route);
 		}
+
+		public function getCustomersByRouteId($routeId, $term = "", $offset = 0, $limit = 10){
+			if($term == ""){
+				$query		= $this->db->query("
+					SELECT customer.name, customer.address, customer.rw, customer.rt, customer.id, customer.city, customer.number, customer.postal_code, customer.block, IF(customer_route.id IS NULL, 0, 1) AS assigned
+					FROM customer
+					LEFT JOIN customer_route ON customer_route.customer_id = customer.id
+					ORDER BY customer.name ASC
+					LIMIT $limit OFFSET $offset
+				");
+			} else {
+				$query		= $this->db->query("
+					SELECT customer.name, customer.address, customer.rw, customer.rw, customer.id,  customer.city, customer.number, customer.postal_code, customer.block, IF(customer_route.id IS NULL, 0, 1) AS assigned
+					FROM customer
+					LEFT JOIN customer_route ON customer_route.customer_id = customer.id
+					WHERE customer.name LIKE '%$term%' OR customer.address LIKE '%$term%'
+					OR customer.city LIKE '%$term%'
+					ORDER BY customer.name ASC
+					LIMIT $limit OFFSET $offset
+				");
+			}
+			
+			$result		= $query->result();
+			return $result;
+		}
+
+		public function assignById($customerId, $routeId, $status){
+			if($status == 1){
+				$this->db_item = array(
+					"id" => '',
+					"customer_id" => $customerId,
+					"route_id" => $route_id
+				);
+
+				$this->db->insert('customer_route', $this->db_item);
+				return $this->db->insert_id();
+			} else {
+				$this->db->where('route_id', $routeId);
+				$this->db->where('customer_id', $customerId);
+				$this->db->delete($this->table_route);
+				return $this->db->affected_rows();
+			}
+		}
 }

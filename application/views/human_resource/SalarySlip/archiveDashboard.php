@@ -154,9 +154,9 @@
 				$('#salaryTableContent').html("");
 				$.each(items, function(index, item){
 					var name = item.name;
-					var image_url = (item.image_url == null) ? '<?= base_url() . "/assets/ProfileImages/defaultImage.png" ?>' : item.image_url;
+					var image_url = (item.image_url == null) ? '<?= base_url("assets/ProfileImages/defaultImage.png")  ?>' : item.image_url;
 					var id		= item.id;
-					$('#salaryTableContent').append("<tr><td><img src='" + "<?= base_url('assets/ProfileImages/') ?>" + image_url + "' style='width:30px;height:30px;border-radius:50%'/> " + name + "</td><td><button class='button button_default_dark' onclick='viewSalarySlip(" + id + ")'><i class='fa fa-eye'></i></button></td></tr>");
+					$('#salaryTableContent').append("<tr><td><img src='" + image_url + "' style='width:30px;height:30px;border-radius:50%'/> " + name + "</td><td><button class='button button_default_dark' onclick='viewSalarySlip(" + id + ")'><i class='fa fa-eye'></i></button></td></tr>");
 					itemCount++;
 				});
 

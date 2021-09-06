@@ -90,6 +90,8 @@
 			</div>
 			<div class='col-xs-12'>
 				<hr>
+				<h3 style='font-family:bebasneue'>Receivable value: <span id='value'></span></h3>
+				<br>
 			</div>
 		</div>
 		<div id='receivable_view_pane'>
@@ -196,6 +198,7 @@
 				category: $('#category').val()
 			},
 			success:function(response){
+				var receivableTotalValue = 0;
 				var receivableCount = 0;
 				$('#receivable_chart').html('');
 				var max_receivable		= 0;
@@ -229,7 +232,7 @@
 					var customerId			= value.customer_id;
 					var opponentId			= value.opponent_id;
 
-					var receivable	= value.value;
+					var receivable	= parseFloat(value.value);
 					var percentage	= Math.max(3, receivable * 100 / max_receivable);
 					if(customerId == null){
 						$('#receivableBarOpponent-' + opponentId).animate({
@@ -239,8 +242,12 @@
 						$('#receivableBarCustomer-' + customerId).animate({
 							'width': percentage + "%"
 						},300);
-					}					
+					}
+
+					receivableTotalValue += receivable;				
 				});
+
+				$('#value').html(numeral(receivableTotalValue).format('0,0.00'));
 			}
 		});
 		setTimeout(function(){

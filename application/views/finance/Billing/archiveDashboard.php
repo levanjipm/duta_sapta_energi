@@ -148,7 +148,7 @@
 				if(general.image_url == null){
 					var imageUrl = "<?= base_url() . '/assets/ProfileImages/defaultImage.png' ?>";
 				} else {
-					var imageUrl = "<?= base_url() . '/assets/ProfileImages/' ?>" + item.image_url;
+					var imageUrl = "<?= base_url() . '/assets/ProfileImages/' ?>" + general.image_url;
 				}
 
 				$('#billingDate_p').html(my_date_format(date));

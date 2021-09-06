@@ -29,8 +29,11 @@ class Salary_slip extends CI_Controller {
 		$this->load->model("Salary_slip_model");
 		$result = $this->Salary_slip_model->insertItem();
 		if($result != null){
-			$this->load->model("Salary_benefit_model");
-			$this->Salary_benefit_model->insertItem($result);
+			if(!empty($_POST['benefit'])){
+				$this->load->model("Salary_benefit_model");
+				$this->Salary_benefit_model->insertItem($result);
+			}
+			
 
 			$this->load->model("Salary_attendance_model");
 			$this->Salary_attendance_model->insertItem($result);

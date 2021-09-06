@@ -160,8 +160,7 @@ class Sales_order_detail_model extends CI_Model {
 					JOIN code_delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order.id
 					JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
 					JOIN price_list ON sales_order.price_list_id = price_list.id
-					WHERE code_delivery_order.is_confirm = 0
-					AND code_delivery_order.is_sent = 0
+					WHERE code_delivery_order.is_sent = 0
 					AND code_delivery_order.is_delete = 0
 					GROUP BY price_list.item_id
 				) sendingTable

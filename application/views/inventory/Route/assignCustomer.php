@@ -48,7 +48,7 @@
 
     function refreshView(page = $('#page').val()){
         $.ajax({
-			url:'<?= site_url('Customer/showItems') ?>',
+			url:'<?= site_url('Route/getCustomers/') . $routeId ?>',
 			data:{
 				term:$('#search').val(),
 				page:page
@@ -97,8 +97,31 @@
 					if(customer_postal != null){
 						complete_address	+= ', ' + customer_postal;
 					}
-					
-					$('#customerTableContent').append("<tr><td>" + customer_name + "</td><td><p>" + complete_address + "</p><p>" + customer_city + "</p></td><td><input type='checkbox' id='customer-" + customer_id + "'></td></tr>");
+
+					var customer_assigned = parseInt(customer.assigned);
+					if(customer_assigned == 0){
+						$('#customerTableContent').append("<tr><td>" + customer_name + "</td><td><p>" + complete_address + "</p><p>" + customer_city + "</p></td><td><input type='checkbox' id='customer-" + customer_id + "'></td></tr>");
+					} else {
+						$('#customerTableContent').append("<tr><td>" + customer_name + "</td><td><p>" + complete_address + "</p><p>" + customer_city + "</p></td><td><input type='checkbox' id='customer-" + customer_id + "' checked></td></tr>");
+					}
+
+					$('#customer-' + customer_id).change(function(){
+						if($('#customer-' + customer_id).prop('checked')){
+							$.ajax({
+								url:"<?= site_url('Route/assignCustomer') ?>",
+								data:{
+									customer_id: customer_id,
+									route_id: <?= $routeId ?>
+								},
+								success:function(response){
+									console.log(response);
+								}
+							})
+						} else {
+							console.log("unchecked");
+						}
+					})
+									
 					
 					customerCount++;
 				});

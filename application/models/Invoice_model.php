@@ -306,7 +306,7 @@ class Invoice_model extends CI_Model {
 							SELECT SUM(receivable.value) as value, invoice_id
 							FROM receivable
 							JOIN invoice ON receivable.invoice_id = invoice.id
-							WHERE invoice.is_confirm = '1'
+							WHERE invoice.is_confirm = 1
 							GROUP BY invoice_id
 							) a
 						ON invoice.id = a.invoice_id
@@ -321,14 +321,15 @@ class Invoice_model extends CI_Model {
 								SELECT invoice.id, invoice.customer_id, invoice.opponent_id, DATEDIFF(NOW(), invoice.date) AS difference, COALESCE(customer.term_of_payment, 0) AS payment
 								FROM invoice
 								LEFT JOIN customer ON invoice.customer_id = customer.id
-								WHERE customer_id IS NOT NULL OR opponent_id IS NOT NULL AND invoice.is_done = '0'
+								WHERE customer_id IS NOT NULL OR opponent_id IS NOT NULL AND invoice.is_done = 0
 							)
 						) as deliveryOrderTable
 						ON deliveryOrderTable.id = invoice.id
 						LEFT JOIN customer ON deliveryOrderTable.customer_id = customer.id
 						LEFT JOIN other_opponent ON deliveryOrderTable.opponent_id = other_opponent.id
 						WHERE difference > IF(deliveryOrderTable.customer_id IS NOT NULL, payment, 0)
-						AND invoice.is_confirm = '1'
+						AND invoice.is_confirm = 1
+						AND invoice.is_done = 0
 						GROUP BY deliveryOrderTable.customer_id, deliveryOrderTable.opponent_id
 					");
 					break;

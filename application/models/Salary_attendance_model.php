@@ -75,7 +75,9 @@ class Salary_attendance_model extends CI_Model {
 				next($attendanceArray);
 			}
 
-			$this->db->insert_batch($this->table_salary, $batch);
+			if(count($batch) > 0){
+				$this->db->insert_batch($this->table_salary, $batch);
+			}
 		}
 
 		public function getByCodeId($salarySlipId)
@@ -88,7 +90,9 @@ class Salary_attendance_model extends CI_Model {
 					FROM attendance_list
 					GROUP BY user_id, status, MONTH(attendance_list.date), YEAR(attendance_list.date)
 				) attendanceTable
-				ON salary_slip.month = attendanceTable.month AND salary_slip.year = attendanceTable.year
+				ON salary_slip.month = attendanceTable.month 
+				AND salary_slip.year = attendanceTable.year
+				AND salary_slip.user_id = attendanceTable.user_id
 				JOIN attendance_status ON attendanceTable.status = attendance_status.id
 				LEFT JOIN salary_attendance ON salary_attendance.status_id = attendanceTable.status
 				WHERE salary_slip.id = '$salarySlipId'

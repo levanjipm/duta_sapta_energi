@@ -160,7 +160,7 @@ class Attendance extends CI_Controller {
 		$offset			= ($page - 1) * 10;
 		$this->load->model("Attendance_model");
 		$data['items']	= $this->Attendance_model->getItems($userId, $offset);
-		$data['pages']	= max(1, ceil($this->Attendance_model->countItems($userId))/10);
+		$data['pages']	= max(1, ceil($this->Attendance_model->countItems($userId)/10));
 
 		header('Content-Type: application/json');
 		echo json_encode($data);

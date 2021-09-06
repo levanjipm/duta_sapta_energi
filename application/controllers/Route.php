@@ -31,13 +31,27 @@ class Route extends CI_Controller {
 		
 		$this->load->model('Authorization_model');
 		$data['departments']	= $this->Authorization_model->getByUserId($user_id);
-
-		$this->load->Model("Customer_route_model");
-		$data['customers']		= $this->Customer_model->
+		$data['routeId']		= $routeId;
 		
 		$this->load->view('head');
 		$this->load->view('inventory/header', $data);
-		$this->load->view('inventory/Route/assignCustomer');
+		$this->load->view('inventory/Route/assignCustomer', $data);
+	}
+
+	public function getCustomers($routeId){
+		$term			= $this->input->get('term');
+		$page			= $this->input->get('page');
+		$offset			= ($page - 1) * 10;
+
+		$this->load->model("Customer_route_model");
+		$data				= array();
+		$data['customers'] = $this->Customer_route_model->getCustomersByRouteId($routeId, $term, $offset);
+
+		$this->load->model("Customer_model");
+		$data['pages']		= max(1, ceil($this->Customer_model->countItems($term)/10));
+
+		header('Content-Type: application/json');
+		echo json_encode($data);
 	}
 
 	public function getItems(){
@@ -79,5 +93,21 @@ class Route extends CI_Controller {
 		} else {
 			echo 0;
 		}
+	}
+
+	public assignById(){
+		$customer_id		= $this->input->post('customer_id');
+		$route_id			= $this->input->post('route_id');
+		$this->load->model("Customer_route_model");
+		$result = $this->Customer_route_model->assignById($customer_id, $route_id, 1);
+		echo $result;
+	}
+
+	public unassignById(){
+		$customer_id		= $this->input->post('customer_id');
+		$route_id			= $this->input->post('route_id');
+		$this->load->model("Customer_route_model");
+		$result = $this->Customer_route_model->assignById($customer_id, $route_id, 2);
+		echo $result;
 	}
 }
