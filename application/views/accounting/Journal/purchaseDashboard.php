@@ -100,7 +100,7 @@
 	</div>
 </div>
 
-<div class='alert_wrapper' id='viewInvoiceWrapper'>
+<div class='alert_wrapper' id='viewBlankInvoiceWrapper'>
 	<button class='slide_alert_close_button'>&times;</button>
 	<div class='alert_box_slide'>
 		<h3 style='font-family:bebasneue'>Invoice archive</h3>
@@ -359,7 +359,6 @@
 				$('#invoice_value_p').html(numeral(invoiceValue).format('0,0.00'));
 			},
 			complete:function(){
-
 				$('#viewInvoiceWrapper').fadeIn(300, function(){
 					$('#viewInvoiceWrapper .alert_box_slide').show("slide", { direction: "right" }, 250);
 				});
