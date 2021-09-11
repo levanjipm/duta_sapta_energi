@@ -148,4 +148,11 @@ class Route_model extends CI_Model {
 				return 0;
 			}
 		}
+
+		public function getAllItems(){
+			$this->db->order_by('name', 'ASC');
+			$query			= $this->db->get($this->table_route);
+			$result			= $query->result();
+			return $result;
+		}
 }

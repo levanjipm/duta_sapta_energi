@@ -81,9 +81,21 @@
                     </div>
                 </div>
             </div>
-            <div class='col-md-8 col-sm-12 col-xs-12' style='margin-top:20px'>
+            <div class='col-md-4 col-sm-12 col-xs-12'>
+                <div class='dashboardBox clickable' onclick="window.location.href='<?= site_url('Route') ?>'">
+                    <div class='leftSide'>
+                        <h4><b>Pending</b></h4>
+                        <p>Customer Assignment</p>
+                    </div>
+                    <div class='rightSide'>
+                        <h3 id='unassignedCustomer'>0</h3>
+                        <p>&nbsp;</p>
+                    </div>
+                </div>
+            </div>
+            <div class='col-md-12 col-sm-12 col-xs-12' style='margin-top:20px'>
                 <label>Daily Shipments</label>
-                <canvas id='chartWrapper' width="100" height="40"></canvas>
+                <canvas id='chartWrapper' width="100" height="30"></canvas>
             </div>
         </div>
     </div>
@@ -100,6 +112,7 @@
 				$('#pendingSalesOrders').html(numeral(response.salesOrders).format('0,0'));
 				$("#pendingDeliveryOrders").html(numeral(response.deliveryOrders).format('0,0'));
 				$('#pendingPurchaseOrders').html(numeral(response.purchaseOrders).format('0,0'));
+                $('#unassignedCustomer').html(numeral(response.customer).format('0'));
 			}
 		})
 	}

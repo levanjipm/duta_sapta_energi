@@ -108,17 +108,34 @@
 					$('#customer-' + customer_id).change(function(){
 						if($('#customer-' + customer_id).prop('checked')){
 							$.ajax({
-								url:"<?= site_url('Route/assignCustomer') ?>",
+								url:"<?= site_url('Route/assignById') ?>",
 								data:{
 									customer_id: customer_id,
 									route_id: <?= $routeId ?>
 								},
+								type:"POST",
+								beforeSend:function(){
+									$('input').attr('disabled', true);
+								},
 								success:function(response){
-									console.log(response);
+									$('input').attr('disabled', false);
 								}
 							})
 						} else {
-							console.log("unchecked");
+							$.ajax({
+								url:"<?= site_url('Route/unassignById') ?>",
+								data:{
+									customer_id: customer_id,
+									route_id: <?= $routeId ?>
+								},
+								type:"POST",
+								beforeSend:function(){
+									$('input').attr('disabled', true);
+								},
+								success:function(response){
+									$('input').attr('disabled', false);
+								}
+							})
 						}
 					})
 									

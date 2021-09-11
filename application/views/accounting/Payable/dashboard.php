@@ -88,6 +88,8 @@
 			</div>
 			<div class='col-xs-12'>
 				<hr>
+				<h3 style='font-family:bebasneue'>Payable value: <span id='value'></span></h3>
+				<br>
 			</div>
 		</div>
 		<div id='payable_view_pane'>
@@ -200,6 +202,7 @@
 				var max_payable		= 0;
 				supplierPayableArray = {};
 				otherPayableArray = {};
+				var totalPayableValue = 0;
 
 				$.each(response, function(index, item){
 					var name = item.name;
@@ -234,6 +237,8 @@
 							otherPayableArray[item.other_opponent_id][0] = totalValue;
 						}
 					}
+
+					totalPayableValue += parseFloat(item.value) - parseFloat(item.paid);
 				});
 
 				payableArray = [];
@@ -285,6 +290,9 @@
 					adjust_grid();
 					$('#grid_wrapper').show();
 				}
+
+				
+				$('#value').html(numeral(totalPayableValue).format('0,0.00'));
 			}
 		});
 	}

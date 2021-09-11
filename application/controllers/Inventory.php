@@ -36,6 +36,9 @@ class Inventory extends CI_Controller {
 		$this->load->model("Delivery_order_model");
 		$data['deliveryOrders']	= $this->Delivery_order_model->countUnsentDeliveryOrder();
 
+		$this->load->model("Customer_route_model");
+		$data['customer']	= $this->Customer_route_model->countUnassignedCustomer();
+
 		header("Content-Type:application/json");
 		echo json_encode($data);
 	}

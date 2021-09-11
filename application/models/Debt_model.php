@@ -230,6 +230,7 @@ class Debt_model extends CI_Model {
 						JOIN purchase_order ON good_receipt.purchase_order_id = purchase_order.id
 						JOIN code_purchase_order ON purchase_order.code_purchase_order_id = code_purchase_order.id
 						JOIN purchase_invoice ON code_good_receipt.invoice_id = purchase_invoice.id
+						WHERE purchase_invoice.is_done = 0
 						GROUP BY code_good_receipt.invoice_id
 					) AS a
 					LEFT JOIN (
@@ -1073,24 +1074,28 @@ class Debt_model extends CI_Model {
 					JOIN code_good_receipt ON good_receipt.code_good_receipt_id = code_good_receipt.id
 					JOIN purchase_order ON good_receipt.purchase_order_id = purchase_order.id
 					JOIN code_purchase_order ON purchase_order.code_purchase_order_id = code_purchase_order.id
-					WHERE code_good_receipt.is_confirm = '1'
+					WHERE code_good_receipt.is_confirm = 1
 					GROUP BY code_good_receipt.invoice_id
 				) goodReceiptTable
 				ON goodReceiptTable.invoice_id = purchase_invoice.id
 				WHERE MONTH(purchase_invoice.date) = '$month'
 				AND YEAR(purchase_invoice.date) = '$year'
-				AND purchase_invoice.is_confirm = '1'
-				UNION (
-					SELECT SUM(purchase_invoice_other.value) AS value, purchase_invoice_other.date
-					FROM purchase_invoice_other
-					WHERE purchase_invoice_other.is_confirm = '1'
-					AND MONTH(purchase_invoice_other.date) = '$month'
-					AND YEAR(purchase_invoice_other.date) = '$year'
-					AND purchase_invoice_other.is_confirm = '1'
-				)
+				AND purchase_invoice.is_confirm = 1
+				GROUP BY purchase_invoice.date
 			");
 
 			$result		= $query->result();
+
+			$queryOther		= $this->db->query("
+				SELECT SUM(purchase_invoice_other.value) AS value, purchase_invoice_other.date
+				FROM purchase_invoice_other
+				WHERE purchase_invoice_other.is_confirm = 1
+				AND MONTH(purchase_invoice_other.date) = '$month'
+				AND YEAR(purchase_invoice_other.date) = '$year'
+			");
+
+			$resultOther	= $queryOther->result();
+
 			$response		= array();
 			for($i = 1; $i <= date("t", mktime(0,0,0,$month, 1, $year)); $i++)
 			{
@@ -1098,6 +1103,14 @@ class Debt_model extends CI_Model {
 			}
 
 			foreach($result as $data){
+				$date		= $data->date;
+				$value		= $data->value;
+				$day		= (int)date("d", strtotime($date));
+				$response[$day] += $value;
+				continue;
+			}
+
+			foreach($resultOther as $data){
 				$date		= $data->date;
 				$value		= $data->value;
 				$day		= (int)date("d", strtotime($date));

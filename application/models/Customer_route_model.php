@@ -90,7 +90,7 @@ class Customer_route_model extends CI_Model {
 				$this->db_item = array(
 					"id" => '',
 					"customer_id" => $customerId,
-					"route_id" => $route_id
+					"route_id" => $routeId
 				);
 
 				$this->db->insert('customer_route', $this->db_item);
@@ -101,5 +101,19 @@ class Customer_route_model extends CI_Model {
 				$this->db->delete($this->table_route);
 				return $this->db->affected_rows();
 			}
+		}
+
+		public function countUnassignedCustomer(){
+			$query		= $this->db->query("
+				SELECT customer.id
+				FROM customer
+				WHERE id NOT IN (
+					SELECT customer_route.customer_id
+					FROM customer_route
+				)
+			");
+
+			$result		= $query->num_rows();
+			return $result;
 		}
 }

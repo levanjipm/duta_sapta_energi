@@ -96,8 +96,8 @@
 	var receivable;
 	var customerPlafond;
 	var accessLevel;
-	var includedAreas		= [];
-	var areas				= [];
+	var includedRoutes		= [];
+	var routes				= [];
 
 	$(document).ready(function(){
 		viewAreas();
@@ -260,11 +260,11 @@
 
 	function viewAreas(){
 		$.ajax({
-			url:"<?= site_url('Area/getAllItems') ?>",
+			url:"<?= site_url('Route/getAllItems') ?>",
 			success:function(response){
 				$.each(response, function(index, value){
-					includedAreas.push(parseInt(value.id));
-					areas[value.id]	= value.name;
+					includedRoutes.push(parseInt(value.id));
+					routes[value.id]	= value.name;
 				});
 
 				updateAreasView();
@@ -274,20 +274,20 @@
 
 	function updateAreasView(){
 		$('#areaFilter').html("");
-		$.each(includedAreas, function(index, id){
-			var name		= areas[id];
-			$('#areaFilter').append("<div class='col-sm-4'><label><input type='checkbox' id='checkBox-" + id + "' onchange='updateIncludedAreas(" + id + ")'' checked> " + name + "</label></div>");
+		$.each(includedRoutes, function(index, id){
+			var name		= routes[id];
+			$('#areaFilter').append("<div class='col-sm-4'><label><input type='checkbox' id='checkBox-" + id + "' onchange='updateIncludedRoutes(" + id + ")'' checked> " + name + "</label></div>");
 		})
 
 		refresh_view(1);
 	}
 
-	function updateIncludedAreas(n){
+	function updateIncludedRoutes(n){
 		if($('#checkBox-' + n).is(':checked')){
-			includedAreas.push(n);
+			includedRoutes.push(n);
 		} else {
-			var index = includedAreas.indexOf(n);
-			includedAreas.splice(index, 1);
+			var index = includedRoutes.indexOf(n);
+			includedRoutes.splice(index, 1);
 		}
 
 		refresh_view(1);
@@ -335,7 +335,7 @@
 			url:'<?= site_url('Sales_order/getIncompleteSalesOrderDelivery') ?>',
 			data:{
 				page: page,
-				areas: includedAreas
+				routes: includedRoutes
 			},
 			success:function(response){
 				var sales_orders = response.items;

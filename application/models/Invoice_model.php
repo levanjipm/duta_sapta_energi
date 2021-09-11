@@ -1039,11 +1039,20 @@ class Invoice_model extends CI_Model {
 			$query		= $this->db->query("
 				SELECT invoice.*, customer.name as customerName, customer.address, customer.city, customer.rt, customer.rw, customer.block, customer.number, customer.postal_code, customer.block, COALESCE(receivableTable.value) as paid
 				FROM invoice
-				JOIN code_delivery_order ON code_delivery_order.invoice_id = invoice.id 
-				JOIN delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order.id 
-				JOIN sales_order ON delivery_order.sales_order_id = sales_order.id 
-				JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id 
-				JOIN customer ON code_sales_order.customer_id = customer.id
+				JOIN (
+					//SELECT a.customer_id, code_delivery_order.invoice_id, code_delivery_order.name
+					//FROM code_delivery_order
+					//JOIN (
+					//	SELECT delivery_order.code_delivery_order_id, code_sales_order.customer_id
+					//	FROM delivery_order
+					//	JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
+					//	JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
+					//	GROUP BY delivery_order.code_delivery_order_id
+					//) AS a
+					//ON code_delivery_order.id = a.code_delivery_order_id
+				) AS customerTable
+				ON invoice.id = customerTable.invoice_id
+				JOIN customer ON customer.id = customerTable.customer_id
 				LEFT JOIN (
 					SELECT SUM(receivable.value) AS value, invoice_id FROM receivable GROUP BY receivable.invoice_id
 				) as receivableTable
@@ -1067,9 +1076,10 @@ class Invoice_model extends CI_Model {
 						)
 					) AS invoiceTable
 					WHERE invoiceTable.billingDate = '$date' OR invoiceTable.billingDate IS NULL
-				) AND (invoice.name LIKE '%$term%' OR customer.name LIKE '%$term%' OR code_delivery_order.name LIKE '%$term%')
+				) AND (invoice.name LIKE '%$term%' OR customer.name LIKE '%$term%' OR customerTable.name LIKE '%$term%')
 				LIMIT $limit OFFSET $offset
 			");
+
 			$result = $query->result();
 			return $result;
 		}

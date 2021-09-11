@@ -95,7 +95,7 @@ class Route extends CI_Controller {
 		}
 	}
 
-	public assignById(){
+	public function assignById(){
 		$customer_id		= $this->input->post('customer_id');
 		$route_id			= $this->input->post('route_id');
 		$this->load->model("Customer_route_model");
@@ -103,11 +103,19 @@ class Route extends CI_Controller {
 		echo $result;
 	}
 
-	public unassignById(){
+	public function unassignById(){
 		$customer_id		= $this->input->post('customer_id');
 		$route_id			= $this->input->post('route_id');
 		$this->load->model("Customer_route_model");
 		$result = $this->Customer_route_model->assignById($customer_id, $route_id, 2);
 		echo $result;
+	}
+
+	public function getAllItems(){
+		$this->load->model("Route_model");
+		$data = $this->Route_model->getAllItems();
+		
+		header('Content-Type: application/json');
+		echo json_encode($data);
 	}
 }

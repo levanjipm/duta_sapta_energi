@@ -389,6 +389,7 @@ class Debt extends CI_Controller {
 		$year			= $this->input->get('year');
 		$this->load->model("Debt_model");
 		$data			= $this->Debt_model->getValueByMonthYearDaily($month, $year);
+		
 		header('Content-Type: application/json');
 		echo json_encode($data);
 	}

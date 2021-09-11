@@ -225,6 +225,7 @@ class Sales_order_model extends CI_Model {
 				) as salesOrderTable
 				ON salesOrderTable.code_sales_order_id = code_sales_order.id
 				JOIN customer ON code_sales_order.customer_id = customer.id
+				JOIN customer_route ON customer.id = customer_route.customer_id
 				WHERE code_sales_order.is_confirm = 1
 				AND code_sales_order.id IN (
 					SELECT DISTINCT(sales_order.code_sales_order_id) as id 
@@ -237,7 +238,7 @@ class Sales_order_model extends CI_Model {
 					WHERE is_confirm = '1'	
 				)
 				AND (code_sales_order.name LIKE '%$term%' OR customer.name LIKE '%$term%' OR customer.city LIKE '%$term%')
-				AND customer.area_id IN $inString
+				AND customer_route.route_id IN $inString
 				LIMIT 10 OFFSET $offset
 			");
 
@@ -259,6 +260,7 @@ class Sales_order_model extends CI_Model {
 				SELECT code_sales_order.* 
 				FROM code_sales_order 
 				JOIN customer ON code_sales_order.customer_id = customer.id
+				JOIN customer_route ON customer.id = customer_route.customer_id
 				WHERE code_sales_order.is_confirm = 1
 				AND code_sales_order.id IN (
 					SELECT DISTINCT(sales_order.code_sales_order_id) as id 
@@ -272,7 +274,7 @@ class Sales_order_model extends CI_Model {
 					FROM code_sales_order_close_request
 					WHERE is_confirm = '1'	
 				)
-				AND customer.area_id IN $inString
+				AND customer_route.route_id IN $inString
 			");
 
 			$result = $query->num_rows();
