@@ -118,4 +118,12 @@ class Route extends CI_Controller {
 		header('Content-Type: application/json');
 		echo json_encode($data);
 	}
+
+	public function getCustomerById(){
+		$route_id		= $this->input->get('route_id');
+		$this->load->model("Customer_route_model");
+		$response		= $this->Customer_route_model->getCustomerByRouteId($route_id);
+		header('Content-Type: application/json');
+		echo json_encode($response);
+	}
 }

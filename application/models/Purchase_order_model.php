@@ -201,7 +201,7 @@ class Purchase_order_model extends CI_Model {
 			$query = $this->db->get($this->table_purchase_order);
 			$item = $query->num_rows();
 			
-			if($item != 0){
+			if($item > 0){
 				$this->Purchase_order_model->generateName($date);
 			};
 			

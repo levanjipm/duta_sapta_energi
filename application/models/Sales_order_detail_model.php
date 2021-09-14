@@ -249,7 +249,9 @@ class Sales_order_detail_model extends CI_Model {
 			$this->db->from('sales_order');
 			$this->db->join('price_list', 'sales_order.price_list_id = price_list.id');
 			$this->db->join('item', 'price_list.item_id = item.id');
+			$this->db->join('code_sales_order', 'sales_order.code_sales_order_id = code_sales_order.id');
 			$this->db->where('sales_order.status', 0);
+			$this->db->where('code_sales_order.is_delete', 0);
 			$this->db->group_by('price_list.item_id');
 			$query		= $this->db->get();
 			$result		= $query->result();

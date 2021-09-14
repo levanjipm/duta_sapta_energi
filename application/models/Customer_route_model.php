@@ -116,4 +116,17 @@ class Customer_route_model extends CI_Model {
 			$result		= $query->num_rows();
 			return $result;
 		}
+
+		public function getCustomerByRouteId($routeId){
+			$query		= $this->db->query("
+				SELECT customer.*  
+				FROM customer
+				JOIN customer_route ON customer.id = customer_route.customer_id
+				WHERE customer_route.route_id = '$routeId'
+				ORDER BY customer.name ASC
+			");
+
+			$result		= $query->result();
+			return $result;
+		}
 }

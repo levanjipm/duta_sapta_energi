@@ -7,9 +7,10 @@
 	</div>
 	<br>
 	<div class='dashboard_in'>
-		<button class='button button_mini_tab' onclick="$('#areaFilter').toggle(300)"><i class='fa fa-filter'></i></button>
-		<div class='row' id='areaFilter' style='display:none'>
-		</div>
+		<select class='form-control' id='route'>
+			<option value='0'>Select all</option>
+		</select>
+		<br>
 		<div id='salesOrderTable'>
 			<table class='table table-bordered'>
 				<tr>
@@ -96,11 +97,10 @@
 	var receivable;
 	var customerPlafond;
 	var accessLevel;
-	var includedRoutes		= [];
-	var routes				= [];
 
 	$(document).ready(function(){
-		viewAreas();
+		getRoutes();
+		refresh_view();
 	})
 
 	$('#page').change(function(){
@@ -258,39 +258,15 @@
 		rules: {"hidden_field": {min:1}}
 	});
 
-	function viewAreas(){
+	function getRoutes(){
 		$.ajax({
 			url:"<?= site_url('Route/getAllItems') ?>",
 			success:function(response){
 				$.each(response, function(index, value){
-					includedRoutes.push(parseInt(value.id));
-					routes[value.id]	= value.name;
+					$('#route').append("<option value='" + value.id + "'>" + value.name + " (" + numeral(value.count).format('0,0') + ")</option>");
 				});
-
-				updateAreasView();
 			}
 		})
-	}
-
-	function updateAreasView(){
-		$('#areaFilter').html("");
-		$.each(includedRoutes, function(index, id){
-			var name		= routes[id];
-			$('#areaFilter').append("<div class='col-sm-4'><label><input type='checkbox' id='checkBox-" + id + "' onchange='updateIncludedRoutes(" + id + ")'' checked> " + name + "</label></div>");
-		})
-
-		refresh_view(1);
-	}
-
-	function updateIncludedRoutes(n){
-		if($('#checkBox-' + n).is(':checked')){
-			includedRoutes.push(n);
-		} else {
-			var index = includedRoutes.indexOf(n);
-			includedRoutes.splice(index, 1);
-		}
-
-		refresh_view(1);
 	}
 	
 	function changeTotalValue(){
@@ -330,12 +306,16 @@
 		$('#total').val(total_delivery_order);
 	};
 
+	$('#route').change(function(){
+		refresh_view(1);
+	})
+
 	function refresh_view(page = $('#page').val()){
 		$.ajax({
 			url:'<?= site_url('Sales_order/getIncompleteSalesOrderDelivery') ?>',
 			data:{
 				page: page,
-				routes: includedRoutes
+				routes: $('#route').val()
 			},
 			success:function(response){
 				var sales_orders = response.items;

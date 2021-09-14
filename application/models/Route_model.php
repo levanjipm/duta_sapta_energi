@@ -150,9 +150,32 @@ class Route_model extends CI_Model {
 		}
 
 		public function getAllItems(){
-			$this->db->order_by('name', 'ASC');
-			$query			= $this->db->get($this->table_route);
-			$result			= $query->result();
+			$query		= $this->db->query("
+				SELECT routes.name, routeTable.count, routes.id, routes.name
+				FROM routes
+				JOIN (
+					SELECT COUNT(code_sales_order.id) AS count, customer_route.route_id
+					FROM code_sales_order
+					JOIN customer ON code_sales_order.customer_id = customer.id
+					JOIN customer_route ON customer_route.customer_id = customer.id
+					WHERE code_sales_order.id NOT IN
+					(
+						SELECT code_sales_order_close_request.code_sales_order_id
+						FROM code_sales_order_close_request
+						WHERE is_confirm = 1
+					)
+					AND code_sales_order.id IN (
+						SELECT DISTINCT(sales_order.code_sales_order_id)
+						FROM sales_order
+						WHERE sales_order.status = 0
+					)
+					GROUP BY customer_route.route_id
+				) AS routeTable
+				ON routes.id = routeTable.route_id
+				ORDER BY routes.name ASC
+			");
+
+			$result = $query->result();
 			return $result;
 		}
 }

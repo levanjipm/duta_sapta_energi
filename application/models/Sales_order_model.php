@@ -201,81 +201,121 @@ class Sales_order_model extends CI_Model {
 			return $result;
 		}
 
-		public function getIncompleteSalesOrderDelivery($offset, $term = "", $areaArray = [])
+		public function getIncompleteSalesOrderDelivery($offset, $term = "", $routeId)
 		{
-			$inString = "(";
-			foreach($areaArray as $area){
-				$inString .= "'" . $area . "',";
+			if($routeId == 0){
+				$query = $this->db->query("
+					SELECT code_sales_order.*, sellerTable.name as seller, salesOrderTable.quantity, salesOrderTable.sent
+					FROM code_sales_order
+					LEFT JOIN (
+						SELECT id, name FROM users
+					) as sellerTable
+					ON code_sales_order.seller = sellerTable.id
+					JOIN (
+						SELECT sales_order.code_sales_order_id, SUM(sales_order.quantity) AS quantity, SUM(IF(sales_order.status = 1, sales_order.quantity, sales_order.sent)) as sent
+						FROM sales_order
+						GROUP BY sales_order.code_sales_order_id
+					) as salesOrderTable
+					ON salesOrderTable.code_sales_order_id = code_sales_order.id
+					JOIN customer ON code_sales_order.customer_id = customer.id
+					WHERE code_sales_order.is_confirm = 1
+					AND code_sales_order.id IN (
+						SELECT DISTINCT(sales_order.code_sales_order_id) as id 
+						FROM sales_order
+						WHERE status = 0
+					)
+					AND code_sales_order.id NOT IN (
+						SELECT code_sales_order_close_request.code_sales_order_id
+						FROM code_sales_order_close_request
+						WHERE is_confirm = '1'	
+					)
+					AND (code_sales_order.name LIKE '%$term%' OR customer.name LIKE '%$term%' OR customer.city LIKE '%$term%')
+					ORDER BY code_sales_order.date ASC
+					LIMIT 10 OFFSET $offset
+				");
+			} else {
+				$query = $this->db->query("
+					SELECT code_sales_order.*, sellerTable.name as seller, salesOrderTable.quantity, salesOrderTable.sent
+					FROM code_sales_order
+					LEFT JOIN (
+						SELECT id, name FROM users
+					) as sellerTable
+					ON code_sales_order.seller = sellerTable.id
+					JOIN (
+						SELECT sales_order.code_sales_order_id, SUM(sales_order.quantity) AS quantity, SUM(IF(sales_order.status = 1, sales_order.quantity, sales_order.sent)) as sent
+						FROM sales_order
+						GROUP BY sales_order.code_sales_order_id
+					) as salesOrderTable
+					ON salesOrderTable.code_sales_order_id = code_sales_order.id
+					JOIN customer ON code_sales_order.customer_id = customer.id
+					JOIN customer_route ON customer.id = customer_route.customer_id
+					WHERE code_sales_order.is_confirm = 1
+					AND code_sales_order.id IN (
+						SELECT DISTINCT(sales_order.code_sales_order_id) as id 
+						FROM sales_order
+						WHERE status = 0
+					)
+					AND code_sales_order.id NOT IN (
+						SELECT code_sales_order_close_request.code_sales_order_id
+						FROM code_sales_order_close_request
+						WHERE is_confirm = '1'	
+					)
+					AND (code_sales_order.name LIKE '%$term%' OR customer.name LIKE '%$term%' OR customer.city LIKE '%$term%')
+					AND customer_route.route_id = $routeId
+					ORDER BY code_sales_order.date ASC
+					LIMIT 10 OFFSET $offset
+				");
 			}
-
-			$inString = substr($inString, 0, -1);
-			$inString .= ")";
 			
-			$query = $this->db->query("
-				SELECT code_sales_order.*, sellerTable.name as seller, salesOrderTable.quantity, salesOrderTable.sent
-				FROM code_sales_order
-				LEFT JOIN (
-					SELECT id, name FROM users
-				) as sellerTable
-				ON code_sales_order.seller = sellerTable.id
-				JOIN (
-					SELECT sales_order.code_sales_order_id, SUM(sales_order.quantity) AS quantity, SUM(IF(sales_order.status = 1, sales_order.quantity, sales_order.sent)) as sent
-					FROM sales_order
-					GROUP BY sales_order.code_sales_order_id
-				) as salesOrderTable
-				ON salesOrderTable.code_sales_order_id = code_sales_order.id
-				JOIN customer ON code_sales_order.customer_id = customer.id
-				JOIN customer_route ON customer.id = customer_route.customer_id
-				WHERE code_sales_order.is_confirm = 1
-				AND code_sales_order.id IN (
-					SELECT DISTINCT(sales_order.code_sales_order_id) as id 
-					FROM sales_order
-					WHERE status = 0
-				)
-				AND code_sales_order.id NOT IN (
-					SELECT code_sales_order_close_request.code_sales_order_id
-					FROM code_sales_order_close_request
-					WHERE is_confirm = '1'	
-				)
-				AND (code_sales_order.name LIKE '%$term%' OR customer.name LIKE '%$term%' OR customer.city LIKE '%$term%')
-				AND customer_route.route_id IN $inString
-				LIMIT 10 OFFSET $offset
-			");
 
 			$result = $query->result();
 			return $result;
 		}
 
-		public function countIncompleteSalesOrderDelivery($term = "", $areaArray = [])
+		public function countIncompleteSalesOrderDelivery($term = "", $routeId)
 		{
-			$inString = "(";
-			foreach($areaArray as $area){
-				$inString .= "'" . $area . "',";
+			if($routeId == 0){
+				$query = $this->db->query("
+					SELECT code_sales_order.* 
+					FROM code_sales_order 
+					JOIN customer ON code_sales_order.customer_id = customer.id
+					WHERE code_sales_order.is_confirm = 1
+					AND code_sales_order.id IN (
+						SELECT DISTINCT(sales_order.code_sales_order_id) as id 
+						FROM sales_order
+						WHERE status = 0
+					)
+					AND code_sales_order.name LIKE '%$term%'
+					AND (code_sales_order.name LIKE '%$term%' OR customer.name LIKE '%$term%' OR customer.city LIKE '%$term%')
+					AND code_sales_order.id NOT IN (
+						SELECT code_sales_order_close_request.code_sales_order_id
+						FROM code_sales_order_close_request
+						WHERE is_confirm = '1'	
+					)
+				");
+			} else {
+				$query = $this->db->query("
+					SELECT code_sales_order.* 
+					FROM code_sales_order 
+					JOIN customer ON code_sales_order.customer_id = customer.id
+					JOIN customer_route ON customer.id = customer_route.customer_id
+					WHERE code_sales_order.is_confirm = 1
+					AND code_sales_order.id IN (
+						SELECT DISTINCT(sales_order.code_sales_order_id) as id 
+						FROM sales_order
+						WHERE status = 0
+					)
+					AND code_sales_order.name LIKE '%$term%'
+					AND (code_sales_order.name LIKE '%$term%' OR customer.name LIKE '%$term%' OR customer.city LIKE '%$term%')
+					AND code_sales_order.id NOT IN (
+						SELECT code_sales_order_close_request.code_sales_order_id
+						FROM code_sales_order_close_request
+						WHERE is_confirm = '1'	
+					)
+					AND customer_route.route_id = $routeId
+				");
 			}
-
-			$inString = substr($inString, 0, -1);
-			$inString .= ")";
-
-			$query = $this->db->query("
-				SELECT code_sales_order.* 
-				FROM code_sales_order 
-				JOIN customer ON code_sales_order.customer_id = customer.id
-				JOIN customer_route ON customer.id = customer_route.customer_id
-				WHERE code_sales_order.is_confirm = 1
-				AND code_sales_order.id IN (
-					SELECT DISTINCT(sales_order.code_sales_order_id) as id 
-					FROM sales_order
-					WHERE status = 0
-				)
-				AND code_sales_order.name LIKE '%$term%'
-				AND (code_sales_order.name LIKE '%$term%' OR customer.name LIKE '%$term%' OR customer.city LIKE '%$term%')
-				AND code_sales_order.id NOT IN (
-					SELECT code_sales_order_close_request.code_sales_order_id
-					FROM code_sales_order_close_request
-					WHERE is_confirm = '1'	
-				)
-				AND customer_route.route_id IN $inString
-			");
+			
 
 			$result = $query->num_rows();
 			return $result;

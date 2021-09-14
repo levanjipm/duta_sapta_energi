@@ -1,5 +1,13 @@
 <head>
     <title>Route</title>
+    <style>
+        #map {
+			height: 400px;
+			width:100%;
+		}
+    </style>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
+	<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBX4UnIiCLVbq-LPeTA__c3NKIEZA1rhAw&callback=initMap&libraries=&v=weekly" defer></script>
 </head>
 <div class='dashboard'>
 	<div class='dashboard_head'>
@@ -61,6 +69,13 @@
 			
 			<button class='button button_default_dark' type='button' id='insertRouteButton'><i class='fa fa-long-arrow-right'></i></button>
 		</form>
+	</div>
+</div>
+
+<div class='alert_wrapper' id='view_route_wrapper'>
+	<button class='slide_alert_close_button'>&times;</button>
+	<div class='alert_box_slide'>
+        <div id='map'></div>
 	</div>
 </div>
 
@@ -196,7 +211,7 @@
                     $('#routeTableText').hide();
                 }
                 $.each(response.items, function(i, item){
-                    $('#routeTableContent').append("<tr><td>" + item.name + "</td><td>" + numeral(item.count).format('0,0') + "</td><td><button class='button default_button_dark'><i class='fa fa-map-marker'></i></button><button class='button button_success_dark' onclick='openEditRoute(" + item.id + ", `" + item.name + "`)'><i class='fa fa-pencil'></i></button> <button class='button button_danger_dark' onclick='openDeleteRoute(" + item.id + ")'><i class='fa fa-trash'></i></button> <button class='button button_default_dark' onclick='assignCustomers(" + item.id + ")'><i class='fa fa-keyboard-o'></i></button></td></tr>");
+                    $('#routeTableContent').append("<tr><td>" + item.name + "</td><td>" + numeral(item.count).format('0,0') + "</td><td><button class='button default_button_dark' onclick='openMap(" + item.id + ")'><i class='fa fa-map-marker'></i></button><button class='button button_success_dark' onclick='openEditRoute(" + item.id + ", `" + item.name + "`)'><i class='fa fa-pencil'></i></button> <button class='button button_danger_dark' onclick='openDeleteRoute(" + item.id + ")'><i class='fa fa-trash'></i></button> <button class='button button_default_dark' onclick='assignCustomers(" + item.id + ")'><i class='fa fa-keyboard-o'></i></button></td></tr>");
                 })
                 
                 $('#page').html("");
@@ -253,5 +268,112 @@
             }
         })
     }
+
+    let map;
+	let markers = [];
+
+	function initMap() {
+		map = new google.maps.Map(document.getElementById("map"), {
+			center: { lat: -34.397, lng: 150.644 },
+			zoom: 12,
+		});
+	}
+
+    function openMap(i){
+        $.ajax({
+            url:"<?= site_url('Route/getCustomerById') ?>",
+            data:{
+                route_id: i
+            },
+            beforeSend:function(){
+                setMapOnAll(map);
+                markers = [];
+            },
+            success:function(response){
+                $.each(response, function(index, customer){
+                    if(customer.longitude != 0 && customer.longitude != null && customer.latitude != 0 && customer.latitude != null){
+                        var place = new google.maps.LatLng(parseFloat(customer.latitude), parseFloat(customer.longitude));
+                        var marker = new google.maps.Marker({
+                            position: place,
+                            map: map,
+                            title: customer.name,
+                            icon:'<?= base_url('assets/Icons/location.png') ?>'
+                        });
+
+                        var complete_address		= '';
+                        complete_address		+= customer.address;
+                        var customer_city			= customer.city;
+                        var customer_number			= customer.number;
+                        var customer_rt				= customer.rt;
+                        var customer_rw				= customer.rw;
+                        var customer_postal			= customer.postal_code;
+                        var customer_block			= customer.block;
+                        var customer_id				= customer.id;
+
+                        if(customer_number != null){
+                            complete_address	+= ' No. ' + customer_number;
+                        }
+                        
+                        if(customer_block != null && customer_block != "000"){
+                            complete_address	+= ' Blok ' + customer_block;
+                        }
+                    
+                        if(customer_rt != '000'){
+                            complete_address	+= ' RT ' + customer_rt;
+                        }
+                        
+                        if(customer_rw != '000' && customer_rt != '000'){
+                            complete_address	+= ' /RW ' + customer_rw;
+                        }
+                        
+                        if(customer_postal != null){
+                            complete_address	+= ', ' + customer_postal;
+                        }
+
+                        const contentString =
+                            '<div id="content"><h4 class="headerText">' + customer.name + '</h4>' +
+                            '<div id="bodyContent">' +
+                            "<p class='bodyText'>" + complete_address + "</p>" +
+                            "<p class='bodyText'>" + customer_city + "</p>" +
+                            "</div>" +
+                            "</div>";
+                        const infowindow = new google.maps.InfoWindow({
+                            content: contentString,
+                        });
+
+                        marker.addListener("click", () => {
+                            infowindow.open(map, marker);
+                        });
+
+                        markers.push(marker);
+                        marker.setMap(map);
+                    }
+                })
+
+                $('#view_route_wrapper').fadeIn(300, function(){
+                    var bounds = new google.maps.LatLngBounds();
+
+                    $.each(markers, function(index, marker){
+                        marker.setMap(map);
+                        bounds.extend(marker.position);
+                    });
+                    var listener = google.maps.event.addListener(map, "idle", function() {
+                        map.setZoom(12); 
+                        google.maps.event.removeListener(listener); 
+                    });
+
+                    map.fitBounds(bounds);
+
+                    $('#view_route_wrapper .alert_box_slide').show("slide", { direction: "right" }, 250);
+                });
+            }
+        })
+    }
+
+	function setMapOnAll(map){
+		for (let i = 0; i < markers.length; i++) {
+			markers[i].setMap(null);
+		};
+	}
 
 </script>
