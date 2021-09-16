@@ -59,6 +59,11 @@
 			<a href='<?= site_url('Billing/archiveDashboard') ?>'><button><p style='font-family:museo'>Archive</p></button></a>
 		</div>
 		<a href='<?= site_url('Finance/paymentDashboard') ?>'><button><p>Payment</p></button></a>
+		<button class='container_button'><p style='font-family:museo'>Schedule</p> <i class="fa fa-caret-down"></i></button>
+		<div class='container_bar'>
+			<a href='<?= site_url('Schedule') ?>'><button><p style='font-family:museo'>Dashboard</p></button></a>
+			<a href='<?= site_url('Schedule/print') ?>'><button><p style='font-family:museo'>Print</p></button></a>
+		</div>
 	</div>
 </div>
 <div class="selfCheckIn" data-toggle="tooltip" title="Self Check In">
