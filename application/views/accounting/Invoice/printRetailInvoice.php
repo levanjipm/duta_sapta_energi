@@ -184,6 +184,21 @@
 				</table>
 			</div>
 		</div>
+		<div class='row mt-3'>
+			<div class='col-12'>
+				<p class='mb-0'>Mohon pembayaran dilakukan ke rekening berikut ini:</p>
+				<ul style='padding-inline-start:20px'>
+					<?php foreach($banks as $bank){ ?>
+						<li>
+							<p class='mb-0'><?= $bank->bank . ' cabang ' . $bank->branch ?></p>
+							<p class='mb-0'>Atas nama <?= $bank->name ?></p>
+							<p class='mb-0'><strong><?= $bank->number ?></strong></p>
+						</li>
+					<?php } ?>
+				</ul>
+				<p>Pembayaran melalui cek atau giro dianggap sah setelah berhasil diuangkan.</p>
+			</div>
+		</div>
 	</div>
 </div>
 <br>

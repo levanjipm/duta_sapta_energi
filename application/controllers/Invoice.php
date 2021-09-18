@@ -91,6 +91,9 @@ class Invoice extends CI_Controller {
 			$data['details'] = $this->Delivery_order_detail_model->getByCodeDeliveryOrderId($deliveryOrderId);
 			
 			$deliveryOrder		= $this->Delivery_order_model->getById($deliveryOrderId);
+			$this->load->model("Internal_bank_account_model");
+			$data['banks']		= $this->Internal_bank_account_model->getAll();
+
 			if($deliveryOrder->invoice_id == NULL){
 				$this->load->model('Invoice_model');
 				$resultInsertInvoice = $this->Invoice_model->insertFromDeliveryOrder($result);

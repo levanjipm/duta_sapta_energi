@@ -89,4 +89,11 @@ class Internal_bank_account_model extends CI_Model {
 			
 			return $this->db->affected_rows();
 		}
+
+		public function getAll(){
+			$this->db->order_by('name', 'ASC');
+			$query		= $this->db->get($this->table_account);
+			$result		= $query->result();
+			return $result;
+		}
 }
