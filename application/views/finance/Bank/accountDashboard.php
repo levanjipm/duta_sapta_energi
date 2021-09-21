@@ -95,6 +95,12 @@
 			
 			<label>Branch</label>
 			<input type='text' class='form-control' id='editBranch' name='branch' required>
+
+			<label>Shown to Customers?</label>
+			<select class='form-control' id='editShown' name='is_shown' required>
+				<option value='0'>Not shown</option>
+				<option value='1'>Shown</option>
+			</select>
 			<br>
 			<button type='button' id='updateBankAccountButton' class='button button_default_dark'><i class='fa fa-long-arrow-right'></i></button>
 			<br>
@@ -135,11 +141,13 @@
 				var bank = response.bank;
 				var number = response.number;
 				var branch = response.branch;
+				var is_shown = response.is_shown;
 
 				$('#editName').val(name);
 				$('#editNumber').val(number);
 				$('#editBank').val(bank);
 				$('#editBranch').val(branch);
+				$('#editShown').val(is_shown);
 
 				$('#editId').val(n);
 
@@ -191,8 +199,15 @@
 					var number = item.number;
 					var bank = item.bank;
 					var branch = item.branch;
+					var is_shown	= item.is_shown;
 					var id =item.id;
-					$("#accountTableContent").append("<tr><td>" + number + "</td><td>" + name + "</td><td><label>" + bank + "</label><p>" + branch + "</p></td><td><button class='button button_success_dark' onclick='viewAccount(" + id + ")'><i class='fa fa-pencil'></i></button> <button class='button button_danger_dark' onclick='confirm_delete(" + id + ")'><i class='fa fa-trash'></i></button></td></tr>");
+
+					if(is_shown == 1){
+						$("#accountTableContent").append("<tr><td><p>" + number + "</p><p>Shown to customers</p></td><td>" + name + "</td><td><label>" + bank + "</label><p>" + branch + "</p></td><td><button class='button button_success_dark' onclick='viewAccount(" + id + ")'><i class='fa fa-pencil'></i></button> <button class='button button_danger_dark' onclick='confirm_delete(" + id + ")'><i class='fa fa-trash'></i></button></td></tr>");
+					} else {
+						$("#accountTableContent").append("<tr><td><p>" + number + "</p><p>Not shown to customers</p></td><td>" + name + "</td><td><label>" + bank + "</label><p>" + branch + "</p></td><td><button class='button button_success_dark' onclick='viewAccount(" + id + ")'><i class='fa fa-pencil'></i></button> <button class='button button_danger_dark' onclick='confirm_delete(" + id + ")'><i class='fa fa-trash'></i></button></td></tr>");
+					}
+					
 					accountCount++;
 				});
 				if(accountCount > 0){

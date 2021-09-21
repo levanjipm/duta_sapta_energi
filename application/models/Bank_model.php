@@ -640,7 +640,6 @@ class Bank_model extends CI_Model {
 			$this->db->where('date >=', $start_date);
 			$this->db->where('date <=', $end_date);
 			$this->db->where('bank_transaction_major', null);
-			$this->db->limit($limit, $offset);
 			$query		= $this->db->get($this->table_bank);
 			$result		= $query->num_rows();
 			

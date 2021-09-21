@@ -97,7 +97,11 @@
 			<p id='recommendedTableText'>There is no recommendation list</p>
 		</div>
 		<div id='searchView' style='display:none'>
-			<input type='text' class='form-control' id='searchSearchBar'>
+			<select class='form-control' id='area'>
+				<?php foreach($areas as $area){ ?>
+					<option value="<?= $area->id ?>"><?= $area->name ?> (<?= $area->count  ?>)</option>
+				<?php } ?>
+			</select>
 			<br>
 			<div id='searchTable'>
 				<table class='table table-bordered'>
@@ -169,6 +173,7 @@
 </div>
 <script>
 	var includedInvoice = [];
+
 	$(document).ready(function(){
 		$('#urgentButton').click();
 	});
@@ -224,7 +229,7 @@
 		fetchRecommendationList(1);
 	})
 
-	$('#searchSearchBar').change(function(){
+	$('#area').change(function(){
 		fetchItemList(1);
 	});
 
@@ -249,15 +254,15 @@
 					var invoiceName = item.name;
 					var id			= item.id;
 
-					var customerName = item.customerName;
-					var customerAddress = item.address;
-					var complete_address = item.address;
-					var customer_number = item.number;
-					var customer_block = item.block;
-					var customer_rt = item.rt;
-					var customer_rw = item.rw;
-					var customer_city = item.city;
-					var customer_postal = item.postal_code;
+					var customerName 		= item.customerName;
+					var customerAddress 	= item.address;
+					var complete_address 	= item.address;
+					var customer_number 	= item.number;
+					var customer_block 		= item.block;
+					var customer_rt 		= item.rt;
+					var customer_rw 		= item.rw;
+					var customer_city 		= item.city;
+					var customer_postal 	= item.postal_code;
 				
 					if(customer_number != null){
 						complete_address	+= ' No. ' + customer_number;
@@ -280,10 +285,10 @@
 					}
 
 					if(!includedInvoice.includes("" + id + "")){
-						$('#recommendedTableContent').append("<tr id='row-" + id + "'><td>" + my_date_format(date) +"</td><td>" + invoiceName + "</td><td><label>" + customerName + "</label><p>" + complete_address + "</p><p>" + customer_city + "</p></td><td><button class='button button_default_dark' onclick='selectRecommendedInvoice(" + id + ")' id='selectInvoiceButtonRecommended-" + id + "'><i class='fa fa-long-arrow-right'></i></button><button class='button button_danger_dark' onclick='removeRecommendedInvoice(" + id + ")' id='removeInvoiceButtonRecommended-" + id + "' style='display:none'><i class='fa fa-trash'></i></button></td></tr>");
+						$('#recommendedTableContent').append("<tr id='row-" + id + "'><td>" + my_date_format(date) +"</td><td>" + invoiceName + "</td><td><label>" + customerName + "</label><p>" + complete_address + "</p><p>" + customer_city + "</p></td><td><button class='button button_default_dark' onclick='selectRecommendedInvoice(" + id + ")' id='selectInvoiceButtonRecommended-" + id + "'><i class='fa fa-plus'></i></button><button class='button button_danger_dark' onclick='removeRecommendedInvoice(" + id + ")' id='removeInvoiceButtonRecommended-" + id + "' style='display:none'><i class='fa fa-trash'></i></button></td></tr>");
 						invoiceCount++;
 					} else {
-						$('#recommendedTableContent').append("<tr id='row-" + id + "'><td>" + my_date_format(date) +"</td><td>" + invoiceName + "</td><td><label>" + customerName + "</label><p>" + complete_address + "</p><p>" + customer_city + "</p></td><td><button class='button button_default_dark' onclick='selectRecommendedInvoice(" + id + ")' id='selectInvoiceButtonRecommended-" + id + "' style='display:none'><i class='fa fa-long-arrow-right'></i></button><button class='button button_danger_dark' onclick='removeRecommendedInvoice(" + id + ")' id='removeInvoiceButtonRecommended-" + id + "'><i class='fa fa-trash'></i></button></td></tr>");
+						$('#recommendedTableContent').append("<tr id='row-" + id + "'><td>" + my_date_format(date) +"</td><td>" + invoiceName + "</td><td><label>" + customerName + "</label><p>" + complete_address + "</p><p>" + customer_city + "</p></td><td><button class='button button_default_dark' onclick='selectRecommendedInvoice(" + id + ")' id='selectInvoiceButtonRecommended-" + id + "' style='display:none'><i class='fa fa-plus'></i></button><button class='button button_danger_dark' onclick='removeRecommendedInvoice(" + id + ")' id='removeInvoiceButtonRecommended-" + id + "'><i class='fa fa-trash'></i></button></td></tr>");
 						invoiceCount++;
 					}
 				});
@@ -382,12 +387,13 @@
 		})
 	}
 
-	function fetchItemList(page = $('#searchPage').val()){
+	function fetchItemList(page = $('#searchPage').val(), area = $('#area').val()){
 		$.ajax({
 			url:"<?= site_url('Billing/getBillingData') ?>",
 			data:{
-				page:page,
-				term: $('#searchSearchBar').val(),
+				page: page,
+				area: area,
+				date: '<?= $_GET['date'] ?>'
 			},
 			success:function(response){
 				var items = response.items;

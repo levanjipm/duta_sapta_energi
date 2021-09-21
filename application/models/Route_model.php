@@ -169,6 +169,8 @@ class Route_model extends CI_Model {
 						FROM sales_order
 						WHERE sales_order.status = 0
 					)
+					AND code_sales_order.is_confirm = 1
+					AND code_sales_order.is_delete = 0
 					GROUP BY customer_route.route_id
 				) AS routeTable
 				ON routes.id = routeTable.route_id

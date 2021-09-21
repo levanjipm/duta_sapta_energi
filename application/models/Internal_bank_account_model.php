@@ -67,6 +67,7 @@ class Internal_bank_account_model extends CI_Model {
 			$this->db->set('number', $this->input->post('number'));
 			$this->db->set('bank', $this->input->post('bank'));
 			$this->db->set('branch', $this->input->post('branch'));
+			$this->db->set('is_shown', $this->input->post('is_shown'));
 			$this->db->where("id", $this->input->post('id'));
 
 			$this->db->update($this->table_account);

@@ -117,7 +117,7 @@ class SalesAnalytics extends CI_Controller {
 		echo json_encode($data);
 	}
 
-	public function salesmanDetailReport($month, $year, $salesId)
+	public function salesmanDetailReport($month, $year, $salesId = NULL)
 	{
 		$user_id		= $this->session->userdata('user_id');
 		$this->load->model('User_model');
@@ -130,7 +130,19 @@ class SalesAnalytics extends CI_Controller {
 		$this->load->view('sales/header', $data);
 
 		$data			= array();
-		$data['salesman']	= $this->User_model->getByid($salesId);
+		if($salesId != NULL){
+			$data['salesman']	= $this->User_model->getByid($salesId);
+		} else {
+			$data['salesman']	= (object) array(
+				"id" => 0,
+				"name" => "Office",
+				"address" => "",
+				"bank_account" => "",
+				"email" => "",
+				"access_level" => ""
+			);
+		}
+		
 		$data['month']	= $month;
 		$data['year']	= $year;
 

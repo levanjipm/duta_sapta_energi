@@ -27,6 +27,32 @@ class Billing extends CI_Controller {
 	public function createForm()
 	{
 		$date			= $this->input->get('date');
+		$dayofweek = date('w', strtotime($date));
+		$day = 0;
+		switch($dayofweek){
+			case 0:
+				$day = 6;
+				break;
+			case 1:
+				$day = 0;
+				break;
+			case 2:
+				$day = 1;
+				break;
+			case 3:
+				$day = 2;
+				break;
+			case 4:
+				$day = 3;
+				break;
+			case 5:
+				$day = 4;
+				break;
+			case 6:
+				$day = 5;
+				break;
+		}
+
 		$collector		= $this->input->get('collector');
 		if(!isset($date) || !isset($collector) || $date < date('2020-01-01')){
 			redirect(site_url("Billing/createDashboard"));
@@ -40,8 +66,11 @@ class Billing extends CI_Controller {
 			
 			$this->load->view('head');
 			$this->load->view('finance/header', $data);
-
 			$data = array();
+
+			$this->load->model("Invoice_model");
+			
+			$data['areas'] = $this->Invoice_model->getAreaList($day);
 			$data['date'] = $date;
 			$data['collector'] = $collector;
 			$this->load->view('finance/Billing/createForm', $data);
@@ -63,6 +92,41 @@ class Billing extends CI_Controller {
 		echo json_encode($data);
 	}
 
+	public function getAreaList(){
+		$date		= $this->input->get('date');
+		$dayofweek = date('w', strtotime($date));
+		$day = 0;
+		switch($dayofweek){
+			case 0:
+				$day = 6;
+				break;
+			case 1:
+				$day = 0;
+				break;
+			case 2:
+				$day = 1;
+				break;
+			case 3:
+				$day = 2;
+				break;
+			case 4:
+				$day = 3;
+				break;
+			case 5:
+				$day = 4;
+				break;
+			case 6:
+				$day = 5;
+				break;
+		}
+
+		$this->load->model("Invoice_model");
+		$data		= $this->Invoice_model->getAreaList();
+
+		header('Content-Type: application/json');
+		echo json_encode($data);
+	}
+
 	public function getUrgentList()
 	{
 		$date		= $this->input->get('date');
@@ -70,9 +134,35 @@ class Billing extends CI_Controller {
 		$term		= $this->input->get('term');
 		$offset		= ($page - 1) * 10;
 
+		$dayofweek = date('w', strtotime($date));
+		$day = 0;
+		switch($dayofweek){
+			case 0:
+				$day = 6;
+				break;
+			case 1:
+				$day = 0;
+				break;
+			case 2:
+				$day = 1;
+				break;
+			case 3:
+				$day = 2;
+				break;
+			case 4:
+				$day = 3;
+				break;
+			case 5:
+				$day = 4;
+				break;
+			case 6:
+				$day = 5;
+				break;
+		}
+
 		$this->load->model("Invoice_model");
-		$data['items'] = $this->Invoice_model->getUrgentList($date, $offset, $term);
-		$data['pages'] = max(1, ceil($this->Invoice_model->countUrgentList($date, $offset, $term)/10));
+		$data['items'] = $this->Invoice_model->getUrgentList($date, $offset, $term, $day);
+		$data['pages'] = max(1, ceil($this->Invoice_model->countUrgentList($date, $offset, $term, $day)/10));
 		
 		header('Content-Type: application/json');
 		echo json_encode($data);	
@@ -83,10 +173,38 @@ class Billing extends CI_Controller {
 		$page		= $this->input->get('page');
 		$term		= $this->input->get('term');
 		$offset		= ($page - 1) * 10;
+		$date		= $this->input->get('date');
+		$area		= $this->input->get('area');
+
+		$dayofweek = date('w', strtotime($date));
+		$day = 0;
+		switch($dayofweek){
+			case 0:
+				$day = 6;
+				break;
+			case 1:
+				$day = 0;
+				break;
+			case 2:
+				$day = 1;
+				break;
+			case 3:
+				$day = 2;
+				break;
+			case 4:
+				$day = 3;
+				break;
+			case 5:
+				$day = 4;
+				break;
+			case 6:
+				$day = 5;
+				break;
+		}
 
 		$this->load->model("Invoice_model");
-		$data['items'] = $this->Invoice_model->getBillingData($offset, $term);
-		$data['pages'] = max(1, ceil($this->Invoice_model->countBillingData($term)/10));
+		$data['items'] = $this->Invoice_model->getBillingData($offset, $term, $day, $area);
+		$data['pages'] = max(1, ceil($this->Invoice_model->countBillingData($term, $day, $area)/10));
 		
 		header('Content-Type: application/json');
 		echo json_encode($data);

@@ -844,23 +844,42 @@ class Invoice_model extends CI_Model {
 			return $result;
 		}
 
-		public function getBySalesmanMonthYear($month, $year, $salesId)
+		public function getBySalesmanMonthYear($month, $year, $salesId = NULL)
 		{
-			$query		= $this->db->query("
-				SELECT sales_order.id, (price_list.price_list * (100 - sales_order.discount) / 100) AS unitPrice, delivery_order.quantity, item.reference, item.type, item.name, item.brand, brand.name AS brand_name, item_class.name AS item_class_name, code_sales_order.customer_id, customer.name AS customer_name, customer_area.name AS customer_area_name
-				FROM delivery_order
-				JOIN code_delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order.id
-				JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
-				JOIN price_list ON sales_order.price_list_id = price_list.id
-				JOIN item ON price_list.item_id = item.id
-				JOIN item_class ON item.type = item_class.id
-				JOIN brand ON item.brand = brand.id
-				JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
-				JOIN customer ON code_sales_order.customer_id = customer.id
-				JOIN customer_area ON customer.area_id = customer_area.id
-				WHERE MONTH(code_sales_order.date) = '$month' AND YEAR(code_sales_order.date) = '$year'
-				AND code_sales_order.seller = '$salesId'
-			");
+			if($salesId != NULL){
+				$query		= $this->db->query("
+					SELECT sales_order.id, (price_list.price_list * (100 - sales_order.discount) / 100) AS unitPrice, delivery_order.quantity, item.reference, item.type, item.name, item.brand, brand.name AS brand_name, item_class.name AS item_class_name, code_sales_order.customer_id, customer.name AS customer_name, customer_area.name AS customer_area_name
+					FROM delivery_order
+					JOIN code_delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order.id
+					JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
+					JOIN price_list ON sales_order.price_list_id = price_list.id
+					JOIN item ON price_list.item_id = item.id
+					JOIN item_class ON item.type = item_class.id
+					JOIN brand ON item.brand = brand.id
+					JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
+					JOIN customer ON code_sales_order.customer_id = customer.id
+					JOIN customer_area ON customer.area_id = customer_area.id
+					WHERE MONTH(code_sales_order.date) = '$month' AND YEAR(code_sales_order.date) = '$year'
+					AND code_sales_order.seller = '$salesId'
+				");
+			} else {
+				$query		= $this->db->query("
+					SELECT sales_order.id, (price_list.price_list * (100 - sales_order.discount) / 100) AS unitPrice, delivery_order.quantity, item.reference, item.type, item.name, item.brand, brand.name AS brand_name, item_class.name AS item_class_name, code_sales_order.customer_id, customer.name AS customer_name, customer_area.name AS customer_area_name
+					FROM delivery_order
+					JOIN code_delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order.id
+					JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
+					JOIN price_list ON sales_order.price_list_id = price_list.id
+					JOIN item ON price_list.item_id = item.id
+					JOIN item_class ON item.type = item_class.id
+					JOIN brand ON item.brand = brand.id
+					JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
+					JOIN customer ON code_sales_order.customer_id = customer.id
+					JOIN customer_area ON customer.area_id = customer_area.id
+					WHERE MONTH(code_sales_order.date) = '$month' AND YEAR(code_sales_order.date) = '$year'
+					AND code_sales_order.seller IS NULL
+				");
+			}
+			
 
 			$result		= $query->result();
 			$response	= array();
@@ -971,64 +990,135 @@ class Invoice_model extends CI_Model {
 
 		}
 
-		public function getBillingData($offset, $term, $limit = 10)
+		public function getBillingData($offset, $term, $day = NULL, $area = NULL, $limit = 10)
 		{
-			$query = $this->db->query("
-				SELECT (a.value - a.paid) as value, customer.* 
-				FROM (
-					SELECT SUM(invoice.value + invoice.delivery - invoice.discount) as value, COALESCE(receivableTable.value,0) AS paid, code_sales_order.customer_id
-					FROM invoice
-					LEFT JOIN (
-						SELECT SUM(receivable.value) as value, receivable.invoice_id 
-						FROM receivable
-						GROUP BY receivable.invoice_id
-					) receivableTable
-					ON receivableTable.invoice_id = invoice.id
-					JOIN code_delivery_order ON code_delivery_order.invoice_id = invoice.id
-					JOIN delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order.id
-					JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
-					JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
-					JOIN customer ON code_sales_order.customer_id = customer.id
-					WHERE invoice.is_done = '0'
-					AND customer.name LIKE '%$term%'
-					GROUP BY code_sales_order.customer_id
-					ORDER BY invoice.date ASC
-				) a
-				JOIN customer ON a.customer_id = customer.id
-				ORDER BY value DESC
-				LIMIT $limit OFFSET $offset
-			");
+			if($day == NULL){
+				$query = $this->db->query("
+					SELECT (a.value - a.paid) as value, customer.* 
+					FROM (
+						SELECT SUM(invoice.value + invoice.delivery - invoice.discount) as value, COALESCE(receivableTable.value,0) AS paid, code_sales_order.customer_id
+						FROM invoice
+						LEFT JOIN (
+							SELECT SUM(receivable.value) as value, receivable.invoice_id 
+							FROM receivable
+							GROUP BY receivable.invoice_id
+						) receivableTable
+						ON receivableTable.invoice_id = invoice.id
+						JOIN code_delivery_order ON code_delivery_order.invoice_id = invoice.id
+						JOIN delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order.id
+						JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
+						JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
+						JOIN customer ON code_sales_order.customer_id = customer.id
+						WHERE invoice.is_done = '0'
+						AND customer.name LIKE '%$term%'
+						GROUP BY code_sales_order.customer_id
+						ORDER BY invoice.date ASC
+					) a
+					JOIN customer ON a.customer_id = customer.id
+					ORDER BY value DESC
+					LIMIT $limit OFFSET $offset
+				");
+			} else if($day != NULL && $area != NULL) {
+				$query = $this->db->query("
+					SELECT (a.value - a.paid) as value, customer.* 
+					FROM (
+						SELECT SUM(invoice.value + invoice.delivery - invoice.discount) as value, COALESCE(receivableTable.value,0) AS paid, code_sales_order.customer_id
+						FROM invoice
+						LEFT JOIN (
+							SELECT SUM(receivable.value) as value, receivable.invoice_id 
+							FROM receivable
+							GROUP BY receivable.invoice_id
+						) receivableTable
+						ON receivableTable.invoice_id = invoice.id
+						JOIN code_delivery_order ON code_delivery_order.invoice_id = invoice.id
+						JOIN delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order.id
+						JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
+						JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
+						JOIN customer ON code_sales_order.customer_id = customer.id
+						WHERE invoice.is_done = '0'
+						AND customer.name LIKE '%$term%'
+						GROUP BY code_sales_order.customer_id
+						ORDER BY invoice.date ASC
+					) a
+					JOIN customer ON a.customer_id = customer.id
+					JOIN (
+						SELECT DISTINCT(customer_id) AS customer_id
+						FROM customer_schedule
+						WHERE day = '$day'
+					) scheduleTable
+					ON scheduleTable.customer_id = customer.id
+					WHERE customer.area_id = '$area'
+					ORDER BY value DESC
+					LIMIT $limit OFFSET $offset
+				");
+			}
+			
 
 			$result = $query->result();
 			return $result;
 		}
 
-		public function countBillingData($term)
+		public function countBillingData($term, $day = NULL, $area = NULL)
 		{
-			$query = $this->db->query("
-				SELECT customer.id
-				FROM (
-					SELECT SUM(invoice.value + invoice.delivery - invoice.discount) as value, COALESCE(receivableTable.value,0) AS paid, code_sales_order.customer_id
-					FROM invoice
-					LEFT JOIN (
-						SELECT SUM(receivable.value) as value, receivable.invoice_id 
-						FROM receivable
-						GROUP BY receivable.invoice_id
-					) receivableTable
-					ON receivableTable.invoice_id = invoice.id
-					JOIN code_delivery_order ON code_delivery_order.invoice_id = invoice.id
-					JOIN delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order.id
-					JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
-					JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
-					JOIN customer ON code_sales_order.customer_id = customer.id
-					WHERE invoice.is_done = '0'
-					AND customer.name LIKE '%" . $term . "%'
-					GROUP BY code_sales_order.customer_id
-					ORDER BY invoice.date ASC
-				) a
-				JOIN customer ON a.customer_id = customer.id
-				ORDER BY value DESC
-			");
+			if($day == NULL){
+				$query = $this->db->query("
+					SELECT customer.id
+					FROM (
+						SELECT SUM(invoice.value + invoice.delivery - invoice.discount) as value, COALESCE(receivableTable.value,0) AS paid, code_sales_order.customer_id
+						FROM invoice
+						LEFT JOIN (
+							SELECT SUM(receivable.value) as value, receivable.invoice_id 
+							FROM receivable
+							GROUP BY receivable.invoice_id
+						) receivableTable
+						ON receivableTable.invoice_id = invoice.id
+						JOIN code_delivery_order ON code_delivery_order.invoice_id = invoice.id
+						JOIN delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order.id
+						JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
+						JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
+						JOIN customer ON code_sales_order.customer_id = customer.id
+						WHERE invoice.is_done = '0'
+						AND customer.name LIKE '%" . $term . "%'
+						GROUP BY code_sales_order.customer_id
+						ORDER BY invoice.date ASC
+					) a
+					JOIN customer ON a.customer_id = customer.id
+					ORDER BY value DESC
+				");
+			} else if($day != NULL && $area != NULL) {
+				$query = $this->db->query("
+					SELECT customer.id
+					FROM (
+						SELECT SUM(invoice.value + invoice.delivery - invoice.discount) as value, COALESCE(receivableTable.value,0) AS paid, code_sales_order.customer_id
+						FROM invoice
+						LEFT JOIN (
+							SELECT SUM(receivable.value) as value, receivable.invoice_id 
+							FROM receivable
+							GROUP BY receivable.invoice_id
+						) receivableTable
+						ON receivableTable.invoice_id = invoice.id
+						JOIN code_delivery_order ON code_delivery_order.invoice_id = invoice.id
+						JOIN delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order.id
+						JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
+						JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
+						JOIN customer ON code_sales_order.customer_id = customer.id
+						WHERE invoice.is_done = '0'
+						AND customer.name LIKE '%" . $term . "%'
+						GROUP BY code_sales_order.customer_id
+						ORDER BY invoice.date ASC
+					) a
+					JOIN customer ON a.customer_id = customer.id
+					JOIN (
+						SELECT DISTINCT(customer_id) AS customer_id
+						FROM customer_schedule
+						WHERE day = '$day'
+					) scheduleTable
+					ON scheduleTable.customer_id = customer.id
+					WHERE customer.area_id = '$area'
+					ORDER BY value DESC
+				");
+			}
+			
 
 			$result = $query->num_rows();
 			return $result;
@@ -1132,66 +1222,135 @@ class Invoice_model extends CI_Model {
 			");
 
 			$result = $query->num_rows();
-			echo $result;
 			return $result;
 		}
 
-		function getUrgentList($date, $offset = 0, $term = "", $limit = 10)
+		function getUrgentList($date, $offset = 0, $term = "", $day = NULL, $limit = 10)
 		{
-			$query	= $this->db->query("
-				SELECT invoice.*, customer.name as customerName, customer.address, customer.city, customer.rt, customer.rw, customer.block, customer.number, customer.postal_code, customer.block, COALESCE(receivableTable.value) as paid
-				FROM invoice
-				JOIN code_delivery_order ON code_delivery_order.invoice_id = invoice.id 
-				JOIN delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order.id 
-				JOIN sales_order ON delivery_order.sales_order_id = sales_order.id 
-				JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id 
-				JOIN customer ON code_sales_order.customer_id = customer.id
-				LEFT JOIN (
-					SELECT invoice_id, SUM(value) as value FROM receivable
-					GROUP BY invoice_id
-				) as receivableTable
-				ON receivableTable.invoice_id = invoice.id
-				WHERE invoice.id IN(
-					SELECT DISTINCT(invoice.id) as id
-					FROM invoice 
+			if($day == NULL){
+				$query	= $this->db->query("
+					SELECT invoice.*, customer.name as customerName, customer.address, customer.city, customer.rt, customer.rw, customer.block, customer.number, customer.postal_code, customer.block, COALESCE(receivableTable.value) as paid
+					FROM invoice
 					JOIN code_delivery_order ON code_delivery_order.invoice_id = invoice.id 
 					JOIN delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order.id 
 					JOIN sales_order ON delivery_order.sales_order_id = sales_order.id 
 					JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id 
 					JOIN customer ON code_sales_order.customer_id = customer.id
-					WHERE invoice.is_done = '0' AND invoice.is_confirm = '1' 
-					AND (ADDDATE(customer.term_of_payment, invoice.date) > NOW())
-				)
-				AND (invoice.name LIKE '%$term%' OR customer.name LIKE '%$term%' OR code_delivery_order.name LIKE '%$term%')
-				LIMIT $limit OFFSET $offset
-			");
+					LEFT JOIN (
+						SELECT invoice_id, SUM(value) as value FROM receivable
+						GROUP BY invoice_id
+					) as receivableTable
+					ON receivableTable.invoice_id = invoice.id
+					WHERE invoice.id IN(
+						SELECT DISTINCT(invoice.id) as id
+						FROM invoice 
+						JOIN code_delivery_order ON code_delivery_order.invoice_id = invoice.id 
+						JOIN delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order.id 
+						JOIN sales_order ON delivery_order.sales_order_id = sales_order.id 
+						JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id 
+						JOIN customer ON code_sales_order.customer_id = customer.id
+						WHERE invoice.is_done = '0' AND invoice.is_confirm = '1' 
+						AND (ADDDATE(customer.term_of_payment, invoice.date) > NOW())
+					)
+					AND (invoice.name LIKE '%$term%' OR customer.name LIKE '%$term%' OR code_delivery_order.name LIKE '%$term%')
+					LIMIT $limit OFFSET $offset
+				");
+			} else {
+				$query	= $this->db->query("
+					SELECT invoice.*, customer.name as customerName, customer.address, customer.city, customer.rt, customer.rw, customer.block, customer.number, customer.postal_code, customer.block, COALESCE(receivableTable.value) as paid
+					FROM invoice
+					JOIN code_delivery_order ON code_delivery_order.invoice_id = invoice.id 
+					JOIN delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order.id 
+					JOIN sales_order ON delivery_order.sales_order_id = sales_order.id 
+					JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id 
+					JOIN customer ON code_sales_order.customer_id = customer.id
+					LEFT JOIN (
+						SELECT invoice_id, SUM(value) as value FROM receivable
+						GROUP BY invoice_id
+					) as receivableTable
+					ON receivableTable.invoice_id = invoice.id
+					JOIN (
+						SELECT DISTINCT(customer_id) AS customer_id
+						FROM customer_schedule
+						WHERE day = '$day'
+					) scheduleTable
+					ON customer.id = scheduleTable.customer_id
+					WHERE invoice.id IN(
+						SELECT DISTINCT(invoice.id) as id
+						FROM invoice 
+						JOIN code_delivery_order ON code_delivery_order.invoice_id = invoice.id 
+						JOIN delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order.id 
+						JOIN sales_order ON delivery_order.sales_order_id = sales_order.id 
+						JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id 
+						JOIN customer ON code_sales_order.customer_id = customer.id
+						WHERE invoice.is_done = '0' AND invoice.is_confirm = '1' 
+						AND (ADDDATE(customer.term_of_payment, invoice.date) > NOW())
+					)
+					AND (invoice.name LIKE '%$term%' OR customer.name LIKE '%$term%' OR code_delivery_order.name LIKE '%$term%')
+					LIMIT $limit OFFSET $offset
+				");
+			}
+			
 			$result = $query->result();
 			return $result;
 		}
 
-		function countUrgentList($date, $term)
+		function countUrgentList($date, $term, $day = NULL)
 		{
-			$query	= $this->db->query("
-				SELECT invoice.id
-				FROM invoice
-				JOIN code_delivery_order ON code_delivery_order.invoice_id = invoice.id 
-				JOIN delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order.id 
-				JOIN sales_order ON delivery_order.sales_order_id = sales_order.id 
-				JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id 
-				JOIN customer ON code_sales_order.customer_id = customer.id
-				WHERE invoice.id IN(
-					SELECT DISTINCT(invoice.id) as id
-					FROM invoice 
+			if($day == NULL){
+				$query	= $this->db->query("
+					SELECT invoice.id
+					FROM invoice
 					JOIN code_delivery_order ON code_delivery_order.invoice_id = invoice.id 
 					JOIN delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order.id 
 					JOIN sales_order ON delivery_order.sales_order_id = sales_order.id 
 					JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id 
 					JOIN customer ON code_sales_order.customer_id = customer.id
-					WHERE invoice.is_done = '0' AND invoice.is_confirm = '1' 
-					AND (ADDDATE(customer.term_of_payment, invoice.date) > NOW())
-				)
-				AND (invoice.name LIKE '%$term%' OR customer.name LIKE '%$term%' OR code_delivery_order.name LIKE '%$term%')
-			");
+					WHERE invoice.id IN(
+						SELECT DISTINCT(invoice.id) as id
+						FROM invoice 
+						JOIN code_delivery_order ON code_delivery_order.invoice_id = invoice.id 
+						JOIN delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order.id 
+						JOIN sales_order ON delivery_order.sales_order_id = sales_order.id 
+						JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id 
+						JOIN customer ON code_sales_order.customer_id = customer.id
+						WHERE invoice.is_done = '0' AND invoice.is_confirm = '1' 
+						AND (ADDDATE(customer.term_of_payment, invoice.date) > NOW())
+					)
+					AND (invoice.name LIKE '%$term%' OR customer.name LIKE '%$term%' OR code_delivery_order.name LIKE '%$term%')
+				");
+			} else {
+				$query	= $this->db->query("
+					SELECT invoice.id
+					FROM invoice
+					JOIN code_delivery_order ON code_delivery_order.invoice_id = invoice.id 
+					JOIN delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order.id 
+					JOIN sales_order ON delivery_order.sales_order_id = sales_order.id 
+					JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id 
+					JOIN customer ON code_sales_order.customer_id = customer.id
+					WHERE invoice.id IN(
+						SELECT DISTINCT(invoice.id) as id
+						FROM invoice 
+						JOIN code_delivery_order ON code_delivery_order.invoice_id = invoice.id 
+						JOIN delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order.id 
+						JOIN sales_order ON delivery_order.sales_order_id = sales_order.id 
+						JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id 
+						JOIN customer ON code_sales_order.customer_id = customer.id
+						JOIN (
+							SELECT DISTINCT(customer_id) AS customer_id
+							FROM customer_schedule
+							WHERE day = '$day'
+						) scheduleTable
+						ON customer.id = scheduleTable.customer_id
+						WHERE invoice.is_done = '0' AND invoice.is_confirm = '1' 
+						AND (ADDDATE(customer.term_of_payment, invoice.date) > NOW())
+					)
+					AND (invoice.name LIKE '%$term%' OR customer.name LIKE '%$term%' OR code_delivery_order.name LIKE '%$term%')
+				");
+			}
+
+			$result = $query->num_rows();
+			return $result;
 		}
 
 		public function getByIdArray($idArray)
@@ -2163,6 +2322,35 @@ class Invoice_model extends CI_Model {
 			");
 
 			$result			= $query->result();
+			return $result;
+		}
+
+		public function getAreaList($day){
+			$query			= $this->db->query("
+				SELECT COUNT(customer.id) AS count, customer_area.id, customer_area.name
+				FROM customer
+				JOIN customer_area ON customer.area_id = customer_area.id
+				WHERE customer.id IN 
+				(
+					SELECT DISTINCT(code_sales_order.customer_id) as customer_id
+					FROM code_sales_order
+					LEFT JOIN sales_order ON sales_order.code_sales_order_id = code_sales_order.id
+					JOIN delivery_order ON delivery_order.sales_order_id = sales_order.id
+					JOIN code_delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order.id
+					JOIN invoice ON code_delivery_order.invoice_id = invoice.id
+					JOIN (
+						SELECT DISTINCT(customer_id) AS customer_id
+						FROM customer_schedule
+						WHERE day = '$day'
+					) scheduleTable
+					ON scheduleTable.customer_id = code_sales_order.customer_id
+					WHERE invoice.is_done = 0
+					AND invoice.is_confirm = 1
+				)
+				GROUP BY customer.area_id
+			");
+
+			$result		= $query->result();
 			return $result;
 		}
 	}
