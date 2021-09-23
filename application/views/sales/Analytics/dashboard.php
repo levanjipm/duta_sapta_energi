@@ -120,7 +120,7 @@
 					</select>
 					<select class='form-control' id='year'>
 					<?php for($i = 2020; $i <= date("Y"); $i++){ ?>
-						<option value='<?= $i ?>'><?= $i ?></option>
+						<option value='<?= $i ?>' <?= ($i == date("Y"))? "selected": "" ?>><?= $i ?></option>
 					<?php } ?>
 					</select>
 					<div class='input_group_append'>
@@ -147,7 +147,7 @@
 						</select>
 						<select class='form-control' id='customerYear'>
 						<?php for($i = 2020; $i <= date("Y"); $i++){ ?>
-							<option value='<?= $i ?>'><?= $i ?></option>
+							<option value='<?= $i ?>' <?= ($i == date("Y"))? "selected": "" ?>><?= $i ?></option>
 						<?php } ?>
 						</select>
 						<select class='form-control' id='customerBrand' placeholder='Brand'>

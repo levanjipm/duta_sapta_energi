@@ -71,207 +71,67 @@ class Customer_target_model extends CI_Model {
 		{
 			$currentDate		= date("Y-m-t", mktime(0,0,0,$month, 1, $year));
 			$currentTimestamp	= mktime(0, 0, 0, $month, 1, $year);
+
 			$previousDate		= date("Y-m-t", strtotime("-1 month", $currentTimestamp));
 			$previousMonth		= date("m", strtotime("-1 month", $currentTimestamp));
 			$previousYear		= date("Y", strtotime("-1 month", $currentTimestamp));
 
-			if($limit != 0){
-				$query		= $this->db->query("
-					SELECT customer.*, customer_area.name AS areaName, 
-					COALESCE(a.value,0) AS value, 
-					COALESCE(b.value, 0) AS target, 
-					COALESCE(returnTable.value, 0) as returned, 
-					COALESCE(c.value, 0) AS previousValue, 
-					COALESCE(previousReturnTable.value, 0) AS previousReturned, 
-					COALESCE(d.value, 0) AS previousTarget
-					FROM customer
-					LEFT JOIN (
-						SELECT customer_target.value, customer_target.customer_id
+			$query			= $this->db->query("
+				SELECT customer.*, 
+				COALESCE(currentInvoiceTable.value, 0) AS value, 
+				COALESCE(previousInvoiceTable.value, 0) AS previousValue
+				FROM customer
+				LEFT JOIN (
+					SELECT SUM(price_list.price_list * delivery_order.quantity * ( 100 - sales_order.discount) / 100) AS value, code_sales_order.customer_id
+					FROM sales_order
+					JOIN delivery_order ON delivery_order.sales_order_id = sales_order.id
+					JOIN price_list ON sales_order.price_list_id = price_list.id
+					JOIN item ON price_list.item_id = item.id
+					JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
+					JOIN code_delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order_id
+					JOIN invoice ON code_delivery_order.invoice_id = invoice.id
+					WHERE MONTH(code_delivery_order.date) = '$month'
+					AND YEAR(code_delivery_order.date) = '$year'
+					AND item.brand = '$brand'
+					AND code_delivery_order.is_sent = 1
+					AND invoice.is_confirm = 1
+					GROUP BY code_sales_order.customer_id
+				) AS currentInvoiceTable
+				ON customer.id = currentInvoiceTable.customer_id
+				LEFT JOIN (
+					SELECT SUM(price_list.price_list * delivery_order.quantity * ( 100 - sales_order.discount) / 100) AS value, code_sales_order.customer_id
+					FROM sales_order
+					JOIN delivery_order ON delivery_order.sales_order_id = sales_order.id
+					JOIN price_list ON sales_order.price_list_id = price_list.id
+					JOIN item ON price_list.item_id = item.id
+					JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
+					JOIN code_delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order_id
+					JOIN invoice ON code_delivery_order.invoice_id = invoice.id
+					WHERE MONTH(code_delivery_order.date) = '$previousMonth'
+					AND YEAR(code_delivery_order.date) = '$previousYear'
+					AND item.brand = '$brand'
+					AND code_delivery_order.is_sent = 1
+					AND invoice.is_confirm = 1
+					GROUP BY code_sales_order.customer_id
+				) AS previousInvoiceTable
+				ON customer.id = previousInvoiceTable.customer_id
+				LEFT JOIN (
+					SELECT *
+					FROM
+					(
+						SELECT DISTINCT customer_id 
 						FROM customer_target
-						WHERE customer_target.brand = '$brand'
-						AND dateCreated <= '$currentDate'
-						GROUP BY customer_target.customer_id
-						ORDER BY YEAR(customer_target.dateCreated) DESC, MONTH(customer_target.dateCreated) DESC
-					) AS b
-					ON customer.id = b.customer_id
-					LEFT JOIN (
-						SELECT customer_target.value, customer_target.customer_id
-						FROM customer_target
-						WHERE customer_target.brand = '$brand'
-						AND dateCreated <= '$previousDate' 
-						GROUP BY customer_target.customer_id
-						ORDER BY YEAR(customer_target.dateCreated) DESC, MONTH(customer_target.dateCreated) DESC
-					) AS d
-					ON customer.id = d.customer_id
-					LEFT JOIN (
-						SELECT SUM(delivery_order.quantity * price_list.price_list * (100 - sales_order.discount) / 100) AS value, code_sales_order.customer_id
-						FROM code_sales_order
-						JOIN sales_order ON code_sales_order.id = sales_order.code_sales_order_id
-						JOIN delivery_order ON sales_order.id = delivery_order.sales_order_id
-						JOIN price_list ON sales_order.price_list_id = price_list.id
-						JOIN code_delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order_id
-						JOIN item ON price_list.item_id = item.id
-						WHERE MONTH(code_delivery_order.date) = '$month'
-						AND YEAR(code_delivery_order.date) = '$year'
-						AND code_delivery_order.is_sent = 1
-						AND code_delivery_order.is_confirm = 1
-						AND item.brand = '$brand'
-						GROUP BY code_sales_order.customer_id
-					) AS a
-					ON a.customer_id = customer.id
-					LEFT JOIN (
-						SELECT SUM(delivery_order.quantity * price_list.price_list * (100 - sales_order.discount) / 100) AS value, code_sales_order.customer_id
-						FROM code_sales_order
-						JOIN sales_order ON code_sales_order.id = sales_order.code_sales_order_id
-						JOIN delivery_order ON sales_order.id = delivery_order.sales_order_id
-						JOIN price_list ON sales_order.price_list_id = price_list.id
-						JOIN code_delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order_id
-						JOIN item ON price_list.item_id = item.id
-						WHERE MONTH(code_delivery_order.date) = '$previousMonth'
-						AND YEAR(code_delivery_order.date) = '$previousYear'
-						AND code_delivery_order.is_sent = 1
-						AND code_delivery_order.is_confirm = 1
-						AND item.brand = '$brand'
-						GROUP BY code_sales_order.customer_id
-					) AS c
-					ON customer.id = a.customer_id
-					LEFT JOIN (
-						SELECT COALESCE(SUM(sales_return_received.quantity * price_list.price_list * (1 - sales_order.discount / 100)),0) as value, code_sales_order.customer_id
-						FROM sales_return_received
-						JOIN code_sales_return_received ON sales_return_received.code_sales_return_received_id = code_sales_return_received.id
-						JOIN sales_return ON sales_return_received.sales_return_id = sales_return.id
-						JOIN delivery_order ON sales_return.delivery_order_id = delivery_order.id
-						JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
-						JOIN price_list ON sales_order.price_list_id = price_list.id
-						JOIN item ON price_list.item_id = item.id
-						JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
-						WHERE code_sales_return_received.is_confirm = '1' 
-						AND MONTH(code_sales_return_received.date) = '$month' 
-						AND YEAR(code_sales_return_received.date) = '$year'
-						AND item.brand = '$brand'
-						GROUP BY code_sales_order.customer_id
-					) AS returnTable
-					ON returnTable.customer_id = customer.id
-					LEFT JOIN (
-						SELECT COALESCE(SUM(sales_return_received.quantity * price_list.price_list * (1 - sales_order.discount / 100)),0) as value, code_sales_order.customer_id
-						FROM sales_return_received
-						JOIN code_sales_return_received ON sales_return_received.code_sales_return_received_id = code_sales_return_received.id
-						JOIN sales_return ON sales_return_received.sales_return_id = sales_return.id
-						JOIN delivery_order ON sales_return.delivery_order_id = delivery_order.id
-						JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
-						JOIN price_list ON sales_order.price_list_id = price_list.id
-						JOIN item ON price_list.item_id = item.id
-						JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
-						WHERE code_sales_return_received.is_confirm = '1' 
-						AND MONTH(code_sales_return_received.date) = '$previousMonth'
-						AND YEAR(code_sales_return_received.date) = '$previousYear'
-						AND item.brand = '$brand'
-						GROUP BY code_sales_order.customer_id
-					) AS previousReturnTable
-					ON previousReturnTable.customer_id = customer.id
-					JOIN customer_area ON customer.area_id = customer_area.id
-					WHERE customer.name LIKE '%$term%' OR customer.address LIKE '%$term%'
-					ORDER BY customer.name
-					LIMIT $limit OFFSET $offset
-				");
-			} else {
-				$query		= $this->db->query("
-					SELECT customer.*, customer_area.name AS areaName, 
-					COALESCE(a.value,0) AS value, 
-					COALESCE(b.value, 0) AS target, 
-					COALESCE(returnTable.value, 0) as returned, 
-					COALESCE(c.value, 0) AS previousValue, 
-					COALESCE(previousReturnTable.value, 0) AS previousReturned, 
-					COALESCE(d.value, 0) AS previousTarget
-					FROM customer
-					LEFT JOIN (
-						SELECT customer_target.value, customer_target.customer_id
-						FROM customer_target
-						WHERE customer_target.brand = '$brand'
-						AND dateCreated <= '$currentDate'
-						GROUP BY customer_target.customer_id
-						ORDER BY YEAR(customer_target.dateCreated) DESC, MONTH(customer_target.dateCreated) DESC
-					) AS b
-					ON customer.id = b.customer_id
-					LEFT JOIN (
-						SELECT customer_target.value, customer_target.customer_id
-						FROM customer_target
-						WHERE customer_target.brand = '$brand'
-						AND dateCreated <= '$previousDate' 
-						GROUP BY customer_target.customer_id
-						ORDER BY YEAR(customer_target.dateCreated) DESC, MONTH(customer_target.dateCreated) DESC
-					) AS d
-					ON customer.id = d.customer_id
-					LEFT JOIN (
-						SELECT SUM(delivery_order.quantity * price_list.price_list * (100 - sales_order.discount) / 100) AS value, code_sales_order.customer_id
-						FROM code_sales_order
-						JOIN sales_order ON code_sales_order.id = sales_order.code_sales_order_id
-						JOIN delivery_order ON sales_order.id = delivery_order.sales_order_id
-						JOIN price_list ON sales_order.price_list_id = price_list.id
-						JOIN code_delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order_id
-						JOIN item ON price_list.item_id = item.id
-						WHERE MONTH(code_delivery_order.date) = '$month'
-						AND YEAR(code_delivery_order.date) = '$year'
-						AND code_delivery_order.is_sent = '1'
-						AND code_delivery_order.is_confirm = '1'
-						AND item.brand = '$brand'
-						GROUP BY code_sales_order.customer_id
-					) AS a
-					ON a.customer_id = customer.id
-					LEFT JOIN (
-						SELECT SUM(delivery_order.quantity * price_list.price_list * (100 - sales_order.discount) / 100) AS value, code_sales_order.customer_id
-						FROM code_sales_order
-						JOIN sales_order ON code_sales_order.id = sales_order.code_sales_order_id
-						JOIN delivery_order ON sales_order.id = delivery_order.sales_order_id
-						JOIN price_list ON sales_order.price_list_id = price_list.id
-						JOIN code_delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order_id
-						JOIN item ON price_list.item_id = item.id
-						WHERE MONTH(code_delivery_order.date) = '$previousMonth'
-						AND YEAR(code_delivery_order.date) = '$previousYear'
-						AND code_delivery_order.is_sent = '1'
-						AND code_delivery_order.is_confirm = '1'
-						AND item.brand = '$brand'
-					) AS c
-					ON customer.id = a.customer_id
-					LEFT JOIN (
-						SELECT COALESCE(SUM(sales_return_received.quantity * price_list.price_list * (1 - sales_order.discount / 100)),0) as value, code_sales_order.customer_id
-						FROM sales_return_received
-						JOIN code_sales_return_received ON sales_return_received.code_sales_return_received_id = code_sales_return_received.id
-						JOIN sales_return ON sales_return_received.sales_return_id = sales_return.id
-						JOIN delivery_order ON sales_return.delivery_order_id = delivery_order.id
-						JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
-						JOIN price_list ON sales_order.price_list_id = price_list.id
-						JOIN item ON price_list.item_id = item.id
-						JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
-						WHERE code_sales_return_received.is_confirm = '1' 
-						AND MONTH(code_sales_return_received.date) = '$month' 
-						AND YEAR(code_sales_return_received.date) = '$year'
-						AND item.brand = '$brand'
-						GROUP BY code_sales_order.customer_id
-					) AS returnTable
-					ON returnTable.customer_id = customer.id
-					LEFT JOIN (
-						SELECT COALESCE(SUM(sales_return_received.quantity * price_list.price_list * (1 - sales_order.discount / 100)),0) as value, code_sales_order.customer_id
-						FROM sales_return_received
-						JOIN code_sales_return_received ON sales_return_received.code_sales_return_received_id = code_sales_return_received.id
-						JOIN sales_return ON sales_return_received.sales_return_id = sales_return.id
-						JOIN delivery_order ON sales_return.delivery_order_id = delivery_order.id
-						JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
-						JOIN price_list ON sales_order.price_list_id = price_list.id
-						JOIN item ON price_list.item_id = item.id
-						JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
-						WHERE code_sales_return_received.is_confirm = '1' 
-						AND MONTH(code_sales_return_received.date) = '$previousMonth'
-						AND YEAR(code_sales_return_received.date) = '$previousYear'
-						AND item.brand = '$brand'
-						GROUP BY code_sales_order.customer_id
-					) AS previousReturnTable
-					ON previousReturnTable.customer_id = customer.id
-					JOIN customer_area ON customer.area_id = customer_area.id
-					WHERE customer.name LIKE '%$term%' OR customer.address LIKE '%$term%'
-					ORDER BY customer.name
-				");
-			}
+					) P1
+					CROSS APPLY
+					(
+						SELECT TOP (2) customer_target.id
+						FROM customer_target P2
+						WHERE P1.customer_id = P2.customer_id
+						ORDER BY P2.dateCreated DESC
+					) foo
+				) AS targetTable
+				ON targetTable.customer_id = customer.id
+			");
 
 			$result		= $query->result();
 			return $result;

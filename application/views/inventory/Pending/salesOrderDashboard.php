@@ -84,7 +84,11 @@
 	</div>
 </div>
 
-<form action='<?= site_url('Inventory/viewPendingSalesOrderById') ?>' method="GET" id="salesOrderForm">
+<form 
+	action='<?= site_url('Inventory/viewPendingSalesOrderById') ?>' 
+	method="GET" 
+	id="salesOrderForm" 
+	target='_blank'>
 	<input type='hidden' id='id' name='id'>
 </form>
 
@@ -175,7 +179,7 @@
 	}
 
 	$('#page').change(function(){
-		refreshVIew();
+		refreshView();
 	})
 
 	function viewPendingSalesOrder(customerId)

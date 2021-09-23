@@ -784,6 +784,8 @@ class Sales_order_model extends CI_Model {
 						FROM sales_order
 						WHERE status = '0'
 					)
+					AND code_sales_order.is_confirm = 1
+					AND code_sales_order.is_delete = 0
 					GROUP BY code_sales_order.customer_id
 				) AS a
 				JOIN customer ON a.customer_id = customer.id				
@@ -810,6 +812,8 @@ class Sales_order_model extends CI_Model {
 						FROM sales_order
 						WHERE status = '0'
 					)
+					AND code_sales_order.is_confirm = 1
+					AND code_sales_order.is_delete = 0
 					GROUP BY code_sales_order.customer_id
 				) AS a
 				JOIN customer ON a.customer_id = customer.id

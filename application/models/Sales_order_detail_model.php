@@ -270,6 +270,8 @@ class Sales_order_detail_model extends CI_Model {
 				JOIN price_list ON sales_order.price_list_id = price_list.id
 				WHERE code_sales_order.customer_id = '$customer_id'
 				AND COALESCE(code_sales_order_close_request.is_approved, 0) = 0
+				AND code_sales_order.is_confirm = 1
+				AND code_sales_order.is_delete = 0
 			");			
 			$result		= $query->row();
 			

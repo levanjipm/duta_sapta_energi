@@ -1427,6 +1427,7 @@ class Invoice_model extends CI_Model {
 						) AS deliveryTable
 						ON deliveryTable.id = invoice.id
 						WHERE MONTH(invoice.date) = '$month' AND YEAR(invoice.date) = '$year'
+						AND invoice.is_confirm = 1
 						GROUP BY deliveryTable.seller
 					) AS a
 					LEFT JOIN users ON a.seller = users.id
@@ -1439,7 +1440,9 @@ class Invoice_model extends CI_Model {
 						JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
 						JOIN price_list ON sales_order.price_list_id = price_list.id
 						JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
-						WHERE code_sales_return_received.is_confirm = '1' AND MONTH(code_sales_return_received.date) = '$month' AND YEAR(code_sales_return_received.date) = '$year'
+						WHERE code_sales_return_received.is_confirm = '1' 
+						AND MONTH(code_sales_return_received.date) = '$month' 
+						AND YEAR(code_sales_return_received.date) = '$year'
 						GROUP BY code_sales_order.seller
 					) as returnTable
 					ON returnTable.seller = a.seller
