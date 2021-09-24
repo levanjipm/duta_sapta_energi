@@ -201,9 +201,9 @@
 					}
 
 					if(type == null){
-						$('#invoiceTableContent').append("<tr><td>" + my_date_format(date) + "</td><td><p>" + name + "</p><p>" + taxDocument + "</p></td><td>" + supplierName + ", " + supplierCity + "</td><td>Rp. " + numeral(invoiceValue).format('0,0.00') + "</td><td><button class='button button_default_dark' onclick='viewById(" + id + ")'><i class='fa fa-eye'></i></button></td></tr>");
+						$('#invoiceTableContent').append("<tr><td>" + my_date_format(date) + "</td><td><p><strong>" + name + "</strong></p><p>" + taxDocument + "</p></td><td><strong>" + supplierName + "</strong>, " + supplierCity + "</td><td>Rp. " + numeral(invoiceValue).format('0,0.00') + "</td><td><button class='button button_default_dark' onclick='viewById(" + id + ")'><i class='fa fa-eye'></i></button></td></tr>");
 					} else {
-						$('#invoiceTableContent').append("<tr><td>" + my_date_format(date) + "</td><td><p>" + name + "</p><p>" + taxDocument + "</p></td><td>" + supplierName + ", " + supplierCity + "</td><td>Rp. " + numeral(invoiceValue).format('0,0.00') + "</td><td><button class='button button_default_dark' onclick='viewBlankById(" + id + ")'><i class='fa fa-eye'></i></button></td></tr>");
+						$('#invoiceTableContent').append("<tr><td>" + my_date_format(date) + "</td><td><p><strong>" + name + "</strong></p><p>" + taxDocument + "</p></td><td><strong>" + supplierName + "</strong>, " + supplierCity + "</td><td>Rp. " + numeral(invoiceValue).format('0,0.00') + "</td><td><button class='button button_default_dark' onclick='viewBlankById(" + id + ")'><i class='fa fa-eye'></i></button></td></tr>");
 					}
 					itemCount++;
 				});

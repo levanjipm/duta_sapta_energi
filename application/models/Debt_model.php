@@ -531,7 +531,7 @@ class Debt_model extends CI_Model {
 					WHERE MONTH(purchase_invoice_other.date) = '$month' AND YEAR(purchase_invoice_other.date) = '$year'
 					AND purchase_invoice_other.is_delete = '0'
 				)
-				ORDER BY date ASC
+				ORDER BY date ASC, supplier_id ASC, other_opponent_id ASC, invoice_document ASC, tax_document ASC, id ASC
 				LIMIT 10 OFFSET $offset
 			");
 			

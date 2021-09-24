@@ -812,6 +812,7 @@ class Invoice_model extends CI_Model {
 					AND (invoice.customer_id IS NOT NULL || invoice.opponent_id IS NOT NULL)
 					AND invoice.is_confirm = 1
 				)
+				ORDER by date ASC, name ASC
 				LIMIT 10 OFFSET $offset
 			");
 
