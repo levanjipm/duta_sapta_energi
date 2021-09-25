@@ -177,28 +177,28 @@ class Billing extends CI_Controller {
 		$area		= $this->input->get('area');
 
 		$dayofweek = date('w', strtotime($date));
-		$day = 0;
+		$day = "";
 		switch($dayofweek){
 			case 0:
-				$day = 6;
+				$day .= 6;
 				break;
 			case 1:
-				$day = 0;
+				$day .= 0;
 				break;
 			case 2:
-				$day = 1;
+				$day .= 1;
 				break;
 			case 3:
-				$day = 2;
+				$day .= 2;
 				break;
 			case 4:
-				$day = 3;
+				$day .= 3;
 				break;
 			case 5:
-				$day = 4;
+				$day .= 4;
 				break;
 			case 6:
-				$day = 5;
+				$day .= 5;
 				break;
 		}
 

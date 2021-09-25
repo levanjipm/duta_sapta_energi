@@ -993,7 +993,7 @@ class Invoice_model extends CI_Model {
 
 		public function getBillingData($offset, $term, $day = NULL, $area = NULL, $limit = 10)
 		{
-			if($day == NULL){
+			if(!is_numeric($day)){
 				$query = $this->db->query("
 					SELECT (a.value - a.paid) as value, customer.* 
 					FROM (
