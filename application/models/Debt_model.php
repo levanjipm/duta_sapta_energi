@@ -413,6 +413,7 @@ class Debt_model extends CI_Model {
 					WHERE purchase_invoice_other.supplier_id = '$supplierId'
 					AND purchase_invoice_other.is_done = '0'
 				)
+				ORDER BY date ASC, invoice_document ASC, tax_document ASC
 			");
 
 			$result = $query->result();
@@ -495,6 +496,7 @@ class Debt_model extends CI_Model {
 					ON payableTable.other_purchase_id = purchase_invoice_other.id
 					WHERE purchase_invoice_other.is_done = '0'
 				)
+				ORDER BY date ASC, name ASC, tax_document ASC
 			");
 			
 			$result	= $query->result();

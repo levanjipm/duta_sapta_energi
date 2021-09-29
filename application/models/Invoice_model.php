@@ -861,6 +861,8 @@ class Invoice_model extends CI_Model {
 					JOIN customer ON code_sales_order.customer_id = customer.id
 					JOIN customer_area ON customer.area_id = customer_area.id
 					WHERE MONTH(code_sales_order.date) = '$month' AND YEAR(code_sales_order.date) = '$year'
+					AND code_delivery_order.is_sent = 1
+					AND code_delivery_order.is_confirm = 1
 					AND code_sales_order.seller = '$salesId'
 				");
 			} else {
@@ -877,6 +879,8 @@ class Invoice_model extends CI_Model {
 					JOIN customer ON code_sales_order.customer_id = customer.id
 					JOIN customer_area ON customer.area_id = customer_area.id
 					WHERE MONTH(code_sales_order.date) = '$month' AND YEAR(code_sales_order.date) = '$year'
+					AND code_delivery_order.is_sent = 1
+					AND code_delivery_order.is_confirm = 1
 					AND code_sales_order.seller IS NULL
 				");
 			}

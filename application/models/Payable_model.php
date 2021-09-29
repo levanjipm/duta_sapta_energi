@@ -349,7 +349,7 @@ class Payable_model extends CI_Model {
 						AND purchase_invoice_other.is_confirm = '1'
 					)
 				) purchaseInvoiceTable
-				ORDER BY purchaseInvoiceTable.date ASC
+				ORDER BY purchaseInvoiceTable.date ASC, purchaseInvoiceTable.invoice_document ASC, purchaseInvoiceTable.tax_document ASC
 			");
 
 			$result		= $query->result();

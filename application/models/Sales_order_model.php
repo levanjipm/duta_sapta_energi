@@ -901,6 +901,7 @@ class Sales_order_model extends CI_Model {
 				WHERE code_sales_order.seller = '$salesId'
 				AND MONTH(code_sales_order.date) = '$month' 
 				AND YEAR(code_sales_order.date) = '$year'
+				AND code_sales_order.is_confirm = 1
 				GROUP BY sales_order.code_sales_order_id
 			");
 

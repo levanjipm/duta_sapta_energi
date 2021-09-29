@@ -396,6 +396,8 @@
 		$('#sales').click();
 		calculatePayments();
 		$('[data-toggle="tooltip"]').tooltip();
+
+		refreshView();
 	})
 
 	function viewCustomerDetail(){
@@ -485,7 +487,11 @@
 	});
 
 	function viewSalesmanReport(salesId){
-		window.open("<?= site_url("SalesAnalytics/salesmanDetailReport/") ?>" + $('#month').val() + "/" + $('#year').val() + "/" + salesId);
+		if(salesId == null){
+			window.open("<?= site_url("SalesAnalytics/salesmanDetailReport/") ?>" + $('#month').val() + "/" + $('#year').val());
+		} else {
+			window.open("<?= site_url("SalesAnalytics/salesmanDetailReport/") ?>" + $('#month').val() + "/" + $('#year').val() + "/" + salesId);
+		}
 	}
 
 	function refreshView(){
@@ -520,6 +526,7 @@
 							}
 
 							$('#tableAnalyticBody').append("<tr><td><img src='" + imageUrl + "' style='width:30px;height:30px;border-radius:50%'> " + salesman + "</td><td>Rp. " + numeral(value - returnValue).format("0,0.00") + "<div class='progressBarWrapper'><p></p><div class='progressBar' data-value='" + (value - returnValue) + "'></div></div></td><td><button class='button button_default_dark' onclick='viewSalesmanReport(" + id + ")'><i class='fa fa-eye'></i></button></td></tr>");
+							
 							itemCount++;
 							totalValue += value - returnValue;
 						});
