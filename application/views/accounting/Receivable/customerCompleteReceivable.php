@@ -57,6 +57,13 @@
 				</tr>
 				<tbody id='receivableTableContent'></tbody>
 			</table>
+
+			<select 
+			style='width:100px'
+			class='form-control' 
+			id='page'>
+				<option value='1'>1</option>
+			</select>
 		</div>
 		<p id='receivableTableText'>There is no incomplete receivable found.</p>
 	</div>
@@ -103,6 +110,17 @@
 			<label>Note</label>
 			<p id='blankInvoiceNote_p'></p>
 		</div>
+
+		<table class='table table-bordered' id='payTable'>
+			<thead>
+				<tr>
+					<th>Date</th>
+					<th>Value</th>
+					<th>Action</th>
+				</tr>
+			</thead>
+			<tbody id='payTableContent'></tbody>
+		</table>
 
 <?php if($user_login->access_level > 2){ ?>
 		<form id='completeForm'>
@@ -179,11 +197,16 @@
 		refreshView();
 	});
 
+	$('#page').change(function(){
+		refreshView();
+	})
+
 	function refreshView(){
 		$.ajax({
 			url:"<?= site_url('Receivable/getCompleteReceivableByCustomerId') ?>",
 			data:{
-				id: '<?= $customer->id ?>'
+				id: '<?= $customer->id ?>',
+				page: $('#page').val()
 			},
 			success:function(response){
 				$('#receivableTableContent').html("");
@@ -194,35 +217,14 @@
 					var id = item.id;
 					var date = item.date;
 					var name = item.name;
+					var paid	= item.paid;
 					var value = parseFloat(item.value) + parseFloat(item.delivery) - parseFloat(item.discount);
 					var taxInvoice = (item.taxInvoice == "" || item.taxInvoice == null) ? "<i>Not available</i>" : item.taxInvoice;
 					var paid = parseFloat(item.paid);
 					totalReceivable += value;
 
-					$('#receivableTableContent').append("<tr><td>" + my_date_format(date) + "</td><td><p>" + name + "</p><p>" + taxInvoice + "</p><button class='button button_mini_tab active' onclick='viewInvoice(" + id + ")'><i class='fa fa-eye'></i></button></td><td>Rp. " + numeral(value).format('0,0.00') + "</td><td>Rp. 0,0.00</td><td>Rp. " + numeral(totalReceivable).format('0,0.00') + "</td></tr>");
+					$('#receivableTableContent').append("<tr><td>" + my_date_format(date) + "</td><td><p>" + name + "</p><p>" + taxInvoice + "</p><button class='button button_mini_tab active' onclick='viewInvoice(" + id + ")'><i class='fa fa-eye'></i></button></td><td>Rp. " + numeral(value).format('0,0.00') + "</td><td>Rp. " + numeral(paid).format('0,0.00') + "</td><td>Rp. " + numeral(totalReceivable).format('0,0.00') + "</td></tr>");
 					receivableCount++; 
-
-					var receivableArray = response.receivables.filter(function(receivable){
-						return receivable.invoice_id == id;
-					});
-
-					if(receivableArray.length > 0){
-						$.each(receivableArray, function(index, value){
-							var paymentDate = value.date;
-							var paymentValue = parseFloat(value.value);
-							totalReceivable -= paymentValue;
-<?php if($user_login->access_level > 2){ ?>
-							if(value.bank_id == null){
-								var id = value.id;
-								$('#receivableTableContent').append("<tr class='success'><td>" + my_date_format(paymentDate) + "</td><td><p>Payment</p><button class='button button_default_dark' onclick='confirmDelete(" + id + ")'><i class='fa fa-trash'></i></button></td><td>Rp. 0,0.00</td><td>Rp. " + numeral(paymentValue).format('0,0.00') + "</td><td>Rp. " + numeral(totalReceivable).format('0,0.00') + "</td></tr>");
-							} else {
-								$('#receivableTableContent').append("<tr class='success'><td>" + my_date_format(paymentDate) + "</td><td><p>Payment</p></td><td>Rp. 0,0.00</td><td>Rp. " + numeral(paymentValue).format('0,0.00') + "</td><td>Rp. " + numeral(totalReceivable).format('0,0.00') + "</td></tr>");
-							}	
-<?php } else { ?>
-							$('#receivableTableContent').append("<tr class='success'><td>" + my_date_format(paymentDate) + "</td><td><p>Payment</p</td><td>Rp. 0,0.00</td><td>Rp. " + numeral(paymentValue).format('0,0.00') + "</td><td>Rp. " + numeral(totalReceivable).format('0,0.00') + "</td></tr>");
-<?php } ?>
-						})
-					}	
 				});
 
 				var pendingBankValue = 0;
@@ -242,6 +244,16 @@
 				} else {
 					$('#receivableTableText').show();
 					$('#receivableTable').hide();
+				}
+
+				var pages = response.pages;
+				$('#page').html("");
+				for(i = 1; i <= pages; i++){
+					if(page == i){
+						$('#page').append("<option value='" + i + "' selected>" + i + "</option>");
+					} else {
+						$('#page').append("<option value='" + i + "'>" + i + "</option>");
+					}
 				}
 			}
 		});
@@ -335,6 +347,25 @@
 				} else {
 					$('#completeForm').show();
 				}
+
+				$('#payTableContent').html("");
+
+				console.log(response.receivable.length);
+				if(response.receivable.length > 0){
+					$('#payTable').show();
+					$.each(response.receivable, function(index, item){
+						if(item.bank_id == null){
+							$('#payTableContent').append("<tr><td>"  + my_date_format(item.date) + "</td><td>Rp. " + numeral(item.value).format('0,0.00') + "</td><td><button class='button button_mini_tab active' onclick='confirmDelete(" + item.id + ")'>&times;</button></td></tr>");
+						} else {
+							$('#payTableContent').append("<tr><td>"  + my_date_format(item.date) + "</td><td>Rp. " + numeral(item.value).format('0,0.00') + "</td><td></td></tr>");
+						}
+						
+					})
+				} else {
+					$('#payTable').hide();
+				}
+
+				
 
 				$('#viewInvoiceWrapper').fadeIn(300, function(){
 					$('#viewInvoiceWrapper .alert_box_slide').show("slide", { direction: "right" }, 250);

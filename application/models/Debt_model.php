@@ -779,16 +779,19 @@ class Debt_model extends CI_Model {
 		public function viewPurchaseByMonth()
 		{
 			$query			= $this->db->query("
-				SELECT SUM(purchaseInvoiceTable.value) AS value, purchaseInvoiceTable.month, purchaseInvoiceTable.year FROM (
-					SELECT a.value, MONTH(purchase_invoice.date) AS month, YEAR(purchase_invoice.date) AS year
+				SELECT purchaseInvoiceTable.value AS value, purchaseInvoiceTable.month, purchaseInvoiceTable.year FROM (
+					SELECT SUM(a.value) AS value, MONTH(purchase_invoice.date) AS month, YEAR(purchase_invoice.date) AS year
 					FROM (
 						SELECT SUM(good_receipt.quantity * good_receipt.billed_price) AS value, code_good_receipt.invoice_id
 						FROM good_receipt
 						JOIN code_good_receipt ON good_receipt.code_good_receipt_id = code_good_receipt.id
+						WHERE code_good_receipt.is_confirm = 1
+						AND code_good_receipt.is_delete = 0
+						AND code_good_receipt.invoice_id IS NOT NULL
 						GROUP BY code_good_receipt.invoice_id
 					) AS a
 					JOIN purchase_invoice ON a.invoice_id = purchase_invoice.id
-					WHERE purchase_invoice.is_confirm = '1'
+					WHERE purchase_invoice.is_confirm = 1
 					AND DATEDIFF(CURDATE(), purchase_invoice.date) <= 180 AND DATEDIFF(CURDATE(), purchase_invoice.date) > 0
 					GROUP BY MONTH(purchase_invoice.date), YEAR(purchase_invoice.date)
 					UNION (
@@ -798,7 +801,6 @@ class Debt_model extends CI_Model {
 						GROUP BY MONTH(purchase_invoice_other.date), YEAR(purchase_invoice_other.date)
 					)
 				) purchaseInvoiceTable
-				GROUP BY purchaseInvoiceTable.month, purchaseInvoiceTable.year
 				ORDER BY purchaseInvoiceTable.year DESC, purchaseInvoiceTable.month	DESC
 			");
 

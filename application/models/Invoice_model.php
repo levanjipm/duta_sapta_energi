@@ -584,7 +584,7 @@ class Invoice_model extends CI_Model {
 			return $result;
 		}
 
-		public function viewCompleteReceivableByCustomerId($customerId)
+		public function viewCompleteReceivableByCustomerId($customerId, $offset = 0)
 		{
 			$query = $this->db->query("
 				SELECT invoice.*, COALESCE(a.value,0) as paid
@@ -599,21 +599,55 @@ class Invoice_model extends CI_Model {
 					UNION (
 						SELECT id
 						FROM invoice
-						WHERE is_confirm = '1'
+						WHERE is_confirm = 1
 						AND customer_id = '$customerId'
 					)
 				) AS invoiceTable
 				ON invoice.id = invoiceTable.id
 				LEFT JOIN (
-					SELECT SUM(value) as value, invoice_id FROM receivable GROUP BY invoice_id
+					SELECT SUM(value) as value, invoice_id 
+					FROM receivable 
+					GROUP BY invoice_id
 				) AS a
 				ON a.invoice_id = invoice.id
-				WHERE invoice.is_confirm = '1'
-				AND COALESCE(a.value,0) < invoice.value
-				ORDER BY invoice.date ASC, invoice.name ASC, invoice.id ASC
+				WHERE invoice.is_confirm = 1
+				ORDER BY invoice.date DESC, invoice.name DESC, invoice.id DESC
+				LIMIT 10 OFFSET $offset
 			");
 
 			$result = $query->result();
+			return $result;
+		}
+
+		public function countCompleteReceivableByCustomerId($customerId){
+			$query = $this->db->query("
+				SELECT invoice.id
+				FROM invoice 
+				JOIN (
+					SELECT DISTINCT(code_delivery_order.invoice_id) as id
+					FROM code_delivery_order
+					JOIN delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order.id
+					JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
+					JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
+					WHERE code_sales_order.customer_id = '$customerId'
+					UNION (
+						SELECT id
+						FROM invoice
+						WHERE is_confirm = 1
+						AND customer_id = '$customerId'
+					)
+				) AS invoiceTable
+				ON invoice.id = invoiceTable.id
+				LEFT JOIN (
+					SELECT SUM(value) as value, invoice_id 
+					FROM receivable 
+					GROUP BY invoice_id
+				) AS a
+				ON a.invoice_id = invoice.id
+				WHERE invoice.is_confirm = 1
+			");
+
+			$result = $query->num_rows();
 			return $result;
 		}
 

@@ -153,7 +153,7 @@
 
 	function refreshView(){
 		$.ajax({
-			url:"<?= site_url('Receivable/getCompleteReceivableByCustomerId') ?>",
+			url:"<?= site_url('Receivable/getReceivableByCustomerId') ?>",
 			data:{
 				id: '<?= $customer->id ?>'
 			},
@@ -161,7 +161,7 @@
 				$('#receivableTableContent').html("");
 				var receivableCount = 0;
 				var totalReceivable = 0;
-				var items = response.invoices;
+				var items = response.receivable;
 				$.each(items, function(index, item){
 					var id = item.id;
 					var date = item.date;

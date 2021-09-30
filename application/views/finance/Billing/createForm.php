@@ -505,7 +505,11 @@
 					var date = item.date;
 					var difference = Math.ceil(Math.abs(new Date(date) - new Date())/(1000*60*60*24));
 					var name = item.name;
-					var value = item.value;
+					var base_value  = parseFloat(item.value);
+					var delivery	= parseFloat(item.delivery);
+					var discount	= parseFloat(item.discount);
+					var value = base_value + delivery - discount;
+
 					var paid = item.paid;
 					var id 		= item.id;
 

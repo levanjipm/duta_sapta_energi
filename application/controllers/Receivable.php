@@ -60,6 +60,9 @@ class Receivable extends CI_Controller {
 		
 		$this->load->model('Customer_model');
 		$data['customer'] = $this->Customer_model->getById($customerId);
+
+		$this->load->model('Receivable_model');
+		$data['receivables'] = $this->Receivable_model->viewReceivableByCustomerId($customerId);
 		
 		header('Content-Type: application/json');
 		echo json_encode($data);
@@ -68,14 +71,16 @@ class Receivable extends CI_Controller {
 	public function getCompleteReceivableByCustomerId()
 	{
 		$customerId = $this->input->get('id');
-		$this->load->model('Invoice_model');
-		$data['invoices'] = $this->Invoice_model->viewCompleteReceivableByCustomerId($customerId);
+		$page		= $this->input->get('page');
+		$offset		= ($page - 1) * 10;
 
-		$this->load->model("Receivable_model");
-		$data['receivables'] = $this->Receivable_model->viewReceivableByCustomerId($customerId);
+		$this->load->model('Invoice_model');
+		$data['invoices'] = $this->Invoice_model->viewCompleteReceivableByCustomerId($customerId, $offset);
 
 		$this->load->model("Bank_model");
 		$data['pendingBank'] = $this->Bank_model->getUnassignedByCustomerId($customerId);
+
+		$data['pages']		= max(1, ceil($this->Invoice_model->countCompleteReceivableByCustomerId($customerId)/10));
 
 		header('Content-Type: application/json');
 		echo json_encode($data);

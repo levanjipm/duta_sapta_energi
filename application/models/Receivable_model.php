@@ -102,8 +102,8 @@ class Receivable_model extends CI_Model {
 		{
 			$this->db->select('receivable.*, internal_bank_account.name, internal_bank_account.number');
 			$this->db->from('receivable');
-			$this->db->join('bank_transaction', 'bank_transaction.id = receivable.bank_id');
-			$this->db->join('internal_bank_account', 'internal_bank_account.id = bank_transaction.account_id');
+			$this->db->join('bank_transaction', 'bank_transaction.id = receivable.bank_id', 'left');
+			$this->db->join('internal_bank_account', 'internal_bank_account.id = bank_transaction.account_id', 'left');
 			$this->db->where('invoice_id', $invoiceId);
 
 			$query			= $this->db->get();
