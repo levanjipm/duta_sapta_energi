@@ -70,10 +70,10 @@ class Sales extends CI_Controller {
 	{
 		$month		= $this->input->get('month');
 		$year		= $this->input->get('year');
-		$offset		= $this->input->get('offset');
+		$limit		= $this->input->get('limit');
 
 		$this->load->model('Invoice_model');
-		$result = $this->Invoice_model->getByMonthYear($month, $year, $offset);
+		$result = $this->Invoice_model->getByMonthYear($month, $year, $limit);
 
 		header('Content-Type: application/json');
 		echo json_encode(array_reverse($result));

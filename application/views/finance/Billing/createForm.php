@@ -143,6 +143,10 @@
 			</tr>
 			<tbody id='receivableTableContent'></tbody>
 		</table>
+
+		<select class='form-control' id='customerPage' style='width:100px'>
+			<option value='1'>1</option>
+		</select>
 	</div>
 </div>
 
@@ -173,6 +177,7 @@
 </div>
 <script>
 	var includedInvoice = [];
+	var customerSelected = 0;
 
 	$(document).ready(function(){
 		$('#urgentButton').click();
@@ -458,11 +463,17 @@
 		})
 	}
 
-	function viewCustomer(n){
+	$('#customerPage').change(function(){
+		viewCustomer(customerSelected, $('#customerPage').val());
+	})
+
+	function viewCustomer(n, page = 1){
+		customerSelected = n;
 		$.ajax({
 			url:"<?= site_url('Billing/getByCustomerId') ?>",
 			data:{
-				id:n
+				id:n,
+				page: page
 			},
 			success:function(response){
 				var customer = response.customer;
@@ -527,8 +538,17 @@
 					} else {
 						$('#receivableTableContent').append("<tr><td>" + my_date_format(date) + " (" + numeral(difference).format('0,0') + " days)</td><td>" + name + "</td><td>Rp. " + numeral(value).format('0,0.00') + "</td><td>Rp. " + numeral(paid).format('0,0.00') + "</td><td>" + lastBillingDateText + "</td><td><button class='button button_default_dark' onclick='selectCustomerInvoice(" + id + ")' id='selectInvoiceButtonCustomer-" + id + "' style='display:none'><i class='fa fa-long-arrow-right'></i></button><button class='button button_danger_dark' onclick='removeCustomerInvoice(" + id + ")' id='removeInvoiceButtonCustomer-" + id + "'><i class='fa fa-trash'></i></button></tr>");
 					}
-					
 				})
+
+				var pages = response.pages;
+				$('#customerPage').html("");
+				for(i = 1; i<= pages; i++){
+					if(i == page){
+						$('#customerPage').append("<option value='" + i + "' selected>" + i + "</option>");
+					} else {
+						$('#customerPage').append("<option value='" + i + "'>" + i + "</option>");
+					}
+				}
 
 				$('#customerReceivableWrapper').fadeIn(300, function(){
 					$('#customerReceivableWrapper .alert_box_slide').show("slide", { direction: "right" }, 250);

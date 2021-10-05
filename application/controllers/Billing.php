@@ -213,9 +213,13 @@ class Billing extends CI_Controller {
 	public function getByCustomerId()
 	{
 		$customerId = $this->input->get('id');
-		$this->load->model("Invoice_model");
-		$data['items']		= $this->Invoice_model->viewCompleteReceivableByCustomerId($customerId);
+		$page		= $this->input->get('page');
+		$offset		= ($page - 1) * 10;
 
+		$this->load->model("Invoice_model");
+		$data['items']		= $this->Invoice_model->viewCompleteReceivableByCustomerId($customerId, $offset);
+		$data['pages']		= max(1, ceil($this->Invoice_model->countCompleteReceivableByCustomerId($customerId)/10));
+		
 		$this->load->model("Customer_model");
 		$data['customer']	= $this->Customer_model->getById($customerId);
 

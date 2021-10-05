@@ -53,7 +53,9 @@ class Receivable extends CI_Controller {
 		$customerId = $this->input->get('id');
 
 		$this->load->model('Invoice_model');
-		$data['receivable'] = $this->Invoice_model->viewReceivableByCustomerId($customerId);
+		$invoices = $this->Invoice_model->viewReceivableByCustomerId($customerId);
+
+		$data['receivable'] = $invoices;
 
 		$this->load->model("Bank_model");
 		$data['pendingBank'] = $this->Bank_model->getUnassignedByCustomerId($customerId);
@@ -62,7 +64,12 @@ class Receivable extends CI_Controller {
 		$data['customer'] = $this->Customer_model->getById($customerId);
 
 		$this->load->model('Receivable_model');
-		$data['receivables'] = $this->Receivable_model->viewReceivableByCustomerId($customerId);
+		$invoiceIds = array();
+		foreach($invoices as $invoice){
+			array_push($invoiceIds, $invoice->id);
+		}
+
+		$data['receivables'] = $this->Receivable_model->viewReceivableByInvoiceIds($invoiceIds);
 		
 		header('Content-Type: application/json');
 		echo json_encode($data);

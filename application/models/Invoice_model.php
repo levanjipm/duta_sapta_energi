@@ -611,7 +611,8 @@ class Invoice_model extends CI_Model {
 				) AS a
 				ON a.invoice_id = invoice.id
 				WHERE invoice.is_confirm = 1
-				ORDER BY invoice.date DESC, invoice.name DESC, invoice.id DESC
+				AND invoice.is_done = 0
+				ORDER BY invoice.date ASC, invoice.name DESC, invoice.id DESC
 				LIMIT 10 OFFSET $offset
 			");
 
@@ -992,38 +993,73 @@ class Invoice_model extends CI_Model {
 			return $a['name'] - $b['name'];
 		}
 
-		public function getByMonthYear($month, $year, $offset)
+		public function getByMonthYear($month, $year, $limit = 0)
 		{
-			$query = $this->db->query("
-				SELECT (a.value - COALESCE(returnTable.value, 0)) AS value, a.name, a.id
-				FROM (
-					SELECT customer.name, customer.id, invoice.value
-					FROM invoice
-					JOIN code_delivery_order ON invoice.id = code_delivery_order.invoice_id
-					JOIN delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order.id
-					JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
-					JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
-					JOIN customer ON code_sales_order.customer_id = customer.id
-					WHERE MONTH(invoice.date) = '$month'
-					AND YEAR(invoice.date) = '$year'
-					AND invoice.is_confirm = '1'
-					GROUP BY customer.id
-				) a
-				LEFT JOIN (
-					SELECT COALESCE(SUM(sales_return.price * sales_return_received.quantity), 0) AS value, code_sales_order.customer_id
-					FROM sales_return_received
-					JOIN sales_return ON sales_return_received.sales_return_id = sales_return.id
-					JOIN code_sales_return_received ON sales_return_received.code_sales_return_received_id = code_sales_return_received.id
-					JOIN delivery_order ON sales_return.delivery_order_id = delivery_order.id
-					JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
-					JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
-					WHERE MONTH(code_sales_return_received.date) = '$month' AND YEAR(code_sales_return_received.date)  = '$year'
-					AND code_sales_return_received.is_confirm = '1'
-					GROUP BY code_sales_order.customer_id
-				) returnTable
-				ON returnTable.customer_id = a.id
-				ORDER BY a.value ASC
-			");
+			if($limit == 0){
+				$query = $this->db->query("
+					SELECT (a.value - COALESCE(returnTable.value, 0)) AS value, a.name, a.id
+					FROM (
+						SELECT customer.name, customer.id, invoice.value
+						FROM invoice
+						JOIN code_delivery_order ON invoice.id = code_delivery_order.invoice_id
+						JOIN delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order.id
+						JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
+						JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
+						JOIN customer ON code_sales_order.customer_id = customer.id
+						WHERE MONTH(invoice.date) = '$month'
+						AND YEAR(invoice.date) = '$year'
+						AND invoice.is_confirm = '1'
+						GROUP BY customer.id
+					) a
+					LEFT JOIN (
+						SELECT COALESCE(SUM(sales_return.price * sales_return_received.quantity), 0) AS value, code_sales_order.customer_id
+						FROM sales_return_received
+						JOIN sales_return ON sales_return_received.sales_return_id = sales_return.id
+						JOIN code_sales_return_received ON sales_return_received.code_sales_return_received_id = code_sales_return_received.id
+						JOIN delivery_order ON sales_return.delivery_order_id = delivery_order.id
+						JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
+						JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
+						WHERE MONTH(code_sales_return_received.date) = '$month' AND YEAR(code_sales_return_received.date)  = '$year'
+						AND code_sales_return_received.is_confirm = '1'
+						GROUP BY code_sales_order.customer_id
+					) returnTable
+					ON returnTable.customer_id = a.id
+					ORDER BY a.value ASC
+				");
+			} else {
+				$query = $this->db->query("
+					SELECT (a.value - COALESCE(returnTable.value, 0)) AS value, a.name, a.id
+					FROM (
+						SELECT customer.name, customer.id, invoice.value
+						FROM invoice
+						JOIN code_delivery_order ON invoice.id = code_delivery_order.invoice_id
+						JOIN delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order.id
+						JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
+						JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
+						JOIN customer ON code_sales_order.customer_id = customer.id
+						WHERE MONTH(invoice.date) = '$month'
+						AND YEAR(invoice.date) = '$year'
+						AND invoice.is_confirm = '1'
+						GROUP BY customer.id
+					) a
+					LEFT JOIN (
+						SELECT COALESCE(SUM(sales_return.price * sales_return_received.quantity), 0) AS value, code_sales_order.customer_id
+						FROM sales_return_received
+						JOIN sales_return ON sales_return_received.sales_return_id = sales_return.id
+						JOIN code_sales_return_received ON sales_return_received.code_sales_return_received_id = code_sales_return_received.id
+						JOIN delivery_order ON sales_return.delivery_order_id = delivery_order.id
+						JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
+						JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
+						WHERE MONTH(code_sales_return_received.date) = '$month' AND YEAR(code_sales_return_received.date)  = '$year'
+						AND code_sales_return_received.is_confirm = '1'
+						GROUP BY code_sales_order.customer_id
+					) returnTable
+					ON returnTable.customer_id = a.id
+					ORDER BY a.value ASC
+					LIMIT $limit
+				");
+			}
+			
 			$result = $query->result();
 			return $result;
 

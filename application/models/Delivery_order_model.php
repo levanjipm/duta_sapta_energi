@@ -112,7 +112,7 @@ class Delivery_order_model extends CI_Model {
 				WHERE code_delivery_order.is_confirm = '0'
 				AND code_delivery_order.is_delete = '0'
 				AND code_delivery_order.is_sent = '0'
-
+				ORDER BY code_delivery_order.date ASC
 			");
 
 			$result	 	= $query->result();
@@ -156,7 +156,7 @@ class Delivery_order_model extends CI_Model {
 				WHERE code_delivery_order.is_confirm = '1'
 				AND code_delivery_order.is_delete = '0'
 				AND code_delivery_order.is_sent = '0'
-
+				ORDER BY code_delivery_order.date ASC
 			");
 
 			$result	 	= $query->result();
@@ -178,7 +178,6 @@ class Delivery_order_model extends CI_Model {
 				WHERE code_delivery_order.is_confirm = '1'
 				AND code_delivery_order.is_delete = '0'
 				AND code_delivery_order.is_sent = '0'
-
 			");
 
 			$result	 	= $query->num_rows();
@@ -260,6 +259,7 @@ class Delivery_order_model extends CI_Model {
 			$this->db->where('code_delivery_order.invoice_id', null);
 
 			$this->db->like('code_delivery_order.name', null);
+			$this->db->order_by('code_delivery_order.date', 'ASC');
 			$this->db->limit($limit, $offset);
 			$query		= $this->db->get();
 			
@@ -333,6 +333,7 @@ class Delivery_order_model extends CI_Model {
 				OR customer.address LIKE '%$term%'
 				OR customer.city LIKE '%$term%'
 				OR a.salesOrderName	LIKE '%$term%')
+				ORDER BY code_delivery_order.date ASC
 				LIMIT $limit OFFSET $offset	
 			");
 			
@@ -432,6 +433,7 @@ class Delivery_order_model extends CI_Model {
 				) as deliveryOrderTable
 				ON deliveryOrderTable.id = code_delivery_order.id
 				WHERE code_delivery_order.is_delete = 0;
+				ORDER BY code_delivery_order.date ASC
 			");
 
 			$result = $query->result();
@@ -447,6 +449,7 @@ class Delivery_order_model extends CI_Model {
 				JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
 				JOIN code_sales_order ON code_sales_order.id = sales_order.code_sales_order_id
 				WHERE code_delivery_order.invoice_id = '$invoiceId';
+				ORDER BY code_delivery_order.date ASC
 			");
 
 			$result = $query->row();
@@ -466,6 +469,7 @@ class Delivery_order_model extends CI_Model {
 			$this->db->where('code_delivery_order.is_confirm', 1);
 			$this->db->where('code_delivery_order.is_sent', 1);
 			$this->db->group_by('code_delivery_order.id');
+			$this->db->order_by("code_delivery_order.date", "ASC");
 			$this->db->limit($limit, $offset);
 
 			$query			= $this->db->get();
@@ -517,18 +521,6 @@ class Delivery_order_model extends CI_Model {
 				ORDER BY code_delivery_order.date ASC
 				LIMIT $limit OFFSET $offset
 			");
-			// $this->db->select('code_delivery_order.*, customer.name as customerName, customer.address, customer.city, customer.number, customer.block, customer.rt, customer.rw, customer.postal_code, customer.latitude, customer.longitude');
-			// $this->db->from('code_delivery_order');
-			// $this->db->join('delivery_order', 'delivery_order.code_delivery_order_id = code_delivery_order.id', 'inner');
-			// $this->db->join('sales_order', 'delivery_order.sales_order_id = sales_order.id');
-			// $this->db->join('code_sales_order', 'sales_order.code_sales_order_id = code_sales_order.id');
-			// $this->db->join('customer', 'code_sales_order.customer_id = customer.id');
-			// $this->db->where('code_delivery_order.is_confirm', 1);
-			// $this->db->where('code_delivery_order.is_delete', 0);
-			// $this->db->where('code_delivery_order.is_sent', 0);
-			// $this->db->limit($limit, $offset);
-
-			// $query			= $this->db->get();
 			$result			= $query->result();
 
 			return $result;

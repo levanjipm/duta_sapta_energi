@@ -164,7 +164,7 @@
         $.ajax({
             url:'<?= site_url('Sales/viewSalesByCustomer') ?>',
             data:{
-                offset: 5,
+                limit: 5,
                 month: <?= date('m') ?>,
                 year: <?= date('Y') ?>
             },
