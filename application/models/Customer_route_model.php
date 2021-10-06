@@ -129,4 +129,19 @@ class Customer_route_model extends CI_Model {
 			$result		= $query->result();
 			return $result;
 		}
+
+		public function getUnassignedCustomers(){
+			$query		= $this->db->query("
+				SELECT customer.*
+				FROM customer
+				WHERE customer.id NOT IN (
+					SELECT customer_route.customer_id
+					FROM customer_route
+				)
+				ORDER BY customer.name ASC
+			");
+
+			$result		= $query->result();
+			return $result;
+		}
 }

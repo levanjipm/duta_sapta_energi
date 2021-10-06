@@ -126,4 +126,11 @@ class Route extends CI_Controller {
 		header('Content-Type: application/json');
 		echo json_encode($response);
 	}
+	
+	public function getPendingAssignment(){
+		$this->load->model("Customer_route_model");
+		$response		= $this->Customer_route_model->getUnassignedCustomers();
+		header('Content-Type: application/json');
+		echo json_encode($response);
+	}
 }

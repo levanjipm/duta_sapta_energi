@@ -82,7 +82,7 @@
                 </div>
             </div>
             <div class='col-md-4 col-sm-12 col-xs-12'>
-                <div class='dashboardBox clickable' onclick="window.location.href='<?= site_url('Route') ?>'">
+                <div class='dashboardBox clickable' onclick="fetchPendingAssignment()">
                     <div class='leftSide'>
                         <h4><b>Pending</b></h4>
                         <p>Customer Assignment</p>
@@ -100,10 +100,82 @@
         </div>
     </div>
 </div>
+
+<div class='alert_wrapper' id='pendingRouteWrapper'>
+<button type='button' class='slide_alert_close_button'>&times;</button>
+	<div class='alert_box_slide'>
+        <h3 style='font-family:bebasneue'>Pending Customer Route Assignment</h3>
+        <table class='table table-bordered' id='routeTable'>
+			<tr>
+				<th>Name</th>
+				<th>Address</th>
+			</tr>
+			<tbody id='routeTableContent'></tbody>
+		</table>
+        <p id='routeTableText'>There is no customer to be assigned.</p>
+	</div>
+</div>
+
 <script>
 	$(document).ready(function(){
 		getChartNumbers();
 	});
+
+    function fetchPendingAssignment(){
+        $.ajax({
+            url:"<?= site_url('Route/getPendingAssignment') ?>",
+            beforeSend:function(){
+                $('#routeTableContent').html("");
+            },
+            success:function(response){
+                if(response.length == 0){
+                    $('#routeTable').hide();
+                    $('#routeTableText').show();
+                } else {
+                    $('#routeTable').show();
+                    $('#routeTableText').hide();
+
+                    $.each(response, function(index, item){
+                        var complete_address		= '';
+                        var customer_name			= item.name;
+                        complete_address		    += item.address;
+                        var customer_city			= item.city;
+                        var customer_number			= item.number;
+                        var customer_rt				= item.rt;
+                        var customer_rw				= item.rw;
+                        var customer_postal			= item.postal_code;
+                        var customer_block			= item.block;
+                        var customer_id				= item.id;
+            
+                        if(customer_number != null){
+                            complete_address	+= ' No. ' + customer_number;
+                        }
+                        
+                        if(customer_block != null && customer_block != "000"){
+                            complete_address	+= ' Blok ' + customer_block;
+                        }
+                    
+                        if(customer_rt != '000'){
+                            complete_address	+= ' RT ' + customer_rt;
+                        }
+                        
+                        if(customer_rw != '000' && customer_rt != '000'){
+                            complete_address	+= ' /RW ' + customer_rw;
+                        }
+                        
+                        if(customer_postal != null){
+                            complete_address	+= ', ' + customer_postal;
+                        }
+                        $('#routeTableContent').append("<tr><td>" + item.name + "</td><td>" + complete_address + "</td>")
+                    })
+                }
+
+                $('#pendingRouteWrapper').fadeIn(300, function(){
+                    $('#pendingRouteWrapper .alert_box_slide').show("slide", { direction: "right" }, 250);
+                });
+            }
+        })
+    }
 
 	function getChartNumbers(){
 		$.ajax({

@@ -526,10 +526,11 @@ class Good_receipt_model extends CI_Model {
 		public function getUninvoicedItems($offset = 0, $limit = 10)
 		{
 			$query			= $this->db->query("
-				SELECT code_good_receipt.* FROM code_good_receipt
-				JOIN good_receipt ON good_receipt.code_good_receipt_id = code_good_receipt.id
-				WHERE code_good_receipt.is_confirm ='1'
+				SELECT code_good_receipt.* 
+				FROM code_good_receipt
+				WHERE code_good_receipt.is_confirm = 1
 				AND code_good_receipt.invoice_id IS NULL
+				ORDER BY code_good_receipt.date ASC
 				LIMIT $limit OFFSET $offset
 			");
 			$result			= $query->result();

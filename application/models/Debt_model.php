@@ -779,7 +779,8 @@ class Debt_model extends CI_Model {
 		public function viewPurchaseByMonth()
 		{
 			$query			= $this->db->query("
-				SELECT purchaseInvoiceTable.value AS value, purchaseInvoiceTable.month, purchaseInvoiceTable.year FROM (
+				SELECT purchaseInvoiceTable.value AS value, purchaseInvoiceTable.month, purchaseInvoiceTable.year 
+				FROM (
 					SELECT SUM(a.value) AS value, MONTH(purchase_invoice.date) AS month, YEAR(purchase_invoice.date) AS year
 					FROM (
 						SELECT SUM(good_receipt.quantity * good_receipt.billed_price) AS value, code_good_receipt.invoice_id

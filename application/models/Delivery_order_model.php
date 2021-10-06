@@ -432,8 +432,8 @@ class Delivery_order_model extends CI_Model {
 					WHERE code_sales_order.id = '$salesOrderId'
 				) as deliveryOrderTable
 				ON deliveryOrderTable.id = code_delivery_order.id
-				WHERE code_delivery_order.is_delete = 0;
-				ORDER BY code_delivery_order.date ASC
+				WHERE code_delivery_order.is_delete = 0
+				ORDER BY code_delivery_order.date ASC;
 			");
 
 			$result = $query->result();
@@ -448,8 +448,8 @@ class Delivery_order_model extends CI_Model {
 				JOIN delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order.id
 				JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
 				JOIN code_sales_order ON code_sales_order.id = sales_order.code_sales_order_id
-				WHERE code_delivery_order.invoice_id = '$invoiceId';
-				ORDER BY code_delivery_order.date ASC
+				WHERE code_delivery_order.invoice_id = '$invoiceId'
+				ORDER BY code_delivery_order.date ASC;
 			");
 
 			$result = $query->row();
