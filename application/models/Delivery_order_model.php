@@ -246,7 +246,7 @@ class Delivery_order_model extends CI_Model {
 		
 		public function getUninvoicedDeliveryOrders($type, $offset = 0, $filter = '', $limit = 10)
 		{
-			$this->db->select('DISTINCT(code_delivery_order.id) as id, , code_delivery_order.date, code_delivery_order.name, code_delivery_order.is_confirm, code_delivery_order.is_sent, code_delivery_order.guid, code_delivery_order.invoice_id, customer.name as customer_name, customer.address as customer_address, customer.city as customer_city');
+			$this->db->select('DISTINCT(code_delivery_order.id) as id, code_delivery_order.date, code_delivery_order.name, code_delivery_order.is_confirm, code_delivery_order.is_sent, code_delivery_order.guid, code_delivery_order.invoice_id, customer.name as customer_name, customer.address as customer_address, customer.city as customer_city, code_sales_order.invoicing_method');
 			$this->db->from('code_delivery_order');
 			$this->db->join('delivery_order', 'delivery_order.code_delivery_order_id = code_delivery_order.id', 'left');
 			$this->db->join('sales_order', 'delivery_order.sales_order_id = sales_order.id');

@@ -65,8 +65,13 @@ class Stock extends CI_Controller {
 	public function viewCard()
 	{
 		$itemId			= $this->input->get('id');
+		$page			= $this->input->get('page');
+		$offset			= ($page - 1) * 10;
+
 		$this->load->model('Stock_in_model');
-		$data['items'] = $this->Stock_in_model->viewCard($itemId);
+		$data['items'] = $this->Stock_in_model->viewCard($itemId, $offset);
+		$data['stock']	= $this->Stock_in_model->ViewPreviousStock($itemId, $offset);
+		$data['pages']	= max(1, ceil($this->Stock_in_model->countCard($itemId)/10));
 
 		$this->load->model("Delivery_order_model");
 		$data['progress']	= $this->Delivery_order_model->viewOnProgressByItemId($itemId);

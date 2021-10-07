@@ -211,6 +211,8 @@
 						</div>
 						<br>
 						<p>Rp. <span id='CustomerValueP'>0.00</span></p>
+						<button type='button' id='customerValueDetailButton' class='button button_default_dark' onclick='fetchValueDetail()'>Detail</button>
+						<br><br>
 						<label>Information</label>
 						<p>The value mentioned above is the sum of invoices value of the current customer subtracted by sum of returned received in that period.</p>
 					</form>
@@ -286,6 +288,25 @@
 	</div>
 </div>
 
+<div class='alert_wrapper' id='viewDetailWrapper'>
+	<button class='slide_alert_close_button'>&times;</button>
+	<div class='alert_box_slide'>
+		<h3 style='font-family:bebasneue'>Purchase Detail</h3>
+		<div class='table-responsive-md'>
+			<table class='table table-bordered'>
+				<thead>
+					<tr>
+						<th>Name</th>
+						<th>Value</th>
+						<th>Quantity
+					</tr>
+				</thead>
+				<tbody id='detailTableContent'></tbody>
+			</table>
+		</div>
+	</div>
+</div>
+
 <div class='alert_wrapper' id='viewInvoiceWrapper'>
 	<button class='slide_alert_close_button'>&times;</button>
 	<div class='alert_box_slide'>
@@ -345,6 +366,7 @@
 
 	$(document).ready(function(){
 		$('#salesOrderButton').click();
+		$('#customerValueDetailButton').hide();
 	});
 
 	$('#addTargetButton').click(function(){
@@ -766,21 +788,45 @@
 					start: $('#dateStart').val(),
 					end: $('#dateEnd').val()
 				},
+				beforeSend:function(){
+					$('#customerValueDetailButton').hide();
+					$('#detailTableContent').html("");
+				},
 				type:"POST",
 				success:function(response){
 					var value		= response.value;
 					$('#CustomerValueP').html(numeral(value).format('0,0.00'));
 
+					if(value > 0){
+						$('#customerValueDetailButton').show();
+					}
+
 					var distribution	= response.distribution;
 					var totalValue		= 0;
 					$.each(distribution, function(index, item){
-						var name		= item.name;
-						var value		= item.value;
-						var returned	= item.returned;
-						totalValue += parseFloat(value);
+						var quantity		= parseInt(item.quantity);
+						var returned		= parseInt(item.returnedQuantity);
+
+						var value			= parseFloat(item.value);
+						var returnedValue	= parseFloat(item.returned);
+
+						var finalValue		= value - returnedValue;
+						var finalQuantity	= quantity - returned;
+
+						if(finalValue != 0 && finalQuantity != 0){
+							$('#detailTableContent').append("<tr><td>" + item.name + "</td><td>Rp. " + numeral(finalValue).format('0,0.00') + "</td><td>" + numeral(finalQuantity).format('0,0') + "</td></tr>");
+						}
+
+						
 					});
 				}
 			})
 		}
+	}
+
+	function fetchValueDetail(){
+		$('#viewDetailWrapper').fadeIn(300, function(){
+			$('#viewDetailWrapper .alert_box_slide').show("slide", { direction: "right" }, 250);
+		});
 	}
 </script>

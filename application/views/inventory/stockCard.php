@@ -80,13 +80,23 @@
             url:"<?= site_url('Stock/viewCard') ?>",
             data:{
                 id:<?= $item->id ?>,
+                page: $('#page').val()
+            },
+            beforeSend:function(){
+                $('#stockTableContent').html("");
+                $('#progressTableContent').html("");
             },
             success:function(responseData){
-                console.log(responseData);
+                var stock           = responseData.stock;
                 var response        = responseData.items;
-                var i           = 0;
-                var finalStock = 0;
-                var itemCount = 0;
+                var mutation        = 0;
+                $.each(response, function(index, item){
+                    var quantity = parseInt(item.quantity);
+                    mutation += quantity;
+                });
+
+                var finalStock      = stock + mutation;
+                var itemCount       = 0;
                 $.each(response, function(index, item){
                     var name = item.name;
                     var quantity = parseInt(item.quantity);
@@ -94,28 +104,22 @@
                     var date = item.date;
                     var type    = item.documentType;
                     var id      = item.documentId;
-                    
-                    var page        = Math.floor(i / 10) + 1;
                     if(date != null){
-                        finalStock += quantity;
                         if(type == "goodReceipt"){
-                            $('#stockTableContent').prepend("<tr class='stockRow-" + page + "'><td>" + my_date_format(date) + "</td><td>" + documentName + "<button class='button button_mini_tab' onclick='viewDocument(" + id + ",1)'><i class='fa fa-eye'></i></button></td><td>" + name + "</td><td>" + numeral(quantity).format('0,0') + "</td><td>" + numeral(finalStock).format('0,0') + "</td></tr>");
-                            itemCount++;
+                            $('#stockTableContent').append("<tr><td>" + my_date_format(date) + "</td><td>" + documentName + "<button class='button button_mini_tab' onclick='viewDocument(" + id + ",1)'><i class='fa fa-eye'></i></button></td><td>" + name + "</td><td>" + numeral(quantity).format('0,0') + "</td><td>" + numeral(finalStock).format('0,0') + "</td></tr>");
                         } else if(type == "salesReturn"){
-                            $('#stockTableContent').prepend("<tr class='stockRow-" + page + "'><td>" + my_date_format(date) + "</td><td>" + documentName + "<button class='button button_mini_tab' onclick='viewDocument(" + id + ",2)'><i class='fa fa-eye'></i></button></td><td>" + name + "</td><td>" + numeral(quantity).format('0,0') + "</td><td>" + numeral(finalStock).format('0,0') + "</td></tr>");
-                            itemCount++;
+                            $('#stockTableContent').append("<tr><td>" + my_date_format(date) + "</td><td>" + documentName + "<button class='button button_mini_tab' onclick='viewDocument(" + id + ",2)'><i class='fa fa-eye'></i></button></td><td>" + name + "</td><td>" + numeral(quantity).format('0,0') + "</td><td>" + numeral(finalStock).format('0,0') + "</td></tr>");
                         } else if(type == "event"){
-                            $('#stockTableContent').prepend("<tr class='stockRow-" + page + "'><td>" + my_date_format(date) + "</td><td>" + documentName + "<button class='button button_mini_tab' onclick='viewDocument(" + id + ",3)'><i class='fa fa-eye'></i></button></td><td>" + name + "</td><td>" + numeral(quantity).format('0,0') + "</td><td>" + numeral(finalStock).format('0,0') + "</td></tr>");
-                            itemCount++;
+                            $('#stockTableContent').append("<tr><td>" + my_date_format(date) + "</td><td>" + documentName + "<button class='button button_mini_tab' onclick='viewDocument(" + id + ",3)'><i class='fa fa-eye'></i></button></td><td>" + name + "</td><td>" + numeral(quantity).format('0,0') + "</td><td>" + numeral(finalStock).format('0,0') + "</td></tr>");
                         } else if(type == "deliveryOrder"){
-                            $('#stockTableContent').prepend("<tr class='stockRow-" + page + "'><td>" + my_date_format(date) + "</td><td>" + documentName + "<button class='button button_mini_tab' onclick='viewDocument(" + id + ",4)'><i class='fa fa-eye'></i></button></td><td>" + name + "</td><td>" + numeral(quantity).format('0,0') + "</td><td>" + numeral(finalStock).format('0,0') + "</td></tr>");
-                            itemCount++;
+                            $('#stockTableContent').append("<tr><td>" + my_date_format(date) + "</td><td>" + documentName + "<button class='button button_mini_tab' onclick='viewDocument(" + id + ",4)'><i class='fa fa-eye'></i></button></td><td>" + name + "</td><td>" + numeral(quantity).format('0,0') + "</td><td>" + numeral(finalStock).format('0,0') + "</td></tr>");
                         } else if(type == "purchaseReturn"){
-                            $('#stockTableContent').prepend("<tr class='stockRow-" + page + "'><td>" + my_date_format(date) + "</td><td>" + documentName + "<button class='button button_mini_tab' onclick='viewDocument(" + id + ",5)'><i class='fa fa-eye'></i></button></td><td>" + name + "</td><td>" + numeral(quantity).format('0,0') + "</td><td>" + numeral(finalStock).format('0,0') + "</td></tr>");
-                            itemCount++;
+                            $('#stockTableContent').append("<tr><td>" + my_date_format(date) + "</td><td>" + documentName + "<button class='button button_mini_tab' onclick='viewDocument(" + id + ",5)'><i class='fa fa-eye'></i></button></td><td>" + name + "</td><td>" + numeral(quantity).format('0,0') + "</td><td>" + numeral(finalStock).format('0,0') + "</td></tr>");
                         }
 
-                        i++;
+                        finalStock -= quantity;
+
+                        itemCount++;
                     }
                 });
 
@@ -130,12 +134,18 @@
                     var quantity            = parseInt(item.quantity);
 
                     $('#progressTableContent').append("<tr><td>" + customerName + "</td><td><label>" + name + "</label><p>" + my_date_format(date) + "</td><td>" + numeral(quantity).format('0,0') + "</td></tr>");
-                })
+                });
 
-                var pages = Math.max(Math.ceil(itemCount/20),1);
+                var page = $('#page').val();
+
                 $('#page').html("");
-                for(i = 1; i <= pages; i++){
-                    $('#page').append("<option value='" + i + "'>" + i + "</option>");
+                for(x = 1; x <= responseData.pages; x++){
+                    if(x == page){
+                        $('#page').append("<option value='" + x + "' selected>" + x + "</option>");
+                    } else {
+                        $('#page').append("<option value='" + x + "'>" + x + "</option>");
+                    }
+                    
                 }
 
                 if(itemCount > 0){
@@ -145,14 +155,6 @@
                     $('#stockTable').hide();
                     $('#stockTableText').show();
                 }
-
-                $('.tr[id^="stockRow-"]').each(function(){
-                    $(this).hide();
-                })
-
-                $('.stockRow-1').each(function(){
-                    $(this).show();
-                })
             }
         })
     }
@@ -164,8 +166,7 @@
     })
 
     $('#page').change(function(){
-        $('#stockTableContent').hide();
-        $('.stockRow-' + $('#page').val()).show();
+        refresh_view();
     })
 
     function viewDocument(id, type)

@@ -895,7 +895,8 @@ class Invoice_model extends CI_Model {
 					JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
 					JOIN customer ON code_sales_order.customer_id = customer.id
 					JOIN customer_area ON customer.area_id = customer_area.id
-					WHERE MONTH(code_sales_order.date) = '$month' AND YEAR(code_sales_order.date) = '$year'
+					WHERE MONTH(code_delivery_order.date) = '$month' 
+					AND YEAR(code_delivery_order.date) = '$year'
 					AND code_delivery_order.is_sent = 1
 					AND code_delivery_order.is_confirm = 1
 					AND code_sales_order.seller = '$salesId'
@@ -913,7 +914,8 @@ class Invoice_model extends CI_Model {
 					JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
 					JOIN customer ON code_sales_order.customer_id = customer.id
 					JOIN customer_area ON customer.area_id = customer_area.id
-					WHERE MONTH(code_sales_order.date) = '$month' AND YEAR(code_sales_order.date) = '$year'
+					WHERE MONTH(code_delivery_order.date) = '$month' 
+					AND YEAR(code_delivery_order.date) = '$year'
 					AND code_delivery_order.is_sent = 1
 					AND code_delivery_order.is_confirm = 1
 					AND code_sales_order.seller IS NULL
@@ -1491,19 +1493,24 @@ class Invoice_model extends CI_Model {
 					SELECT users.id, COALESCE(a.value,0) as value, users.image_url, users.name, COALESCE(returnTable.value, 0) as returned
 					FROM
 					 (
-						SELECT SUM(invoice.value + invoice.delivery - invoice.discount) as value, COALESCE(deliveryTable.seller,0) AS seller
+						SELECT SUM(invoice.value + invoice.delivery - invoice.discount) as value, COALESCE(salesTable.seller,0) AS seller
 						FROM invoice
-						JOIN (
+						LEFT JOIN (
 							SELECT DISTINCT(code_delivery_order.invoice_id) as id, code_sales_order.seller
 							FROM code_delivery_order
 							JOIN delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order.id
 							JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
 							JOIN code_sales_order ON code_sales_order.id = sales_order.code_sales_order_id
-						) AS deliveryTable
-						ON deliveryTable.id = invoice.id
-						WHERE MONTH(invoice.date) = '$month' AND YEAR(invoice.date) = '$year'
+						) AS salesTable
+						ON salesTable.id = invoice.id
+						WHERE invoice.id IN (
+							SELECT code_delivery_order.invoice_id AS id
+							FROM code_delivery_order
+							WHERE MONTH(code_delivery_order.date) = $month
+							AND YEAR(code_delivery_order.date) = $year
+						)
 						AND invoice.is_confirm = 1
-						GROUP BY deliveryTable.seller
+						GROUP BY seller
 					) AS a
 					LEFT JOIN users ON a.seller = users.id
 					LEFT JOIN (
@@ -2128,10 +2135,10 @@ class Invoice_model extends CI_Model {
 		public function getCustomerValueByDateRangerItemType($customerId, $dateStart, $dateEnd)
 		{
 			$query		= $this->db->query("
-				SELECT item_class.name, COALESCE(a.value,0) AS value, COALESCE(b.value, 0) AS returned
+				SELECT item_class.name, COALESCE(a.value,0) AS value, COALESCE(b.value, 0) AS returned, COALESCE(a.quantity, 0) AS quantity, COALESCE(b.quantity, 0) AS returnedQuantity
 				FROM item_class
 				LEFT JOIN (
-					SELECT SUM(delivery_order.quantity * (100 - sales_order.discount) * price_list.price_list) AS value, item.type
+					SELECT SUM(delivery_order.quantity * (100 - sales_order.discount) * price_list.price_list) AS value, item.type, SUM(delivery_order.quantity) AS quantity
 					FROM delivery_order
 					JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
 					JOIN price_list ON sales_order.price_list_id = price_list.id
@@ -2147,7 +2154,7 @@ class Invoice_model extends CI_Model {
 				) a
 				ON a.type = item_class.id
 				LEFT JOIN (
-					SELECT SUM(sales_return_received.quantity * sales_return.price) AS value, item.type
+					SELECT SUM(sales_return_received.quantity * sales_return.price) AS value, item.type, SUM(sales_return_received.quantity) AS quantity
 					FROM sales_return_received
 					JOIN sales_return ON sales_return_received.sales_return_id
 					JOIN code_sales_return_received ON sales_return_received.code_sales_return_received_id = code_sales_return_received.id
@@ -2163,6 +2170,7 @@ class Invoice_model extends CI_Model {
 					GROUP BY item.type
 				) b
 				ON b.type = item_class.id
+				ORDER BY item_class.name ASC
 			");
 
 			$result			= $query->result();

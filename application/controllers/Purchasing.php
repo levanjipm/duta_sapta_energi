@@ -169,7 +169,6 @@ class Purchasing extends CI_Controller {
 		$data		= $this->Debt_model->viewPurchaseByMonth();
 		$result			= array();
 		$today			= date("Y-m-d");
-		print_r($data);
 		foreach($data as $datum){
 			$month		= $datum->month;
 			$year		= $datum->year;
@@ -192,7 +191,7 @@ class Purchasing extends CI_Controller {
 			}
 		}
 
-		print_r($result);
+		ksort($result);
 
 		$result		= array_reverse($result);
 		header('Content-Type: application/json');

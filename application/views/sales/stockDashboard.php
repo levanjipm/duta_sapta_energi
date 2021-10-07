@@ -60,11 +60,12 @@
 					var current_stock	= stock.stock;
 					var statusIn		= stock.processIn;
 					var statusOut		= stock.processOut;
+					var pendingPurchase	= stock.processPurchase;
 
 					if(statusIn == null && statusOut == null){
-						$('#stock_table').append("<tr><td>" + reference + "</td><td>" + name + "</td><td>" + numeral(current_stock).format('0,0') + "</td></tr>");
+						$('#stock_table').append("<tr><td>" + reference + "</td><td>" + name + "</td><td>" + numeral(current_stock).format('0,0') + " (" + numeral(pendingPurchase).format('0,0') + ")</td></tr>");
 					} else {
-						$('#stock_table').append("<tr><td>" + reference + "</td><td>" + name + "</td><td>" + numeral(current_stock).format('0,0') + "</td><td></td></tr>");
+						$('#stock_table').append("<tr><td>" + reference + "</td><td>" + name + "</td><td>" + numeral(current_stock).format('0,0') + " (" + numeral(pendingPurchase).format('0,0') + ")</td></tr>");
 					}				
 				});
 				
