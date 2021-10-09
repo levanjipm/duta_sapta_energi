@@ -183,7 +183,7 @@
 	var customerSelected = 0;
 
 	$(document).ready(function(){
-		$('#urgentButton').click();
+		$('#recommendedButton').click();
 	});
 
 	$('#recommendedButton').click(function(){
@@ -276,6 +276,8 @@
 					var customer_rw 		= item.rw;
 					var customer_city 		= item.city;
 					var customer_postal 	= item.postal_code;
+
+					var dueDate				= item.due;
 				
 					if(customer_number != null){
 						complete_address	+= ' No. ' + customer_number;
@@ -301,7 +303,7 @@
 					var nextBilledDate = (item.nextBillingDate == null) ? "None" : my_date_format(item.nextBillingDate);
 
 					if(!includedInvoice.includes("" + id + "")){
-						$('#recommendedTableContent').append("<tr id='row-" + id + "'><td>" + my_date_format(date) +"</td><td>" + invoiceName + "</td><td><label>" + customerName + "</label><p>" + complete_address + "</p><p>" + customer_city + "</p></td><td>Rp. " + numeral(value).format('0,0.00') + "</td><td>Rp. " + numeral(paid).format('0,0.00') + "</td><td>" + lastBilledDate + " / " + nextBilledDate + "</td><td><button class='button button_default_dark' onclick='selectRecommendedInvoice(" + id + ")' id='selectInvoiceButtonRecommended-" + id + "'><i class='fa fa-plus'></i></button><button class='button button_danger_dark' onclick='removeRecommendedInvoice(" + id + ")' id='removeInvoiceButtonRecommended-" + id + "' style='display:none'><i class='fa fa-trash'></i></button></td></tr>");
+						$('#recommendedTableContent').append("<tr id='row-" + id + "'><td><p>" + my_date_format(date) +"</p><p><strong>Due on " + my_date_format(dueDate) + "</strong></p></td><td>" + invoiceName + "</td><td><label>" + customerName + "</label><p>" + complete_address + "</p><p>" + customer_city + "</p></td><td>Rp. " + numeral(value).format('0,0.00') + "</td><td>Rp. " + numeral(paid).format('0,0.00') + "</td><td>" + lastBilledDate + " / " + nextBilledDate + "</td><td><button class='button button_default_dark' onclick='selectRecommendedInvoice(" + id + ")' id='selectInvoiceButtonRecommended-" + id + "'><i class='fa fa-plus'></i></button><button class='button button_danger_dark' onclick='removeRecommendedInvoice(" + id + ")' id='removeInvoiceButtonRecommended-" + id + "' style='display:none'><i class='fa fa-trash'></i></button></td></tr>");
 						invoiceCount++;
 					} else {
 						$('#recommendedTableContent').append("<tr id='row-" + id + "'><td>" + my_date_format(date) +"</td><td>" + invoiceName + "</td><td><label>" + customerName + "</label><p>" + complete_address + "</p><p>" + customer_city + "</p></td><td>Rp. " + numeral(value).format('0,0.00') + "</td><td>Rp. " + numeral(paid).format('0,0.00') + "</td><td>" + lastBilledDate + " / " + nextBilledDate + "</td><td><button class='button button_default_dark' onclick='selectRecommendedInvoice(" + id + ")' id='selectInvoiceButtonRecommended-" + id + "' style='display:none'><i class='fa fa-plus'></i></button><button class='button button_danger_dark' onclick='removeRecommendedInvoice(" + id + ")' id='removeInvoiceButtonRecommended-" + id + "'><i class='fa fa-trash'></i></button></td></tr>");

@@ -1203,13 +1203,13 @@ class Invoice_model extends CI_Model {
 		public function getRecommendationList($date, $offset = 0, $term = "", $limit = 10)
 		{
 			$query		= $this->db->query("
-				SELECT invoice.*, customer.name as customerName, customer.address, customer.city, customer.rt, customer.rw, customer.block, customer.number, customer.postal_code, customer.block, COALESCE(receivableTable.value) as paid
+				SELECT invoice.*, customer.name as customerName, customer.address, customer.city, customer.rt, customer.rw, customer.block, customer.number, customer.postal_code, customer.block, COALESCE(receivableTable.value) as paid, ADDDATE(invoice.date, INTERVAL COALESCE(customerTable.payment, customer.term_of_payment) DAY) AS due
 				FROM invoice
 				JOIN (
-					SELECT a.customer_id, code_delivery_order.invoice_id, code_delivery_order.name
+					SELECT a.customer_id, code_delivery_order.invoice_id, code_delivery_order.name, a.payment
 					FROM code_delivery_order
 					JOIN (
-						SELECT delivery_order.code_delivery_order_id, code_sales_order.customer_id
+						SELECT delivery_order.code_delivery_order_id, code_sales_order.customer_id, code_sales_order.payment
 						FROM delivery_order
 						JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
 						JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
