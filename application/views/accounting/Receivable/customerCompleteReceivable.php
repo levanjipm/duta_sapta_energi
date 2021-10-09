@@ -209,6 +209,8 @@
 				page: $('#page').val()
 			},
 			success:function(response){
+				var page = $('#page').val();
+
 				$('#receivableTableContent').html("");
 				var receivableCount = 0;
 				var totalReceivable = 0;

@@ -611,7 +611,6 @@ class Invoice_model extends CI_Model {
 				) AS a
 				ON a.invoice_id = invoice.id
 				WHERE invoice.is_confirm = 1
-				AND invoice.is_done = 0
 				ORDER BY invoice.date ASC, invoice.name DESC, invoice.id DESC
 				LIMIT 10 OFFSET $offset
 			");
