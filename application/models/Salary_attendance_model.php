@@ -88,13 +88,17 @@ class Salary_attendance_model extends CI_Model {
 				JOIN (
 					SELECT COUNT(attendance_list.id) AS count, attendance_list.status, attendance_list.user_id, MONTH(attendance_list.date) AS month, YEAR(attendance_list.date) AS year
 					FROM attendance_list
-					GROUP BY user_id, status, MONTH(attendance_list.date), YEAR(attendance_list.date)
+					GROUP BY user_id, status, 
+					MONTH(attendance_list.date), 
+					YEAR(attendance_list.date)
 				) attendanceTable
 				ON salary_slip.month = attendanceTable.month 
 				AND salary_slip.year = attendanceTable.year
 				AND salary_slip.user_id = attendanceTable.user_id
-				JOIN attendance_status ON attendanceTable.status = attendance_status.id
-				LEFT JOIN salary_attendance ON salary_attendance.status_id = attendanceTable.status
+				LEFT JOIN attendance_status ON attendanceTable.status = attendance_status.id
+				LEFT JOIN salary_attendance 
+				ON salary_attendance.status_id = attendanceTable.status
+				AND salary_attendance.salary_slip_id = salary_slip.id
 				WHERE salary_slip.id = '$salarySlipId'
 			");
 

@@ -29,6 +29,10 @@
 				</tr>
 				<tbody id='receivableTableContent'></tbody>
 			</table>
+
+			<select class='form-control' id='page' style='width:100px'>
+				<option value='1'>1</option>
+			</select>
 		</div>
 		<p id='receivableTableText'>There is no incomplete receivable found.</p>
 	</div>
@@ -151,11 +155,16 @@
 		refreshView();
 	});
 
+	$('#page').change(function(){
+		refreshView();
+	})
+
 	function refreshView(){
 		$.ajax({
 			url:"<?= site_url('Receivable/getCompleteReceivableByCustomerId') ?>",
 			data:{
-				id: '<?= $customer->id ?>'
+				id: '<?= $customer->id ?>',
+				page: $('#page').val()
 			},
 			success:function(response){
 				$('#receivableTableContent').html("");
@@ -174,29 +183,6 @@
 					if(item.is_done == 0){
 						$('#receivableTableContent').append("<tr><td>" + my_date_format(date) + "</td><td><p>" + name + "</p><p>" + taxInvoice + "</p><button class='button button_mini_tab active' onclick='viewInvoice(" + id + ")'><i class='fa fa-eye'></i></button></td><td>Rp. " + numeral(value).format('0,0.00') + "</td><td>Rp. 0,0.00</td><td>Rp. " + numeral(totalReceivable).format('0,0.00') + "</td></tr>");
 						receivableCount++; 
-
-						var receivableArray = response.receivables.filter(function(receivable){
-							return receivable.invoice_id == id;
-						});
-
-						if(receivableArray.length > 0){
-							$.each(receivableArray, function(index, value){
-								var paymentDate = value.date;
-								var paymentValue = parseFloat(value.value);
-								totalReceivable -= paymentValue;
-<?php if($user_login->access_level > 2){ ?>
-							if(value.bank_id == null){
-								var id = value.id;
-								$('#receivableTableContent').append("<tr class='success'><td>" + my_date_format(paymentDate) + "</td><td><p>Payment</p><button class='button button_default_dark' onclick='confirmDelete(" + id + ")'><i class='fa fa-trash'></i></button></td><td>Rp. 0,0.00</td><td>Rp. " + numeral(paymentValue).format('0,0.00') + "</td><td>Rp. " + numeral(totalReceivable).format('0,0.00') + "</td></tr>");
-							} else {
-								$('#receivableTableContent').append("<tr class='success'><td>" + my_date_format(paymentDate) + "</td><td><p>Payment</p></td><td>Rp. 0,0.00</td><td>Rp. " + numeral(paymentValue).format('0,0.00') + "</td><td>Rp. " + numeral(totalReceivable).format('0,0.00') + "</td></tr>");
-							}
-							
-<?php } else { ?>
-							$('#receivableTableContent').append("<tr class='success'><td>" + my_date_format(paymentDate) + "</td><td><p>Payment</p</td><td>Rp. 0,0.00</td><td>Rp. " + numeral(paymentValue).format('0,0.00') + "</td><td>Rp. " + numeral(totalReceivable).format('0,0.00') + "</td></tr>");
-<?php } ?>
-							})
-						}
 					}	
 				});
 
