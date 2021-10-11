@@ -163,7 +163,7 @@ class Billing extends CI_Controller {
 		$this->load->model("Invoice_model");
 		$data = array();
 		$data['items'] = $this->Invoice_model->getUrgentList($date, $offset, $term, $day);
-		// $data['pages'] = max(1, ceil($this->Invoice_model->countUrgentList($date, $offset, $term, $day)/10));
+		$data['pages'] = max(1, ceil($this->Invoice_model->countUrgentList($date, $offset, $term, $day)/10));
 		
 		header('Content-Type: application/json');
 		echo json_encode($data);	
