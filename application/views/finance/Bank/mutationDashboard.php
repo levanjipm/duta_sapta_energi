@@ -184,6 +184,8 @@
 					}
 				});
 
+				final_balance += parseFloat(response.offsetMutation);
+
 				current_balance		= final_balance;
 				
 				var mutationCount = 0;

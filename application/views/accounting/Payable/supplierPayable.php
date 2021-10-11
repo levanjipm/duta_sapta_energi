@@ -29,6 +29,10 @@
 				</tr>
 				<tbody id='payableTableContent'></tbody>
 			</table>
+
+			<select class='form-control' id='page' style='width:100px'>
+				<option value='1'>1</option>
+			</select>
 		</div>
 		<p id='payableTableText'>There is no incomplete payable found.</p>
 	</div>
@@ -76,6 +80,19 @@
 			<label>Note</label>
 			<p id='blankInvoiceNote_p'></p>
 		</div>
+
+		<div id='payTable'>
+			<table class='table table-bordered'>
+				<thead>
+					<tr>
+						<th>Date</th>
+						<th>Value</th>
+					</tr>
+				</thead>
+				<tbody id='payTableContent'></tbody>
+			</table>
+		</div>
+		<p id='payTableText'>There is no payable found.</p>
 
 <?php if($user_login->access_level > 2){ ?>
 		<form id='completeForm'>
@@ -162,14 +179,33 @@
 		refreshView();
 	});
 
+	$('#page').change(function(){
+		refreshView();
+	})
+
 	function refreshView(){
 		$.ajax({
 			url:"<?= site_url('Payable/getCompletePayableBySupplierId') ?>",
 			data:{
-				id: '<?= $supplier->id ?>'
+				id: '<?= $supplier->id ?>',
+				page: $('#page').val()
+			},
+			beforeSend:function(){
+				$('#payableTableContent').html("");
 			},
 			success:function(response){
-				$('#payableTableContent').html("");
+				var pages = response.pages;
+				var page	= $('#page').val();
+
+				$('#page').html("");
+				for(i = 1; i <= pages; i++){
+					if(i == page){
+						$('#page').append("<option value='" + i + "' selected>" + i + "</option>");
+					} else {
+						$('#page').append("<option value='" + i + "'>" + i + "</option>");
+					}
+				}
+
 				var payableCount = 0;
 				var totalPayable = 0;
 				var items = response.items;
@@ -182,45 +218,15 @@
 					var taxInvoice = (item.tax_document == "" || item.tax_document == null) ? "<i>Not available</i>" : item.tax_document;
 					var paid = parseFloat(item.paid);
 					var type = item.type;
-					totalPayable += value;
-
+					totalPayable += (value - paid);
 					if(is_done == 0){
 						if(type == 1){
-						$('#payableTableContent').append("<tr><td>" + my_date_format(date) + "</td><td><p>" + name + "</p><p>" + taxInvoice + "</p><button class='button button_mini_tab active' onclick='viewInvoice(" + id + ")'><i class='fa fa-eye'></i></button></td><td>Rp. " + numeral(value).format('0,0.00') + "</td><td>Rp. 0,0.00</td><td>Rp. " + numeral(totalPayable).format('0,0.00') + "</td></tr>");
+						$('#payableTableContent').append("<tr><td>" + my_date_format(date) + "</td><td><p><strong>" + name + "</strong></p><p>" + taxInvoice + "</p><button class='button button_mini_tab active' onclick='viewInvoice(" + id + ")'><i class='fa fa-eye'></i></button></td><td>Rp. " + numeral(value).format('0,0.00') + "</td><td>Rp. " + numeral(paid).format('0,0.00') + "</td><td>Rp. " + numeral(totalPayable).format('0,0.00') + "</td></tr>");
 						payableCount++; 
 						} else {
-							$('#payableTableContent').append("<tr><td>" + my_date_format(date) + "</td><td><p>" + name + "</p><p>" + taxInvoice + "</p><button class='button button_mini_tab active' onclick='viewBlankInvoice(" + id + ")'><i class='fa fa-eye'></i></button></td><td>Rp. " + numeral(value).format('0,0.00') + "</td><td>Rp. 0,0.00</td><td>Rp. " + numeral(totalPayable).format('0,0.00') + "</td></tr>");
+							$('#payableTableContent').append("<tr><td>" + my_date_format(date) + "</td><td><p><strong>" + name + "</strong></p><p>" + taxInvoice + "</p><button class='button button_mini_tab active' onclick='viewBlankInvoice(" + id + ")'><i class='fa fa-eye'></i></button></td><td>Rp. " + numeral(value).format('0,0.00') + "</td><td>Rp. " + numeral(paid).format('0,0.00') + "</td><td>Rp. " + numeral(totalPayable).format('0,0.00') + "</td></tr>");
 							payableCount++; 
 						}
-					}
-
-					if(type == 1){
-						var payableArray = response.payable.filter(function(payable){
-							return payable.purchase_id == id;
-						});
-					} else {
-						var payableArray = response.payable.filter(function(payable){
-							return payable.other_purchase_id == id;
-						});
-					}
-					
-
-					if(payableArray.length > 0){
-						$.each(payableArray, function(index, value){
-							var paymentDate = value.date;
-							var paymentValue = parseFloat(value.value);
-							totalPayable -= paymentValue;
-<?php if($user_login->access_level > 2){ ?>
-							if(value.bank_id == null){
-								var id = value.id;
-								$('#payableTableContent').append("<tr class='success'><td>" + my_date_format(paymentDate) + "</td><td><p>Payment</p><button class='button button_default_dark' onclick='confirmDelete(" + id + ")'><i class='fa fa-trash'></i></button></td><td>Rp. 0,0.00</td><td>Rp. " + numeral(paymentValue).format('0,0.00') + "</td><td>Rp. " + numeral(totalPayable).format('0,0.00') + "</td></tr>");
-							} else {
-								$('#payableTableContent').append("<tr class='success'><td>" + my_date_format(paymentDate) + "</td><td><p>Payment</p></td><td>Rp. 0,0.00</td><td>Rp. " + numeral(paymentValue).format('0,0.00') + "</td><td>Rp. " + numeral(totalPayable).format('0,0.00') + "</td></tr>");
-							}		
-<?php } else { ?>
-							$('#payableTableContent').append("<tr class='success'><td>" + my_date_format(paymentDate) + "</td><td><p>Payment</p</td><td>Rp. 0,0.00</td><td>Rp. " + numeral(paymentValue).format('0,0.00') + "</td><td>Rp. " + numeral(totalPayable).format('0,0.00') + "</td></tr>");
-<?php } ?>
-						})
 					}
 				});
 
@@ -247,6 +253,9 @@
 			url:"<?= site_url('Debt/getById') ?>",
 			data:{
 				id: n
+			},
+			beforeSend:function(){
+				$('#payTableContent').html("");
 			},
 			success:function(response){
 				invoiceId = n;
@@ -287,6 +296,21 @@
 
 				$('#blankTable').hide();
 				$('#goodReceiptTable').show();
+
+				var payable		= response.payable;
+				var payableCount = 0;
+				$.each(payable, function(index, item){
+					$('#payTableContent').append("<tr><td>" + my_date_format(item.date) + "</td><td>Rp. " + numeral(item.value).format('0,0.00') + "</td></tr>");
+					payableCount++;
+				})
+
+				if(payableCount > 0){
+					$('#payTable').show();
+					$('#payTableText').hide();
+				} else {
+					$('#payTable').hide();
+					$('#payTableText').show();
+				}
 			},
 			complete:function(){
 				$('#viewInvoiceWrapper').fadeIn(300, function(){
@@ -321,6 +345,21 @@
 				
 				$('#goodReceiptTable').hide();
 				$('#blankTable').show();
+
+				var payable		= response.payable;
+				var payableCount = 0;
+				$.each(payable, function(index, item){
+					$('#payTableContent').append("<tr><td>" + my_date_format(item.date) + "</td><td>Rp. " + numeral(item.value).format('0,0.00') + "</td></tr>");
+					payableCount++;
+				})
+
+				if(payableCount > 0){
+					$('#payTable').show();
+					$('#payTableText').hide();
+				} else {
+					$('#payTable').hide();
+					$('#payTableText').show();
+				}
 			},
 			complete:function(){
 				$('#viewInvoiceWrapper').fadeIn(300, function(){

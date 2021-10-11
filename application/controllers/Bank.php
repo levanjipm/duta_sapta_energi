@@ -282,7 +282,14 @@ class Bank extends CI_Controller {
 		
 		$this->load->model('Bank_model');
 		$data['balance']	= $this->Bank_model->getBalance($account_id, $date_start);
+		if($offset > 0){
+			$data['offsetMutation']	= $this->Bank_model->getOffsetMutation($account_id, $date_start, $date_end, $offset);
+		} else {
+			$data['offsetMutation']	= 0;
+		}
+
 		$data['mutations'] 	= $this->Bank_model->getMutation($account_id, $date_start, $date_end, $offset);
+		
 		$data['pages'] 		= max(1, ceil($this->Bank_model->countMutation($account_id, $date_start, $date_end, $offset)/25));
 		
 		header('Content-Type: application/json');

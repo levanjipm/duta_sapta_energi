@@ -627,10 +627,35 @@ class Bank_model extends CI_Model {
 			$this->db->where('bank_transaction_major', null);
 			$this->db->limit($limit, $offset);
 			$this->db->order_by('date', 'ASC');
+			$this->db->order_by('id', 'ASC');
 			$query		= $this->db->get();
 			$result		= $query->result();
-			
+
 			return $result;
+		}
+
+		public function getOffsetMutation($account, $start_date, $end_date, $offset){
+			$this->db->select("value, transaction");
+			$this->db->select('transaction');
+			$this->db->where('bank_transaction_major', NULL);
+			$this->db->where('account_id', $account);
+			$this->db->where('date >=', date("Y-m-d", strtotime($start_date)));
+			$this->db->where('date <=', date("Y-m-d", strtotime($end_date)));
+			$this->db->order_by('date', 'ASC');
+			$this->db->order_by('id', 'ASC');
+			$this->db->limit($offset, 0);
+			$query			= $this->db->get($this->table_bank);
+			$result			= $query->result();
+			$response		= 0;
+			foreach($result as $item){
+				if($item->transaction == 1){
+					$response += $item->value;
+				} else {
+					$response -= $item->value;
+				}
+			}
+
+			return $response;
 		}
 		
 		public function countMutation($account, $start_date, $end_date, $offset = 0, $limit = 25)
@@ -653,6 +678,8 @@ class Bank_model extends CI_Model {
 			$this->db->where('bank_transaction_major', NULL);
 			$this->db->where('account_id', $account);
 			$this->db->where('date <', date("Y-m-d", strtotime($date)));
+			$this->db->order_by('date', 'ASC');
+			$this->db->order_by('id', 'ASC');
 			$this->db->group_by('transaction');
 			$query	= $this->db->get($this->table_bank);
 			$result	= $query->result();

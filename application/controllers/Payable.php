@@ -143,11 +143,11 @@ class Payable extends CI_Controller {
 	public function getCompletePayableBySupplierId()
 	{
 		$supplierId			= $this->input->get('id');
+		$page				= $this->input->get('page');
+		$offset				= ($page - 1) * 10;
 		$this->load->model("Debt_model");
-		$data['items'] = $this->Debt_model->getPayableBySupplierId($supplierId);
-
-		$this->load->model("Payable_model");
-		$data['payable'] = $this->Payable_model->getBySupplierId($supplierId);
+		$data['items'] = $this->Debt_model->getPayableBySupplierId($supplierId, $offset);
+		$data['pages']	= max(1, ceil($this->Debt_model->countPayableBySupplierId($supplierId)/10));
 
 		$this->load->model("Bank_model");
 		$data['pendingBankData'] = $this->Bank_model->getPendingValueByOpponentId("supplier", $supplierId);
@@ -159,11 +159,11 @@ class Payable extends CI_Controller {
 	public function getCompletePayableBySupplierIdAll()
 	{
 		$supplierId			= $this->input->get('id');
+		$page				= $this->input->get('page');
+		$offset				= ($page - 1) * 10;
 		$this->load->model("Debt_model");
-		$data['items'] = $this->Debt_model->getCompletePayableBySupplierId($supplierId);
-
-		$this->load->model("Payable_model");
-		$data['payable'] = $this->Payable_model->getCompleteBySupplierId($supplierId);
+		$data['items'] = $this->Debt_model->getCompletePayableBySupplierId($supplierId, $offset);
+		$data['pages']	= max(1, ceil($this->Debt_model->countCompletePayableBySupplierId($supplierId)/10));
 
 		header('Content-Type: application/json');
 		echo json_encode($data);

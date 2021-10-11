@@ -139,6 +139,7 @@ class Payable_model extends CI_Model {
 					WHERE supplier_id = '$supplierId'
 					AND is_done = '0'
 				)
+				ORDER BY payable.date ASC
 			");
 
 			$result			= $query->result();

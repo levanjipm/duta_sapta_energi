@@ -57,6 +57,8 @@
 				</tr>
 				<tbody id='payableTableContent'></tbody>
 			</table>
+
+			<select class='form-control' style='width:100px' id='page'><option value='1'>1</option></select>
 		</div>
 		<p id='payableTableText'>There is no payable found.</p>
 	</div>
@@ -104,6 +106,19 @@
 			<label>Note</label>
 			<p id='blankInvoiceNote_p'></p>
 		</div>
+
+		<div id='payTable'>
+			<table class='table table-bordered'>
+				<thead>
+					<tr>
+						<th>Date</th>
+						<th>Value</th>
+					</tr>
+				</thead>
+				<tbody id='payTableContent'></tbody>
+			</table>
+		</div>
+		<p id='payTableText'>There is no payable found.</p>
 	</div>
 </div>
 
@@ -135,16 +150,33 @@
 		refreshView();
 	});
 
+	$('#page').change(function(){
+		refreshView();
+	})
+
 	function refreshView(){
 		$.ajax({
 			url:"<?= site_url('Payable/getCompletePayableBySupplierIdAll') ?>",
 			data:{
-				id: '<?= $supplier->id ?>'
+				id: '<?= $supplier->id ?>',
+				page: $('#page').val()
 			},
 			success:function(response){
 				$('#payableTableContent').html("");
 				var payableCount = 0;
 				var totalPayable = 0;
+
+				var pages		= response.pages;
+				var page		= $('#page').val();
+				$('#page').html("");
+
+				for(i = 1; i <= pages; i++){
+					if(i == page){
+						$('#page').append("<option value='" + i + "' selected>" + i + "</option>");
+					} else {
+						$('#page').append("<option value='" + i + "'>" + i + "</option>");
+					}
+				}
 				var items = response.items;
 				$.each(items, function(index, item){
 					var id = item.id;
@@ -157,50 +189,12 @@
 					totalPayable += value;
 
 					if(type == 1){
-						$('#payableTableContent').append("<tr id='invoiceRow-" + id + "'><td>" + my_date_format(date) + "</td><td><p>" + name + "</p><p>" + taxInvoice + "</p><button class='button button_mini_tab active' onclick='viewInvoice(" + id + ")'><i class='fa fa-eye'></i></button></td><td>Rp. " + numeral(value).format('0,0.00') + "</td><td>Rp. 0,0.00</td><td>Rp. " + numeral(totalPayable).format('0,0.00') + "</td></tr>");
+						$('#payableTableContent').append("<tr id='invoiceRow-" + id + "'><td>" + my_date_format(date) + "</td><td><p>" + name + "</p><p>" + taxInvoice + "</p><button class='button button_mini_tab active' onclick='viewInvoice(" + id + ")'><i class='fa fa-eye'></i></button></td><td>Rp. " + numeral(value).format('0,0.00') + "</td><td>Rp. " + numeral(paid).format('0,0.00') + "</td><td>Rp. " + numeral(totalPayable).format('0,0.00') + "</td></tr>");
 						payableCount++; 
 					} else {
-						$('#payableTableContent').append("<tr id='blankInvoiceRow-" + id + "'><td>" + my_date_format(date) + "</td><td><p>" + name + "</p><p>" + taxInvoice + "</p><button class='button button_mini_tab active' onclick='viewBlankInvoice(" + id + ")'><i class='fa fa-eye'></i></button></td><td>Rp. " + numeral(value).format('0,0.00') + "</td><td>Rp. 0,0.00</td><td>Rp. " + numeral(totalPayable).format('0,0.00') + "</td></tr>");
+						$('#payableTableContent').append("<tr id='blankInvoiceRow-" + id + "'><td>" + my_date_format(date) + "</td><td><p>" + name + "</p><p>" + taxInvoice + "</p><button class='button button_mini_tab active' onclick='viewBlankInvoice(" + id + ")'><i class='fa fa-eye'></i></button></td><td>Rp. " + numeral(value).format('0,0.00') + "</td><td>Rp. " + numeral(paid).format('0,0.00') + "</td><td>Rp. " + numeral(totalPayable).format('0,0.00') + "</td></tr>");
 						payableCount++; 
-					}
-					
-
-					if(type == 1){
-						var payableArray = response.payable.filter(function(payable){
-							return payable.purchase_id == id;
-						});
-					} else {
-						var payableArray = response.payable.filter(function(payable){
-							return payable.other_purchase_id == id;
-						});
-					}
-
-					var paymentString = "";
-					if(payableArray.length > 0){
-						$.each(payableArray, function(index, value){
-							var paymentDate = value.date;
-							var bank_id		= value.bank_id;
-							var paymentValue = parseFloat(value.value);
-							var id			= value.id;
-							totalPayable -= paymentValue;
-
-							if(bank_id == null){
-							<?php if($user_login->access_level > 2){ ?>
-								paymentString += "<tr><td>" + my_date_format(paymentDate) + "</td><td><p>Payment</p><button class='button button_default_dark' onclick='confirmDelete(" + id + ")'><i class='fa fa-trash'></i></button></td><td>Rp. 0,0.00</td><td>Rp. " + numeral(paymentValue).format('0,0.00') + "</td><td>Rp. " + numeral(totalPayable).format('0,0.00') + "</td></tr>";
-							<?php } else { ?>
-								paymentString += "<tr><td>" + my_date_format(paymentDate) + "</td><td>Payment</td><td>Rp. 0,0.00</td><td>Rp. " + numeral(paymentValue).format('0,0.00') + "</td><td>Rp. " + numeral(totalPayable).format('0,0.00') + "</td></tr>";
-							<?php } ?>
-							} else {
-								paymentString += "<tr><td>" + my_date_format(paymentDate) + "</td><td>Payment</td><td>Rp. 0,0.00</td><td>Rp. " + numeral(paymentValue).format('0,0.00') + "</td><td>Rp. " + numeral(totalPayable).format('0,0.00') + "</td></tr>";
-							}
-						});
-
-						if(type == 1){
-							$('#invoiceRow-' + id).after(paymentString);
-						} else {
-							$('#blankInvoiceRow-' + id).after(paymentString);
-						}
-					}
+					}	
 				});
 
 				var pendingBankValue = parseFloat(response.pendingBankData);
@@ -226,6 +220,9 @@
 			url:"<?= site_url('Debt/getById') ?>",
 			data:{
 				id: n
+			},
+			beforeSend:function(){
+				$('#payTableContent').html("");
 			},
 			success:function(response){
 				invoiceId = n;
@@ -266,6 +263,21 @@
 
 				$('#blankTable').hide();
 				$('#goodReceiptTable').show();
+
+				var payable		= response.payable;
+				var payableCount = 0;
+				$.each(payable, function(index, item){
+					$('#payTableContent').append("<tr><td>" + my_date_format(item.date) + "</td><td>Rp. " + numeral(item.value).format('0,0.00') + "</td></tr>");
+					payableCount++;
+				})
+
+				if(payableCount > 0){
+					$('#payTable').show();
+					$('#payTableText').hide();
+				} else {
+					$('#payTable').hide();
+					$('#payTableText').show();
+				}
 			},
 			complete:function(){
 				$('#viewInvoiceWrapper').fadeIn(300, function(){

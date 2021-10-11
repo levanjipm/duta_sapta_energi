@@ -387,7 +387,7 @@ class Debt_model extends CI_Model {
 			return $result;
 		}
 
-		public function getPayableBySupplierId($supplierId)
+		public function getPayableBySupplierId($supplierId, $offset = 0)
 		{
 			$query = $this->db->query("
 				SELECT purchase_invoice.*, SUM(good_receipt.billed_price * good_receipt.quantity) as value, COALESCE(a.value,0) AS paid, 1 AS type 
@@ -414,15 +414,15 @@ class Debt_model extends CI_Model {
 					AND purchase_invoice_other.is_done = '0'
 				)
 				ORDER BY date ASC, invoice_document ASC, tax_document ASC
+				LIMIT 10 OFFSET $offset
 			");
 
 			$result = $query->result();
 			return $result;
 		}
 
-		public function getCompletePayableBySupplierId($supplierId)
-		{
-			$query = $this->db->query("
+		public function countPayableBySupplierId($supplierId){
+			$query		= $this->db->query("
 				SELECT purchase_invoice.*, SUM(good_receipt.billed_price * good_receipt.quantity) as value, COALESCE(a.value,0) AS paid, 1 AS type 
 				FROM good_receipt
 				INNER JOIN code_good_receipt ON good_receipt.code_good_receipt_id = code_good_receipt.id 
@@ -433,6 +433,7 @@ class Debt_model extends CI_Model {
 				LEFT JOIN
 					(SELECT SUM(value) as value, purchase_id FROM payable GROUP BY purchase_id) a
 				ON a.purchase_id = purchase_invoice.id
+				WHERE purchase_invoice.is_done = '0'
 				AND code_purchase_order.supplier_id = '$supplierId'
 				GROUP BY code_good_receipt.invoice_id
 				UNION (
@@ -443,10 +444,80 @@ class Debt_model extends CI_Model {
 					) AS b
 					ON b.other_purchase_id = purchase_invoice_other.id
 					WHERE purchase_invoice_other.supplier_id = '$supplierId'
+					AND purchase_invoice_other.is_done = '0'
 				)
 			");
 
+			$result			= $query->num_rows();
+			return $result;
+		}
+
+		public function getCompletePayableBySupplierId($supplierId, $offset = 10)
+		{
+			// Code good receipt value view//
+			// select `duta_sapta_energi`.`code_good_receipt`.`id` AS `id`, sum((`duta_sapta_energi`.`good_receipt`.`billed_price` * `duta_sapta_energi`.`good_receipt`.`quantity`)) AS `value`,`duta_sapta_energi`.`code_purchase_order`.`id` AS `code_purchase_order_id`,`duta_sapta_energi`.`supplier`.`id` AS `supplier_id`, `duta_sapta_energi`.`code_good_receipt`.`invoice_id` from ((((`duta_sapta_energi`.`code_good_receipt` join `duta_sapta_energi`.`good_receipt` on((`duta_sapta_energi`.`good_receipt`.`code_good_receipt_id` = `duta_sapta_energi`.`code_good_receipt`.`id`))) join `duta_sapta_energi`.`purchase_order` on((`duta_sapta_energi`.`good_receipt`.`purchase_order_id` = `duta_sapta_energi`.`purchase_order`.`id`))) join `duta_sapta_energi`.`code_purchase_order` on((`duta_sapta_energi`.`purchase_order`.`code_purchase_order_id` = `duta_sapta_energi`.`code_purchase_order`.`id`))) join `duta_sapta_energi`.`supplier` on((`duta_sapta_energi`.`code_purchase_order`.`supplier_id` = `duta_sapta_energi`.`supplier`.`id`))) where (`duta_sapta_energi`.`code_good_receipt`.`invoice_id` is not null) group by `duta_sapta_energi`.`code_good_receipt`.`id`
+			$query = $this->db->query("
+				SELECT purchase_invoice.*, a.value, COALESCE(b.value,0) AS paid, 1 AS type 
+				FROM purchase_invoice
+				JOIN (
+					SELECT SUM(code_good_receipt_value.value) AS value, code_good_receipt_value.invoice_id
+					FROM code_good_receipt_value
+					WHERE code_good_receipt_value.supplier_id = $supplierId
+					GROUP BY code_good_receipt_value.invoice_id
+				) AS a
+				ON purchase_invoice.id = a.invoice_id
+				LEFT JOIN (
+						SELECT SUM(value) as value, purchase_id 
+						FROM payable 
+						GROUP BY purchase_id
+				) AS b
+				ON b.purchase_id = purchase_invoice.id
+				UNION (
+					SELECT purchase_invoice_other.id, purchase_invoice_other.date,  purchase_invoice_other.tax_document, purchase_invoice_other.invoice_document, purchase_invoice_other.created_by, purchase_invoice_other.is_confirm, purchase_invoice_other.is_delete, purchase_invoice_other.confirmed_by, purchase_invoice_other.is_done, purchase_invoice_other.value, COALESCE(b.value,0) as paid, 2 AS type
+					FROM purchase_invoice_other
+					LEFT JOIN (
+						SELECT SUM(value) as value, payable.other_purchase_id FROM payable GROUP BY payable.other_purchase_id
+					) AS b
+					ON b.other_purchase_id = purchase_invoice_other.id
+					WHERE purchase_invoice_other.supplier_id = '$supplierId'
+				)
+				ORDER BY date ASC, id ASC
+				LIMIT 10 OFFSET $offset
+			");
+
 			$result		= $query->result();
+			return $result;
+		}
+
+		public function countCompletePayableBySupplierId($supplierId){
+			$query = $this->db->query("
+				SELECT purchase_invoice.id
+				FROM purchase_invoice
+				JOIN (
+					SELECT SUM(code_good_receipt_value.value) AS value, code_good_receipt_value.invoice_id
+					FROM code_good_receipt_value
+					WHERE code_good_receipt_value.supplier_id = $supplierId
+					GROUP BY code_good_receipt_value.invoice_id
+				) AS a
+				ON purchase_invoice.id = a.invoice_id
+				LEFT JOIN (
+						SELECT SUM(value) as value, purchase_id 
+						FROM payable 
+						GROUP BY purchase_id
+				) AS b
+				ON b.purchase_id = purchase_invoice.id
+				UNION (
+					SELECT purchase_invoice_other.id
+					FROM purchase_invoice_other
+					LEFT JOIN (
+						SELECT SUM(value) as value, payable.other_purchase_id FROM payable GROUP BY payable.other_purchase_id
+					) AS b
+					ON b.other_purchase_id = purchase_invoice_other.id
+					WHERE purchase_invoice_other.supplier_id = '$supplierId'
+				)
+			");
+
+			$result		= $query->num_rows();
 			return $result;
 		}
 
@@ -470,13 +541,10 @@ class Debt_model extends CI_Model {
 			$query		= $this->db->query("
 				SELECT a.value as value, COALESCE(b.paid,0) as paid, purchase_invoice.id, purchase_invoice.date, purchase_invoice.invoice_document as name, purchase_invoice.tax_document, 1 AS type
 				FROM (
-					SELECT SUM(good_receipt.quantity * good_receipt.billed_price) as value, code_good_receipt.invoice_id
-					FROM good_receipt
-					JOIN purchase_order ON good_receipt.purchase_order_id = purchase_order.id
-					JOIN code_purchase_order ON purchase_order.code_purchase_order_id = code_purchase_order.id
-					JOIN code_good_receipt ON good_receipt.code_good_receipt_id = code_good_receipt.id
-					WHERE code_purchase_order.supplier_id = '$supplier_id'
-					GROUP BY code_good_receipt.invoice_id
+					SELECT SUM(code_good_receipt_value.value) AS value, code_good_receipt_value.invoice_id
+					FROM code_good_receipt_value
+					WHERE code_good_receipt_value.supplier_id = '$supplier_id'
+					GROUP BY code_good_receipt_value.invoice_id
 				) AS a
 				JOIN purchase_invoice ON a.invoice_id = purchase_invoice.id
 				LEFT JOIN (
