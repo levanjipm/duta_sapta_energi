@@ -33,7 +33,7 @@
 				<tr>
 					<th>Date</th>
 					<th>Invoice</th>
-					<th>Customer</th>
+					<th>Supplier</th>
 					<th>Value</th>
 					<th>Action</th>
 				</tr>
@@ -53,58 +53,6 @@
 	<div class='alert_box_slide'>
 		<h3 style='font-family:bebasneue'>Invoice archive</h3>
 		<hr>
-		<label>Customer</label>
-		<p id='customer_name_p'></p>
-		<p id='customer_address_p'></p>
-		<p id='customer_city_p'></p>
-
-		<label>Invoice</label>
-		<p id='invoice_name_p'></p>
-		<p id='invoice_tax_p'></p>
-		<p id='invoice_date_p'></p>
-
-
-		<div id='regularInvoice'>
-			<label>Other</label>
-			<p id='invoicing_method_p'></p>
-			<p id='taxing_p'></p>
-
-			<label>Sales order</label>
-			<p id='sales_order_name_p'></p>
-			<p id='sales_order_date_p'></p>
-			<p id='sales_order_seller_p'></p>
-
-			<label>Items</label>
-			<div class='table-responsive-md'>
-				<table class='table table-bordered'>
-					<tr>
-						<th>Reference</th>
-						<th>Name</th>
-						<th>Price list</th>
-						<th>Discount</th>
-						<th>Net price</th>
-						<th>Quantity</th>
-						<th>Total price</th>
-					</tr>
-					<tbody id='deliveryOrderTableContent'></tbody>
-				</table>
-			</div>
-		</div>
-		<div id='otherInvoice'>
-			<label>Value</label>
-			<p id='invoiceValue_p'></p>
-
-			<label>Information</label>
-			<p id='invoiceInformation_p'></p>
-		</div>
-	</div>
-</div>
-
-<div class='alert_wrapper' id='viewBlankInvoiceWrapper'>
-	<button class='slide_alert_close_button'>&times;</button>
-	<div class='alert_box_slide'>
-		<h3 style='font-family:bebasneue'>Invoice archive</h3>
-		<hr>
 		<label>Supplier</label>
 		<p id='supplier_name_p'></p>
 		<p id='supplier_address_p'></p>
@@ -114,9 +62,6 @@
 		<p id='invoice_name_p'></p>
 		<p id='invoice_tax_p'></p>
 		<p id='invoice_date_p'></p>
-		<p><strong>Rp. <span id='invoice_value_p'></span></strong></p>
-
-		<hr>
 		<div id='goodReceiptWrapper'></div>
 	</div>
 </div>

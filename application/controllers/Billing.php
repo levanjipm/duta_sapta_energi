@@ -162,8 +162,8 @@ class Billing extends CI_Controller {
 
 		$this->load->model("Invoice_model");
 		$data = array();
-		$data['items'] = $this->Invoice_model->getUrgentList($date, $offset, $term, $day);
-		$data['pages'] = max(1, ceil($this->Invoice_model->countUrgentList($date, $offset, $term, $day)/10));
+		$data['items'] = $this->Invoice_model->getUrgentList($date, $offset, $term);
+		$data['pages'] = max(1, ceil($this->Invoice_model->countUrgentList($date, $term)/10));
 		
 		header('Content-Type: application/json');
 		echo json_encode($data);	
@@ -178,28 +178,28 @@ class Billing extends CI_Controller {
 		$area		= $this->input->get('area');
 
 		$dayofweek = date('w', strtotime($date));
-		$day = "";
+		$day = 0;
 		switch($dayofweek){
 			case 0:
-				$day .= 6;
+				$day = 6;
 				break;
 			case 1:
-				$day .= 0;
+				$day = 0;
 				break;
 			case 2:
-				$day .= 1;
+				$day = 1;
 				break;
 			case 3:
-				$day .= 2;
+				$day = 2;
 				break;
 			case 4:
-				$day .= 3;
+				$day = 3;
 				break;
 			case 5:
-				$day .= 4;
+				$day = 4;
 				break;
 			case 6:
-				$day .= 5;
+				$day = 5;
 				break;
 		}
 
@@ -218,8 +218,8 @@ class Billing extends CI_Controller {
 		$offset		= ($page - 1) * 10;
 
 		$this->load->model("Invoice_model");
-		$data['items']		= $this->Invoice_model->viewCompleteReceivableByCustomerId($customerId, $offset);
-		$data['pages']		= max(1, ceil($this->Invoice_model->countCompleteReceivableByCustomerId($customerId)/10));
+		$data['items']		= $this->Invoice_model->viewIncompleteReceivableByCustomerId($customerId, $offset);
+		$data['pages']		= max(1, ceil($this->Invoice_model->countIncompleteReceivableByCustomerId($customerId)/10));
 		
 		$this->load->model("Customer_model");
 		$data['customer']	= $this->Customer_model->getById($customerId);

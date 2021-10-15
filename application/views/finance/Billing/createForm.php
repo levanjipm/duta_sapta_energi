@@ -65,6 +65,9 @@
 						<th>Date</th>
 						<th>Name</th>
 						<th>Customer</th>
+						<th>Value</th>
+						<th>Paid</th>
+						<th>Last Billed / Next Billed</th>
 						<th>Action</th>
 					</tr>
 					<tbody id='urgentTableContent'></tbody>
@@ -74,7 +77,7 @@
 					<option value='1'>1</option>
 				</select>
 			</div>
-			<p id='urgentTableTetxt'>There is no urgent list</p>
+			<p id='urgentTableText'>There is no urgent list</p>
 		</div>
 		<div id='recommendedView' style='display:none'>
 			<input type='text' id='recommendedSearchBar' class='form-control'>
@@ -183,7 +186,7 @@
 	var customerSelected = 0;
 
 	$(document).ready(function(){
-		$('#recommendedButton').click();
+		$('#urgentButton').click();
 	});
 
 	$('#recommendedButton').click(function(){
@@ -228,6 +231,10 @@
 			}, 250)			
 		})
 	});
+
+	$('#urgentPage').change(function(){
+		fetchUrgentList();
+	})
 
 	$('#recommendedPage').change(function(){
 		fetchRecommendationList();
@@ -341,13 +348,23 @@
 				date: "<?= $date ?>"
 			},
 			success:function(response){
-				var items = response.items;
 				$('#urgentTableContent').html("");
+
+				console.log(response);
+				var items = response.items;
 				var invoiceCount = 0;
 				$.each(items, function(index, item){
 					var date		= item.date;
 					var invoiceName = item.name;
 					var id			= item.id;
+					var due			= item.due;
+					var paid		= item.paid;
+					var base		= parseFloat(item.value);
+					var delivery	= parseFloat(item.delivery);
+					var discount	= parseFloat(item.discount);
+
+					var value		= base + delivery - discount;
+
 					if(!includedInvoice.includes("" + id + "")){
 						var customerName = item.customerName;
 						var customerAddress = item.address;
@@ -358,6 +375,9 @@
 						var customer_rw = item.rw;
 						var customer_city = item.city;
 						var customer_postal = item.postal_code;
+
+						var lastBilledDate = (item.lastBillingDate == null) ? "Never" : my_date_format(item.lastBillingDate);
+						var nextBilledDate = (item.nextBillingDate == null) ? "None" : my_date_format(item.nextBillingDate);
 					
 						if(customer_number != null){
 							complete_address	+= ' No. ' + customer_number;
@@ -379,7 +399,7 @@
 							complete_address	+= ', ' + customer_postal;
 						}
 
-						$('#urgentTableContent').append("<tr id='row-" + id + "'><td>" + my_date_format(date) +"</td><td>" + invoiceName + "</td><td><label>" + customerName + "</label><p>" + complete_address + "</p><p>" + customer_city + "</p></td><td><button class='button button_default_dark' onclick='selectUrgentInvoice(" + id + ")' id='selectInvoiceButtonUrgent-" + id + "'><i class='fa fa-long-arrow-right'></i></button><button class='button button_danger_dark' onclick='removeUrgentInvoice(" + id + ")' id='removeInvoiceButtonUrgent-" + id + "' style='display:none'><i class='fa fa-trash'></i></button></td></tr>");
+						$('#urgentTableContent').append("<tr id='row-" + id + "'><td><p>" + my_date_format(date) +"</p><p><strong>Due on: " + my_date_format(due) + "</strong></p></td><td>" + invoiceName + "</td><td><label>" + customerName + "</label><p>" + complete_address + "</p><p>" + customer_city + "</p></td><td>Rp. " + numeral(value).format('0,0.00') + "</td><td>Rp. " + numeral(paid).format('0,0.00') + "</td><td>" + lastBilledDate + " / " + nextBilledDate + "</td><td><button class='button button_default_dark' onclick='selectUrgentInvoice(" + id + ")' id='selectInvoiceButtonUrgent-" + id + "'><i class='fa fa-plus'></i></button><button class='button button_danger_dark' onclick='removeUrgentInvoice(" + id + ")' id='removeInvoiceButtonUrgent-" + id + "' style='display:none'><i class='fa fa-trash'></i></button></td></tr>");
 						invoiceCount++;
 					}
 				});
@@ -393,6 +413,7 @@
 				}
 
 				var pages = response.pages;
+				var page	= $('#urgentPage').val();
 				$('#urgentPage').html("");
 				for(i = 1; i <= pages; i++){
 					if(i == page){
@@ -533,6 +554,7 @@
 					var delivery	= parseFloat(item.delivery);
 					var discount	= parseFloat(item.discount);
 					var value = base_value + delivery - discount;
+					var due			= item.due;
 
 					var paid = item.paid;
 					var id 		= item.id;
@@ -547,9 +569,9 @@
 					}
 
 					if(!includedInvoice.includes("" + id + "")){
-						$('#receivableTableContent').append("<tr><td>" + my_date_format(date) + " (" + numeral(difference).format('0,0') + " days)</td><td>" + name + "</td><td>Rp. " + numeral(value).format('0,0.00') + "</td><td>Rp. " + numeral(paid).format('0,0.00') + "</td><td>" + lastBillingDateText + "</td><td><button class='button button_default_dark' onclick='selectCustomerInvoice(" + id + ")' id='selectInvoiceButtonCustomer-" + id + "'><i class='fa fa-long-arrow-right'></i></button><button class='button button_danger_dark' onclick='removeCustomerInvoice(" + id + ")' id='removeInvoiceButtonCustomer-" + id + "' style='display:none'><i class='fa fa-trash'></i></button></tr>");
+						$('#receivableTableContent').append("<tr><td><p>" + my_date_format(date) + " (" + numeral(difference).format('0,0') + " days)</p><p><strong>Due on: " + my_date_format(due) + "</strong></p></td><td>" + name + "</td><td>Rp. " + numeral(value).format('0,0.00') + "</td><td>Rp. " + numeral(paid).format('0,0.00') + "</td><td>" + lastBillingDateText + "</td><td><button class='button button_default_dark' onclick='selectCustomerInvoice(" + id + ")' id='selectInvoiceButtonCustomer-" + id + "'><i class='fa fa-plus'></i></button><button class='button button_danger_dark' onclick='removeCustomerInvoice(" + id + ")' id='removeInvoiceButtonCustomer-" + id + "' style='display:none'><i class='fa fa-trash'></i></button></tr>");
 					} else {
-						$('#receivableTableContent').append("<tr><td>" + my_date_format(date) + " (" + numeral(difference).format('0,0') + " days)</td><td>" + name + "</td><td>Rp. " + numeral(value).format('0,0.00') + "</td><td>Rp. " + numeral(paid).format('0,0.00') + "</td><td>" + lastBillingDateText + "</td><td><button class='button button_default_dark' onclick='selectCustomerInvoice(" + id + ")' id='selectInvoiceButtonCustomer-" + id + "' style='display:none'><i class='fa fa-long-arrow-right'></i></button><button class='button button_danger_dark' onclick='removeCustomerInvoice(" + id + ")' id='removeInvoiceButtonCustomer-" + id + "'><i class='fa fa-trash'></i></button></tr>");
+						$('#receivableTableContent').append("<tr><td>" + my_date_format(date) + " (" + numeral(difference).format('0,0') + " days)</td><td>" + name + "</td><td>Rp. " + numeral(value).format('0,0.00') + "</td><td>Rp. " + numeral(paid).format('0,0.00') + "</td><td>" + lastBillingDateText + "</td><td><button class='button button_default_dark' onclick='selectCustomerInvoice(" + id + ")' id='selectInvoiceButtonCustomer-" + id + "' style='display:none'><i class='fa fa-plus'></i></button><button class='button button_danger_dark' onclick='removeCustomerInvoice(" + id + ")' id='removeInvoiceButtonCustomer-" + id + "'><i class='fa fa-trash'></i></button></tr>");
 					}
 				})
 

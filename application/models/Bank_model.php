@@ -554,6 +554,7 @@ class Bank_model extends CI_Model {
 							$original_value		= $original_array[$purchase_id];
 							$remaining_value	= $remaining_array[$purchase_id];
 							$difference			= $original_value - $remaining_value;
+
 							if($difference > 0){
 								$db_item	= array(
 									'bank_id' => $bank_id,
@@ -563,7 +564,8 @@ class Bank_model extends CI_Model {
 									'other_purchase_id' => NULL,
 								);
 						
-								$this->db->insert('payable', $db_item);
+								$insertId = $this->db->insert('payable', $db_item);
+								echo $insertId;
 					
 								if($remaining_value == 0){
 									$this->db->set('is_done', 1);

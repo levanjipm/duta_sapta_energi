@@ -575,7 +575,7 @@ class Customer_model extends CI_Model {
 
 		public function getNoo($month, $year, $brand)
 		{
-			$dateParam			= $year . '-' . str_pad($month, 2, 0) . "-01";
+			$dateParam			= $year . '-' . str_pad($month, 2, 0, STR_PAD_LEFT) . "-01";
 			$query			= $this->db->query("
 				SELECT customer.*, customer_area.name as area
 				FROM customer
@@ -587,16 +587,20 @@ class Customer_model extends CI_Model {
 					JOIN sales_order ON code_sales_order.id = sales_order.code_sales_order_id
 					JOIN price_list ON sales_order.price_list_id = price_list.id
 					JOIN item ON price_list.item_id = item.id
-					WHERE code_sales_order.is_confirm = '1'
+					WHERE code_sales_order.is_confirm = 1
 					AND MONTH(code_sales_order.date) = '$month'
 					AND YEAR(code_sales_order.date) = '$year'
 					AND item.brand = '$brand'
-				)
-				AND customer.id NOT IN (
-					SELECT code_sales_order.customer_id
-					FROM code_sales_order
-					WHERE code_sales_order.date < $dateParam
-					AND code_sales_order.is_confirm = '1'
+					AND code_sales_order.customer_id NOT IN (
+						SELECT code_sales_order.customer_id
+						FROM code_sales_order
+						JOIN sales_order ON code_sales_order.id = sales_order.code_sales_order_id
+						JOIN price_list ON sales_order.price_list_id = price_list.id
+						JOIN item ON price_list.item_id = item.id
+						WHERE code_sales_order.date < '$dateParam'
+						AND code_sales_order.is_confirm = 1
+						AND item.brand = '$brand'
+					)
 				)
 			");
 

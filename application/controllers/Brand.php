@@ -89,9 +89,12 @@ class Brand extends CI_Controller {
 		$month				= $this->input->get('month');
 		$year				= $this->input->get('year');
 		
+		$data				= array();
+
 		$this->load->model("Brand_model");
-		$result		= $this->Brand_model->getCustomerBought($brandId, $month, $year);
-		echo json_encode($result);
+		$data['customerArea']		= $this->Brand_model->getCustomerBought($brandId, $month, $year);
+		$data['valueType']				= $this->Brand_model->getValueByType($brandId, $month, $year);
+		echo json_encode($data);
 	}
 
 	public function getChartItems()

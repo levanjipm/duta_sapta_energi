@@ -162,11 +162,33 @@ class Brand_model extends CI_Model {
 					JOIN item ON price_list.item_id = item.id
 					JOIN brand ON item.brand = brand.id
 					JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
-					WHERE MONTH(code_sales_order.date) <= '$month'
-					AND YEAR(code_sales_order.date) <= '$year'
+					WHERE MONTH(code_sales_order.date) = '$month'
+					AND YEAR(code_sales_order.date) = '$year'
 					AND brand.id = '$brandId'
 				)
 				GROUP BY customer.area_id
+			");
+
+			$result			= $query->result();
+			return $result;
+		}
+
+		public function getValueByType($brandId, $month, $year){
+			$query		= $this->db->query("
+				SELECT SUM(price_list.price_list * delivery_order.quantity * (100 - sales_order.discount)/100) AS value, item_class.name, item_class.description
+				FROM sales_order
+				JOIN price_list ON price_list.id = sales_order.price_list_id
+				JOIN delivery_order ON sales_order.id = delivery_order.sales_order_id
+				JOIN code_delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order.id
+				JOIN item ON price_list.item_id = item.id
+				JOIN item_class ON item.type = item_class.id
+				WHERE item.brand = '$brandId'
+				AND MONTH(code_delivery_order.date) = '$month'
+				AND YEAR(code_delivery_order.date) = '$year'
+				AND code_delivery_order.is_confirm = 1
+				AND code_delivery_order.is_sent = 1
+				GROUP BY item_class.id
+				ORDER BY item_class.name ASC
 			");
 
 			$result			= $query->result();

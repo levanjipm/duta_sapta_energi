@@ -127,7 +127,6 @@ class Item extends CI_Controller {
 		$this->load->model("Stock_out_model");
 		$stockArray		= $this->Stock_out_model->calculateMonthlyOutput($reference);
 		$currentDate	= mktime(0,0,0,date('m'), 1, date("Y"));
-		$stockArray		= array();
 		foreach($stockArray as $stock){
 			$month		= $stock->month;
 			$year		= $stock->year;
@@ -135,6 +134,7 @@ class Item extends CI_Controller {
 
 			$date		= mktime(0,0,0,$month, 1, $year);
 			$difference	= round(($currentDate - $date) / (60 * 60 * 24 * 30));
+			echo $difference;
 
 			$stockArray[$difference] = $quantity;
 			continue;

@@ -113,6 +113,9 @@
 					<tr>
 						<th>Date</th>
 						<th>Value</th>
+					<?php if($user_login->access_level >= 2){ ?>
+						<th>Action</th>
+					<?php } ?>
 					</tr>
 				</thead>
 				<tbody id='payTableContent'></tbody>
@@ -267,7 +270,15 @@
 				var payable		= response.payable;
 				var payableCount = 0;
 				$.each(payable, function(index, item){
+				<?php if($user_login->access_level >= 2){ ?>
+					if(item.bank_id == null){
+						$('#payTableContent').append("<tr id='blankPay-" + item.id + "'><td>" + my_date_format(item.date) + "</td><td>Rp. " + numeral(item.value).format('0,0.00') + "</td><td><button class='button button_default_dark' onclick='confirmDelete(" + item.id + ")'>&times;</button></td></tr>");
+					} else {
+						$('#payTableContent').append("<tr><td>" + my_date_format(item.date) + "</td><td>Rp. " + numeral(item.value).format('0,0.00') + "</td><td></td></tr>");
+					}
+				<?php } else { ?>
 					$('#payTableContent').append("<tr><td>" + my_date_format(item.date) + "</td><td>Rp. " + numeral(item.value).format('0,0.00') + "</td></tr>");
+				<?php } ?>
 					payableCount++;
 				})
 
@@ -340,7 +351,9 @@
 				$('button').attr('disabled', false);
 				refreshView();
 				if(response == 1){
+					$('#blankPay-' + payableId).hide();
 					payableId = null;
+					
 					$('#deletePayableWrapper').fadeOut();
 				} else {
 					$('#errorDeletePayable').fadeTo(250, 1);

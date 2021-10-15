@@ -209,7 +209,7 @@ class Bank extends CI_Controller {
 		
 		$this->load->view('head');
 		$this->load->view('accounting/header', $data);
-		
+
 		if($type == 1 && $customerId != null){
 			$this->load->model('Invoice_model');
 			$data['invoices'] = $this->Invoice_model->getIncompletedTransaction($customerId);
@@ -244,6 +244,8 @@ class Bank extends CI_Controller {
 		$customer_id	= $result->customer_id;
 		$supplier_id	= $result->supplier_id;
 		$other_id		= $result->other_id;
+
+		echo $type;
 		
 		if($type == 1 && $customer_id != null){
 			$this->Bank_model->assign_receivable($result);
@@ -255,7 +257,7 @@ class Bank extends CI_Controller {
 			$this->Bank_model->assign_payable($result);
 		}
 		
-		redirect(site_url('Bank/assignDashboard'));
+		// redirect(site_url('Bank/assignDashboard'));
 	}
 	
 	public function mutationDashboard()

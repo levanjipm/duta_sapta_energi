@@ -73,7 +73,6 @@ class Payable extends CI_Controller {
 		$this->load->view('head');
 		$this->load->view('accounting/header', $data);
 
-		$data		= array();
 		$this->load->model("Supplier_model");
 		$data['supplier']	= $this->Supplier_model->getByid($supplierId);
 		$this->load->view('accounting/Payable/supplierCompletePayable', $data);

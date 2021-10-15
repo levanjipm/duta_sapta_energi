@@ -722,22 +722,22 @@ class Debt_model extends CI_Model {
 			$query			= $this->db->query("
 				SELECT goodReceiptTable.value, COALESCE(payableTable.value, 0) AS paid
 				FROM (
-					SELECT SUM(good_receipt.quantity * good_receipt.billed_price) AS value, code_good_receipt.invoice_id
-					FROM good_receipt
-					JOIN code_good_receipt
-					ON good_receipt.code_good_receipt_id = code_good_receipt_id
-					GROUP BY code_good_receipt.invoice_id
+					SELECT SUM(code_good_receipt_value.value) AS value, code_good_receipt_value.invoice_id
+					FROM code_good_receipt_value
+					WHERE code_good_receipt_value.invoice_id = $invoiceId
 				) goodReceiptTable
 				LEFT JOIN (
-					SELECT SUM(value) AS value, purchase_id FROM payable
-					GROUP BY purchase_id
+					SELECT SUM(value) AS value, purchase_id 
+					FROM payable
+					WHERE purchase_id = $invoiceId
 				) payableTable
 				ON payableTable.purchase_id = goodReceiptTable.invoice_id
 			");
 
 			$result			= $query->row();
-			$value			= $result->value;
-			$paid			= $result->paid;
+			$value			= (float)$result->value;
+			$paid			= (float)$result->paid;
+
 			if($value > $paid){
 				$db_item		= array(
 					"id" => "",

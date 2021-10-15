@@ -390,24 +390,34 @@ class Purchase_order_model extends CI_Model {
 
 		public function getItems($year, $month, $offset = 0, $term = '', $limit = 25)
 		{
-			$this->db->select('code_purchase_order.*, supplier.name as supplier_name, supplier.address as address, supplier.city as city, supplier.number, supplier.rt, supplier.rw, supplier.postal_code, supplier.npwp, supplier.phone_number, supplier.block');
-			$this->db->from('code_purchase_order');
-			$this->db->join('supplier', 'code_purchase_order.supplier_id = supplier.id');
-			
-			if($term != ''){
-				$this->db->like('supplier.name', $term, 'both');
-				$this->db->or_like('supplier.address', $term, 'both');
-				$this->db->or_like('code_purchase_order.name', $term, 'both');
-			}
-			
-			$this->db->where('MONTH(date)', $month);
-			$this->db->where('YEAR(date)', $year);
-			
-			$this->db->order_by('code_purchase_order.date', 'asc');
-			$this->db->order_by('code_purchase_order.id', 'asc');
-			$this->db->limit($limit, $offset);
-			
-			$query		= $this->db->get();
+			$query			= $this->db->query("
+				SELECT code_purchase_order.*, supplier.name as supplier_name, supplier.address as address, supplier.city as city, supplier.number, supplier.rt, supplier.rw, supplier.postal_code, supplier.npwp, supplier.phone_number, supplier.block
+				FROM code_purchase_order
+				JOIN supplier ON code_purchase_order.supplier_id = supplier.id
+				WHERE MONTH(code_purchase_order.date) = '$month'
+				AND YEAR(code_purchase_order.date) = '$year'
+				AND
+				(
+					supplier.name LIKE '%$term%'
+					OR supplier.address LIKE '%$term%'
+					OR supplier.city LIKE '%$term%'
+					OR code_purchase_order.name LIKE '%$term%'
+					OR code_purchase_order.dropship_address LIKE '%$term%'
+					OR code_purchase_order.dropship_city LIKE '%$term%'
+					OR code_purchase_order.dropship_contact_person LIKE '%$term%'
+					OR code_purchase_order.dropship_contact LIKE '%$term%'
+					OR code_purchase_order.id IN (
+						SELECT purchase_order.code_purchase_order_id
+						FROM purchase_order
+						JOIN item ON purchase_order.item_id = item.id
+						WHERE item.reference LIKE '%$term%'
+						OR item.name LIKE '%$term%'
+					)
+				)
+
+				LIMIT 10 OFFSET $offset
+			");
+
 			$result		= $query->result();
 			
 			return $result;
@@ -415,22 +425,35 @@ class Purchase_order_model extends CI_Model {
 		
 		public function count_items($year, $month, $term = '')
 		{
-			$this->db->select('code_purchase_order.id');
-			$this->db->from('code_purchase_order');
-			$this->db->join('supplier', 'code_purchase_order.supplier_id = supplier.id');
-			
-			if($term != ''){
-				$this->db->like('supplier.name', $term, 'both');
-				$this->db->or_like('supplier.address', $term, 'both');
-				$this->db->or_like('code_purchase_order.name', $term, 'both');
-			}
+			$query	= $this->db->query("
+				SELECT code_purchase_order.id
+				FROM code_purchase_order
+				JOIN supplier ON code_purchase_order.supplier_id = supplier.id
+				WHERE MONTH(code_purchase_order.date) = '$month'
+				AND YEAR(code_purchase_order.date) = '$year'
+				AND
+				(
+					supplier.name LIKE '%$term%'
+					OR supplier.address LIKE '%$term%'
+					OR supplier.city LIKE '%$term%'
+					OR code_purchase_order.name LIKE '%$term%'
+					OR code_purchase_order.dropship_address LIKE '%$term%'
+					OR code_purchase_order.dropship_city LIKE '%$term%'
+					OR code_purchase_order.dropship_contact_person LIKE '%$term%'
+					OR code_purchase_order.dropship_contact LIKE '%$term%'
+					OR code_purchase_order.id IN (
+						SELECT purchase_order.code_purchase_order_id
+						FROM purchase_order
+						JOIN item ON purchase_order.item_id = item.id
+						WHERE item.reference LIKE '%$term%'
+						OR item.name LIKE '%$term%'
+					)
+				)
+			");
 
-			$this->db->where('MONTH(date)', $month);
-			$this->db->where('YEAR(date)', $year);
-			$query		= $this->db->get();
+
 			$result		= $query->num_rows();
-			
-			return $result;		$result = $this->Purchase_order_model->show_unconfirmed_purchase_order();
+			return $result;
 
 		}
 		
