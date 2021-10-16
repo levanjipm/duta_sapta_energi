@@ -565,7 +565,6 @@ class Bank_model extends CI_Model {
 								);
 						
 								$insertId = $this->db->insert('payable', $db_item);
-								echo $insertId;
 					
 								if($remaining_value == 0){
 									$this->db->set('is_done', 1);

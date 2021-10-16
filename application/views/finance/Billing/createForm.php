@@ -55,6 +55,7 @@
 		<button class='button button_mini_tab' id='urgentButton'>Urgent</button>
 		<button class='button button_mini_tab' id='recommendedButton'>Recommendation Based</button>
 		<button class='button button_mini_tab' id='searchButton'>Schedule Based</button>
+		<button class='button button_mini_tab' id='allButton'>Customer based</button>
 		<br><br>
 		<div id='urgentView' style='display:none'>
 			<input type='text' id='urgentSearchBar' class='form-control'>
@@ -125,6 +126,29 @@
 
 			<p id='searchTableText'>There is no invoice found.</p>
 		</div>
+		<div id='allView' style='display:none'>
+			<select class='form-control' id='allArea'>
+				<?php foreach($completeAreas as $area){ ?>
+					<option value="<?= $area->id ?>"><?= $area->name ?> (<?= $area->count  ?>)</option>
+				<?php } ?>
+			</select>
+			<br>
+			<div id='allTable'>
+				<table class='table table-bordered'>
+					<tr>
+						<th>Customer</th>
+						<th>Action</th>
+					</tr>
+					<tbody id='allTableContent'></tbody>
+				</table>
+
+				<select class='form-control' id='allPage' style='width:100px'>
+					<option value='1'>1</option>
+				</select>
+			</div>
+
+			<p id='allTableText'>There is no invoice found.</p>
+		</div>
 	</div>
 </div>
 
@@ -144,7 +168,7 @@
 				<th>Name</th>
 				<th>Value</th>
 				<th>Paid</th>
-				<th>Last Billed</th>
+				<th>Last Billed / Next Billing</th>
 				<th>Action</th>
 			</tr>
 			<tbody id='receivableTableContent'></tbody>
@@ -197,7 +221,7 @@
 		$('#recommendedButton').addClass('active');
 		$('#recommendedButton').attr('disabled', true);
 
-		$('#urgentView, #searchView').fadeOut(250, function(){
+		$('#urgentView, #searchView, #allView').fadeOut(250, function(){
 			setTimeout(function(){
 				$('#recommendedView').fadeIn(250);
 			}, 250)
@@ -211,9 +235,23 @@
 		fetchItemList();
 		$('#searchButton').addClass('active');
 		$('#searchButton').attr('disabled', true);
-		$('#urgentView, #recommendedView').fadeOut(250, function(){
+		$('#urgentView, #recommendedView, #allView').fadeOut(250, function(){
 			setTimeout(function(){
 				$('#searchView').fadeIn(250);
+			}, 250)			
+		})
+	});
+
+	$('#allButton').click(function(){
+		$('.button_mini_tab').attr('disabled', false);
+		$('.button_mini_tab').removeClass("active");
+
+		fetchCustomerList();
+		$('#allButton').addClass('active');
+		$('#allButton').attr('disabled', true);
+		$('#urgentView, #recommendedView, #searchView').fadeOut(250, function(){
+			setTimeout(function(){
+				$('#allView').fadeIn(250);
 			}, 250)			
 		})
 	});
@@ -225,7 +263,7 @@
 		fetchUrgentList();
 		$('#urgentButton').addClass('active');
 		$('#urgentButton').attr('disabled', true);
-		$('#searchView, #recommendedView').fadeOut(250, function(){
+		$('#searchView, #recommendedView, #allView').fadeOut(250, function(){
 			setTimeout(function(){
 				$('#urgentView').fadeIn(250);
 			}, 250)			
@@ -250,6 +288,14 @@
 
 	$('#searchPage').change(function(){
 		fetchItemList();
+	})
+
+	$('#allArea').change(function(){
+		fetchCustomerList(1);
+	});
+
+	$('#allPage').change(function(){
+		fetchCustomerList();
 	})
 
 	function fetchRecommendationList(page = $('#recommendedPage').val()){
@@ -347,10 +393,10 @@
 				term: $('#urgentSearchBar').val(),
 				date: "<?= $date ?>"
 			},
-			success:function(response){
+			beforeSend:function(){
 				$('#urgentTableContent').html("");
-
-				console.log(response);
+			},
+			success:function(response){
 				var items = response.items;
 				var invoiceCount = 0;
 				$.each(items, function(index, item){
@@ -425,6 +471,80 @@
 			}
 		})
 	}
+
+	function fetchCustomerList(page = $('#allPage').val(), area = $('#allArea').val()){
+		$.ajax({
+			url:"<?= site_url('Billing/getBillingData') ?>",
+			data:{
+				page: page,
+				area: area,
+			},
+			beforeSend:function(){
+				$('#allTableContent').html("");
+			},
+			success:function(response){
+				console.log(response);
+				var items = response.items;
+				var invoiceCount = 0;
+				$.each(items, function(index, item){
+					var id			= item.id;
+					if(!includedInvoice.includes("" + id + "")){
+						var customerName = item.name;
+						var customerAddress = item.address;
+						var complete_address = item.address;
+						var customer_number = item.number;
+						var customer_block = item.block;
+						var customer_rt = item.rt;
+						var customer_rw = item.rw;
+						var customer_city = item.city;
+						var customer_postal = item.postal_code;
+					
+						if(customer_number != null){
+							complete_address	+= ' No. ' + customer_number;
+						}
+					
+						if(customer_block != null && customer_block != "000"){
+							complete_address	+= ' Blok ' + customer_block;
+						}
+				
+						if(customer_rt != '000'){
+							complete_address	+= ' RT ' + customer_rt;
+						}
+					
+						if(customer_rw != '000' && customer_rt != '000'){
+							complete_address	+= ' /RW ' + customer_rw;
+						}
+					
+						if(customer_postal != null){
+							complete_address	+= ', ' + customer_postal;
+						}
+
+						$('#allTableContent').append("<tr><td><label>" + customerName + "</label><p>" + complete_address + "</p><p>" + customer_city + "</p></td><td><button class='button button_default_dark'  onclick='viewCustomer(" + id + ")'><i class='fa fa-eye'></i></button></tr>");
+						invoiceCount++;
+					}
+				});
+
+				if(invoiceCount > 0){
+					$('#allTable').show();
+					$('#allTableText').hide();
+				} else {
+					$('#allTable').hide();
+					$("#allTableText").show();
+				}
+
+				var pages = response.pages;
+				$('#allPage').html("");
+				for(i = 1; i <= pages; i++){
+					if(i == page){
+						$('#allPage').append("<option value='" + i + "' selected>" + i + "</option>");
+					} else {
+						$('#allPage').append("<option value='" + i + "'>" + i + "</option>");
+					}
+				}
+			}
+		})
+	}
+
 
 	function fetchItemList(page = $('#searchPage').val(), area = $('#area').val()){
 		$.ajax({
@@ -568,10 +688,19 @@
 						var lastBillingDateText = my_date_format(lastBillingDate);
 					}
 
-					if(!includedInvoice.includes("" + id + "")){
-						$('#receivableTableContent').append("<tr><td><p>" + my_date_format(date) + " (" + numeral(difference).format('0,0') + " days)</p><p><strong>Due on: " + my_date_format(due) + "</strong></p></td><td>" + name + "</td><td>Rp. " + numeral(value).format('0,0.00') + "</td><td>Rp. " + numeral(paid).format('0,0.00') + "</td><td>" + lastBillingDateText + "</td><td><button class='button button_default_dark' onclick='selectCustomerInvoice(" + id + ")' id='selectInvoiceButtonCustomer-" + id + "'><i class='fa fa-plus'></i></button><button class='button button_danger_dark' onclick='removeCustomerInvoice(" + id + ")' id='removeInvoiceButtonCustomer-" + id + "' style='display:none'><i class='fa fa-trash'></i></button></tr>");
+					var nextBillingDate = item.nextBillingDate;
+					if(nextBillingDate == null){
+						var nextBillingDateText = "<i>None</i>";
+					} else if(lastBillingDate == new Date(<?= $date ?>)){
+						var nextBillingDateText = "<strong>On progress</strong>";
 					} else {
-						$('#receivableTableContent').append("<tr><td>" + my_date_format(date) + " (" + numeral(difference).format('0,0') + " days)</td><td>" + name + "</td><td>Rp. " + numeral(value).format('0,0.00') + "</td><td>Rp. " + numeral(paid).format('0,0.00') + "</td><td>" + lastBillingDateText + "</td><td><button class='button button_default_dark' onclick='selectCustomerInvoice(" + id + ")' id='selectInvoiceButtonCustomer-" + id + "' style='display:none'><i class='fa fa-plus'></i></button><button class='button button_danger_dark' onclick='removeCustomerInvoice(" + id + ")' id='removeInvoiceButtonCustomer-" + id + "'><i class='fa fa-trash'></i></button></tr>");
+						var nextBillingDateText = my_date_format(nextBillingDate);
+					}
+
+					if(!includedInvoice.includes("" + id + "")){
+						$('#receivableTableContent').append("<tr><td><p>" + my_date_format(date) + " (" + numeral(difference).format('0,0') + " days)</p><p><strong>Due on: " + my_date_format(due) + "</strong></p></td><td>" + name + "</td><td>Rp. " + numeral(value).format('0,0.00') + "</td><td>Rp. " + numeral(paid).format('0,0.00') + "</td><td>" + lastBillingDateText + " / " + nextBillingDateText + "</td><td><button class='button button_default_dark' onclick='selectCustomerInvoice(" + id + ")' id='selectInvoiceButtonCustomer-" + id + "'><i class='fa fa-plus'></i></button><button class='button button_danger_dark' onclick='removeCustomerInvoice(" + id + ")' id='removeInvoiceButtonCustomer-" + id + "' style='display:none'><i class='fa fa-trash'></i></button></tr>");
+					} else {
+						$('#receivableTableContent').append("<tr><td>" + my_date_format(date) + " (" + numeral(difference).format('0,0') + " days)</td><td>" + name + "</td><td>Rp. " + numeral(value).format('0,0.00') + "</td><td>Rp. " + numeral(paid).format('0,0.00') + "</td><td>" + lastBillingDateText + " / " + nextBillingDateText + "</td><td><button class='button button_default_dark' onclick='selectCustomerInvoice(" + id + ")' id='selectInvoiceButtonCustomer-" + id + "' style='display:none'><i class='fa fa-plus'></i></button><button class='button button_danger_dark' onclick='removeCustomerInvoice(" + id + ")' id='removeInvoiceButtonCustomer-" + id + "'><i class='fa fa-trash'></i></button></tr>");
 					}
 				})
 

@@ -257,7 +257,7 @@ class Bank extends CI_Controller {
 			$this->Bank_model->assign_payable($result);
 		}
 		
-		// redirect(site_url('Bank/assignDashboard'));
+		redirect(site_url('Bank/assignDashboard'));
 	}
 	
 	public function mutationDashboard()

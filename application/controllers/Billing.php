@@ -71,6 +71,7 @@ class Billing extends CI_Controller {
 			$this->load->model("Invoice_model");
 			
 			$data['areas'] = $this->Invoice_model->getAreaList($day);
+			$data['completeAreas']	= $this->Invoice_model->getAreaList();
 			$data['date'] = $date;
 			$data['collector'] = $collector;
 			$this->load->view('finance/Billing/createForm', $data);
@@ -171,41 +172,46 @@ class Billing extends CI_Controller {
 
 	public function getBillingData()
 	{
+		$this->load->model("Invoice_model");
 		$page		= $this->input->get('page');
 		$term		= $this->input->get('term');
 		$offset		= ($page - 1) * 10;
-		$date		= $this->input->get('date');
 		$area		= $this->input->get('area');
+		if(!empty($this->input->get('date'))){
+			$date		= $this->input->get('date');
 
-		$dayofweek = date('w', strtotime($date));
-		$day = 0;
-		switch($dayofweek){
-			case 0:
-				$day = 6;
-				break;
-			case 1:
-				$day = 0;
-				break;
-			case 2:
-				$day = 1;
-				break;
-			case 3:
-				$day = 2;
-				break;
-			case 4:
-				$day = 3;
-				break;
-			case 5:
-				$day = 4;
-				break;
-			case 6:
-				$day = 5;
-				break;
+			$dayofweek = date('w', strtotime($date));
+			$day = 0;
+			switch($dayofweek){
+				case 0:
+					$day = 6;
+					break;
+				case 1:
+					$day = 0;
+					break;
+				case 2:
+					$day = 1;
+					break;
+				case 3:
+					$day = 2;
+					break;
+				case 4:
+					$day = 3;
+					break;
+				case 5:
+					$day = 4;
+					break;
+				case 6:
+					$day = 5;
+					break;
+			}
+			
+			$data['items'] = $this->Invoice_model->getBillingData($offset, $term, $day, $area);
+			$data['pages'] = max(1, ceil($this->Invoice_model->countBillingData($term, $day, $area)/10));
+		} else {
+			$data['items'] = $this->Invoice_model->getBillingData($offset, $term, NULL, $area);
+			$data['pages'] = max(1, ceil($this->Invoice_model->countBillingData($term, NULL, $area)/10));
 		}
-
-		$this->load->model("Invoice_model");
-		$data['items'] = $this->Invoice_model->getBillingData($offset, $term, $day, $area);
-		$data['pages'] = max(1, ceil($this->Invoice_model->countBillingData($term, $day, $area)/10));
 		
 		header('Content-Type: application/json');
 		echo json_encode($data);
