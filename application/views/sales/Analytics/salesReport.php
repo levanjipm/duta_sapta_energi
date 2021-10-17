@@ -69,7 +69,6 @@
 				<table class='table table-bordered'>
 					<tr>
 						<th>Active Customer</th>
-						<th>Active Customer ( Last Month ) </th>
 					</tr>
 					<tbody id='customerOverviewTable'></tbody>
 				</table>
@@ -137,33 +136,8 @@
 					$areaArray[$areaId]['target'] += $currentTarget;
 				}
 
-				$prevValue		= $customer->previousValue;
-				$prevReturned	= $customer->previousReturned;
-				$prevTotalValue	= $prevValue - $prevReturned;
-				$prevTarget		= $customer->previousTarget;
-
 				if($value > 0){
 					$customerCountBought++;
-				}
-
-				if($prevValue > 0){
-					$customerCountBoughtLast++;
-				}
-
-				if($totalValue > $prevTotalValue){
-					$valueIcon		= "<span style='color:green'><i class='fa fa-caret-up'></i></span>";
-				} else if($totalValue == $prevTotalValue){
-					$valueIcon		= "<span style='color:#E19B3C'><i class='fa fa-minus'></i></span>";
-				} else {
-					$valueIcon		= "<span style='color:red'><i class='fa fa-caret-down'></i></span>";
-				}
-
-				if($currentTarget > $prevTarget){
-					$targetIcon		= "<span style='color:green'><i class='fa fa-caret-up'></i></span>";
-				} else if($currentTarget == $prevTarget){
-					$targetIcon		= "<span style='color:#E19B3C'><i class='fa fa-minus'></i></span>";
-				} else {
-					$targetIcon		= "<span style='color:red'><i class='fa fa-caret-down'></i></span>";
 				}
 		?>
 					<tr>
@@ -172,7 +146,7 @@
 							<p><?= $complete_address ?></p>
 							<p><?= $customer->city ?></p>
 						</td>
-						<td>Rp. <?= number_format($totalValue,2) ?> <?= $valueIcon ?> | Rp. <?= number_format($currentTarget,2) ?> <?= $targetIcon ?></td>
+						<td>Rp. <?= number_format($totalValue,2) ?>| Rp. <?= number_format($currentTarget,2) ?></td>
 					</tr>
 		<?php }; $finalAreaArray		= json_encode($areaArray); ?>
 					<tr>
@@ -202,5 +176,5 @@
 
 	$('#areaOverviewTable').append("<tr><td><label>Total</label></td><td>Rp. " + numeral(<?= $customerTotalValue ?>).format('0,0.00') + "</td><td>Rp. " + numeral(<?= $customerTotalTarget ?>).format('0,0.00') + "</td></tr>");
 
-	$('#customerOverviewTable').append("<tr><td>" + numeral(<?= $customerCountBought ?>).format('0,0') + "</td><td>" + numeral(<?= $customerCountBoughtLast ?>).format('0,0') + "</td></tr>");
+	$('#customerOverviewTable').append("<tr><td>" + numeral(<?= $customerCountBought ?>).format('0,0') + "</td></tr>");
 </script>

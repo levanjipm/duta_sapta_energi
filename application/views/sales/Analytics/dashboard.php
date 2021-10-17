@@ -173,7 +173,6 @@
 								<tr>
 									<th>Customer</th>
 									<th>Achivement | Target</th>
-									<th>Achivement | Target</th>
 									<th>Action</th>
 								</tr>
 								<tbody id='customerTableContent'></tbody>
@@ -674,29 +673,12 @@
 						var returned = parseFloat((item.returned == null)? 0 : item.returned);
 						var target = parseFloat(item.target);
 						var totalValue = value - returned;
+						var accomplishment = (target == 0) ? 1 : (totalValue / target);
+						console.log(totalValue);
+						console.log(target);
+						console.log(accomplishment);
 
-						var previousValue = parseFloat(item.previousValue);
-						var previousReturned	= parseFloat(item.previousReturned);
-						var totalPreviousValue	= previousValue - previousReturned;
-						var previousTarget		= parseFloat(item.previousTarget);
-
-						if(previousValue > totalValue){
-							var valueIcon		= '<span style="color:red"><i class="fa fa-caret-down" aria-hidden="true"></i></span>';
-						} else if(previousValue == totalValue){
-							var valueIcon		= '<span style="color:#E19B3C"><i class="fa fa-minus" aria-hidden="true"></i></span>';
-						} else {
-							var valueIcon		= '<span style="color:green"><i class="fa fa-caret-up" aria-hidden="true"></i></span>';
-						}
-
-						if(previousTarget > target){
-							var targetIcon		= '<span style="color:red"><i class="fa fa-caret-down" aria-hidden="true"></i></span>';
-						} else if(previousTarget == target){
-							var targetIcon		= '<span style="color:#E19B3C"><i class="fa fa-minus" aria-hidden="true"></i></span>';
-						} else {
-							var targetIcon		= '<span style="color:green"><i class="fa fa-caret-up" aria-hidden="true"></i></span>';
-						}
-
-						$('#customerTableContent').append("<tr><td><label>" + name + "</label><p>" + complete_address + "</p>" + customer_city + "</p></td><td><p>Rp. " + numeral(totalPreviousValue).format('0,0.00') + " | Rp. " + numeral(previousTarget).format('0,0.00') + "</p><div class='progressBarWrapper'><p>" + numeral(100 * totalPreviousValue / previousTarget).format("0,0.00") + "%</p><div class='progressBar' id='previousProgressCustomer-" + customer_id + "' data-value='" + (totalPreviousValue / previousTarget) + "'></div></div></td><td><p>Rp. " + numeral(totalValue).format('0,0.00') + " " + valueIcon + " | Rp. " + numeral(target).format('0,0.00') + " " + targetIcon + "</p><div class='progressBarWrapper'><p>" + numeral(100 * totalValue / target).format("0,0.00") + "%</p><div class='progressBar' id='progressCustomer-" + customer_id + "' data-value='" + (totalValue / target) + "'></div></div></td><td><button class='button button_default_dark' onclick='viewCustomerTarget(" + customer_id + ")'><i class='fa fa-eye'></i></button></td></tr>");
+						$('#customerTableContent').append("<tr><td><label>" + name + "</label><p>" + complete_address + "</p>" + customer_city + "</p></td><td><p>Rp. " + numeral(totalValue).format('0,0.00') + " | Rp. " + numeral(target).format('0,0.00') + " </p><div class='progressBarWrapper'><p>" + numeral(100 * accomplishment).format("0,0.00") + "%</p><div class='progressBar' id='progressCustomer-" + customer_id + "' data-value='" + (totalValue / target) + "'></div></div></td><td><button class='button button_default_dark' onclick='viewCustomerTarget(" + customer_id + ")'><i class='fa fa-eye'></i></button></td></tr>");
 						itemCount++;
 					});
 

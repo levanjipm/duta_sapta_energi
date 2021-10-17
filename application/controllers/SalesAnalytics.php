@@ -42,7 +42,7 @@ class SalesAnalytics extends CI_Controller {
 		$data['items'] = $this->Customer_target_model->getItems($month, $year, $brand, $offset, $term);
 
 		$this->load->model("Customer_model");
-		$data['pages'] = max(1, ceil($this->Customer_model->countItems($term)/25));
+		$data['pages'] = max(1, ceil($this->Customer_target_model->countItems($month, $year, $brand, $term)/25));
 
 		header('Content-Type: application/json');
 		echo json_encode($data);

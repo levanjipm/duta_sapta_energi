@@ -1664,6 +1664,7 @@ class Invoice_model extends CI_Model {
 							WHERE code_delivery_order.is_sent = '1' AND MONTH(code_delivery_order.date) = '$month' AND YEAR(code_delivery_order.date) = '$year'
 						) AS a
 						JOIN invoice ON a.id = invoice.id
+						WHERE invoice.is_confirm = 1
 						GROUP BY a.area_id
 					) AS invoiceTable
 					ON customer_area.id = invoiceTable.area_id
@@ -1695,8 +1696,10 @@ class Invoice_model extends CI_Model {
 						JOIN invoice ON code_delivery_order.invoice_id = invoice.id
 						JOIN price_list ON sales_order.price_list_id = price_list.id
 						JOIN item ON price_list.item_id = item.id
-						WHERE MONTH(invoice.date) = '$month' AND YEAR(invoice.date) = '$year'
-						AND invoice.is_confirm = '1'
+						WHERE MONTH(invoice.date) = '$month' 
+						AND YEAR(invoice.date) = '$year'
+						AND invoice.is_confirm = 1
+						AND code_delivery_order.is_sent = 1
 						GROUP BY item.type
 					) invoiceTable
 					ON invoiceTable.type = item_class.id
@@ -1721,15 +1724,30 @@ class Invoice_model extends CI_Model {
 					SELECT brand.name, COALESCE(invoiceTable.value,0) as value, COALESCE(returnTable.value,0) as returned
 					FROM brand
 					LEFT JOIN (
-						SELECT item.brand, SUM(price_list.price_list * (100 - sales_order.discount) * delivery_order.quantity / 100) as value
+						SELECT SUM(delivery_order.quantity * price_list.price_list * ( 100 - sales_order.discount ) / 100) AS value, item.brand
 						FROM delivery_order
-						JOIN sales_order ON sales_order.id = delivery_order.sales_order_id
 						JOIN code_delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order.id
-						JOIN invoice ON code_delivery_order.invoice_id = invoice.id
+						JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
 						JOIN price_list ON sales_order.price_list_id = price_list.id
 						JOIN item ON price_list.item_id = item.id
-						WHERE MONTH(invoice.date) = '$month' AND YEAR(invoice.date) = '$year'
-						AND invoice.is_confirm = '1'
+						JOIN (
+							SELECT invoice.id, code_sales_order.customer_id
+							FROM invoice
+							JOIN code_delivery_order ON invoice.id = code_delivery_order.invoice_id
+							JOIN (
+								SELECT delivery_order.code_delivery_order_id, sales_order.code_sales_order_id
+								FROM delivery_order
+								JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
+								GROUP BY sales_order.code_sales_order_id
+							) deliverySales
+							ON code_delivery_order.id = deliverySales.code_delivery_order_id
+							JOIN code_sales_order ON deliverySales.code_sales_order_id = code_sales_order.id
+							WHERE invoice.is_confirm = 1
+						) invoiceCustomer
+						ON code_delivery_order.invoice_id = invoiceCustomer.id
+						JOIN customer ON customer.id = invoiceCustomer.customer_id
+						WHERE MONTH(code_delivery_order.date) = $month
+						AND YEAR(code_delivery_order.date) = $year
 						GROUP BY item.brand
 					) invoiceTable
 					ON invoiceTable.brand = brand.id
@@ -1743,7 +1761,8 @@ class Invoice_model extends CI_Model {
 						JOIN price_list ON sales_order.price_list_id = price_list.id
 						JOIN item ON price_list.item_id = item.id
 						WHERE code_sales_return_received.is_confirm = '1'
-						AND MONTH(code_sales_return_received.date) = '$month' AND YEAR(code_sales_return_received.date) = '$year'
+						AND MONTH(code_sales_return_received.date) = '$month' 
+						AND YEAR(code_sales_return_received.date) = '$year'
 						GROUP BY item.type
 					) returnTable
 					ON returnTable.brand = brand.id
