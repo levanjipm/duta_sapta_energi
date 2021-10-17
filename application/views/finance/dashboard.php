@@ -130,6 +130,30 @@
                     </div>
 				</div>
 			</div>
+			<div class='col-md-6 col-sm-12 col-xs-12' style="margin-top:20px" onclick='viewPendingCustomerAssignment()'>
+				<div class='dashboardBox'>
+					<div class='leftSide'>
+                        <h4><b>Pending</b></h4>
+                        <p>Customer Assignment</p>
+                    </div>
+                    <div class='rightSide'>
+                        <h3><?= number_format($customerAssignment,0) ?></h3>
+                        <p>&nbsp;</p>
+                    </div>
+				</div>
+			</div>
+			<div class='col-md-6 col-sm-12 col-xs-12' style="margin-top:20px">
+				<div class='dashboardBox'>
+					<div class='leftSide'>
+                        <h4><b>Debt - Equity</b></h4>
+                        <p>Ratio</p>
+                    </div>
+                    <div class='rightSide'>
+                        <h3><?= number_format($deratio,2) ?></h3>
+                        <p>&nbsp;</p>
+                    </div>
+				</div>
+			</div>
         </div>
 		<div class="row" style="padding-top:20px">
 			<div class="col-sm-6 col-xs-12">
@@ -187,6 +211,25 @@
 		</div>
     </div>
 </div>
+
+<div class='alert_wrapper' id='pendingAssignmentWrapper'>
+	<button class='slide_alert_close_button'>&times;</button>
+    <div class='alert_box_slide'>
+		<h3 style='font-family:bebasneue'>Pending Assignment</h3>
+		<hr>
+		<table class='table table-bordered' id='pendingAssignmentTable'>
+			<tr>
+				<th>Name</th>
+				<th>Address</th>
+				<th>City</th>
+			</tr>
+			<tbody id='pendingAssignmentTableContent'></tbody>
+		</table>
+
+		<p id='pendingAssignmentTableText'>There is no pending assignment for customers' schedule.</p>
+	</div>
+</div>
+
 <script>
 	$(document).ready(function(){
 		getReceivable();
@@ -291,6 +334,64 @@
 					   }
 					});
 				}
+			}
+		})
+	}
+
+	function viewPendingCustomerAssignment(){
+		$.ajax({
+			url:"<?= site_url('Schedule/getUnassignedCustomer') ?>",
+			beforeSend:function(){
+				$('#pendingAssignmentTableContent').html("");
+			},
+			success:function(response){
+				$.each(response, function(index, customer){
+					var complete_address		= '';
+					var customer_name			= customer.name;
+					complete_address		+= customer.address;
+					var customer_city			= customer.city;
+					var customer_number			= customer.number;
+					var customer_rt				= customer.rt;
+					var customer_rw				= customer.rw;
+					var customer_postal			= customer.postal_code;
+					var customer_block			= customer.block;
+					var customer_id				= customer.id;
+		
+					if(customer_number != null){
+						complete_address	+= ' No. ' + customer_number;
+					}
+					
+					if(customer_block != null && customer_block != "000"){
+						complete_address	+= ' Blok ' + customer_block;
+					}
+				
+					if(customer_rt != '000'){
+						complete_address	+= ' RT ' + customer_rt;
+					}
+					
+					if(customer_rw != '000' && customer_rt != '000'){
+						complete_address	+= ' /RW ' + customer_rw;
+					}
+					
+					if(customer_postal != null){
+						complete_address	+= ', ' + customer_postal;
+					}
+
+					$("#pendingAssignmentTableContent").append("<tr><td>" + customer_name + "</td><td>" + complete_address + "</td><td>" + customer_city + "</td></tr>");
+				
+					if(response.length == 0){
+						$('#pendingAssignmentTableText').show();
+						$('#pendingAssingmentTable').hide();
+					} else {
+						$('#pendingAssingmentTable').show();
+						$('#pendingAssignmentTableText').hide();
+					}
+				});
+			},
+			complete:function(){
+				$('#pendingAssignmentWrapper').fadeIn(300, function(){
+					$('#pendingAssignmentWrapper .alert_box_slide').show("slide", { direction: "right" }, 250);
+				});
 			}
 		})
 	}

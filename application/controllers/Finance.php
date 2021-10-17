@@ -58,6 +58,17 @@ class Finance extends CI_Controller {
 			$data['ratio']		= ($assetValue + $receivable + $bankAccount + $pettyCashAccount) / $liability;
 		}
 
+		$this->load->model("Stock_in_model");
+		$stockValue				= $this->Stock_in_model->calculateValue(date("Y-m-d"));
+		if($liability == 0){
+			$data['deratio']	= 0;
+		} else {
+			$data['deratio']	= $liability / ($assetValue + $receivable + $bankAccount + $pettyCashAccount + $stockValue);
+		}
+
+		$this->load->model("Schedule_model");
+		$data['customerAssignment']		= $this->Schedule_model->countPendingAssignment();
+
 		$this->load->view('finance/dashboard', $data);
 	}
 

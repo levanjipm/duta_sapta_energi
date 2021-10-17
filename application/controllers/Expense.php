@@ -126,7 +126,14 @@ class Expense extends CI_Controller {
 		$year		= $this->input->get('year');
 
 		$this->load->model("Expense_class_model");
-		$data = $this->Expense_class_model->getExpenseByParentId($id, $month, $year);
+		$items = $this->Expense_class_model->getExpenseByParentId($id, $month, $year);
+		$total	= 0;
+		foreach($items as $item){
+			$total += (float)$item->value;
+		};
+
+		$data['items']		= $items;
+		$data['total']		= $total;
 
 		header('Content-Type: application/json');
 		echo json_encode($data);

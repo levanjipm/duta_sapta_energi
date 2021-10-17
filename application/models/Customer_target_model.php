@@ -283,7 +283,7 @@ class Customer_target_model extends CI_Model {
 			$query			= $this->db->query("
 				SELECT customer_target.value, customer_target.dateCreated, brand.name
 				FROM customer_target
-				JOIN (
+				LEFT JOIN (
 					SELECT MAX(id) as id FROM customer_target
 					WHERE customer_id = '$customerId'
 				) AS targetTable

@@ -285,4 +285,33 @@ class Schedule_model extends CI_Model {
 			$result		= $query->result();
 			return $result;
 		}
+
+		public function countPendingAssignment(){
+			$query			= $this->db->query("
+				SELECT customer.id
+				FROM customer
+				WHERE customer.id NOT IN (
+					SELECT DISTINCT(customer_id)
+					FROM customer_schedule
+				)
+			");
+
+			$result		= $query->num_rows();
+			return $result;
+		}
+
+		public function getUnassignedCustomer(){
+			$query			= $this->db->query("
+				SELECT customer.*
+				FROM customer
+				WHERE customer.id NOT IN (
+					SELECT DISTINCT(customer_id)
+					FROM customer_schedule
+				)
+				ORDER BY customer.name ASC
+			");
+
+			$result			= $query->result();
+			return $result;
+		}
 }

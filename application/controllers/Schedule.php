@@ -79,4 +79,11 @@ class Schedule extends CI_Controller {
 		header('Content-Type: application/json');
 		echo json_encode($result);
 	}
+
+	public function getUnassignedCustomer(){
+		$this->load->model("Schedule_model");
+		$result		= $this->Schedule_model->getUnassignedCustomer();
+		header('Content-Type: application/json');
+		echo json_encode($result);
+	}
 }

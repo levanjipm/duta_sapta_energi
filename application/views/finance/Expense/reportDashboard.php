@@ -47,6 +47,7 @@
 		<div class='row'>
 			<div class='col-md-2 col-sm-3 col-xs-4'>
 				<select class='form-control' id='month'>
+					<option value='0'>Annual</option>
 <?php
 	for($i = 1; $i <= 12; $i++){
 		if($i == date('m')){
@@ -66,7 +67,7 @@
 <?php
 	for($i = 2020; $i <= date("Y"); $i++){
 ?>
-					<option value='<?= $i ?>'><?= $i ?></option>
+					<option value='<?= $i ?>' <?= (date("Y") == $i) ? "selected" : "" ?>><?= $i ?></option>
 <?php
 	}
 ?>
@@ -105,6 +106,7 @@
 							<th>Name</th>
 							<th>Description</th>
 							<th>Value</th>
+							<th>Proportion</th>
 						</tr>
 						<tbody id='expenseDetailTableContent'></tbody>
 					</table>
@@ -179,17 +181,18 @@
 				$('#parentNameLabel').html(parentName);
 				google.charts.setOnLoadCallback(drawChart);
 				var data = new google.visualization.DataTable();
+				var total	= response.total;
 				data.addColumn('string', 'Name');
 				data.addColumn('number', 'Value');
 
 				$('#expenseDetailTableContent').html("");
-				$.each(response, function(index, value){
-					var groupValue = parseInt(value.value);
+				$.each(response.items, function(index, value){
+					var groupValue = parseFloat(value.value);
 					var groupName = value.name;
 					var groupDescription = value.description;
 					data.addRow([groupName, groupValue]);
 
-					$('#expenseDetailTableContent').append("<tr><td>" + groupName + "</td><td>" + groupDescription + "</td><td>Rp. " + numeral(groupValue).format('0,0.00') + "</td></tr>")
+					$('#expenseDetailTableContent').append("<tr><td>" + groupName + "</td><td>" + groupDescription + "</td><td>Rp. " + numeral(groupValue).format('0,0.00') + "</td><td>" + numeral(groupValue * 100/total).format('0,0.00') + "%</td></tr>")
 				});
 
 				function drawChart(){

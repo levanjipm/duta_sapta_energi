@@ -343,7 +343,8 @@
 				$('#term_of_payment_edit').val(term_of_payment);
 				$('#city_edit').val(city);
 				$('#visit_edit').val(visit);
-				
+			},
+			complete:function(){
 				$('#edit_customer_wrapper').fadeIn(300, function(){
 					$('#edit_customer_wrapper .alert_box_slide').show("slide", { direction: "right" }, 250);
 				});

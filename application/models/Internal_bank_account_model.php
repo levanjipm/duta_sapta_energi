@@ -63,11 +63,22 @@ class Internal_bank_account_model extends CI_Model {
 		public function updateById()
 		{
 			$this->db->db_debug = false;
+
+			$this->db->where('is_shown', 1);
+			$query			= $this->db->get($this->table_account);
+			$result			= $query->num_rows();
+
+			if($result <= 1){
+				$this->db->set('is_shown', 1);
+			} else {
+				$this->db->set('is_shown', $this->input->post('is_shown'));
+			}
+
 			$this->db->set('name', $this->input->post('name'));
 			$this->db->set('number', $this->input->post('number'));
 			$this->db->set('bank', $this->input->post('bank'));
 			$this->db->set('branch', $this->input->post('branch'));
-			$this->db->set('is_shown', $this->input->post('is_shown'));
+
 			$this->db->where("id", $this->input->post('id'));
 
 			$this->db->update($this->table_account);
@@ -93,6 +104,16 @@ class Internal_bank_account_model extends CI_Model {
 
 		public function getAll(){
 			$this->db->order_by('name', 'ASC');
+			$query		= $this->db->get($this->table_account);
+			$result		= $query->result();
+			return $result;
+		}
+
+		public function getShownItems(){
+			$this->db->where("is_shown", 1);
+			$this->db->order_by('name', 'asc');
+			$this->db->order_by('number', 'asc');
+
 			$query		= $this->db->get($this->table_account);
 			$result		= $query->result();
 			return $result;
