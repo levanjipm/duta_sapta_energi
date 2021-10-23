@@ -1056,20 +1056,23 @@ class Debt_model extends CI_Model {
 			$result		= $query->result();
 			$response	= array();
 			foreach($result as $item){
-				$month		= $item->month;
-				$year		= $item->year;
+				if($item->month != NULL && $item->year != NULL){
+					$month		= $item->month;
+					$year		= $item->year;
 
-				$index		= (date("m", strtotime($maxDate)) - $month) + 12 * (date("Y", strtotime($maxDate)) - $year);
-				if(!array_key_exists($index, $response)){
-					$response[$index]	= array(
-						"value" => $item->value,
-						"label" => date("M Y", mktime(0,0,0,$month, 1, $year))
-					);
-				} else {
-					$response[$index]['value']	+= $item->value;
+					$index		= (date("m", strtotime($maxDate)) - $month) + 12 * (date("Y", strtotime($maxDate)) - $year);
+					if(!array_key_exists($index, $response)){
+						$response[$index]	= array(
+							"value" => $item->value,
+							"label" => date("M Y", mktime(0,0,0,$month, 1, $year))
+						);
+					} else {
+						$response[$index]['value']	+= $item->value;
+					}
+
+					next($result);
 				}
-
-				next($result);
+				
 			}
 			
 			$difference		= (date("m", strtotime($maxDate)) - date("m", strtotime($minDate))) + 12 * (date("Y", strtotime($maxDate)) - date("Y", strtotime($minDate)));

@@ -400,7 +400,6 @@ class Bank_model extends CI_Model {
 					$original_value		= $original_array[$invoice_id];
 					$remaining_value	= $remaining_array[$invoice_id];
 					$difference			= $original_value - $remaining_value;
-					echo $difference;
 					if($difference > 0){
 						$db_item	= array(
 							'id' => '',
@@ -430,7 +429,7 @@ class Bank_model extends CI_Model {
 		
 		public function assign_payable($bank_data)
 		{
-			$bank_value		= $bank_data->value;
+			$bank_value		= round((float)$bank_data->value, 4);
 			$bank_id		= $bank_data->id;
 			$supplier_id	= $bank_data->supplier_id;
 			$opponent_id	= $bank_data->other_id;
@@ -451,8 +450,7 @@ class Bank_model extends CI_Model {
 			
 				$total_remaining		= array_sum($remaining_array);
 				$total_invoice			= array_sum($original_array);
-				$assigned				= $total_invoice - $total_remaining;
-			
+				$assigned				= round((float)$total_invoice - $total_remaining, 4);
 			
 				if($assigned < $bank_value){
 					$not_assigned 	= $bank_value - $assigned;

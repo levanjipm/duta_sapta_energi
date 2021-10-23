@@ -244,8 +244,6 @@ class Bank extends CI_Controller {
 		$customer_id	= $result->customer_id;
 		$supplier_id	= $result->supplier_id;
 		$other_id		= $result->other_id;
-
-		echo $type;
 		
 		if($type == 1 && $customer_id != null){
 			$this->Bank_model->assign_receivable($result);

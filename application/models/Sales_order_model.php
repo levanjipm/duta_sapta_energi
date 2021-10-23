@@ -761,7 +761,13 @@ class Sales_order_model extends CI_Model {
 					SELECT DISTINCT(sales_order.code_sales_order_id) as id FROM sales_order WHERE status = '0'
 				) as incompletedSalesOrderTable
 				ON code_sales_order.id = incompletedSalesOrderTable.id
-				WHERE code_sales_order.customer_id = '$customerId';
+				WHERE code_sales_order.customer_id = '$customerId'
+				AND code_sales_order.id NOT IN (
+					SELECT code_sales_order_id
+					FROM code_sales_order_close_request
+					WHERE is_confirm = 1
+				)
+				AND code_sales_order.is_confirm = 1
 			");
 			$result = $query->result();
 			return $result;

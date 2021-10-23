@@ -254,13 +254,14 @@ class Purchase_order_model extends CI_Model {
 			}
 		}
 		
-		public function getIncompletePurchaseOrder($offset = 0, $supplier_id = null, $limit = 10)
+		public function getIncompletePurchaseOrder($offset = 0, $supplier_id = NULL, $limit = 10)
 		{
-			if($supplier_id == null){
+			if($supplier_id === NULL){
 				$query = $this->db->query("
 					SELECT code_purchase_order.* FROM code_purchase_order
 					JOIN (
-						SELECT DISTINCT(purchase_order.code_purchase_order_id) as id FROM purchase_order
+						SELECT DISTINCT(purchase_order.code_purchase_order_id) as id 
+						FROM purchase_order
 						WHERE purchase_order.status= '0'
 					) as a
 					ON a.id = code_purchase_order.id
@@ -271,11 +272,13 @@ class Purchase_order_model extends CI_Model {
 				$query = $this->db->query("
 					SELECT code_purchase_order.* FROM code_purchase_order
 					JOIN (
-						SELECT DISTINCT(purchase_order.code_purchase_order_id) as id FROM purchase_order
+						SELECT DISTINCT(purchase_order.code_purchase_order_id) as id 
+						FROM purchase_order
 						WHERE purchase_order.status= '0'
 					) as a
 					ON a.id = code_purchase_order.id
-					WHERE code_purchase_order.supplier_id = '$supplier_id' AND code_purchase_order.is_confirm = '1'
+					WHERE code_purchase_order.supplier_id = '$supplier_id' 
+					AND code_purchase_order.is_confirm = 1
 					LIMIT $limit OFFSET $offset
 				");
 			}

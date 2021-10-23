@@ -94,7 +94,7 @@ class Supplier extends CI_Controller {
 
 	public function getPurchaseBySupplierId()
 	{
-		$id			= $this->input->get("id");
+		$id			= $this->input->get("supplier_id");
 		$this->load->model("Debt_model");
 		$data		= $this->Debt_model->getValueByPeriod($id, date("Y-m-t", mktime(0,0,0, date("m"), 1, date("Y"))), date("Y-m-d", mktime(0,0,0,date('m'), 1, date("Y") - 1)));
 

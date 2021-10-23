@@ -224,7 +224,7 @@
 		$.ajax({
 			url:"<?= site_url('Purchase_order/getPendingPurchaseOrder') ?>",
 			data:{
-				id:<?= $supplier->id ?>,
+				supplier_id:<?= $supplier->id ?>,
 				page: page
 			},
 			success:function(response){
@@ -314,9 +314,10 @@
 
 	function getPayable(page = $('#payablePage').val()){
 		$.ajax({
-			url:"<?= site_url('Payable/getCompletePayableBySupplierId/') ?>",
+			url:"<?= site_url('Payable/getCompletePayableBySupplierId') ?>",
 			data:{
-				id: <?= $supplier->id ?>
+				id: <?= $supplier->id ?>,
+				page: page
 			},
 			success:function(response){
 				var items = response.items;
