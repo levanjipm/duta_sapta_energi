@@ -169,13 +169,14 @@
                 year: <?= date('Y') ?>
             },
             success:function(response){
-                console.log(response);
                 var headerArray = ["Customer", "Sales", { role: 'style'}];
                 customerData.push(headerArray);
                 var opacity = 1;
 				if(response.length <= 5){
 					var repeatEmpty = 5 - response.length
 				};
+
+                response.reverse();
 
                 $.each(response, function(index, item){
                     var value = parseFloat(item.value);

@@ -227,27 +227,25 @@ class Sales_order extends CI_Controller {
 
 		$this->load->model('Invoice_model');
 
-		$minimumDate = date('Y-m-d');
-		$receivableValue = 0;
+		$pendingInvoice		= 0;
+		$is_top				= false;
 		$invoices = $this->Invoice_model->getCustomerStatusById($customerId);
 		foreach($invoices as $invoice){
-			$value = $invoice->value;
-			$paid = $invoice->paid;
+			$value = (float)$invoice->value;
+			$paid = (float)$invoice->paid;
 			$date = $invoice->date;
+			$term_of_payment	= $invoice->term_of_payment;
 
-			if($date < date('Y-m-d', strtotime($minimumDate))){
-				$minimumDate = $date;
-			};
-
-			$receivableValue += ($value - $paid);
+			if(date("Y-m-d", strtotime($date . ' + ' . $term_of_payment . "days")) < date("Y-m-d")){
+				$is_top = true;
+			}
+			$pendingInvoice		+= ($value - $paid);
 		};
 
-		$pendingInvoice = array(
-			'debt' => $receivableValue,
-			'date' => date('Y-m-d', strtotime($minimumDate))
+		$data['receivable'] = (object) array(
+			"value" => $pendingInvoice,
+			"is_top" => $is_top
 		);
-
-		$data['receivable'] = (object) $pendingInvoice;
 
 		$this->load->model('Sales_order_detail_model');
 		$data['detail'] = $this->Sales_order_detail_model->show_by_code_sales_order_id($sales_order_id);

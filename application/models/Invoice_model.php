@@ -1084,7 +1084,7 @@ class Invoice_model extends CI_Model {
 						GROUP BY code_sales_order.customer_id
 					) returnTable
 					ON returnTable.customer_id = a.id
-					ORDER BY a.value ASC
+					ORDER BY a.value DESC
 				");
 			} else {
 				$query = $this->db->query("
@@ -1115,7 +1115,7 @@ class Invoice_model extends CI_Model {
 						GROUP BY code_sales_order.customer_id
 					) returnTable
 					ON returnTable.customer_id = a.id
-					ORDER BY a.value ASC
+					ORDER BY a.value DESC
 					LIMIT $limit
 				");
 			}

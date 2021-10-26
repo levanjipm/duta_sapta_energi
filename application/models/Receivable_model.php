@@ -73,6 +73,7 @@ class Receivable_model extends CI_Model {
 
 		public function viewReceivableByInvoiceIds($invoiceIds){
 			$this->db->where_in('invoice_id', $invoiceIds);
+			$this->db->order_by('date', 'asc');
 			$query		= $this->db->get($this->table_receivable);
 			$result		= $query->result();
 			return $result;

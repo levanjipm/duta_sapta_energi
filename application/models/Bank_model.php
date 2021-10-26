@@ -286,17 +286,25 @@ class Bank_model extends CI_Model {
 			return $result;
 		}
 		
-		public function countAssignedTransactions($account, $type)
+		public function countAssignedTransactions($account, $type, $dateStart, $dateEnd)
 		{
-			$this->db->where('account_id', $account);
-			$this->db->where('transaction', $type);
-			$this->db->where('is_done', 1);
-			$this->db->where('internal_account_id', NULL);
-			$this->db->where('bank_transaction_major', NULL);
-			$this->db->order_by('date');
+			$this->db->select('bank_transaction.id, COALESCE(`customer`.`name`, `supplier`.`name`, `other_opponent`.`name`, `internal_bank_account`.`name`) as name');
+			
+			$this->db->join('customer', 'bank_transaction.customer_id = customer.id', 'left');
+			$this->db->join('supplier', 'bank_transaction.supplier_id = supplier.id', 'left');
+			$this->db->join('other_opponent', 'bank_transaction.other_id = other_opponent.id', 'left');
+			$this->db->join('internal_bank_account', 'bank_transaction.internal_account_id = internal_bank_account.id', 'left');
+			
+			$this->db->where('bank_transaction.account_id', $account);
+			$this->db->where('bank_transaction.transaction', $type);
+			$this->db->where('bank_transaction.bank_transaction_major', NULL);
+
+			$this->db->where('date >=', $dateStart);
+			$this->db->where('date <=', $dateEnd);
+
+			$this->db->order_by('bank_transaction.date');
 			$query	= $this->db->get($this->table_bank);
 			$result	= $query->num_rows();
-			
 			return $result;
 		}
 		

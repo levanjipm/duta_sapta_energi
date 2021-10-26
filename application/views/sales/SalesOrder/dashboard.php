@@ -283,16 +283,12 @@
 				$('#pending_bank_value_p').html(numeral(pendingBank).format('0,0.00'));
 
 				var receivable = response.receivable;
-				var debt = receivable.debt;
-
-				var minimumDate = new Date(receivable.date);
-				var todayDate = new Date();
+				var debt		= receivable.value;
+				var is_top		= receivable.is_top;
 
 				$('#receivable_value_p').html(numeral(debt).format('0,0.00'));
 
-				var difference		= Math.floor(Math.abs((todayDate - minimumDate) / (60 * 60 * 24 * 1000)));
-
-				if(debt > plafond || (receivable.date != null && difference > termOfPayment)){
+				if(debt > plafond || is_top){
 					$('#warningDebtText').show();
 					$('#confirm_button').attr('disabled', true);
 				} else {
