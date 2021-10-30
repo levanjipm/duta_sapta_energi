@@ -187,14 +187,15 @@ class Item_model extends CI_Model {
 		{
 			$query 				= $this->db->query("
 				SELECT price_list.price_list, item.*, brand.id as brand_id, brand.name as brand
+				FROM price_list
+				JOIN item ON item.id = price_list.item_id
+				JOIN brand ON item.brand = brand.id
+				WHERE price_list.id IN (
+					SELECT MAX(price_list.id)
 					FROM price_list
-					JOIN item ON item.id = price_list.item_id
-					JOIN brand ON item.brand = brand.id
-					WHERE price_list.id IN (
-						SELECT MAX(price_list.id)
-						FROM price_list
-						GROUP BY item_id
-					) AND item.id = '$item_id'");	
+					GROUP BY item_id
+				) AND item.id = '$item_id'"
+			);	
 			$item 	= $query->row();
 			
 			return $item;

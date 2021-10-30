@@ -358,11 +358,7 @@ class Invoice extends CI_Controller {
 			$sentStatus = $deliveryOrder->is_sent;
 			$confirmStatus = $deliveryOrder->is_confirm;
 			if($sentStatus == 1 && $confirmStatus == 1){
-				if($taxing == 1){
-					$result = $this->Invoice_model->updateById($invoiceId, $taxInvoice);
-				} else {
-					$result = $this->Invoice_model->updateById($invoiceId);
-				}
+				$result = $this->Invoice_model->updateById($invoiceId, $taxInvoice);
 			} else {
 				$result = 0;
 			}

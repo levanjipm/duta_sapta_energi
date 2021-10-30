@@ -256,13 +256,12 @@
 					var taxing = sales_order.taxing;
 					if(taxing == 1){
 						var taxing_text = "Taxable sales";
-						$('#taxInvoiceWrapper').show();
-						$('#taxInvoice').attr('required', true);
 					} else if(taxing == 0){
 						var taxing_text = "Non-taxable sales";
-						$('#taxInvoiceWrapper').hide();
-						$('#taxInvoice').attr('required', false);
 					}
+
+					$('#taxInvoiceWrapper').show();
+					$('#taxInvoice').attr('required', true);
 
 					$('#invoicing_method_p').html(invoicing_text);
 					$('#taxing_p').html(taxing_text);
@@ -324,7 +323,10 @@
                             $('#confirmFailedNotification').fadeTo(250, 0);
                         }, 1000)
                     }
-                }
+                },
+				complete:function(){
+					$('#taxInvoice').val("");
+				}
             })
         }
     }
