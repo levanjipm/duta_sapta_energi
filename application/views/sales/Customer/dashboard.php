@@ -56,6 +56,15 @@
 			
 			<label>Hamlet (RW)</label>
 			<input type='text' class='form-control' id='address_rw' minlength='3' maxlength='3' required>
+
+			<label>Ward (Kelurahan)</label>
+			<input type='text' class='form-control' id='address_ward' required>
+
+			<label>District (Kecamatan)</label>
+			<input type='text' class='form-control' id='address_district' required>
+
+			<label>Province (Provinsi)</label>
+			<input type='text' class='form-control' id='address_province' required>
 			
 			<label>Postal code</label>
 			<input type='number' class='form-control' id='address_postal'>
@@ -127,7 +136,16 @@
 			
 			<label>City</label>
 			<input type='text' class='form-control' id='city_edit' required>
-			
+
+			<label>Ward (Kecamatan)</label>
+			<input type='text' class='form-control' id='ward_edit' required>
+
+			<label>District (Kelurahan)</label>
+			<input type='text' class='form-control' id='district_edit' required>
+
+			<label>Province (Provinsi)</label>
+			<input type='text' class='form-control' id='province_edit' required>
+	
 			<label>Phone number</label>
 			<input type='text' class='form-control' id='phone_edit' required>
 			
@@ -239,6 +257,9 @@
 					address_postal: $('#address_postal').val(),
 					address_rt: $('#address_rt').val(),
 					address_rw: $('#address_rw').val(),
+					address_ward: $('#address_ward').val(),
+					address_district: $('#address_district').val(),
+					address_province: $('#address_province').val(),
 					customer_city: $('#customer_city').val(),
 					area_id: $('#area_id').val(),
 					customer_npwp: $('#customer_npwp').val(),
@@ -322,6 +343,9 @@
 				var phone 			= response.phone_number;
 				var rt 				= response.rt;
 				var rw 				= response.rw;
+				var kecamatan		= response.kecamatan;
+				var kelurahan		= response.kelurahan;
+				var provinsi		= response.provinsi;
 				var term_of_payment = response.term_of_payment;
 				var city			= response.city;
 				var visit			= response.visiting_frequency;
@@ -343,6 +367,9 @@
 				$('#term_of_payment_edit').val(term_of_payment);
 				$('#city_edit').val(city);
 				$('#visit_edit').val(visit);
+				$('#ward_edit').val(kecamatan);
+				$('#district_edit').val(provinsi);
+				$('#province_edit').val(provinsi);
 			},
 			complete:function(){
 				$('#edit_customer_wrapper').fadeIn(300, function(){
@@ -369,7 +396,10 @@
 				pic 			: $('#pic_edit').val(), 				
 				phone 			: $('#phone_edit').val(), 				
 				rt 				: $('#rt_edit').val(), 					
-				rw 				: $('#rw_edit').val(), 					
+				rw 				: $('#rw_edit').val(),
+				kecamatan		: $('#ward_edit').val(),
+				kelurahan		: $('#district_edit').val(),
+				provinsi		: $('#province_edit').val(),			
 				term_of_payment : $('#term_of_payment_edit').val(),
 				city			: $('#city_edit').val(),
 				visit			: $('#visit_edit').val()
@@ -412,6 +442,9 @@
 					var customer_number			= customer.number;
 					var customer_rt				= customer.rt;
 					var customer_rw				= customer.rw;
+					var customer_kecamatan		= customer.kecamatan;
+					var customer_kelurahan		= customer.kelurahan;
+					var customer_provinsi		= customer.provinsi;
 					var customer_postal			= customer.postal_code;
 					var customer_block			= customer.block;
 					var customer_id				= customer.id;
@@ -420,7 +453,7 @@
 						complete_address	+= ' No. ' + customer_number;
 					}
 					
-					if(customer_block != null && customer_block != "000"){
+					if(customer_block != null && customer_block != "000" && customer_block != ""){
 						complete_address	+= ' Blok ' + customer_block;
 					}
 				
@@ -435,11 +468,14 @@
 					if(customer_postal != null){
 						complete_address	+= ', ' + customer_postal;
 					}
+
+					complete_address += ", Kel. " + customer_kelurahan;
+					complete_address += ", Kec. " + customer_kecamatan;
 					
 					if(customer.password != null){
-						$('#customerTableContent').append("<tr><td>" + customer_name + "</td><td><p>" + complete_address + "</p><p>" + customer_city + "</p></td><td><button type='button' class='button button_success_dark' onclick='open_edit_form(" + customer_id + ")'><i class='fa fa-pencil'></i></button> <button type='button' class='button button_danger_dark' onclick='confirm_delete(" + customer_id + ")'><i class='fa fa-trash'></i></button> <button type='button' onclick='viewCustomerDetail(" + customer_id + ")' class='button button_default_dark'><i class='fa fa-eye'></i></button> <button type='button' class='button button_default_dark' onclick='resetPassword(" + customer_id + ")'><i class='fa fa-undo'></i></button></td></tr>");
+						$('#customerTableContent').append("<tr><td>" + customer_name + "</td><td><p>" + complete_address + "</p><p>" + customer_city + ", " + customer_provinsi + "</p></td><td><button type='button' class='button button_success_dark' onclick='open_edit_form(" + customer_id + ")'><i class='fa fa-pencil'></i></button> <button type='button' class='button button_danger_dark' onclick='confirm_delete(" + customer_id + ")'><i class='fa fa-trash'></i></button> <button type='button' onclick='viewCustomerDetail(" + customer_id + ")' class='button button_default_dark'><i class='fa fa-eye'></i></button> <button type='button' class='button button_default_dark' onclick='resetPassword(" + customer_id + ")'><i class='fa fa-undo'></i></button></td></tr>");
 					} else {
-						$('#customerTableContent').append("<tr><td>" + customer_name + "</td><td><p>" + complete_address + "</p><p>" + customer_city + "</p></td><td><button type='button' class='button button_success_dark' onclick='open_edit_form(" + customer_id + ")'><i class='fa fa-pencil'></i></button> <button type='button' class='button button_danger_dark' onclick='confirm_delete(" + customer_id + ")'><i class='fa fa-trash'></i></button> <button type='button' onclick='viewCustomerDetail(" + customer_id + ")' class='button button_default_dark'><i class='fa fa-eye'></i></button></td></tr>");
+						$('#customerTableContent').append("<tr><td>" + customer_name + "</td><td><p>" + complete_address + "</p><p>" + customer_city + ", " + customer_provinsi + "</p></td><td><button type='button' class='button button_success_dark' onclick='open_edit_form(" + customer_id + ")'><i class='fa fa-pencil'></i></button> <button type='button' class='button button_danger_dark' onclick='confirm_delete(" + customer_id + ")'><i class='fa fa-trash'></i></button> <button type='button' onclick='viewCustomerDetail(" + customer_id + ")' class='button button_default_dark'><i class='fa fa-eye'></i></button></td></tr>");
 					}
 					
 					customerCount++;

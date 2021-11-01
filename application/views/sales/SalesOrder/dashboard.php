@@ -139,12 +139,16 @@
 					var customer_rw				= sales_order.customer_rw;
 					var customer_postal			= sales_order.customer_postal_code;
 					var customer_block			= sales_order.customer_block;
+					var customer_kelurahan		= sales_order.customer_kelurahan;
+					var customer_kecamatan		= sales_order.customer_kecamatan;
+					var customer_provinsi		= sales_order.customer_provinsi;
+					
 		
 					if(customer_number != null){
 						complete_address	+= ' No. ' + customer_number;
 					}
 					
-					if(customer_block != null){
+					if(customer_block != null && customer_block != "" && customer_block != "000"){
 						complete_address	+= ' Blok ' + customer_block;
 					}
 				
@@ -159,6 +163,9 @@
 					if(customer_postal != null){
 						complete_address	+= ', ' + customer_postal;
 					}
+
+					complete_address += ", Kel. " + customer_kelurahan;
+					complete_address += ", Kec. " + customer_kecamatan;
 					
 					$('#sales_order_table').append("<tr><td>" + my_date_format(sales_order_date) + "</td><td><label>Name</label><p>" + sales_order_name + "</p><label>Seller</label><p>" + seller + "</p></td><td><p style='font-family:museo'>" + customer_name + "</p><p style='font-family:museo'>" + complete_address + "</p><p style='font-family:museo'>" + customer_city + "</p></td><td><button type='button' class='button button_default_dark' title='View " + sales_order_name + "' onclick='view_sales_order(" + sales_order_id + ")'><i class='fa fa-eye'></i></button></td></tr>");
 				});
@@ -232,12 +239,15 @@
 				var customer_block			= customer.block;
 				var plafond					= customer.plafond;
 				var termOfPayment			= customer.term_of_payment;
+				var customer_kelurahan		= customer.kelurahan;
+				var customer_kecamatan		= customer.kecamatan;
+				var customer_provinsi		= customer.provinsi;
 	
 				if(customer_number != null){
 					complete_address	+= ' No. ' + customer_number;
 				}
 				
-				if(customer_block != null){
+				if(customer_block != null && customer_block != "" && customer_block != "000"){
 					complete_address	+= ' Blok ' + customer_block;
 				}
 			
@@ -252,6 +262,9 @@
 				if(customer_postal != null){
 					complete_address	+= ', ' + customer_postal;
 				}
+
+				complete_address += ", Kel. " + customer_kelurahan;
+				complete_address += ", Kec. " + customer_kecamatan;
 
 				$('#customer_plafond_p').html(numeral(plafond).format('0,0.00'))				
 				$('#customer_name_p').html(customer_name);

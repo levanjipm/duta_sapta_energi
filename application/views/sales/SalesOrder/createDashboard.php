@@ -468,11 +468,14 @@
 					var customer_postal		= customer.postal_code;
 					var customer_pic		= customer.pic_name;
 					var complete_address	= customer_address;
+					var customer_kecamatan	= customer.kecamatan;
+					var customer_kelurahan	= customer.kelurahan;
+					var customer_provinsi	= customer.provinsi;
 					if(customer_number != null && customer_number != ''){
 						complete_address	+= ' no. ' + customer_number;
 					};
 					
-					if(customer_block != null && customer_block != ''){
+					if(customer_block != null && customer_block != '' && customer_block != "000"){
 						complete_address	+= ', blok ' + customer_block;
 					};
 					
@@ -483,8 +486,12 @@
 					if(customer_postal != ''){
 						complete_address += ', ' + customer_postal;
 					}
+
+					complete_address += ", Kel. " + customer_kelurahan;
+					complete_address += ", Kec. " + customer_kecamatan;
 					
 					complete_address += ', ' + customer_city;
+					complete_address += ", " + customer_provinsi;
 					
 					$('#customerTableContent').append("<tr><td id='customer_name-" + customer_id + "'>" + customer_name + "</td><td id='customer_address-" + customer_id + "'>" + complete_address + "</td><td><button type='button' class='button button_success_dark' onclick='selectCustomer(" + customer_id + ")'><i class='fa fa-check'></i></button></td>");
 					customerCount++;

@@ -26,6 +26,9 @@ class Customer_model extends CI_Model {
 		public $plafond;
 		public $uid;
 		public $password;
+		public $kecamatan;
+		public $kelurahan;
+		public $provinsi;
 		
 		public $complete_address;
 		
@@ -58,6 +61,9 @@ class Customer_model extends CI_Model {
 			$this->term_of_payment		= $db_item->term_of_payment;
 			$this->uid					= $db_item->uid;
 			$this->password				= $db_item->password;
+			$this->kecamatan			= $db_item->kecamatan;
+			$this->kelurahan			= $db_item->kelurahan;
+			$this->provinsi				= $db_item->provinsi;
 			
 			return $this;
 		}
@@ -88,6 +94,9 @@ class Customer_model extends CI_Model {
 			$db_item->term_of_payment		= $this->term_of_payment;
 			$db_item->uid					= $this->uid;
 			$db_item->password				= $this->password;
+			$db_item->kecamatan				= $this->kecamatan;
+			$db_item->kelurahan				= $this->kelurahan;
+			$db_item->provinsi				= $this->provinsi;
 			
 			return $db_item;
 		}
@@ -118,6 +127,9 @@ class Customer_model extends CI_Model {
 			$stub->term_of_payment		= $db_item->term_of_payment;
 			$stub->uid					= $db_item->uid;
 			$stub->password				= $db_item->password;
+			$stub->kecamatan			= $db_item->kecamatan;
+			$stub->kelurahan			= $db_item->kelurahan;
+			$stub->provinsi				= $db_item->provinsi;
 			
 			return $stub;
 		}
@@ -233,6 +245,9 @@ class Customer_model extends CI_Model {
 				$this->latitude				= $this->input->post('latitude');
 				$this->longitude			= $this->input->post('longitude');
 				$this->pic_name				= $this->input->post('customer_pic');
+				$this->kecamatan			= $this->input->post('address_ward');
+				$this->kelurahan			= $this->input->post('address_district');
+				$this->provinsi				= $this->input->post('address_province');
 				$this->date_created			= date('Y-m-d');
 				$this->created_by			= $this->session->userdata('user_id');
 				$this->is_black_list		= 0;
@@ -288,8 +303,11 @@ class Customer_model extends CI_Model {
 				'rt' 				=> $this->input->post('rt'),
 				'rw' 				=> $this->input->post('rw'),
 				'city' 				=> $this->input->post('city'),
-				'latitude'			=> ($this->input->post('latitude') == "")? null : $this->input->post('latitude'),
-				'longitude'			=> ($this->input->post('longitude') == "")? null : $this->input->post('longitude'),
+				'kecamatan'			=> $this->input->post('kecamatan'),
+				'kelurahan'			=> $this->input->post('kelurahan'),
+				'provinsi'			=> $this->input->post('kelurahan'),
+				'latitude'			=> ($this->input->post('latitude') == "" || $this->input->post('latitude') == 0)? null : $this->input->post('latitude'),
+				'longitude'			=> ($this->input->post('longitude') == "" || $this->input->post('longitude') == 0)? null : $this->input->post('longitude'),
 				'postal_code' 		=> $this->input->post('postal'),
 				'area_id' 			=> $this->input->post('area_id'),
 				'npwp' 				=> $this->input->post('npwp'),
