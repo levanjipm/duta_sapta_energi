@@ -200,10 +200,15 @@ class Debt_model extends CI_Model {
 					INNER JOIN code_purchase_order ON purchase_order.code_purchase_order_id = code_purchase_order.id
 					JOIN supplier ON code_purchase_order.supplier_id = supplier.id
 					JOIN purchase_invoice ON code_good_receipt.invoice_id = purchase_invoice.id
-					LEFT JOIN
-						(SELECT SUM(value) as value, purchase_id FROM payable GROUP BY purchase_id) a
+					LEFT JOIN (
+						SELECT SUM(value) as value, purchase_id 
+						FROM payable 
+						GROUP BY purchase_id
+					) a
 					ON a.purchase_id = purchase_invoice.id
-					WHERE purchase_invoice.is_done = '0'
+					WHERE purchase_invoice.is_done = 0
+					AND purchase_invoice.is_confirm = 1
+					AND purchase_invoice.is_delete = 0
 					GROUP BY code_purchase_order.supplier_id
 					UNION
 					(
@@ -215,9 +220,9 @@ class Debt_model extends CI_Model {
 							SELECT SUM(value) AS value, other_purchase_id FROM payable GROUP BY other_purchase_id
 						) b
 						ON b.other_purchase_id = purchase_invoice_other.id
-						WHERE purchase_invoice_other.is_done = '0'
-						AND purchase_invoice_other.is_confirm = '1'
-						GROUP BY IF(purchase_invoice_other.supplier_id = null, purchase_invoice_other.other_opponent_id, purchase_invoice_other.supplier_id)
+						WHERE purchase_invoice_other.is_done = 0
+						AND purchase_invoice_other.is_confirm = 1
+						GROUP BY IF(purchase_invoice_other.supplier_id IS NULL, purchase_invoice_other.other_opponent_id, purchase_invoice_other.supplier_id)
 					)
 				");
 			} else if($category == 2){

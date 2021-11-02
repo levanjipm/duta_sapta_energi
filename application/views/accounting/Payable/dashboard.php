@@ -138,6 +138,11 @@
 			</table>
 		</div>
 
+		<select class='form-control' id='page' style='width:100px'>
+			<option value='1'>1</option>
+		</select>
+		<hr>
+
 		<button type='button' id='viewPayableButton' class='button button_default_dark'><i class='fa fa-eye'></i></button>
 	</div>
 </div>
@@ -261,7 +266,7 @@
 						if(value > maxPayable){
 							maxPayable = value;
 						}
-						$('#payable_chart').append("<div class='row' style='cursor:pointer' id='supplierPayable-" + id + "' onclick='viewSupplierPayableDetail(" + id + ")' ><div class='col-sm-3 col-xs-3 center'><p><strong>" + name + "</strong></div><div class='col-sm-7 col-xs-6'><div class='Payable_line' id='supplierPayableLine-" + id + "' data-value='" + value + "'></div></div><div class='col-sm-2 col-xs-3 center' style='text-align:right'><p>Rp. " + numeral(value).format('0,0.00') + "</p></div></div><br>");
+						$('#payable_chart').append("<div class='row' style='cursor:pointer' id='supplierPayable-" + id + "' onclick='viewSupplierPayableDetail(" + id + ", 1)' ><div class='col-sm-3 col-xs-3 center'><p><strong>" + name + "</strong></div><div class='col-sm-7 col-xs-6'><div class='Payable_line' id='supplierPayableLine-" + id + "' data-value='" + value + "'></div></div><div class='col-sm-2 col-xs-3 center' style='text-align:right'><p>Rp. " + numeral(value).format('0,0.00') + "</p></div></div><br>");
 						payableCount++;
 					} else {
 						var value= payable[0];
@@ -271,7 +276,7 @@
 							maxPayable = value;
 						}
 
-						$('#payable_chart').append("<div class='row' style='cursor:pointer' id='otherPayable-" + id + "' onclick='viewOtherPayableDetail(" + id + ")' ><div class='col-sm-3 col-xs-3 center'><p><strong>" + name + "</strong></div><div class='col-sm-7 col-xs-6'><div class='Payable_line' id='otherPayableLine-" + id + "' data-value='" + value + "'></div></div><div class='col-sm-2 col-xs-3 center' style='text-align:right'><p>Rp. " + numeral(value).format('0,0.00') + "</p></div></div><br>");
+						$('#payable_chart').append("<div class='row' style='cursor:pointer' id='otherPayable-" + id + "' onclick='viewOtherPayableDetail(" + id + ", 1)' ><div class='col-sm-3 col-xs-3 center'><p><strong>" + name + "</strong></div><div class='col-sm-7 col-xs-6'><div class='Payable_line' id='otherPayableLine-" + id + "' data-value='" + value + "'></div></div><div class='col-sm-2 col-xs-3 center' style='text-align:right'><p>Rp. " + numeral(value).format('0,0.00') + "</p></div></div><br>");
 						payableCount++;
 					}
 				});
@@ -314,11 +319,16 @@
 		$('#grid_wrapper').fadeTo(500, 1);
 	}
 
-	function viewSupplierPayableDetail(n){
+	$('#page').change(function(){
+		viewSupplierPayableDetail(supplierId);
+	})
+
+	function viewSupplierPayableDetail(n, page = $('#page').val()){
 		$.ajax({
 			url:'<?= site_url('Payable/viewPayableBySupplierId') ?>',
 			data:{
-				id: n
+				id: n,
+				page: page,
 			},
 			success:function(response){
 				supplierId = n;
@@ -382,6 +392,18 @@
 				$('#supplier_address_p').html(complete_address);
 				$('#supplier_city_p').html(supplier_city);
 
+				$('#page').html("");
+
+				var pages = response.pages;
+				for(i = 1; i <= pages; i++){
+					if(i == page){
+						$('#page').append("<option value='" + i + "' selected>" + i +"</option>");
+					} else {
+						$('#page').append("<option value='" + i + "'>" + i +"</option>");
+					}
+				}
+			},
+			complete:function(){
 				$('#payableDetailWrapper').fadeIn(300, function(){
 					$('#payableDetailWrapper .alert_box_slide').show("slide", { direction: "right" }, 250);
 				});
@@ -389,11 +411,12 @@
 		})
 	}
 
-	function viewOtherPayableDetail(n){
+	function viewOtherPayableDetail(n, page = $('#page').val()){
 		$.ajax({
 			url:'<?= site_url('Payable/viewPayableByOtherId') ?>',
 			data:{
-				id: n
+				id: n,
+				page: page,
 			},
 			success:function(response){
 				opponentId = n;
@@ -431,6 +454,16 @@
 				$('#supplier_address_p').html(complete_address);
 				$('#supplier_city_p').html(supplier_city);
 
+				var pages = response.pages;
+				for(i = 1; i <= pages; i++){
+					if(i == page){
+						$('#page').append("<option value='" + i + "' selected>" + i +"</option>");
+					} else {
+						$('#page').append("<option value='" + i + "'>" + i +"</option>");
+					}
+				}
+			},
+			complete:function(){
 				$('#payableDetailWrapper').fadeIn(300, function(){
 					$('#payableDetailWrapper .alert_box_slide').show("slide", { direction: "right" }, 250);
 				});

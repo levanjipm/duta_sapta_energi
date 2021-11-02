@@ -40,6 +40,8 @@
             <p id='customer_address_p'></p>
             <p id='customer_city_p'></p>
 
+			<input type='text' id='customer_name_p_input'>
+
             <label>Invoice</label>
             <p id='invoice_name_p'></p>
             <p id='invoice_date_p'></p>
@@ -112,12 +114,14 @@
 						var customer_rw = customer.rw;
 						var customer_city = customer.city;
 						var customer_postal = customer.postal;
+						var customer_kelurahan	= customer.kelurahan;
+						var customer_kecamatan	= customer.kecamatan;
                     
 						if(customer_number != null){
 							complete_address	+= ' No. ' + customer_number;
 						}
                     
-						if(customer_block != null){
+						if(customer_block != null && customer_block != "" && customer_block != "000"){
 							complete_address	+= ' Blok ' + customer_block;
 						}
                 
@@ -132,6 +136,9 @@
 						if(customer_postal != null){
 							complete_address	+= ', ' + customer_postal;
 						}
+
+						complete_address += ", Kel. " + customer_kelurahan;
+						complete_address += ", Kec. " + customer_kecamatan;
 					} else {
 						var customer_name = opponent.name;
 						var complete_address = opponent.description;
@@ -173,6 +180,7 @@
                 $('#invoice_id').val(n);
 				$('#deliveryOrderStatus').html("You are good to go.");
 				$("#confirmButton").attr('disabled', false);
+				$('#customer_name_p_input').hide();
                 var customer = response.customer;      
 				if(customer != null){
 					var customer_name = customer.name;
@@ -183,12 +191,14 @@
 					var customer_rw = customer.rw;
 					var customer_city = customer.city;
 					var customer_postal = customer.postal;
+					var customer_kelurahan = customer.kelurahan;
+					var customer_kecamatan = customer.kecamatan;
                 
 					if(customer_number != null){
 						complete_address	+= ' No. ' + customer_number;
 					}
                 
-					if(customer_block != null){
+					if(customer_block != null && customer_block != "" && customer_block != "000"){
 						complete_address	+= ' Blok ' + customer_block;
 					}
             
@@ -203,6 +213,9 @@
 					if(customer_postal != null){
 						complete_address	+= ', ' + customer_postal;
 					}
+
+					complete_address += ", Kel. " + customer_kelurahan;
+					complete_address += ", Kec. " + customer_kecamatan;
 				} else {
 					var opponent = response.opponent;
 					var customer_name = opponent.name;
@@ -213,6 +226,12 @@
                 $('#customer_name_p').html(customer_name);
                 $('#customer_address_p').html(complete_address);
                 $('#customer_city_p').html(customer_city);
+
+				$('#customer_name_p_input').val(customer_name);
+
+				$('#customer_name_p').on('click', function(){
+					navigator.clipboard.writeText(customer_name);
+				})
 
                 var invoice = response.invoice;
                 var name = invoice.name;

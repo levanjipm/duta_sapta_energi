@@ -51,8 +51,12 @@ class Payable extends CI_Controller {
 	public function viewPayableBySupplierId()
 	{
 		$supplierId = $this->input->get('id');
+		$page		= $this->input->get("page");
+		$offset		= ($page - 1)* 10;
+
 		$this->load->model('Debt_model');
-		$data['items'] = $this->Debt_model->getPayableBySupplierId($supplierId);
+		$data['items'] = $this->Debt_model->getPayableBySupplierId($supplierId, $offset);
+		$data['pages']	= max(1, ceil($this->Debt_model->countPayableBySupplierId($supplierId)/10));
 
 		$this->load->model('Supplier_model');
 		$data['supplier'] = $this->Supplier_model->getById($supplierId);
