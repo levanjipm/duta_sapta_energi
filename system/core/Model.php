@@ -54,7 +54,9 @@ class CI_Model {
 	 * @link	https://github.com/bcit-ci/CodeIgniter/issues/5332
 	 * @return	void
 	 */
-	public function __construct() {}
+	public function __construct() {
+		$this->db->reconnect();
+	}
 
 	/**
 	 * __get magic
