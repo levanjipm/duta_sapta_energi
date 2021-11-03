@@ -12,7 +12,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	<script src='<?= base_url('third_party/Jquery/jquery-ui.js') ?>'></script>
 	<link rel='stylesheet' href='<?= base_url('third_party/Jquery/jquery-ui.css') ?>'>
 	<script src='<?= base_url('third_party/numeral/numeral.js') ?>'></script>
-	<script src='<?= base_url('third_party/jquery/jquery.inputmask.bundle.js') ?>'></script>
+	<script src='<?= base_url('third_party/Jquery/jquery.inputmask.bundle.js') ?>'></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
 	<link rel="stylesheet" href='<?= base_url('css/style.css') ?>'>
 	<link rel="stylesheet" href='<?= base_url('css/button_style.css') ?>'>
@@ -20,7 +20,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	<link rel="stylesheet" href='<?= base_url('css/input_style.css') ?>'>
 	<link rel="stylesheet" href='<?= base_url('css/loader_style.css') ?>'>
 	<script src='<?= base_url('js/header.js') ?>'></script>
-	<script src='<?= base_url('third_party/validation/dist/jquery.validate.min.js') ?>'></script>
+	<script src='<?= base_url('third_party/validation/dist/Jquery.validate.min.js') ?>'></script>
 	<style>
 		.selfCheckIn{
 			width:50px;
