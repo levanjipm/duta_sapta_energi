@@ -83,7 +83,7 @@ class Debt extends CI_Controller {
 		$this->load->model("Supplier_model");
 		$data['supplier']	= $this->Supplier_model->getById($supplierId);
 
-		$this->load->view('accounting/debt/pendingDocument', $data);
+		$this->load->view('accounting/Debt/pendingDocument', $data);
 	}
 	
 	public function getUninvoicedDocumentsBySupplierId()
@@ -244,7 +244,7 @@ class Debt extends CI_Controller {
 		$this->load->view('head');
 		$this->load->view('accounting/header', $data);
 
-		$this->load->view('accounting/debt/confirmDashboard');
+		$this->load->view('accounting/Debt/confirmDashboard');
 	}
 
 	public function archiveDashboard()
@@ -260,7 +260,7 @@ class Debt extends CI_Controller {
 		$this->load->view('accounting/header', $data);
 		$this->load->model('Debt_model');
 		$data['years'] = $this->Debt_model->getYears();
-		$this->load->view('accounting/debt/archiveDashboard', $data);
+		$this->load->view('accounting/Debt/archiveDashboard', $data);
 	}
 
 	public function loadForm()
