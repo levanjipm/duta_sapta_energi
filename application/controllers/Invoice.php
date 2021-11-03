@@ -102,7 +102,7 @@ class Invoice extends CI_Controller {
 					
 					$data['invoice'] = $this->Invoice_model->getById($resultInsertInvoice);
 					$this->load->view('head');
-					$this->load->view('accounting/invoice/printRetailInvoice', $data);
+					$this->load->view('accounting/Invoice/printRetailInvoice', $data);
 
 				} else {
 					redirect(site_url('Invoice'));
