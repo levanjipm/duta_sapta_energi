@@ -20,7 +20,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	<link rel="stylesheet" href='<?= base_url('css/input_style.css') ?>'>
 	<link rel="stylesheet" href='<?= base_url('css/loader_style.css') ?>'>
 	<script src='<?= base_url('js/header.js') ?>'></script>
-	<script src='<?= base_url('third_party/validation/dist/Jquery.validate.min.js') ?>'></script>
+	<script src='<?= base_url('third_party/validation/dist/jquery.validate.min.js') ?>'></script>
 	<style>
 		.selfCheckIn{
 			width:50px;
