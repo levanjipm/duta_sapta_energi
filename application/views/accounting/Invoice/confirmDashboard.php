@@ -36,11 +36,9 @@
             </script>
 
             <label>Customer</label>
-            <p id='customer_name_p'></p>
-            <p id='customer_address_p'></p>
+            <p style='cursor:pointer' id='customer_name_p'></p>
+            <p style='cursor:pointer' id='customer_address_p'></p>
             <p id='customer_city_p'></p>
-
-			<input type='text' id='customer_name_p_input'>
 
             <label>Invoice</label>
             <p id='invoice_name_p'></p>
@@ -180,7 +178,6 @@
                 $('#invoice_id').val(n);
 				$('#deliveryOrderStatus').html("You are good to go.");
 				$("#confirmButton").attr('disabled', false);
-				$('#customer_name_p_input').hide();
                 var customer = response.customer;      
 				if(customer != null){
 					var customer_name = customer.name;
@@ -227,10 +224,12 @@
                 $('#customer_address_p').html(complete_address);
                 $('#customer_city_p').html(customer_city);
 
-				$('#customer_name_p_input').val(customer_name);
-
 				$('#customer_name_p').on('click', function(){
 					navigator.clipboard.writeText(customer_name);
+				})
+				
+				$('#customer_address_p').on('click', function(){
+					navigator.clipboard.writeText(complete_address + ", " + customer_city);
 				})
 
                 var invoice = response.invoice;
@@ -296,10 +295,19 @@
 						var discount = parseFloat(item.discount);
 						var net_price = price_list * (100 - discount) / 100;
 						var total_price = quantity * net_price;
+						var id		= item.id;
 
 						invoiceValue += total_price;
 
-						$('#deliveryOrderTableContent').append("<tr><td>" + reference + "</td><td>" + name + "</td><td>Rp. " + numeral(price_list).format('0,0.00') + "</td><td>" + numeral(discount).format('0,0.00') + "%</td><td>Rp. " + numeral(net_price).format('0,0.00') + "</td><td>" + numeral(quantity).format('0,0') + "</td><td>Rp. " + numeral(total_price).format('0,0.00') + "</td></tr>");
+						$('#deliveryOrderTableContent').append("<tr><td style='cursor:pointer' id='reference-" + id + "'>" + reference + "</td><td>" + name + "</td><td>Rp. " + numeral(price_list).format('0,0.00') + "</td><td>" + numeral(discount).format('0,0.00') + "%</td><td  style='cursor:pointer'  id='price-" + id + "'>Rp. " + numeral(net_price).format('0,0.00') + "</td><td>" + numeral(quantity).format('0,0') + "</td><td>Rp. " + numeral(total_price).format('0,0.00') + "</td></tr>");
+
+						$('#reference-' + id).on('click', function(){
+							navigator.clipboard.writeText(reference);
+						})
+
+						$('#price-' + id).on('click', function(){
+							navigator.clipboard.writeText((net_price / 1.1).toFixed(3));
+						})
 					});
 
 					$('#deliveryOrderTableContent').append("<tr><td colspan='4'></td><td colspan='2'><strong>Sub Total</strong></td><td>Rp. " + numeral(invoiceValue).format('0,0.00') + "</td></tr><tr><td colspan='4'></td><td colspan='2'><strong>Discount</strong></td><td>Rp. " + numeral(invoiceDiscount).format('0,0.00') + "</td></tr><tr><td colspan='4'></td><td colspan='2'><strong>Delivery</strong></td><td>Rp. " + numeral(invoiceDelivery).format('0,0.00') + "</td></tr><tr><td colspan='4'></td><td colspan='2'><strong>Total</strong></td><td>Rp. " + numeral(invoiceValue - invoiceDiscount + invoiceDelivery).format('0,0.00') + "</td></tr>");
