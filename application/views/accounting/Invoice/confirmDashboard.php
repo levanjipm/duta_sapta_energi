@@ -229,7 +229,7 @@
 				})
 				
 				$('#customer_address_p').on('click', function(){
-					navigator.clipboard.writeText(complete_address + ", " + customer_city);
+					navigator.clipboard.writeText(complete_address + "\n" + customer_city);
 				})
 
                 var invoice = response.invoice;
