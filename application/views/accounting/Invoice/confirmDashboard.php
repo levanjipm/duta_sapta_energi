@@ -299,7 +299,7 @@
 
 						invoiceValue += total_price;
 
-						$('#deliveryOrderTableContent').append("<tr><td style='cursor:pointer' id='reference-" + id + "'>" + reference + "</td><td>" + name + "</td><td>Rp. " + numeral(price_list).format('0,0.00') + "</td><td>" + numeral(discount).format('0,0.00') + "%</td><td  style='cursor:pointer'  id='price-" + id + "'>Rp. " + numeral(net_price).format('0,0.00') + "</td><td>" + numeral(quantity).format('0,0') + "</td><td>Rp. " + numeral(total_price).format('0,0.00') + "</td></tr>");
+						$('#deliveryOrderTableContent').append("<tr><td style='cursor:pointer' id='reference-" + id + "'>" + reference + "</td><td>" + name + "</td><td>Rp. " + numeral(price_list).format('0,0.00') + "</td><td>" + numeral(discount).format('0,0.00') + "%</td><td style='cursor:pointer'  id='price-" + id + "'>Rp. " + numeral(net_price).format('0,0.00') + "</td><td style='cursor:pointer'  id='quantity-" + id + "'>" + numeral(quantity).format('0,0') + "</td><td>Rp. " + numeral(total_price).format('0,0.00') + "</td></tr>");
 
 						$('#reference-' + id).on('click', function(){
 							navigator.clipboard.writeText(reference);
@@ -307,6 +307,10 @@
 
 						$('#price-' + id).on('click', function(){
 							navigator.clipboard.writeText((net_price / 1.1).toFixed(3));
+						})
+
+						$('#quantity-' + id).on('click', function(){
+							navigator.clipboard.writeText(quantity);
 						})
 					});
 
