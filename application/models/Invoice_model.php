@@ -1721,36 +1721,23 @@ class Invoice_model extends CI_Model {
 				");
 			} else if($aspect == 5){
 				$query		= $this->db->query("
-					SELECT brand.name, COALESCE(invoiceTable.value,0) as value, COALESCE(returnTable.value,0) as returned
+					SELECT brand.name, name(invoiceTable.value,0) as value, COALESCE(returnTable.value,0) as returned
 					FROM brand
 					LEFT JOIN (
-						SELECT SUM(delivery_order.quantity * price_list.price_list * ( 100 - sales_order.discount ) / 100) AS value, item.brand
+						SELECT item.brand, SUM(price_list.price_list * (100 - sales_order.discount) * delivery_order.quantity / 100) as value
 						FROM delivery_order
+						JOIN sales_order ON sales_order.id = delivery_order.sales_order_id
 						JOIN code_delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order.id
-						JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
+						JOIN invoice ON code_delivery_order.invoice_id = invoice.id
 						JOIN price_list ON sales_order.price_list_id = price_list.id
 						JOIN item ON price_list.item_id = item.id
-						JOIN (
-							SELECT invoice.id, code_sales_order.customer_id
-							FROM invoice
-							JOIN code_delivery_order ON invoice.id = code_delivery_order.invoice_id
-							JOIN (
-								SELECT delivery_order.code_delivery_order_id, sales_order.code_sales_order_id
-								FROM delivery_order
-								JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
-								GROUP BY sales_order.code_sales_order_id
-							) deliverySales
-							ON code_delivery_order.id = deliverySales.code_delivery_order_id
-							JOIN code_sales_order ON deliverySales.code_sales_order_id = code_sales_order.id
-							WHERE invoice.is_confirm = 1
-						) invoiceCustomer
-						ON code_delivery_order.invoice_id = invoiceCustomer.id
-						JOIN customer ON customer.id = invoiceCustomer.customer_id
-						WHERE MONTH(code_delivery_order.date) = $month
-						AND YEAR(code_delivery_order.date) = $year
+						WHERE MONTH(invoice.date) = '$month' 
+						AND YEAR(invoice.date) = '$year'
+						AND invoice.is_confirm = 1
+						AND code_delivery_order.is_sent = 1
 						GROUP BY item.brand
 					) invoiceTable
-					ON invoiceTable.brand = brand.id
+					ON invoiceTable.type = brand.id
 					LEFT JOIN (
 						SELECT item.brand, COALESCE(SUM(sales_return.price * sales_return_received.quantity),0) as value
 						FROM sales_return_received
@@ -1761,11 +1748,10 @@ class Invoice_model extends CI_Model {
 						JOIN price_list ON sales_order.price_list_id = price_list.id
 						JOIN item ON price_list.item_id = item.id
 						WHERE code_sales_return_received.is_confirm = '1'
-						AND MONTH(code_sales_return_received.date) = '$month' 
-						AND YEAR(code_sales_return_received.date) = '$year'
-						GROUP BY item.type
+						AND MONTH(code_sales_return_received.date) = '$month' AND YEAR(code_sales_return_received.date) = '$year'
+						GROUP BY item.brand
 					) returnTable
-					ON returnTable.brand = brand.id
+					ON returnTable.type = brand.id
 					ORDER BY brand.name ASC
 				");
 			}
