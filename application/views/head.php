@@ -21,6 +21,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	<link rel="stylesheet" href='<?= base_url('css/loader_style.css') ?>'>
 	<script src='<?= base_url('js/header.js') ?>'></script>
 	<script src='<?= base_url('third_party/validation/dist/jquery.validate.min.js') ?>'></script>
+	<meta name="theme-color" content="#E19B3C">
+	<link rel="icon" 
+      type="image/png" 
+      href="<?= base_url() ?>/assets/Logo_light_small.png">
 	<style>
 		.selfCheckIn{
 			width:50px;

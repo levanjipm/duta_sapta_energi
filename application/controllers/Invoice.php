@@ -69,7 +69,7 @@ class Invoice extends CI_Controller {
 		$result = $this->Delivery_order_detail_model->getByCodeDeliveryOrderId($deliveryOrderId);
 		$data['details'] = $result;
 		
-		$this->load->view('accounting/invoice/createRetailInvoice', $data);
+		$this->load->view('accounting/Invoice/createRetailInvoice', $data);
 	}
 	
 	public function printRetailInvoice()
@@ -111,7 +111,7 @@ class Invoice extends CI_Controller {
 				$this->load->model('Invoice_model');
 				$data['invoice'] = $this->Invoice_model->getById($deliveryOrder->invoice_id);
 				$this->load->view('head');
-				$this->load->view('accounting/invoice/printRetailInvoice', $data);
+				$this->load->view('accounting/Invoice/printRetailInvoice', $data);
 			}
 		}
 	}
@@ -145,7 +145,7 @@ class Invoice extends CI_Controller {
 	
 			$this->load->model('Delivery_order_detail_model');
 			$data['details'] = $this->Delivery_order_detail_model->getByCodeDeliveryOrderId($deliveryOrderId);
-			$this->load->view('accounting/invoice/createCoorporateInvoice', $data);			
+			$this->load->view('accounting/Invoice/createCoorporateInvoice', $data);			
 		}
 	}
 	
@@ -215,7 +215,7 @@ class Invoice extends CI_Controller {
 		$data['items'] = $this->Delivery_order_detail_model->getByCodeDeliveryOrderId($deliveryOrderId);
 
 		$this->load->view('head');
-		$this->load->view('accounting/invoice/printCoorporateInvoice', $data);
+		$this->load->view('accounting/Invoice/printCoorporateInvoice', $data);
 	}
 
 	public function convertNumberToWords()
@@ -258,7 +258,7 @@ class Invoice extends CI_Controller {
 		$this->load->model('Invoice_model');
 		$data['years'] = $this->Invoice_model->getYears();
 		
-		$this->load->view('accounting//invoice/archiveDashboard', $data);
+		$this->load->view('accounting/Invoice/archiveDashboard', $data);
 	}
 	
 	public function getUnconfirmedinvoice()
