@@ -55,7 +55,6 @@ class CI_Model {
 	 * @return	void
 	 */
 	public function __construct() {
-		$this->db->reconnect();
 	}
 
 	/**
