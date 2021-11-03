@@ -2,7 +2,7 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 
 class Attendance_model extends CI_Model {
-	private $table_attendance = 'Attendance_list';
+	private $table_attendance = 'attendance_list';
 		
 		public $id;
 		public $user_id;
