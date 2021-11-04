@@ -22,7 +22,7 @@ class CustomerSales extends CI_Controller {
 			
 			$this->load->view('head');
 			$this->load->view('sales/header', $data);
-			$this->load->view('sales/customer/assignSalesDashboard');
+			$this->load->view('sales/Customer/assignSalesDashboard');
 		} else {
 			redirect(site_url("Welcome"));
 		}
@@ -44,7 +44,7 @@ class CustomerSales extends CI_Controller {
 		$sales			= $this->input->get('sales');
 		$data['sales']		= $this->User_model->getById($sales);
 		
-		$this->load->view('sales/customer/assignSalesForm', $data);
+		$this->load->view('sales/Customer/assignSalesForm', $data);
 	}
 
 	public function getBySales()
