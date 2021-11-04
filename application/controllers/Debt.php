@@ -380,7 +380,7 @@ class Debt extends CI_Controller {
 		
 		$this->load->view('head');
 		$this->load->view('accounting/header', $data);
-		$this->load->view('accounting/journal/purchaseDashboard');
+		$this->load->view('accounting/Journal/purchaseDashboard');
 	}
 
 	public function getValueByMonthYearDaily()
