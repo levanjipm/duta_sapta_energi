@@ -20,7 +20,7 @@ class Purchase_order extends CI_Controller {
 		
 		$this->load->view('head');
 		$this->load->view('purchasing/header', $data);
-		$this->load->view('Purchasing/PurchaseOrder/confirmDashboard');
+		$this->load->view('purchasing/PurchaseOrder/confirmDashboard');
 	}
 	
 	public function createDashboard()
@@ -39,7 +39,7 @@ class Purchase_order extends CI_Controller {
 		$guid	= $this->Purchase_order_model->create_guid();
 		
 		$data['guid'] = $guid;
-		$this->load->view('Purchasing/PurchaseOrder/createDashboard', $data);
+		$this->load->view('purchasing/PurchaseOrder/createDashboard', $data);
 	}
 	
 	public function insertItem()
