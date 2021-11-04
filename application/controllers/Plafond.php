@@ -14,7 +14,7 @@ class Plafond extends CI_Controller {
 		$this->load->view('head');
 		$this->load->view('sales/header', $data);
 		
-		$this->load->view('Sales/Plafond/plafond_dashboard');
+		$this->load->view('sales/Plafond/plafond_dashboard');
 	}
 
 	public function confirmDashboard()
@@ -32,7 +32,7 @@ class Plafond extends CI_Controller {
 			
 			$this->load->view('head');
 			$this->load->view('sales/header', $data);
-			$this->load->view('Sales/Plafond/plafond_status_dashboard');
+			$this->load->view('sales/Plafond/plafond_status_dashboard');
 		}	
 	}
 	
@@ -134,7 +134,7 @@ class Plafond extends CI_Controller {
 		
 		$data['status']			= 'success';
 		
-		$this->load->view('Sales/Plafond/plafond_confirm_result', $data);
+		$this->load->view('sales/Plafond/plafond_confirm_result', $data);
 	}
 
 	public function failedConfirm()
@@ -150,7 +150,7 @@ class Plafond extends CI_Controller {
 		$this->load->view('sales/header', $data);
 		$data['status']			= 'failed';
 		
-		$this->load->view('Sales/Plafond/plafond_confirm_result', $data);
+		$this->load->view('sales/Plafond/plafond_confirm_result', $data);
 	}
 
 	public function successSubmission($submission_id)
@@ -175,7 +175,7 @@ class Plafond extends CI_Controller {
 		
 		$data['status']			= 'success';
 		
-		$this->load->view('Sales/Plafond/plafond_check_out', $data);
+		$this->load->view('sales/Plafond/plafond_check_out', $data);
 	}
 	
 	public function failedSubmission()
@@ -192,7 +192,7 @@ class Plafond extends CI_Controller {
 		
 		$data['status']			= 'failed';
 		
-		$this->load->view('Sales/Plafond/plafond_check_out', $data);
+		$this->load->view('sales/plafond/plafond_check_out', $data);
 	}
 	
 	public function showUnconfirmed()
