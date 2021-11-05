@@ -95,7 +95,7 @@ class Income extends CI_Controller {
 		$this->load->view('head');
 		$this->load->view('finance/header', $data);
 
-		$this->load->view('finance/income/reportDashboard');
+		$this->load->view('finance/Income/reportDashboard');
 	}
 
 	public function getItemsByClass()

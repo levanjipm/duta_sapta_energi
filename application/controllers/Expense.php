@@ -57,7 +57,7 @@ class Expense extends CI_Controller {
 		$this->load->model('Petty_cash_model');
 		$data['years']	= $this->Petty_cash_model->show_years();
 		
-		$this->load->view('finance/expense/reportDashboard', $data);
+		$this->load->view('finance/Expense/reportDashboard', $data);
 	}
 	
 	public function getById()
