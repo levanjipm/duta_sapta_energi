@@ -380,7 +380,7 @@ class Sales_order extends CI_Controller {
 		$this->load->view('head');
 		$this->load->view('sales/header', $data);
 
-		$this->load->view('sales/salesOrder/closeDashboard');
+		$this->load->view('sales/SalesOrder/closeDashboard');
 	}
 
 	public function closeSalesOrderInput()
