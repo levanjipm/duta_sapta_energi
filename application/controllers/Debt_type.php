@@ -22,7 +22,7 @@ class Debt_type extends CI_Controller {
 		$this->load->view('head');
 		$this->load->view('accounting/header', $data);
 
-		$this->load->view('accounting/debt/typeDashboard');
+		$this->load->view('accounting/Debt/typeDashboard');
 	}
 
 	public function getItems()
