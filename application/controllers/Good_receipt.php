@@ -19,9 +19,9 @@ class Good_receipt extends CI_Controller {
 		$data['departments']	= $this->Authorization_model->getByUserId($user_id);
 		
 		$this->load->view('head');
-		$this->load->view('Inventory/header', $data);
+		$this->load->view('inventory/header', $data);
 		
-		$this->load->view('Inventory/goodReceipt/goodReceiptCreate');
+		$this->load->view('inventory/goodReceipt/goodReceiptCreate');
 	}
 
 	public function confirmDashboard()
@@ -35,9 +35,9 @@ class Good_receipt extends CI_Controller {
 			$data['departments']	= $this->Authorization_model->getByUserId($user_id);
 			
 			$this->load->view('head');
-			$this->load->view('Inventory/header', $data);
+			$this->load->view('inventory/header', $data);
 
-			$this->load->view('Inventory/goodReceipt/goodReceiptConfirm');
+			$this->load->view('inventory/goodReceipt/goodReceiptConfirm');
 		} else {
 			redirect(site_url("Inventory"));
 		}		
@@ -173,12 +173,12 @@ class Good_receipt extends CI_Controller {
 		$data['departments']	= $this->Authorization_model->getByUserId($user_id);
 		
 		$this->load->view('head');
-		$this->load->view('Inventory/header', $data);
+		$this->load->view('inventory/header', $data);
 		
 		$this->load->model('Good_receipt_model');
 		$data['years']	= $this->Good_receipt_model->show_years();
 		
-		$this->load->view('Inventory/goodReceipt/goodReceiptArchive', $data);
+		$this->load->view('inventory/goodReceipt/goodReceiptArchive', $data);
 	}
 	
 	public function view_archive()
