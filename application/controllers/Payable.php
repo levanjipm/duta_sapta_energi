@@ -122,7 +122,7 @@ class Payable extends CI_Controller {
 
 		$this->load->model('Supplier_model');
 		$data['supplier'] = $this->Supplier_model->getById($supplierId);
-		$this->load->view('accounting/payable/supplierPayable', $data);
+		$this->load->view('accounting/Payable/supplierPayable', $data);
 	}
 
 	public function viewFinanceBySupplierId($supplierId)
@@ -139,7 +139,7 @@ class Payable extends CI_Controller {
 
 		$this->load->model('Supplier_model');
 		$data['supplier'] = $this->Supplier_model->getById($supplierId);
-		$this->load->view('finance/payable/supplierPayable', $data);
+		$this->load->view('finance/Payable/supplierPayable', $data);
 	}
 
 
@@ -218,7 +218,7 @@ class Payable extends CI_Controller {
 
 		$this->load->model("Opponent_model");
 		$data['opponent']		= $this->Opponent_model->getById($opponentId);
-		$this->load->view('accounting/payable/opponentPayable', $data);
+		$this->load->view('accounting/Payable/opponentPayable', $data);
 	}
 
 	public function viewFinanceByOpponentId($opponentId)
