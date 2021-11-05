@@ -21,7 +21,7 @@ class Good_receipt extends CI_Controller {
 		$this->load->view('head');
 		$this->load->view('inventory/header', $data);
 		
-		$this->load->view('inventory/goodReceipt/goodReceiptCreate');
+		$this->load->view('inventory/GoodReceipt/goodReceiptCreate');
 	}
 
 	public function confirmDashboard()
@@ -37,7 +37,7 @@ class Good_receipt extends CI_Controller {
 			$this->load->view('head');
 			$this->load->view('inventory/header', $data);
 
-			$this->load->view('inventory/goodReceipt/goodReceiptConfirm');
+			$this->load->view('inventory/GoodReceipt/goodReceiptConfirm');
 		} else {
 			redirect(site_url("Inventory"));
 		}		
@@ -178,7 +178,7 @@ class Good_receipt extends CI_Controller {
 		$this->load->model('Good_receipt_model');
 		$data['years']	= $this->Good_receipt_model->show_years();
 		
-		$this->load->view('inventory/goodReceipt/goodReceiptArchive', $data);
+		$this->load->view('inventory/GoodReceipt/goodReceiptArchive', $data);
 	}
 	
 	public function view_archive()
