@@ -305,7 +305,7 @@ class Customer_model extends CI_Model {
 				'city' 				=> $this->input->post('city'),
 				'kecamatan'			=> $this->input->post('kecamatan'),
 				'kelurahan'			=> $this->input->post('kelurahan'),
-				'provinsi'			=> $this->input->post('kelurahan'),
+				'provinsi'			=> $this->input->post('provinsi'),
 				'latitude'			=> ($this->input->post('latitude') == "" || $this->input->post('latitude') == 0)? null : $this->input->post('latitude'),
 				'longitude'			=> ($this->input->post('longitude') == "" || $this->input->post('longitude') == 0)? null : $this->input->post('longitude'),
 				'postal_code' 		=> $this->input->post('postal'),

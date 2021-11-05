@@ -368,7 +368,7 @@
 				$('#city_edit').val(city);
 				$('#visit_edit').val(visit);
 				$('#ward_edit').val(kecamatan);
-				$('#district_edit').val(provinsi);
+				$('#district_edit').val(kelurahan);
 				$('#province_edit').val(provinsi);
 			},
 			complete:function(){
@@ -437,7 +437,7 @@
 				$.each(customers, function(index, customer){
 					var complete_address		= '';
 					var customer_name			= customer.name;
-					complete_address		+= customer.address;
+					complete_address			+= customer.address;
 					var customer_city			= customer.city;
 					var customer_number			= customer.number;
 					var customer_rt				= customer.rt;
