@@ -85,7 +85,7 @@ class Bank extends CI_Controller {
 				$data['type'] = "Customer";
 			}
 			
-			$this->load->view('accounting/bank/assignExpense', $data);
+			$this->load->view('accounting/Bank/assignExpense', $data);
 		} else {
 			redirect(site_url('Bank/assignDashboard'));
 		}
@@ -123,7 +123,7 @@ class Bank extends CI_Controller {
 				$data['type'] = "Customer";
 			}
 			
-			$this->load->view('accounting/bank/assignIncome', $data);
+			$this->load->view('accounting/Bank/assignIncome', $data);
 		} else {
 			redirect(site_url('Bank/assignDashboard'));
 		}

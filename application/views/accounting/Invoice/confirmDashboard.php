@@ -306,7 +306,7 @@
 						})
 
 						$('#price-' + id).on('click', function(){
-							navigator.clipboard.writeText((net_price / 1.1).toFixed(3));
+							navigator.clipboard.writeText((net_price / 1.1).toFixed(3).toString().replace(".", ","));
 						})
 
 						$('#quantity-' + id).on('click', function(){
