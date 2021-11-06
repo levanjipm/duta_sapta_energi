@@ -18,7 +18,7 @@
 		$complete_address	.= ' No. ' . $customer_number;
 	}
 	
-	if($customer_block != NULL){
+	if($customer_block != NULL && $customer_block != "000" & $customer_block != ""){
 		$complete_address	.= ' Blok ' . $customer_block;
 	}
 	
@@ -33,6 +33,9 @@
 	if($customer_postal != NULL){
 		$complete_address	.= ', ' . $customer_postal;
 	}
+
+	$complete_address .= " , Kel. " . $customer->kelurahan;
+	$complete_address .= " , Kec. " . $customer->kecamatan;
 ?>
 <head>
 	<title>INV.DSE<?= $delivery_order_name ?> <?= $customer_name ?> <?= $customer_city ?></title>

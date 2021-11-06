@@ -27,7 +27,7 @@
 		$complete_address	.= ' No. ' . $customer_number;
 	}
 	
-	if($customer_block != NULL && $customer_block != "000"){
+	if($customer_block != NULL && $customer_block != "000" && $customer_block != NULL){
 		$complete_address	.= ' Blok ' . $customer_block;
 	}
 	
@@ -42,6 +42,9 @@
 	if($customer_postal != NULL){
 		$complete_address	.= ', ' . $customer_postal;
 	}
+
+	$complete_address .= " , Kel. " . $customer->kelurahan;
+	$complete_address .= " , Kec. " . $customer->kecamatan;
 ?>
 <title><?= $invoice->name . " - " . $customer_name ?></title>
 <style>

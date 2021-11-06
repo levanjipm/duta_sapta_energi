@@ -37,7 +37,7 @@
 	$complete_address		= $customer->address;
 	$complete_address		.= ' No. ' . $customer->number;
 	
-	if($customer->block != '' && $customer->block != '000'){
+	if($customer->block != '' && $customer->block != '000' && $customer->block != NULL){
 		$complete_address	.= ' Block ' . $customer->block;
 	}
 	
@@ -48,6 +48,9 @@
 	if($customer->rw != '' && $customer->rw != '000'){
 		$complete_address	.= ' RW ' . $customer->rw;
 	}
+
+	$complete_address .= " , Kel. " . $customer->kelurahan;
+	$complete_address .= " , Kec. " . $customer->kecamatan;
 ?>
 <div class='row' style='margin:0' id='printable'>	
 	<div class='col-12' style='background-color:white;padding:20px'>
