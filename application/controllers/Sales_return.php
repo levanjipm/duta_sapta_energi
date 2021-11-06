@@ -21,7 +21,7 @@ class Sales_return extends CI_Controller {
 		
 		$this->load->view('head');
 		$this->load->view('sales/header', $data);
-		$this->load->view('sales/return/createDashboard');
+		$this->load->view('sales/Return/createDashboard');
 	}
 	
 	public function authenticate()
@@ -137,7 +137,7 @@ class Sales_return extends CI_Controller {
 		
 		$this->load->view('head');
 		$this->load->view('sales/header', $data);
-		$this->load->view('sales/return/confirmDashboard');
+		$this->load->view('sales/Return/confirmDashboard');
 	}
 
 	public function getUnconfirmedDocuments()

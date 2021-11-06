@@ -70,7 +70,7 @@
 								<td><?= number_format($item['quantity'], 0) ?></td>
 								<td><?= number_format($item['returned']) ?></td>
 								<td>
-									<input type='number' class='form-control' name='return_price[<?= $item['id'] ?>]' value='0' min='1'>
+									<input type='number' class='form-control' name='return_price[<?= $item['id'] ?>]' value='0'>
 									<p>Rp. <?= number_format($net_price,2) ?></p>
 								</td>
 								<td><input type='number' class='form-control' name='return_quantity[<?= $item['id'] ?>]' max='<?= $item['quantity'] - $item['returned'] ?>' value='0' min='0' onchange='calculate_total()'></td>
