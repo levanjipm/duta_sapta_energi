@@ -190,6 +190,7 @@
 					var customer_postal = customer.postal;
 					var customer_kelurahan = customer.kelurahan;
 					var customer_kecamatan = customer.kecamatan;
+					var customer_npwp	= (customer.npwp == null) ? "00.000.000.0-000.000" : customer.npwp;
                 
 					if(customer_number != null){
 						complete_address	+= ' No. ' + customer_number;
@@ -213,11 +214,18 @@
 
 					complete_address += ", Kel. " + customer_kelurahan;
 					complete_address += ", Kec. " + customer_kecamatan;
+
+					$('#customer_npwp_p').html(customer_npwp);
+					$('#customer_npwp_p').on('click', function(){
+						navigator.writeText(customer_npwp);
+					})
 				} else {
 					var opponent = response.opponent;
 					var customer_name = opponent.name;
 					var complete_address = opponent.description;
 					var customer_city = opponent.type;
+
+					$('#customer_npwp_p').html("");
 				}
 
                 $('#customer_name_p').html(customer_name);
