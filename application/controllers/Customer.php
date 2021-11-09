@@ -319,6 +319,6 @@ class Customer extends CI_Controller {
 		$this->load->model("Area_model");
 		$data['areas']		= $this->Area_model->showAllItems();
 
-		$this->load->view('sales/customer/map', $data);
+		$this->load->view('sales/Customer/map', $data);
 	}
 }
