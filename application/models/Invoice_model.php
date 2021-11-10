@@ -2137,7 +2137,7 @@ class Invoice_model extends CI_Model {
 			return $result;
 		}
 
-		public function getIncompletedTransactionByCustomerUID($customerUID)
+		public function getIncompletedTransactionByCustomerUID($customerUID, $offset = 0, $limit = 10)
 		{
 			$query		= $this->db->query("
 				SELECT invoice.*, COALESCE(receivableTable.value,0) as paid
@@ -2167,9 +2167,44 @@ class Invoice_model extends CI_Model {
 				AND invoice.is_done = '0'
 				AND invoice.is_confirm = '1'
 				ORDER BY invoice.date ASC
+				LIMIT $limit OFFSET $offset
 			");
 
 			$result	= $query->result();
+			return $result;
+		}
+
+		public function countIncompletedTransactionByCustomerUID($customerUID){
+			$query		= $this->db->query("
+				SELECT invoice.id
+				FROM invoice
+				LEFT JOIN (
+					SELECT SUM(value) as value, invoice_id FROM receivable
+					GROUP BY invoice_id
+				) AS receivableTable
+				ON receivableTable.invoice_id = invoice.id
+				WHERE invoice.id IN (
+					SELECT DISTINCT(code_delivery_order.invoice_id) as id
+					FROM code_delivery_order
+					JOIN delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order.id
+					JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
+					JOIN code_sales_order ON sales_order.code_sales_order_id = code_sales_order.id
+					JOIN customer ON customer.id = code_sales_order.customer_id
+					WHERE customer.uid = '$customerUID'
+					UNION (
+						SELECT invoice.id 
+						FROM invoice
+						JOIN customer ON invoice.customer_id = customer.id
+						WHERE invoice.is_done = '0'
+						AND invoice.is_confirm = '1'
+						AND customer.uid = '$customerUID'						
+					)
+				)
+				AND invoice.is_done = '0'
+				AND invoice.is_confirm = '1'
+			");
+
+			$result	= $query->num_rows();
 			return $result;
 		}
 

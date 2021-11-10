@@ -16,6 +16,7 @@ class Api extends CI_Controller {
         header('Access-Control-Allow-Origin: *');
         header("Access-Control-Allow-Methods: *");
         header("Content-Type:application/json");
+        header("Access-Control-Allow-Headers: Content-Type, Content-Length, Accept-Encoding");
 
         $postdata = file_get_contents("php://input");
         $request        = json_decode($postdata);
@@ -33,20 +34,41 @@ class Api extends CI_Controller {
 
             echo 0;
         } else {
+            $completeAddress = "";
+            $completeAddress .= $result->address;
+
+            if($result->number != NULL){
+                $completeAddress	.= ' No. ' . $result->number;
+            }
+            
+            if($result->block != NULL && $result->block != "000" && $result->block != ""){
+                $completeAddress	.= ' Blok ' . $result->block;
+            }
+        
+            if($result->rt != '000'){
+                $completeAddress	.= ' RT ' . $result->rt;
+            }
+            
+            if($result->rw != '000' && $result->rw != '000'){
+                $completeAddress	.= ' /RW ' . $result->rw;
+            }
+            
+            if($result->postal_code != NULL){
+                $completeAddress	.= ', ' . $result->postal_code;
+            }
+
+            $completeAddress .= ", Kel. " . $result->kelurahan;
+            $completeAddress .= ", Kec. " . $result->kecamatan;
             $response        = array(
                 "status" => "success",
                 "message" => "Successfully logged in.",
                 "user" => array(
                     "name" => $result->name,
-                    "address" => $result->address,
-                    "number" => $result->number,
-                    "block" => $result->block,
-                    "rt" => $result->rt,
-                    "rw" => $result->rw,
+                    "address" => $completeAddress,
                     "pic" => $result->pic_name,
                     "city" => $result->city,
-                    "postal_code" => $result->postal_code,
-                    "phone_number" => $result->phone_number
+                    "phone_number" => $result->phone_number,
+                    "uid" => $result->uid
                 )
             );
 
@@ -61,16 +83,14 @@ class Api extends CI_Controller {
         header('Access-Control-Allow-Origin: *');
         header("Access-Control-Allow-Methods: *");
         header("Content-Type:application/json");
+        header("Access-Control-Allow-Headers: Content-Type, Content-Length, Accept-Encoding");
 
-        $postdata = file_get_contents("php://input");
-        $this->load->model("Invoice_model");
-        $result     = $this->Invoice_model->getBalanceByCustomerUID($postdata);
-        $value      = (float)$result->value - (float)$result->paid;
+        $headers = apache_request_headers();
+        $authorization = substr($headers['Authorization'], 7, 500);
+        $data       = $this->JWT->DecodeToken($authorization);
 
-        $this->load->model("Sales_order_model");
-        $pendingSalesOrders     = $this->Sales_order_model->countPendingByCustomerUID($postdata);
-        $data['balance']    = $value;
-        $data['pending']    = $pendingSalesOrders;
+        $result           = array();
+        $result['user']   = $data;
         echo json_encode($data);
     }
 
@@ -110,15 +130,48 @@ class Api extends CI_Controller {
         echo(json_encode($batch));
     }
 
-    public function getCustomerInvoices()
+    public function getCustomerInvoices($page = 1)
     {
         header('Access-Control-Allow-Origin: *');
         header("Access-Control-Allow-Methods: *");
         header("Content-Type:application/json");
+        header("Access-Control-Allow-Headers: Content-Type, Content-Length, Accept-Encoding");
 
-        $postdata = file_get_contents("php://input");
+        $headers = apache_request_headers();
+        $authorization = substr($headers['Authorization'], 7, 500);
+        $data       = $this->JWT->DecodeToken($authorization);
+        $uid        = $data['uid'];
+        $offset     = ($page - 1) * 10;
+
         $this->load->model("Invoice_model");
-        $data           = $this->Invoice_model->getIncompletedTransactionByCustomerUID($postdata);
+        $data           = $this->Invoice_model->getIncompletedTransactionByCustomerUID($uid, $offset);
+        echo(json_encode($data));
+    }
+
+    public function countCustomerInvoice(){
+        header('Access-Control-Allow-Origin: *');
+        header("Access-Control-Allow-Methods: *");
+        header("Content-Type:application/json");
+        header("Access-Control-Allow-Headers: Content-Type, Content-Length, Accept-Encoding");
+
+        $headers = apache_request_headers();
+        $authorization = substr($headers['Authorization'], 7, 500);
+        $data       = $this->JWT->DecodeToken($authorization);
+        $uid        = $data['uid'];
+
+        $this->load->model("Invoice_model");
+        $data           = $this->Invoice_model->countIncompletedTransactionByCustomerUID($uid);
+        echo $data;
+    }
+
+    public function getCustomerInvoiceById($id){
+        header('Access-Control-Allow-Origin: *');
+        header("Access-Control-Allow-Methods: *");
+        header("Content-Type:application/json");
+        header("Access-Control-Allow-Headers: Content-Type, Content-Length, Accept-Encoding");
+
+        $this->load->model("Invoice_model");
+        $data           = $this->Invoice_model->getById($id);
         echo(json_encode($data));
     }
 
