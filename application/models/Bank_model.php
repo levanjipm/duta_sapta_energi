@@ -853,6 +853,7 @@ class Bank_model extends CI_Model {
 			$level		= 0;
 			$status		= true;
 			$data		= array();
+			$idArray		= array();
 			while($status){
 				if($level == 0){
 					$query		= $this->db->query("
@@ -896,7 +897,6 @@ class Bank_model extends CI_Model {
 						break;
 					} else {
 						array_push($data, $result);
-						$idArray		= array();
 						array_push($idArray, $id);
 						$level++;
 					}
@@ -1102,5 +1102,36 @@ class Bank_model extends CI_Model {
 			}
 			$query			= $this->db->get($this->table_bank);
 			$result			= $query->num_rows();
+			return $result;
+		}
+
+		public function getCustomerPaymentsByCustomerUID($uid, $offset = 0)
+		{
+			$query			= $this->db->query("
+				SELECT bank_transaction.date, bank_transaction.value, bank_transaction.transaction, bank_transaction.id
+				FROM bank_transaction
+				JOIN customer ON bank_transaction.customer_id = customer.id
+				WHERE customer.uid = '$uid'
+				AND bank_transaction.bank_transaction_major IS NULL
+				ORDER BY bank_transaction.date DESC
+				LIMIT 10 OFFSET $offset
+			");
+
+			$result		= $query->result();
+			return $result;
+		}
+
+		public function countCustomerPaymentsByCustomerUID($uid)
+		{
+			$query			= $this->db->query("
+				SELECT bank_transaction.id
+				FROM bank_transaction
+				JOIN customer ON bank_transaction.customer_id = customer.id
+				WHERE customer.uid = '$uid'
+				AND bank_transaction.bank_transaction_major IS NULL
+			");
+
+			$result		= $query->num_rows();
+			return $result;
 		}
 }

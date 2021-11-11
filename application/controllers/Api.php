@@ -91,44 +91,60 @@ class Api extends CI_Controller {
 
         $result           = array();
         $result['user']   = $data;
-        echo json_encode($data);
-    }
-
-    public function getCustomerSalesHistory()
-    {
-        header('Access-Control-Allow-Origin: *');
-        header("Access-Control-Allow-Methods: *");
-        header("Content-Type:application/json");
-
-        $postdata = file_get_contents("php://input");
-        $this->load->model("Invoice_model");
-        $result       = $this->Invoice_model->getCustomerSalesHistory($postdata);
-
-        for($i = 0; $i < 12; $i++){
-			$month		= date('m', strtotime("-" . $i . "months"));
-			$year		= date('Y', strtotime("-" . $i . "months"));
-			$batchArray[$i] = array(
-				"label" => date("M Y", mktime(0,0,0,$month, 1, $year)),
-				"value" => 0
-			);
-		}
-
-		foreach($result as $data){
-			$month			= $data->month;
-            $year			= $data->year;
-            $value          = $data->value;
-
-            $date			= mktime(0,0,0, $month, 1, $year);
-            $today          = strtotime("now");
-            $datediff		= floor(($today - $date)/(30 * 60 * 60 * 24));
-
-            $batchArray[$datediff]['value'] = (float)$value;
-            continue;
-        }
         
-        $batch          = (object)$batchArray;
-        echo(json_encode($batch));
+        $this->load->model("Invoice_model");
+        $receivableArray          = $this->Invoice_model->getStatusByCustomerUID($data['uid']);
+        $result['overdue']  = 0;
+        $result['due']      = 0;
+        foreach($receivableArray as $receivableObject){
+            if($receivableObject->due == 1){
+                $result['overdue']        = (float)$receivableObject->value;
+            } else {
+                $result['due']              = (float)$receivableObject->value;
+            }
+        };
+
+        $this->load->model("Internal_bank_account_model");
+        $result['account']        = $this->Internal_bank_account_model->getShownItems();
+        echo json_encode($result);
     }
+    
+
+    // public function getCustomerSalesHistory()
+    // {
+    //     header('Access-Control-Allow-Origin: *');
+    //     header("Access-Control-Allow-Methods: *");
+    //     header("Content-Type:application/json");
+
+    //     $postdata = file_get_contents("php://input");
+    //     $this->load->model("Invoice_model");
+    //     $result       = $this->Invoice_model->getCustomerSalesHistory($postdata);
+
+    //     for($i = 0; $i < 12; $i++){
+	// 		$month		= date('m', strtotime("-" . $i . "months"));
+	// 		$year		= date('Y', strtotime("-" . $i . "months"));
+	// 		$batchArray[$i] = array(
+	// 			"label" => date("M Y", mktime(0,0,0,$month, 1, $year)),
+	// 			"value" => 0
+	// 		);
+	// 	}
+
+	// 	foreach($result as $data){
+	// 		$month			= $data->month;
+    //         $year			= $data->year;
+    //         $value          = $data->value;
+
+    //         $date			= mktime(0,0,0, $month, 1, $year);
+    //         $today          = strtotime("now");
+    //         $datediff		= floor(($today - $date)/(30 * 60 * 60 * 24));
+
+    //         $batchArray[$datediff]['value'] = (float)$value;
+    //         continue;
+    //     }
+        
+    //     $batch          = (object)$batchArray;
+    //     echo(json_encode($batch));
+    // }
 
     public function getCustomerInvoices($page = 1)
     {
@@ -148,6 +164,25 @@ class Api extends CI_Controller {
         echo(json_encode($data));
     }
 
+    public function getCompleteCustomerInvoices($page = 1)
+    {
+        header('Access-Control-Allow-Origin: *');
+        header("Access-Control-Allow-Methods: *");
+        header("Content-Type:application/json");
+        header("Access-Control-Allow-Headers: Content-Type, Content-Length, Accept-Encoding");
+
+        $headers = apache_request_headers();
+        $authorization = substr($headers['Authorization'], 7, 500);
+        $data       = $this->JWT->DecodeToken($authorization);
+        $uid        = $data['uid'];
+        $offset     = ($page - 1) * 10;
+
+        $this->load->model("Invoice_model");
+        $data['invoices']           = $this->Invoice_model->getCompleteTransactionByCustomerUID($uid, $offset);
+        $data['records']            = $this->Invoice_model->countCompleteTransactionByCustomerUID($uid);
+        echo(json_encode($data));
+    }
+
     public function countCustomerInvoice(){
         header('Access-Control-Allow-Origin: *');
         header("Access-Control-Allow-Methods: *");
@@ -164,30 +199,43 @@ class Api extends CI_Controller {
         echo $data;
     }
 
-    public function getCustomerInvoiceById($id){
+    public function getCustomerPayments($page = 1){
         header('Access-Control-Allow-Origin: *');
         header("Access-Control-Allow-Methods: *");
         header("Content-Type:application/json");
         header("Access-Control-Allow-Headers: Content-Type, Content-Length, Accept-Encoding");
 
-        $this->load->model("Invoice_model");
-        $data           = $this->Invoice_model->getById($id);
-        echo(json_encode($data));
+        $headers = apache_request_headers();
+        $authorization = substr($headers['Authorization'], 7, 500);
+        $data       = $this->JWT->DecodeToken($authorization);
+        $uid        = $data['uid'];
+        $offset     = ($page - 1) * 10;
+
+        $this->load->model("Bank_model");
+        $result['payments']       = $this->Bank_model->getCustomerPaymentsByCustomerUID($uid, $offset);
+        $result['records']        = $this->Bank_model->countCustomerPaymentsByCustomerUID($uid);
+        echo json_encode($result);
     }
 
-    public function getCustomerInvoiceHistory()
-    {
+    public function getInvoiceByName($name){
         header('Access-Control-Allow-Origin: *');
         header("Access-Control-Allow-Methods: *");
         header("Content-Type:application/json");
+        header("Access-Control-Allow-Headers: Content-Type, Content-Length, Accept-Encoding");
 
-        $postdata = file_get_contents("php://input");
-        $customerUID         = $postdata;
+        $headers = apache_request_headers();
+        $authorization = substr($headers['Authorization'], 7, 500);
+        $data       = $this->JWT->DecodeToken($authorization);
+        $uid        = $data['uid'];
         
         $this->load->model("Invoice_model");
-        $result       = $this->Invoice_model->getCustomerHistory($customerUID);
-        echo(json_encode($result));
+        $result['general']     = $this->Invoice_model->getInvoiceByName($name, $uid);
+        
+        $this->load->model("Delivery_order_detail_model");
+        $result['detail']       = $this->Delivery_order_detail_model->getByInvoiceId($result['general']->id);
+        echo json_encode($result);
     }
+
 
 	public function register()
 	{
