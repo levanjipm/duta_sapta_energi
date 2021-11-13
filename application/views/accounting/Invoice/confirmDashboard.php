@@ -38,6 +38,7 @@
             <label>Customer</label>
             <p style='cursor:pointer' id='customer_name_p'></p>
             <p style='cursor:pointer' id='customer_address_p'></p>
+			<p style='cursor:pointer' id='customer_npwp_p'></p>
             <p id='customer_city_p'></p>
 
             <label>Invoice</label>
@@ -190,7 +191,7 @@
 					var customer_postal = customer.postal;
 					var customer_kelurahan = customer.kelurahan;
 					var customer_kecamatan = customer.kecamatan;
-					var customer_npwp	= (customer.npwp == null) ? "00.000.000.0-000.000" : customer.npwp;
+					var customer_npwp	= (customer.npwp == null || customer.npwp == "") ? "00.000.000.0-000.000" : customer.npwp;
                 
 					if(customer_number != null){
 						complete_address	+= ' No. ' + customer_number;

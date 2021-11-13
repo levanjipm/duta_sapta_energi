@@ -100,6 +100,7 @@
 					<p><?= $customer_name ?></p>
 					<p><?= $complete_address ?></p>
 					<p><?= $customer_city ?></p>
+					<p style='margin-bottom:0'><?= $customer->uid ?></p>
 				</div>
 			</div>
 			<br><br>

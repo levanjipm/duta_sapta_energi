@@ -60,6 +60,8 @@
 		$customer_rw			= $item->rw;
 		$customer_postal		= $item->postal_code;
 		$customer_block			= $item->block;
+		$customer_kecamatan		= $item->kecamatan;
+		$customer_kelurahan		= $item->kelurahan;
 		
 		if($customer_number != NULL){
 			$complete_address	.= ' No. ' . $customer_number;
@@ -80,6 +82,9 @@
 		if($customer_postal != NULL){
 			$complete_address	.= ', ' . $customer_postal;
 		}
+
+		$complete_address		.= ", Kel. " . $customer_kelurahan;
+		$complete_address		.= ", Kec. " . $customer_kecamatan;
 ?>
 					<tr style='height:150px'>
 						<td style='width:25%'>

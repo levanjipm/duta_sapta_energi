@@ -234,6 +234,9 @@
 					var customer_postal		= item.postal_code;
 					var customer_pic		= item.pic_name;
 					var complete_address	= item.address;
+					var customer_kelurahan	= item.kelurahan;
+					var customer_kecamatan	= item.kecamatan;
+
 					if(customer_number != null && customer_number != ''){
 						complete_address	+= ' no. ' + customer_number;
 					};
@@ -249,6 +252,9 @@
 					if(customer_postal != ''){
 						complete_address += ', ' + customer_postal;
 					}
+
+					complete_address += ", Kel. " + customer_kelurahan;
+					complete_address += ", Kec. " + customer_kecamatan;
 
 					var lastVisited		= (item.lastVisited == null) ? "<i>Never</i>" : my_date_format(item.lastVisited);
 

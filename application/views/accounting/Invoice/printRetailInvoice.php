@@ -98,6 +98,7 @@
 				<p style="margin-bottom:0"><?= $customer_name ?></p>
 				<p style="margin-bottom:0"><?= $complete_address ?></p>
 				<p style="margin-bottom:0"><?= $customer_city ?></p>
+				<p style='margin-bottom:0'><?= $customer->uid ?></p>
 			</div>
 			<div class='col-xs-4'>
 				<label style="margin-bottom:0">Tanggal</label>

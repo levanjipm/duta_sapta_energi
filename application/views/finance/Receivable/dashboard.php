@@ -273,12 +273,14 @@
 				var customer_rw = customer.rw;
 				var customer_city = customer.city;
 				var customer_postal = customer.postal;
+				var customer_kelurahan		= customer.kelurahan;
+				var customer_kecamatan		= customer.kecamatan;
 				
 				if(customer_number != null){
 					complete_address	+= ' No. ' + customer_number;
 				}
 				
-				if(customer_block != null && customer_block != "000"){
+				if(customer_block != null && customer_block != "000" && customer_block != ""){
 					complete_address	+= ' Blok ' + customer_block;
 				}
 			
@@ -293,6 +295,9 @@
 				if(customer_postal != null){
 					complete_address	+= ', ' + customer_postal;
 				}
+
+				complete_address		+= ", Kel. " + customer_kelurahan;
+				complete_address		+= ", Kec. " + customer_kecamatan;
 				
 				$('#customer_name_p').html(customer_name);
 				$('#customer_address_p').html(complete_address);
