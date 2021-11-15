@@ -21,23 +21,23 @@ class Inventory_case extends CI_Controller {
 		$this->load->view('head');
 		$this->load->view('inventory/header', $data);
 		
-		$this->load->view('inventory/case/createDashboard');
+		$this->load->view('inventory/Case/createDashboard');
 	}
 
 	public function createDashboard($event)
 	{
 		switch($event){
 			case 'lost':
-				$this->load->view('inventory/case/case_lost_goods_dashboard');
+				$this->load->view('inventory/Case/case_lost_goods_dashboard');
 				break;
 			case 'found':
-				$this->load->view('inventory/case/case_found_goods_dashboard');
+				$this->load->view('inventory/Case/case_found_goods_dashboard');
 				break;
 			case 'dematerialized':
-				$this->load->view('inventory/case/case_dematerialized_goods_dashboard');
+				$this->load->view('inventory/Case/case_dematerialized_goods_dashboard');
 				break;
 			case 'materialized':
-				$this->load->view('inventory/case/case_materialized_goods_dashboard');
+				$this->load->view('inventory/Case/case_materialized_goods_dashboard');
 				break;
 			default:
 				redirect(site_url("Inventory_case"));
@@ -56,7 +56,7 @@ class Inventory_case extends CI_Controller {
 		$this->load->view('head');
 		$this->load->view('inventory/header', $data);
 		
-		$this->load->view('inventory/case/confirmDashboard');
+		$this->load->view('inventory/Case/confirmDashboard');
 	}
 
 	public function insertItem($event)

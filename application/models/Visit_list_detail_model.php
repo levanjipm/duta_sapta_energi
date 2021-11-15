@@ -79,7 +79,7 @@ class Visit_list_detail_model extends CI_Model {
 		public function getByCodeId($id)
 		{
 			$query			= $this->db->query("
-				SELECT visit_list.id, customer.name, customer.address, customer.number, customer.block, customer.rt, customer.rw, customer.postal_code, customer.city, visit_list.result, visit_list.note, customer.latitude, customer.longitude
+				SELECT visit_list.id, customer.name, customer.address, customer.number, customer.block, customer.rt, customer.rw, customer.postal_code, customer.city, customer.kecamatan, customer.kelurahan, visit_list.result, visit_list.note, customer.latitude, customer.longitude
 				FROM
 				visit_list
 				JOIN customer
