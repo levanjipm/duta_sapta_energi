@@ -157,7 +157,9 @@ class Petty_cash_model extends CI_Model {
 		
 		public function calculateBalance($month, $year, $offset = 0)
 		{
-			$date		= date('Y-m-d', mktime(1,1,1,$month, 1, $year));
+			$date		= date('Y-m-d', mktime(NULL, NULL, NULL, $month, 1, $year));
+			$balance	= 0;
+
 			$this->db->select_sum('petty_cash.value');
 			$this->db->where('transaction', 1);
 			$this->db->where('date <', $date);
@@ -165,10 +167,8 @@ class Petty_cash_model extends CI_Model {
 			$query		= $this->db->get($this->table_petty_cash);
 			$result		= $query->row();
 			
-			if($result->value == null){
-				$value_1	= 0;
-			} else {
-				$value_1	= $result->value;
+			if($result->value != null){
+				$balance	-= $result->value;
 			}
 			
 			$this->db->select_sum('petty_cash.value');
@@ -178,33 +178,32 @@ class Petty_cash_model extends CI_Model {
 			$query		= $this->db->get($this->table_petty_cash);
 			$result		= $query->row();
 			
-			if($result->value == null){
-				$value_2	= 0;
-			} else {
-				$value_2	= $result->value;
+			if($result->value != null){
+				$balance	+= $result->value;
 			}
 			
 			$query		= $this->db->query("
-				SELECT  SUM(value) as value FROM (
-					SELECT value FROM petty_cash 
+				SELECT  SUM(q.value) as value, petty_cash.transaction
+				FROM (
+					SELECT value , petty_cash.id
+					FROM petty_cash 
 					WHERE MONTH(date) = '$month' AND YEAR(date) = '$year'
-					AND transaction = '1'
-					ORDER BY id
-					LIMIT $offset) q
-				");
-			$result		= $query->row();
-			$value_3	= $result->value;
+					ORDER BY date ASC, id ASC
+					LIMIT $offset
+				) q
+				JOIN petty_cash ON q.id = petty_cash.id
+				GROUP BY petty_cash.transaction
+			");
+			$result		= $query->result();
+			foreach($result as $item){
+				if($item->transaction == 1){
+					$balance		-= $item->value;
+				} else {
+					$balance		+= $item->value;
+				}
+			}
 			
-			$query		= $this->db->query("SELECT  SUM(value) as value FROM (
-				SELECT value FROM petty_cash
-				WHERE MONTH(date) = '$month' AND YEAR(date) = '$year'
-				AND transaction = '2'
-				ORDER BY id
-				LIMIT $offset) q");
-			$result		= $query->row();
-			$value_4	= $result->value;
-			
-			return $value_2 + $value_4 - $value_3 - $value_1;
+			return $balance;
 		}
 		
 		public function show_years()
