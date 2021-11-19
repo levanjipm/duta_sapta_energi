@@ -266,7 +266,7 @@ class Customer extends CI_Controller {
 		$this->load->model("Customer_model");
 		$data['customer'] = $this->Customer_model->getById($customerId);
 		
-		$this->load->view('sales/customer/salesOrderArchive', $data);
+		$this->load->view('sales/Customer/salesOrderArchive', $data);
 	}
 
 	public function updateVisitFrequency()

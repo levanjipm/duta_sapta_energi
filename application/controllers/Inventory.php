@@ -130,7 +130,7 @@ class Inventory extends CI_Controller {
 		$this->load->model("Good_receipt_model");
 		$data['goodReceipt']		= $this->Good_receipt_model->getReceivedByPurchaseOrderId($id);
 
-		$this->load->view("inventory/pending/purchaseOrderDetail", $data);
+		$this->load->view("inventory/Pending/purchaseOrderDetail", $data);
 	}
 
 	public function pendingDeliveryOrderDashboard()
