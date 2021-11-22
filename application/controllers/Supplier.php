@@ -22,7 +22,7 @@ class Supplier extends CI_Controller {
 		$this->load->view('head');
 		$this->load->view('purchasing/header', $data);
 		
-		$this->load->view('purchasing/supplier/dashboard');
+		$this->load->view('purchasing/Supplier/dashboard');
 	}
 	
 	public function showItems()
@@ -89,7 +89,7 @@ class Supplier extends CI_Controller {
 		$this->load->model("Supplier_model");
 		$data['supplier']		= $this->Supplier_model->getById($supplierId);
 
-		$this->load->view('purchasing/supplier/detailDashboard', $data);		
+		$this->load->view('purchasing/Supplier/detailDashboard', $data);		
 	}
 
 	public function getPurchaseBySupplierId()

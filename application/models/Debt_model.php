@@ -819,10 +819,10 @@ class Debt_model extends CI_Model {
 						JOIN item ON purchase_order.item_id = item.id
 						JOIN item_class ON item.type = item_class.id
 						JOIN purchase_invoice ON code_good_receipt.invoice_id = purchase_invoice.id
-						WHERE code_good_receipt.is_confirm = '1'
-						AND purchase_invoice.is_confirm = '1'
-						AND YEAR(purchase_invoice.date) = '$year'
-						AND MONTH(purchase_invoice.date) = '$month'
+						WHERE code_good_receipt.is_confirm = 1
+						AND purchase_invoice.is_confirm = 1
+						AND YEAR(purchase_invoice.date) = $year
+						AND MONTH(purchase_invoice.date) = $month
 						AND code_purchase_order.supplier_id = '$supplierId'
 						GROUP BY item_class.id
 						UNION (
@@ -843,6 +843,8 @@ class Debt_model extends CI_Model {
 					GROUP BY a.id
 					ORDER BY a.name ASC
 				");
+
+				
 			}
 
 			$result			= $query->result();
