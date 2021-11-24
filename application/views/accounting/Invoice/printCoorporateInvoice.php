@@ -78,7 +78,7 @@
 		<div class='col-sm-10 col-sm-offset-1' style='background-color:white;padding:20px' id='printable'>
 			<div class='row'>
 				<div class='col-xs-4 col-xs-offset-4' style='text-align:center'>
-					<img src='<?= base_url('assets/logo_dark.png') ?>' style='width:50%'></img>
+					<img src='<?= base_url('assets/Logo_dark.png') ?>' style='width:50%'></img>
 				</div>
 				<div class='col-xs-12'>
 					<hr style='border-bottom:2px solid #e2bc53;margin-bottom:1px'>
