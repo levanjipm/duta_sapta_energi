@@ -194,7 +194,7 @@ class Inventory_case_detail_model extends CI_Model {
 			$result	= $query->result();
 			
 			$batch = $this->Inventory_case_detail_model->convertToStockBatch($result);
-			return (count($batch) != 0) ? $batch : null;
+			return (count($batch) != 0) ? $batch : array();
 		}
 		
 		public function convertToStockBatch($results)
