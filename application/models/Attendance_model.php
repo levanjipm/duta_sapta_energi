@@ -125,7 +125,7 @@ class Attendance_model extends CI_Model {
 				FROM attendance_status
 				LEFT JOIN (
 					SELECT COUNT(attendance_list.id) as count, attendance_status.id 
-					FROM Attendance_list
+					FROM attendance_list
 					JOIN attendance_status ON attendance_status.id = attendance_list.status
 					WHERE attendance_list.user_id = '$userId'
 					AND MONTH(attendance_list.date) = '$month'
