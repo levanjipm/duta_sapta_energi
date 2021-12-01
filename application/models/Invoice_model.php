@@ -365,7 +365,8 @@ class Invoice_model extends CI_Model {
 						LEFT JOIN customer ON deliveryOrderTable.customer_id = customer.id
 						LEFT JOIN other_opponent ON deliveryOrderTable.opponent_id = other_opponent.id
 						WHERE DATEDIFF(NOW(), invoice.date) <= 30
-						AND invoice.is_confirm = '1'
+						AND invoice.is_confirm = 1
+						AND invoice.is_done = 0
 						GROUP BY deliveryOrderTable.customer_id, deliveryOrderTable.opponent_id
 					");
 					break;
@@ -397,7 +398,8 @@ class Invoice_model extends CI_Model {
 						LEFT JOIN customer ON deliveryOrderTable.customer_id = customer.id
 						LEFT JOIN other_opponent ON deliveryOrderTable.opponent_id = other_opponent.id
 						WHERE DATEDIFF(NOW(), invoice.date) > 30 AND DATEDIFF(NOW(), invoice.date) <= 45
-						AND invoice.is_confirm = '1'
+						AND invoice.is_confirm = 1
+						AND invoice.is_done = 0
 						GROUP BY deliveryOrderTable.customer_id, deliveryOrderTable.opponent_id
 					");
 					break;
@@ -429,7 +431,8 @@ class Invoice_model extends CI_Model {
 						LEFT JOIN customer ON deliveryOrderTable.customer_id = customer.id
 						LEFT JOIN other_opponent ON deliveryOrderTable.opponent_id = other_opponent.id
 						WHERE DATEDIFF(NOW(), invoice.date) > 45 AND DATEDIFF(NOW(), invoice.date) <= 60
-						AND invoice.is_confirm = '1'
+						AND invoice.is_confirm = 1
+						AND invoice.is_done = 0
 						GROUP BY deliveryOrderTable.customer_id, deliveryOrderTable.opponent_id
 					");
 					break;
@@ -461,7 +464,8 @@ class Invoice_model extends CI_Model {
 						LEFT JOIN customer ON deliveryOrderTable.customer_id = customer.id
 						LEFT JOIN other_opponent ON deliveryOrderTable.opponent_id = other_opponent.id
 						WHERE DATEDIFF(NOW(), invoice.date) > 60
-						AND invoice.is_confirm = '1'
+						AND invoice.is_confirm = 1
+						AND invoice.is_done = 0
 						GROUP BY deliveryOrderTable.customer_id, deliveryOrderTable.opponent_id
 					");
 					break;
