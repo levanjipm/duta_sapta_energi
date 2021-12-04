@@ -183,7 +183,7 @@ class Asset extends CI_Controller {
 		
 		$this->load->view('head');
 		$this->load->view('accounting/header', $data);
-		$this->load->view('accounting/asset/valueDashboard');
+		$this->load->view('accounting/Asset/valueDashboard');
 	}
 
 	public function calculateAsset()
