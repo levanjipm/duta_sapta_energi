@@ -106,6 +106,10 @@
 		})
 	}
 
+	$('#page').change(function(){
+		refresh_view();
+	})
+
 	function viewGoodReceipt(n){
 		$.ajax({
 			url:'<?= site_url("Good_receipt/showById") ?>',
