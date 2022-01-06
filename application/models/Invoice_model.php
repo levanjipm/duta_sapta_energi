@@ -2368,7 +2368,7 @@ class Invoice_model extends CI_Model {
 				SELECT item_class.name, COALESCE(a.value,0) AS value, COALESCE(b.value, 0) AS returned, COALESCE(a.quantity, 0) AS quantity, COALESCE(b.quantity, 0) AS returnedQuantity
 				FROM item_class
 				LEFT JOIN (
-					SELECT SUM(delivery_order.quantity * (100 - sales_order.discount) * price_list.price_list) AS value, item.type, SUM(delivery_order.quantity) AS quantity
+					SELECT SUM(delivery_order.quantity * (100 - sales_order.discount) * price_list.price_list / 100) AS value, item.type, SUM(delivery_order.quantity) AS quantity
 					FROM delivery_order
 					JOIN sales_order ON delivery_order.sales_order_id = sales_order.id
 					JOIN price_list ON sales_order.price_list_id = price_list.id
