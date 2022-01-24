@@ -23,7 +23,7 @@ class Customer extends CI_Controller {
 		$this->load->view('sales/header', $data);
 		
 		$this->load->model('Area_model');
-		$data['areas'] = $this->Area_model->showItems();
+		$data['areas'] = $this->Area_model->showItems(0, '', 250);
 		
 		$data['authorize'] = $this->session->userdata('user_role');
 		

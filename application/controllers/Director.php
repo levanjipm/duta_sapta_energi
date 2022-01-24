@@ -115,7 +115,7 @@ class Director extends CI_Controller {
 			//Stock Value//
 			$this->load->model("Stock_in_model");
 			if($month == 0){
-				$initialDate		= $year . "-01-01";
+				$initialDate		= ($year - 1) . "-12-31";
 				$endDate			= $year . "-12-31";
 			} else {
 				$initialDate		= date("Y-m-t", strtotime("-1 month", mktime(0,0,0,$month, 1, $year)));

@@ -900,13 +900,14 @@ class Invoice_model extends CI_Model {
 					WHERE MONTH(invoice.date) = '$month' 
 					AND YEAR(invoice.date) = '$year'
 					AND invoice.is_confirm = 1
+					AND code_delivery_order.is_sent = 1
 				) a
 				ON a.id = invoice.id
 				UNION (
 					SELECT invoice.*, invoice.customer_id, invoice.opponent_id, IF((invoice.taxInvoice = '' OR invoice.taxInvoice IS NULL), 1, 0) AS taxing
 					FROM invoice
 					WHERE MONTH(invoice.date) = '$month' AND YEAR(invoice.date) = '$year'
-					AND (invoice.customer_id IS NOT NULL || invoice.opponent_id IS NOT NULL)
+					AND (invoice.customer_id IS NOT NULL OR invoice.opponent_id IS NOT NULL)
 					AND invoice.is_confirm = 1
 				)
 				ORDER by date ASC, name ASC
@@ -2500,9 +2501,11 @@ class Invoice_model extends CI_Model {
 			$query			= $this->db->query("
 				SELECT SUM(invoice.value) AS value, invoice.date
 				FROM invoice
+				JOIN code_delivery_order ON invoice.id = code_delivery_order.invoice_id
 				WHERE MONTH(invoice.date) = '$month'
 				AND YEAR(invoice.date) = '$year'
-				AND invoice.is_confirm = '1'
+				AND invoice.is_confirm = 1
+				AND code_delivery_order.is_sent = 1
 				GROUP BY invoice.date
 			");
 

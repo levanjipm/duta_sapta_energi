@@ -522,7 +522,7 @@ class Invoice extends CI_Controller {
 		header("Content-Type: application/csv;");
    
 		$file = fopen('php://output', 'w');
-		$header = array("Date","Name", "Tax Document", "Opponent", "Value"); 
+		$header = array("Date","Name", "Tax Document", "Opponent", "Value", "Discount", "Delivery"); 
 		fputcsv($file, $header, ';');
 		foreach ($data as $item)
 		{
@@ -531,7 +531,9 @@ class Invoice extends CI_Controller {
 				"name" => $item['name'],
 				"tax_document" => $item['taxInvoice'],
 				"opponent" => $item['opponent'],
-				"value" => (float)$item['value']
+				"value" => (float)$item['value'],
+				"discount" => (float)$item['discount'],
+				"delivery" => (float)$item['delivery']
 			);
 
 			fputcsv($file, $valueArray, ';');

@@ -1043,7 +1043,6 @@ class Bank_model extends CI_Model {
 				JOIN internal_bank_account ON bank_transaction.account_id = internal_bank_account.id
 				WHERE bank_transaction.date <= '$date'
 				AND bank_transaction.is_delete = '0'
-				AND bank_transaction.bank_transaction_major IS NULL
 				GROUP BY bank_transaction.account_id, bank_transaction.transaction
 			");
 

@@ -266,7 +266,7 @@ class Receivable_model extends CI_Model {
 		public function getByDate($date)
 		{
 			$query			= $this->db->query("
-				SELECT SUM(invoice.value + invoice.delivery - invoice.discount) AS value, COALESCE(receivableTable.value, 0) AS paid
+				SELECT SUM(invoice.value + invoice.delivery - invoice.discount) AS value, COALESCE(SUM(receivableTable.value), 0) AS paid
 				FROM invoice
 				LEFT JOIN (
 					SELECT SUM(receivable.value) AS value, receivable.invoice_id
