@@ -6,314 +6,432 @@ class Api extends CI_Controller {
 		parent::__construct();
 
         $this->load->helper('url');
-        require "third_party/JWT/CreatorJWT.php";
+        require_once APPPATH.'third_party/JWT/CreatorJWT.php';
 
         $this->JWT = new CreatorJwt();
     }
 
+    public function Index(){
+        $this->load->view('index.php');
+    }
+
     public function login()
     {
-        header('Access-Control-Allow-Origin: *');
+        header('Access-Control-Allow-Origin: https://customer.dutasaptae.management');
         header("Access-Control-Allow-Methods: *");
-        header("Content-Type:application/json");
-        header("Access-Control-Allow-Headers: Content-Type, Content-Length, Accept-Encoding");
+        header("Access-Control-Allow-Headers: Content-Type, Content-Length, Accept-Encoding, Access-Control-Allow-Origin");
+        header('Content-Type: application/json, charset=utf-8');
 
         $postdata = file_get_contents("php://input");
         $request        = json_decode($postdata);
-        $username       = $request->username;
+        $email       = $request->email;
         $password       = $request->password;
 
-        $this->load->model("Customer_model");
-        $result     = $this->Customer_model->customerLogin($username, $password);
+        $this->load->model("User_model");
+        $result     = $this->User_model->login($email, $password);
         if($result == null){
-            $response       = array(
-                "status" => "error",
-                "message" => "Failed to log in.",
-                "user" => array()
-            );
-
             echo 0;
         } else {
-            $completeAddress = "";
-            $completeAddress .= $result->address;
-
-            if($result->number != NULL){
-                $completeAddress	.= ' No. ' . $result->number;
-            }
-            
-            if($result->block != NULL && $result->block != "000" && $result->block != ""){
-                $completeAddress	.= ' Blok ' . $result->block;
-            }
-        
-            if($result->rt != '000'){
-                $completeAddress	.= ' RT ' . $result->rt;
-            }
-            
-            if($result->rw != '000' && $result->rw != '000'){
-                $completeAddress	.= ' /RW ' . $result->rw;
-            }
-            
-            if($result->postal_code != NULL){
-                $completeAddress	.= ', ' . $result->postal_code;
-            }
-
-            $completeAddress .= ", Kel. " . $result->kelurahan;
-            $completeAddress .= ", Kec. " . $result->kecamatan;
-            $response        = array(
-                "status" => "success",
-                "message" => "Successfully logged in.",
-                "user" => array(
-                    "name" => $result->name,
-                    "address" => $completeAddress,
-                    "pic" => $result->pic_name,
-                    "city" => $result->city,
-                    "phone_number" => $result->phone_number,
-                    "uid" => $result->uid
-                )
-            );
-
-            $tokenData = $response["user"];
+            $tokenData = $result;
             $token = $this->JWT->GenerateToken($tokenData);
             echo json_encode(array('Token'=>$token));
         }
     }
 
-    public function getCustomerData()
+    public function getRoutes()
     {
-        header('Access-Control-Allow-Origin: *');
+        header('Access-Control-Allow-Origin: https://warehouse.dutasaptae.management');
         header("Access-Control-Allow-Methods: *");
-        header("Content-Type:application/json");
-        header("Access-Control-Allow-Headers: Content-Type, Content-Length, Accept-Encoding");
+        header("Access-Control-Allow-Headers: Content-Type, Content-Length, Accept-Encoding, Access-Control-Allow-Origin");
+        header('Content-Type: application/json, charset=utf-8');
 
         $headers = apache_request_headers();
-        $authorization = substr($headers['Authorization'], 7, 500);
-        $data       = $this->JWT->DecodeToken($authorization);
-
-        $result           = array();
-        $result['user']   = $data;
-        
-        $this->load->model("Invoice_model");
-        $receivableArray          = $this->Invoice_model->getStatusByCustomerUID($data['uid']);
-        $result['overdue']  = 0;
-        $result['due']      = 0;
-        foreach($receivableArray as $receivableObject){
-            if($receivableObject->due == 1){
-                $result['overdue']        = (float)$receivableObject->value;
-            } else {
-                $result['due']              = (float)$receivableObject->value;
-            }
-        };
-
-        $this->load->model("Internal_bank_account_model");
-        $result['account']        = $this->Internal_bank_account_model->getShownItems();
-        echo json_encode($result);
-    }
-    
-
-    // public function getCustomerSalesHistory()
-    // {
-    //     header('Access-Control-Allow-Origin: *');
-    //     header("Access-Control-Allow-Methods: *");
-    //     header("Content-Type:application/json");
-
-    //     $postdata = file_get_contents("php://input");
-    //     $this->load->model("Invoice_model");
-    //     $result       = $this->Invoice_model->getCustomerSalesHistory($postdata);
-
-    //     for($i = 0; $i < 12; $i++){
-	// 		$month		= date('m', strtotime("-" . $i . "months"));
-	// 		$year		= date('Y', strtotime("-" . $i . "months"));
-	// 		$batchArray[$i] = array(
-	// 			"label" => date("M Y", mktime(0,0,0,$month, 1, $year)),
-	// 			"value" => 0
-	// 		);
-	// 	}
-
-	// 	foreach($result as $data){
-	// 		$month			= $data->month;
-    //         $year			= $data->year;
-    //         $value          = $data->value;
-
-    //         $date			= mktime(0,0,0, $month, 1, $year);
-    //         $today          = strtotime("now");
-    //         $datediff		= floor(($today - $date)/(30 * 60 * 60 * 24));
-
-    //         $batchArray[$datediff]['value'] = (float)$value;
-    //         continue;
-    //     }
-        
-    //     $batch          = (object)$batchArray;
-    //     echo(json_encode($batch));
-    // }
-
-    public function getCustomerInvoices($page = 1)
-    {
-        header('Access-Control-Allow-Origin: *');
-        header("Access-Control-Allow-Methods: *");
-        header("Content-Type:application/json");
-        header("Access-Control-Allow-Headers: Content-Type, Content-Length, Accept-Encoding");
-
-        $headers = apache_request_headers();
-        $authorization = substr($headers['Authorization'], 7, 500);
-        $data       = $this->JWT->DecodeToken($authorization);
-        $uid        = $data['uid'];
-        $offset     = ($page - 1) * 10;
-
-        $this->load->model("Invoice_model");
-        $data           = $this->Invoice_model->getIncompletedTransactionByCustomerUID($uid, $offset);
-        echo(json_encode($data));
-    }
-
-    public function getCompleteCustomerInvoices($page = 1)
-    {
-        header('Access-Control-Allow-Origin: *');
-        header("Access-Control-Allow-Methods: *");
-        header("Content-Type:application/json");
-        header("Access-Control-Allow-Headers: Content-Type, Content-Length, Accept-Encoding");
-
-        $headers = apache_request_headers();
-        $authorization = substr($headers['Authorization'], 7, 500);
-        $data       = $this->JWT->DecodeToken($authorization);
-        $uid        = $data['uid'];
-        $offset     = ($page - 1) * 10;
-
-        $this->load->model("Invoice_model");
-        $data['invoices']           = $this->Invoice_model->getCompleteTransactionByCustomerUID($uid, $offset);
-        $data['records']            = $this->Invoice_model->countCompleteTransactionByCustomerUID($uid);
-        echo(json_encode($data));
-    }
-
-    public function countCustomerInvoice(){
-        header('Access-Control-Allow-Origin: *');
-        header("Access-Control-Allow-Methods: *");
-        header("Content-Type:application/json");
-        header("Access-Control-Allow-Headers: Content-Type, Content-Length, Accept-Encoding");
-
-        $headers = apache_request_headers();
-        $authorization = substr($headers['Authorization'], 7, 500);
-        $data       = $this->JWT->DecodeToken($authorization);
-        $uid        = $data['uid'];
-
-        $this->load->model("Invoice_model");
-        $data           = $this->Invoice_model->countIncompletedTransactionByCustomerUID($uid);
-        echo $data;
-    }
-
-    public function getCustomerPayments($page = 1){
-        header('Access-Control-Allow-Origin: *');
-        header("Access-Control-Allow-Methods: *");
-        header("Content-Type:application/json");
-        header("Access-Control-Allow-Headers: Content-Type, Content-Length, Accept-Encoding");
-
-        $headers = apache_request_headers();
-        $authorization = substr($headers['Authorization'], 7, 500);
-        $data       = $this->JWT->DecodeToken($authorization);
-        $uid        = $data['uid'];
-        $offset     = ($page - 1) * 10;
-
-        $this->load->model("Bank_model");
-        $result['payments']       = $this->Bank_model->getCustomerPaymentsByCustomerUID($uid, $offset);
-        $result['records']        = $this->Bank_model->countCustomerPaymentsByCustomerUID($uid);
-        echo json_encode($result);
-    }
-
-    public function getInvoiceByName($name){
-        header('Access-Control-Allow-Origin: *');
-        header("Access-Control-Allow-Methods: *");
-        header("Content-Type:application/json");
-        header("Access-Control-Allow-Headers: Content-Type, Content-Length, Accept-Encoding");
-
-        $headers = apache_request_headers();
-        $authorization = substr($headers['Authorization'], 7, 500);
-        $data       = $this->JWT->DecodeToken($authorization);
-        $uid        = $data['uid'];
-        
-        $this->load->model("Invoice_model");
-        $result['general']     = $this->Invoice_model->getInvoiceByName($name, $uid);
-        
-        $this->load->model("Delivery_order_detail_model");
-        $result['detail']       = $this->Delivery_order_detail_model->getByInvoiceId($result['general']->id);
-        echo json_encode($result);
-    }
-
-
-	public function register()
-	{
-		header('Access-Control-Allow-Origin: *');
-        header("Access-Control-Allow-Methods: *");
-        header("Content-Type:application/json");
-
-        $postdata = file_get_contents("php://input");
-        $request    = json_decode($postdata);
-		$this->load->model("Customer_model");
-		$result			= $this->Customer_model->registerCustomer($request->username, $request->password);
-		echo $result;
-	}
-
-	public function getCustomerSales()
-	{
-		header('Access-Control-Allow-Origin: *');
-        header("Access-Control-Allow-Methods: *");
-        header("Content-Type:application/json");
-
-        $postdata = file_get_contents("php://input");
-		$customerUID         = $postdata;
-		$this->load->model("Customer_sales_model");
-		$result		= $this->Customer_sales_model->getByCustomerUID($customerUID);
-		echo json_encode($result);
-    }
-    
-    public function getCustomerSalesOrderHistory()
-    {
-        header('Access-Control-Allow-Origin: *');
-        header("Access-Control-Allow-Methods: *");
-        header("Content-Type:application/json");
-
-        $currentMonth       = date('m');
-        $currentYear        = date('Y');
-        $currentDate        = mktime(0,0,0,$currentMonth, 1, $currentYear);
-        $postdata = file_get_contents("php://input");
-        $customerUID         = $postdata;
-        $this->load->model("Sales_order_model");
-        $data       = $this->Sales_order_model->getByCustomerUIDMonthly($customerUID);
-        $result     = array();
-        foreach($data as $datum){
-            $year       = $datum->year;
-            $month      = $datum->month;
-            $value      = $datum->value;
-            $sentValue  = $datum->sentValue;
-
-            $difference = round(($currentDate - mktime(0,0,0,$month, 1, $year)) / (60 * 60 * 24 * 30));
-            $result[$difference] = array(
-                "value" => $value,
-                "sent" => $sentValue
-            );
-            continue;
+        if(!array_key_exists('Authorization', $headers) || $this->JWT->DecodeToken(substr($headers['Authorization'], 7, 500)) == NULL){
+            header("HTTP/1.1 401 Unauthorized");
+            exit;
+        } else {
+            $this->load->model("Route_model");
+            $data           = $this->Route_model->getRoutes();
+            echo json_encode($data);
         }
-        echo json_encode($result);
+
+        
     }
 
-    public function getSalesOrderHistory()
-    {
-        header('Access-Control-Allow-Origin: *');
+    public function getDeliverables($routeId, $offset = 0){
+        header('Access-Control-Allow-Origin: https://warehouse.dutasaptae.management');
         header("Access-Control-Allow-Methods: *");
-        header("Content-Type:application/json");
+        header("Access-Control-Allow-Headers: Content-Type, Content-Length, Accept-Encoding, Access-Control-Allow-Origin");
+        header('Content-Type: application/json, charset=utf-8');
+
+        $headers = apache_request_headers();
+        if(!array_key_exists('Authorization', $headers) || $this->JWT->DecodeToken(substr($headers['Authorization'], 7, 500)) == NULL){
+            header("HTTP/1.1 401 Unauthorized");
+            exit;
+        } else {
+            $this->load->model("Sales_order_model");
+            $data       = $this->Sales_order_model->getByRoute($routeId, $offset);
+            echo json_encode($data);
+        }
         
-        $id             = $this->input->get('id');
-        $this->load->model("Sales_order_model");
-        $data           = $this->Sales_order_model->getByCustomerUid($id);
+    }
+
+    public function getUndeliverables($routeId, $offset = 0){
+        header('Access-Control-Allow-Origin: https://warehouse.dutasaptae.management');
+        header("Access-Control-Allow-Methods: *");
+        header("Access-Control-Allow-Headers: Content-Type, Content-Length, Accept-Encoding, Access-Control-Allow-Origin");
+        header('Content-Type: application/json, charset=utf-8');
+
+        $headers = apache_request_headers();
+        if(!array_key_exists('Authorization', $headers) || $this->JWT->DecodeToken(substr($headers['Authorization'], 7, 500)) == NULL){
+            header("HTTP/1.1 401 Unauthorized");
+            exit;
+        } else {
+            $this->load->model("Sales_order_model");
+        $data       = $this->Sales_order_model->getByUndeliverableRoute($routeId, $offset);
         echo json_encode($data);
+        }
     }
 
     public function getSalesOrderByName($name)
     {
-        header('Access-Control-Allow-Origin: *');
+        header('Access-Control-Allow-Origin: https://warehouse.dutasaptae.management');
         header("Access-Control-Allow-Methods: *");
-        header("Content-Type:application/json");
+        header("Access-Control-Allow-Headers: Content-Type, Content-Length, Accept-Encoding, Access-Control-Allow-Origin");
+        header('Content-Type: application/json, charset=utf-8');
 
-        $this->load->model("Sales_order_model");
-        $data           = $this->Sales_order_model->getByName($name);
-        echo json_encode($data);
+        $headers = apache_request_headers();
+        if(!array_key_exists('Authorization', $headers) || $this->JWT->DecodeToken(substr($headers['Authorization'], 7, 500)) == NULL){
+            header("HTTP/1.1 401 Unauthorized");
+            exit;
+        } else {
+            $this->load->model("Sales_order_model");
+            $data           = $this->Sales_order_model->getByName($name);
+            echo json_encode($data);
+        }
+    }
+
+    public function getSuppliersWithIncompletedPurchaseOrders()
+    {
+        header('Access-Control-Allow-Origin: https://warehouse.dutasaptae.management');
+        header("Access-Control-Allow-Methods: *");
+        header("Access-Control-Allow-Headers: Content-Type, Content-Length, Accept-Encoding, Access-Control-Allow-Origin");
+        header('Content-Type: application/json, charset=utf-8');
+
+        $headers = apache_request_headers();
+        if(!array_key_exists('Authorization', $headers) || $this->JWT->DecodeToken(substr($headers['Authorization'], 7, 500)) == NULL){
+            header("HTTP/1.1 401 Unauthorized");
+            exit;
+        } else {
+            $this->load->model("Purchase_order_model");
+            $data           = $this->Purchase_order_model->getSuppliersWithIncompletedPurchaseOrders();
+            echo json_encode($data);
+        }
+    }
+
+    public function getPurchaseOrdersBySupplierId($supplierId)
+    {
+        header('Access-Control-Allow-Origin: https://warehouse.dutasaptae.management');
+        header("Access-Control-Allow-Methods: *");
+        header("Access-Control-Allow-Headers: Content-Type, Content-Length, Accept-Encoding, Access-Control-Allow-Origin");
+        header('Content-Type: application/json, charset=utf-8');
+
+        $headers = apache_request_headers();
+        if(!array_key_exists('Authorization', $headers) || $this->JWT->DecodeToken(substr($headers['Authorization'], 7, 500)) == NULL){
+            header("HTTP/1.1 401 Unauthorized");
+            exit;
+        } else {
+            $this->load->model("Purchase_order_model");
+            $data           = $this->Purchase_order_model->getBySupplierId($supplierId);
+            echo json_encode($data);
+        }
+    }
+
+    public function createGoodReceipt(){
+        $headers = apache_request_headers();
+        if(!array_key_exists('Authorization', $headers) || $this->JWT->DecodeToken(substr($headers['Authorization'], 7, 500)) == NULL){
+            header("HTTP/1.1 401 Unauthorized");
+            exit;
+        } else {
+            $postdata = file_get_contents("php://input");
+            $request        = json_decode($postdata);
+
+            $date           = $request->date;
+            $name           = $request->name;
+            $createdBy      = $request->createdBy;
+            $guid           = $request->uid;
+            $items          = $request->item;
+
+            $this->load->model("Good_receipt_model");
+            $result      = $this->Good_receipt_model->createGoodReceipt($name, $date, $createdBy, $guid, $items);
+            echo $result;
+        }
+    }
+
+    public function createDeliveryOrder()
+	{
+        $headers = apache_request_headers();
+        if(!array_key_exists('Authorization', $headers) || $this->JWT->DecodeToken(substr($headers['Authorization'], 7, 500)) == NULL){
+            header("HTTP/1.1 401 Unauthorized");
+            exit;
+        } else {
+            $postdata           = file_get_contents("php://input");
+            $request            = json_decode($postdata);
+            $guid			    = $request->uid;
+            $date               = $request->date;
+            $items              = $request->item;
+            $taxing             = $request->taxing;
+
+            //GUID is generated via UUID Package by Angular client side
+            //Date format received is the classic 'YYYY-MM-DD' format
+
+            //First, we will check wether this sales order is still creatable by checking
+            //The sent quantity, quantity, and to be sent quantity
+            //and taking the status column into account.
+
+            //Check if the item array is correctly constructed, not filled
+            // with 0
+
+            //Since the items format contains quantity and id
+            $itemArray      = array();
+            foreach($items as $item){
+                $id         = $item->id;
+                $quantity   = $item->quantity;
+
+                if($quantity > 0){
+                    $itemArray[$id]     = $quantity;
+                }
+                
+                next($items);
+            }
+
+            //Getting data from an ID Array and sending it to the
+            // Create function one we find out that the quantity submitted
+            // is allowed.
+
+            $this->load->model("Sales_order_detail_model");
+            $salesOrderArray        = $this->Sales_order_detail_model->getByIdArray(array_keys($itemArray));
+            $updateArray            = array();
+            $deliveryOrderItemArray = array();
+
+            foreach($salesOrderArray as $salesOrderItem){
+                $quantity           = $salesOrderItem->quantity;
+                $sent               = $salesOrderItem->sent;
+                $toBeSent           = $itemArray[$salesOrderItem->id];
+                if($quantity == ($sent + $toBeSent)){
+                    array_push($updateArray, array(
+                        "id" => $salesOrderItem->id,
+                        "sent" => $sent + $toBeSent,
+                        "status" => 1
+                    ));
+
+                    array_push($deliveryOrderItemArray, array(
+                        "sales_order_id" => $salesOrderItem->id,
+                        "quantity" => $toBeSent,
+                    ));
+                } else if($quantity > ($sent + $toBeSent)) {
+                    array_push($updateArray, array(
+                        "id" => $salesOrderItem->id,
+                        "sent" => $sent + $toBeSent,
+                        "status" => 0
+                    ));
+
+                    array_push($deliveryOrderItemArray, array(
+                        "sales_order_id" => $salesOrderItem->id,
+                        "quantity" => $toBeSent,
+                    ));
+                }
+                next($salesOrderArray);
+            }
+
+            $this->load->model("Delivery_order_model");
+            $deliveryOrderResult            = $this->Delivery_order_model->insertItem($date,$taxing, $deliveryOrderItemArray, $guid);
+            if($deliveryOrderResult == 1){
+                $this->Sales_order_detail_model->updateSalesOrderSent($updateArray);
+
+                echo 1;
+            } else {
+                echo 0;
+            }
+        }
+        
+	}
+
+    public function getBrands()
+    {
+        $headers = apache_request_headers();
+        if(!array_key_exists('Authorization', $headers) || $this->JWT->DecodeToken(substr($headers['Authorization'], 7, 500)) == NULL){
+            header("HTTP/1.1 401 Unauthorized");
+            exit;
+        } else {
+            $this->load->model("Item_model");
+            $result         = $this->Item_model->getBrands();
+            echo json_encode($result);
+        }
+    }
+
+    public function getItemTypesByBrand($brand)
+    {
+        $headers = apache_request_headers();
+        if(!array_key_exists('Authorization', $headers) || $this->JWT->DecodeToken(substr($headers['Authorization'], 7, 500)) == NULL){
+            header("HTTP/1.1 401 Unauthorized");
+            exit;
+        } else {
+            $this->load->model("Item_model");
+            $result         = $this->Item_model->getItemTypesByBrand($brand);
+            echo json_encode($result);
+        }
+    }
+
+    public function getItemsByType()
+    {
+        $headers = apache_request_headers();
+        if(!array_key_exists('Authorization', $headers) || $this->JWT->DecodeToken(substr($headers['Authorization'], 7, 500)) == NULL){
+            header("HTTP/1.1 401 Unauthorized");
+            exit;
+        } else {
+            $postdata = file_get_contents("php://input");
+            $idArray        = json_decode($postdata);
+            $this->load->model("Item_model");
+            $result         = $this->Item_model->getByItemTypeIdArray($idArray);
+            echo json_encode($result);
+        }
+    }
+
+    public function getUnconfirmedDeliveryOrder()
+    {
+        $headers = apache_request_headers();
+        if(!array_key_exists('Authorization', $headers) || $this->JWT->DecodeToken(substr($headers['Authorization'], 7, 500)) == NULL){
+            header("HTTP/1.1 401 Unauthorized");
+            exit;
+        } else {
+            $this->load->model("Delivery_order_model");
+            $result         = $this->Delivery_order_model->getUnconfirmed();
+            echo json_encode($result);
+        }
+    }
+
+    public function getUnconfirmedGoodReceipt()
+    {
+        $headers = apache_request_headers();
+        if(!array_key_exists('Authorization', $headers) || $this->JWT->DecodeToken(substr($headers['Authorization'], 7, 500)) == NULL){
+            header("HTTP/1.1 401 Unauthorized");
+            exit;
+        } else {
+            $this->load->model("Good_receipt_model");
+            $result         = $this->Good_receipt_model->getUnconfirmed();
+            echo json_encode($result);
+        }
+    }
+
+    public function getDeliveryOrderById($id)
+    {
+        $headers = apache_request_headers();
+        if(!array_key_exists('Authorization', $headers) || $this->JWT->DecodeToken(substr($headers['Authorization'], 7, 500)) == NULL){
+            header("HTTP/1.1 401 Unauthorized");
+            exit;
+        } else {
+            $this->load->model("Delivery_order_model");
+            $result     = $this->Delivery_order_model->getDeliveryOrderById($id);
+            echo json_encode($result);
+        }
+    }
+
+    public function confirmDeliveryOrderById()
+    {
+        $headers = apache_request_headers();
+        if(!array_key_exists('Authorization', $headers) || $this->JWT->DecodeToken(substr($headers['Authorization'], 7, 500)) == NULL){
+            header("HTTP/1.1 401 Unauthorized");
+            exit;
+        } else {
+            $postdata = file_get_contents("php://input");
+            $request        = json_decode($postdata);
+            $id             = $request->id;
+            $confirmedBy    = $request->confirmedBy;
+
+            $this->load->model("User_model");
+            $user           = $this->User_model->getById($confirmedBy);
+
+            if($user == NULL)
+            {
+                echo 0;
+            } else {
+                $this->load->model("Delivery_order_model");
+                $result         = $this->Delivery_order_model->confirmById(1, $id);
+                echo ($result) ? 1 : 0;
+            }
+        }
+    }
+
+    public function checkStock($keyword, $page = 1)
+	{
+        $headers = apache_request_headers();
+        if(!array_key_exists('Authorization', $headers) || $this->JWT->DecodeToken(substr($headers['Authorization'], 7, 500)) == NULL){
+            header("HTTP/1.1 401 Unauthorized");
+            exit;
+        } else {
+            $this->load->model("Stock_model");
+            $data           = array();
+            $offset         = ($page - 1) * 10;
+            $data['items']  = $this->Stock_model->searchStock($keyword, $offset);
+            $data['count']  = $this->Stock_model->countStock($keyword);
+
+            echo json_encode($data);
+        }
+	}
+
+    public function getGoodReceiptById($id)
+    {
+        $headers = apache_request_headers();
+        if(!array_key_exists('Authorization', $headers) || $this->JWT->DecodeToken(substr($headers['Authorization'], 7, 500)) == NULL){
+            header("HTTP/1.1 401 Unauthorized");
+            exit;
+        } else {
+            $this->load->model("Good_receipt_model");
+            $data       = array();
+            $data['general']     = $this->Good_receipt_model->getById($id);
+            $data['items']          = $this->Good_receipt_model->getItemsById($id);
+
+            echo json_encode($data);
+        }
+    }
+
+    public function confirmGoodReceiptById($id)
+    {
+        $headers = apache_request_headers();
+        if(!array_key_exists('Authorization', $headers) || $this->JWT->DecodeToken(substr($headers['Authorization'], 7, 500)) == NULL){
+            header("HTTP/1.1 401 Unauthorized");
+            exit;
+        } else {
+            
+            $authorization = substr($headers['Authorization'], 7, 500);
+            $data       = $this->JWT->DecodeToken($authorization);
+
+            $this->load->model('Good_receipt_model');
+            if ($this->Good_receipt_model->updateStatusById(1, $id, $data['id']) == 1)
+            {
+                $this->load->model('Good_receipt_detail_model');
+
+                $batch = $this->Good_receipt_detail_model->getStockBatchByCodeGoodReceiptId($id);
+
+                $expectedInput = count($batch);
+
+                $this->load->model('Stock_model');
+                $result = $this->Stock_model->insertItem($batch);
+
+                if($result == $expectedInput){
+                    echo 1;
+                } else {
+                    $this->Good_receipt_detail_model->deleteByCodeGoodReceiptId($id);
+                    $this->Stock_model->deleteItemFromGoodReceipt($id);
+                    $this->Good_receipt_model->updateStatusById(-1, $id);
+
+                    echo 0;
+                }
+            } else {
+                echo 0;
+            }
+        }
     }
 }
 ?>

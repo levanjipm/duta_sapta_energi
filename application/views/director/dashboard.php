@@ -475,7 +475,7 @@
 					var value	= item.value;
 					var type	= item.type;
 
-					if(type == 1 || type == 2){
+					if(type == 1){
 						expenseValue += parseFloat(value);
 						$('#expenseTableContent').append("<tr><td>" + item.name + "</td><td>Rp. " + numeral(value).format('0,0.00') + "</td></tr>");
 						expenseCount++;
@@ -640,7 +640,7 @@
 			},
 			success:function(response){
 				var cashOnHand		= parseFloat(response.cashOnHand);
-				var cashOnAccount	= parseFloat(response.cashOnAccount);
+				var cashOnAccount	= response.cashOnAccount;
 				var receivable		= parseFloat(response.receivable);
 				var assetValue		= parseFloat(response.assetValue);
 				var depreciation	= parseFloat(response.depreciation);
@@ -654,7 +654,7 @@
 					var name		= item.name;
 					var credit		= item.credit;
 					var debit		= item.debit;
-					var balance		= credit - balance;
+					var balance		= credit - debit;
 					$('#cashOnAccountTable').append("<tr><td>" + name + "</td><td>Rp. " + numeral(balance).format('0,0.00') + "</td></tr>");
 					cashOnAccountValue += balance;
 					cashOnAccountItem++;

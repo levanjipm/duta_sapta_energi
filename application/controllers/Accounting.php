@@ -35,7 +35,7 @@ class Accounting extends CI_Controller {
 		
 		$this->load->view('head');
 		$this->load->view('accounting/header', $data);
-		$this->load->view('accounting/return/salesReturnDashboard');
+		$this->load->view('accounting/Return/salesReturnDashboard');
 	}
 
 	public function purchaseReturn()
@@ -49,7 +49,7 @@ class Accounting extends CI_Controller {
 		
 		$this->load->view('head');
 		$this->load->view('accounting/header', $data);
-		$this->load->view('accounting/return/purchaseReturnDashboard');
+		$this->load->view('accounting/Return/purchaseReturnDashboard');
 	}
 
 	public function getGeneralInformation(){
