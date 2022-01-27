@@ -1726,10 +1726,10 @@ class Invoice_model extends CI_Model {
 				");
 			} else if($aspect == 5){
 				$query		= $this->db->query("
-					SELECT brand.name, name(invoiceTable.value,0) as value, COALESCE(returnTable.value,0) as returned
+					SELECT brand.name, COALESCE(invoiceTable.value,0) as value, COALESCE(returnTable.value,0) as returned
 					FROM brand
 					LEFT JOIN (
-						SELECT item.brand, SUM(price_list.price_list * (100 - sales_order.discount) * delivery_order.quantity / 100) as value
+						SELECT item.brand, SUM(price_list.price_list * (100 - sales_order.discount) * delivery_order.quantity / 100) as value 
 						FROM delivery_order
 						JOIN sales_order ON sales_order.id = delivery_order.sales_order_id
 						JOIN code_delivery_order ON delivery_order.code_delivery_order_id = code_delivery_order.id
@@ -1742,7 +1742,7 @@ class Invoice_model extends CI_Model {
 						AND code_delivery_order.is_sent = 1
 						GROUP BY item.brand
 					) invoiceTable
-					ON invoiceTable.type = brand.id
+					ON invoiceTable.brand = brand.id
 					LEFT JOIN (
 						SELECT item.brand, COALESCE(SUM(sales_return.price * sales_return_received.quantity),0) as value
 						FROM sales_return_received
@@ -1756,7 +1756,7 @@ class Invoice_model extends CI_Model {
 						AND MONTH(code_sales_return_received.date) = '$month' AND YEAR(code_sales_return_received.date) = '$year'
 						GROUP BY item.brand
 					) returnTable
-					ON returnTable.type = brand.id
+					ON returnTable.brand = brand.id
 					ORDER BY brand.name ASC
 				");
 			}

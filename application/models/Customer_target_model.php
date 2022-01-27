@@ -317,19 +317,9 @@ class Customer_target_model extends CI_Model {
 							"brand" => $brand
 						);
 						$this->db->insert($this->table_target, $db_item);
+						
 						return $this->db->affected_rows();
 					}
-				} else {
-					$db_item = array(
-						"id" => "",
-						"customer_id" => $customerId,
-						"created_by" => $this->session->userdata('user_id'),
-						"dateCreated" => $date,
-						"value" => $value,
-						"brand" => $brand
-					);
-					$this->db->insert($this->table_target, $db_item);
-					return $this->db->affected_rows();
 				}
 			} else {
 				return 0;
