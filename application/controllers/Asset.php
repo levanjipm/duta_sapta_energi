@@ -221,4 +221,24 @@ class Asset extends CI_Controller {
 		header('Content-Type: application/json');
 		echo json_encode($data);
 	}
+
+	public function getAssetListByDate()
+	{
+		$date			= $this->input->get('date');
+		$this->load->model("Asset_model");
+		$assets			= $this->Asset_model->getCurrentValue($date);
+		$response		= array();
+		foreach($assets as $asset)
+		{
+			#Apabila asset sudah terjual sebelum tanggal evaluasi,
+			#Maka asset tersebut tidak lagi diperhitungkan ke dalam daftar asset
+
+			if(strtotime($asset->sold_date) > $date || $asset->sold_date == NULL){
+				array_push($response, $asset);
+			}
+		}
+
+		header('Content-Type: application/json');
+		echo json_encode($response);
+	}
 }
