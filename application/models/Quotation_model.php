@@ -112,7 +112,8 @@ class Quotation_model extends CI_Model {
 				"is_delete" => 0,
 				"customer_id" => $this->input->post('customerId'),
 				"taxing" => $this->input->post('taxing'),
-				"note" => $this->input->post('note')
+				"note" => $this->input->post('note'),
+				"tax" => tax_rate
 			);
 			$this->db->insert($this->table_quotation, $db_item);
 			return $this->db->insert_id();

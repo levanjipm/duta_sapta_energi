@@ -87,3 +87,4 @@ defined('EXIT__AUTO_MAX')      OR define('EXIT__AUTO_MAX', 125); // highest auto
 //Constants//
 
 define('customer_default_plafond_global', 3000000);
+define('tax_rate', 10);
