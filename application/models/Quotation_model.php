@@ -84,7 +84,7 @@ class Quotation_model extends CI_Model {
 
 		private function generateName($date)
 		{
-			$validateion = false;
+			$validation = false;
 			while($validation == false){
 				$name = "Q.DSE-" . date('Ym', strtotime($date)) . "-" . rand(0,9) . rand(0,9) . rand(0,9) . rand(0,9) . rand(0,9) . rand(0,9) . rand(0,9) . rand(0,9);
 				$this->db->where("name", $name);
